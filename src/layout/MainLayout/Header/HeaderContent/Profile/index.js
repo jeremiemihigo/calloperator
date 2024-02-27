@@ -58,8 +58,7 @@ const Profile = () => {
 
   const handleLogout = async () => {
     localStorage.removeItem('auth');
-    localStorage.removeItem('bboxxSupportNom');
-    window.location.replace('/bboxx/login');
+    window.location.replace('/login');
   };
 
   const anchorRef = useRef(null);

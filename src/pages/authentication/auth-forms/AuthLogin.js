@@ -55,7 +55,7 @@ const AuthLogin = () => {
               .then((result) => {
                 if (result.status === 200 && result.data.token) {
                   localStorage.setItem('auth', result.data.token);
-                  window.location.replace('/bboxx');
+                  window.location.replace('/');
                 } else {
                   setStatus({ success: false });
                   setErrors({ submit: result.data });
