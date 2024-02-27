@@ -28,6 +28,7 @@ import userImage from 'assets/images/users/user.png';
 // assets
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 // tab panel wrapper
 function TabPanel({ children, value, index, ...other }) {
@@ -55,10 +56,12 @@ function a11yProps(index) {
 
 const Profile = () => {
   const theme = useTheme();
+  const navigation = useNavigate();
 
   const handleLogout = async () => {
     localStorage.removeItem('auth');
-    window.location.replace('/login');
+    navigation('/login');
+    // window.location.replace('/login');
   };
 
   const anchorRef = useRef(null);

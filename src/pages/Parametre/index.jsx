@@ -104,7 +104,7 @@ function Parametre() {
           console.log(response);
         }
       }
-      window.location.replace('/bboxx/parametre');
+      // window.location.replace('/parametre');
     } catch (error) {
       setLoading(false);
       setExcelFileError(error);
