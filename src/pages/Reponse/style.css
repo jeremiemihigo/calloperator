@@ -1,0 +1,30 @@
+.lot{
+ background-color: rgb(29, 29, 61); 
+ color: white;
+ padding: 5px;
+ border-radius: 4px;
+ text-align: center;
+ font-weight: bolder;  
+ margin-top: 10px;
+ margin-bottom: 3px;
+}
+.gridReponse{
+    background-color: #b5b6eb;
+    border-radius: 10px;
+    margin:5px;
+    padding: 5px;
+    font-size: 12px;
+}
+.gridReponse >p{
+    font-size: 12px;
+}
+.reponseClasse >p{
+    padding: 0;
+    margin: 3px;
+    font-size: 12px;
+}
+.marge{
+    width: 100%;
+    background-color: rgb(29, 29, 61); 
+    height: 3px;
+}

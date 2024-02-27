@@ -1,0 +1,33 @@
+// third-party
+import { combineReducers } from 'redux';
+
+// project import
+import menu from './menu';
+import zone from 'Redux/Zone';
+import agent from 'Redux/Agent';
+import parametre from 'Redux/Parametre';
+import reponse from 'Redux/Reponses';
+import periodeStore from 'Redux/PeriodeDossier';
+import periodeActive from 'Redux/PeriodeActive';
+import statShop from 'Redux/StatShop';
+import raison from 'Redux/Raison';
+import user from 'Redux/user';
+import agentAdmin from 'Redux/AgentAdmin';
+
+// ==============================|| COMBINE REDUCERS ||============================== //
+
+const reducers = combineReducers({
+  menu,
+  zone,
+  agentAdmin,
+  user,
+  raison,
+  statShop,
+  agent,
+  parametre,
+  reponse,
+  periodeStore,
+  periodeActive
+});
+
+export default reducers;

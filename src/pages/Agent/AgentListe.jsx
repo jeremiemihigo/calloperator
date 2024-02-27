@@ -1,0 +1,140 @@
+/* eslint-disable react/prop-types */
+import { Block } from '@mui/icons-material';
+import { DataGrid } from '@mui/x-data-grid';
+import axios from 'axios';
+import { lien } from 'static/Lien';
+import { useEffect, useState } from 'react';
+import DirectionSnackbar from 'Control/SnackBar';
+import { Typography } from '@mui/material';
+import { config } from 'static/Lien';
+
+function AgentListe({ liste }) {
+  const [open, setOpen] = useState(false);
+  const [data, setData] = useState();
+
+  useEffect(() => {
+    setData(liste);
+  }, [liste]);
+  const bloquer = (agent) => {
+    axios.put(lien + '/bloquer', { id: agent._id, value: !agent.active }, config).then((result) => {
+      if (result.status === 200) {
+        setOpen(true);
+      }
+    });
+  };
+  const resetPassword = (agent) => {
+    axios.put(lien + '/reset', { id: agent._id }, config).then((result) => {
+      if (result.status === 200) {
+        setOpen(true);
+      }
+    });
+  };
+  const columns = [
+    {
+      field: 'codeAgent',
+      headerName: 'Code',
+      width: 100,
+      editable: false
+    },
+    {
+      field: 'nom',
+      headerName: 'NOMS',
+      width: 180,
+      editable: false
+    },
+    {
+      field: 'telephone',
+      headerName: 'Telephone',
+      width: 120,
+      editable: false
+    },
+    {
+      field: 'active',
+      headerName: 'Status',
+      width: 70,
+      editable: false,
+      renderCell: (params) => {
+        return <span className={params.row.active ? 'green' : 'red'}>{params.row.active ? 'Actif' : 'Bloquer'}</span>;
+      }
+    },
+    {
+      field: 'action',
+      headerName: 'Action',
+      width: 70,
+      editable: false,
+      renderCell: (params) => {
+        return (
+          <Typography onClick={() => bloquer(params.row)}>
+            <Block fontSize="small" />
+          </Typography>
+        );
+      }
+    },
+    {
+      field: 'paswo',
+      headerName: 'Reset',
+      width: 70,
+      editable: false,
+      renderCell: (params) => {
+        return (
+          <Typography onClick={() => resetPassword(params.row)} className="cursor-pointer">
+            Reset
+          </Typography>
+        );
+      }
+    }
+  ];
+  return (
+    <div className="container">
+      {open && <DirectionSnackbar open={open} setOpen={setOpen} message="Opération effectuée" />}
+      <div className="row">
+        <p>Agents</p>
+        <div className="col-lg-12">
+          {data && data.agentListe.length > 0 ? (
+            <DataGrid
+              rows={data.agentListe}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 7
+                  }
+                }
+              }}
+              pageSizeOptions={[7]}
+              checkboxSelection
+              disableRowSelectionOnClick
+            />
+          ) : (
+            <p className="red">Aucun agent trouvé</p>
+          )}
+        </div>
+      </div>
+      <div className="row mt-2">
+        <p>Techniciens</p>
+        <div className="col-lg-12">
+          {data && data.techListe.length > 0 ? (
+            <DataGrid
+              rows={data.techListe}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 7
+                  }
+                }
+              }}
+              pageSizeOptions={[7]}
+              checkboxSelection
+              disableRowSelectionOnClick
+            />
+          ) : (
+            <p className="red">Aucun technicien trouvé</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default AgentListe;
