@@ -84,7 +84,7 @@ const ProfileTab = () => {
           <ListItemText primary="Corbeille" />
         </ListItemButton>
       )}
-      {userConenct && (
+      {userConenct && userConenct.fonction === 'superUser' && (
         <ListItemButton selected={selectedIndex === 5} onClick={(event) => handleListItemClick(event, 5)}>
           <ListItemIcon>
             <Settings fontSize="small" />
