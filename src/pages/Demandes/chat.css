@@ -2,6 +2,7 @@
  border-radius: 10px;
   background-color: #c5e6c1;
   margin-bottom: 1px;
+  cursor: pointer;
 }
 .messageTitle{
   background-color: #29afdf;
