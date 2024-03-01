@@ -19,8 +19,9 @@ const DashboardDefault = () => {
   const [statReponse, setStatReponse] = React.useState();
 
   React.useEffect(() => {
-    let stat = _.groupBy(reponse.reponse, 'agent.nom')
+    let stat = _.groupBy(reponse.reponse, 'agent.nom');
     setStatReponse(Object.entries(stat));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>

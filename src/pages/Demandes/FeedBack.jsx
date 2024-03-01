@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import { lien, config } from 'static/Lien';
 import { Input } from 'antd';
+import Chats from './Chats';
 const { TextArea } = Input;
 
 function FeedbackComponent({ demande, update }) {
@@ -62,6 +63,7 @@ function FeedbackComponent({ demande, update }) {
           }}
         />
       </div>
+      <Chats />
     </div>
   );
 }

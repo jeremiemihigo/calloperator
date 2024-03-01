@@ -7,8 +7,6 @@ import { lien_image } from 'static/Lien';
 import { CreateContexte } from 'Context';
 import './style.css';
 
-import UpdateDemandeDetail from './UpdateDemandeDetail';
-import Popup from 'static/Popup';
 import BasicTabs from 'Control/Tabs';
 import FeedbackComponent from './FeedBack';
 import ReponsesComponent from './ReponseComponent';
@@ -17,18 +15,7 @@ import { Image, Space } from 'antd';
 
 function ReponseAdmin(props) {
   const { update } = props;
-  const [openPopup, setOpenPopup] = React.useState(false);
   const { demande } = useContext(CreateContexte);
-  const [dataTo, setDataTo] = React.useState({
-    propriete: '',
-    id: ''
-  });
-
-  const loading = (propriete, id, e) => {
-    e.preventDefault();
-    setDataTo({ propriete, id });
-    setOpenPopup(true);
-  };
 
   const titres = [
     { id: 0, label: 'Reponse' },
@@ -45,44 +32,22 @@ function ReponseAdmin(props) {
   function AfficherJsx({ demandes }) {
     return (
       <div style={{ textAlign: 'justify' }}>
+        <p>{demandes.codeclient && <span>{demandes.codeclient};</span>}</p>
+
         <p>
-          {demandes.codeclient && (
-            <span onClick={(e) => loading('codeClient', demandes._id, e)}>
-              <span style={style.span}>Code Client : </span>
-              {demandes.codeclient}
-            </span>
-          )}
-        </p>
+          <span>{demandes.sector};</span>
+          <span>{demandes.commune + '; '}</span>
 
-        <br />
-        <p style={{ cursor: 'pointer' }}>
-          <span onClick={(e) => loading('sector', demandes._id, e)}>
-            <span style={style.span}>Sector : </span>
-            {demandes.sector}
-          </span>
+          <span>{demandes.cell + '; '}</span>
 
-          <span onClick={(e) => loading('cell', demandes._id, e)}>
-            <span style={style.span}>Cell : </span>
-            {demandes.cell}
-          </span>
-
-          <span onClick={(e) => loading('reference', demandes._id, e)}>
-            <span style={style.span}>Référence : </span>
-            {demandes.reference}
-          </span>
-
-          <span onClick={(e) => loading('sat', demandes._id, e)}>
-            <span style={style.span}>Sat : </span>
-            {demandes.reference}
-          </span>
+          <span>{demandes.reference + '; '}</span>
+          <span>contact : {demandes.numero + '; '}</span>
         </p>
         <p>
-          <span onClick={(e) => loading('statut', demandes._id, e)}>
-            <span style={style.span}>Statut du client</span> {`${demandes.statut === 'allumer' ? 'allumé' : 'éteint'}`}{' '}
-          </span>
+          <span> {`${demandes.statut === 'allumer' ? 'client allumé;' : 'client éteint;'}`} </span>
           {demandes.raison && (
-            <span onClick={(e) => loading('raison', demandes._id, e)}>
-              <span style={style.span}>Raison</span>
+            <span>
+              <span style={style.span}></span>
               {demandes.raison}
             </span>
           )}
@@ -112,12 +77,6 @@ function ReponseAdmin(props) {
       <Grid item lg={6}>
         <BasicTabs titres={titres} components={components} />
       </Grid>
-
-      {dataTo && (
-        <Popup open={openPopup} setOpen={setOpenPopup} title="Modification">
-          <UpdateDemandeDetail data={dataTo} />
-        </Popup>
-      )}
     </Grid>
   );
 }

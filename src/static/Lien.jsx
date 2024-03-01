@@ -1,8 +1,8 @@
 // eslint-disable-next-line no-undef
 import axios from 'axios';
-// export const lien = 'http://109.199.122.241:5000/bboxx/support';
+// export const lien = 'http://localhost:5000/bboxx/support';
 export const lien = 'https://bboxxbackend-app.onrender.com/bboxx/support';
-// export const lien_image = 'http://109.199.122.241:5000/bboxx/image';
+// export const lien_image = 'http://localhost:5000/bboxx/image';
 export const lien_image = 'https://bboxxbackend-app.onrender.com/bboxx/image';
 export const config = {
   headers: {

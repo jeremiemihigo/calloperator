@@ -18,7 +18,7 @@ function DemandeListe() {
   const loadings = async () => {
     try {
       const response = await axios.get(`${lien}/toutesDemandeAttente`);
-
+      console.log(response);
       if (response.data) {
         setDataChat(_.filter(response.data.response, { feedback: 'chat' }));
         setChat(response.data.reclamation);

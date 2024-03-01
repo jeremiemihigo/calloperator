@@ -7,7 +7,7 @@ import axios from 'axios';
 import { postReponse } from 'Redux/Reponses';
 import { lien, config } from 'static/Lien';
 import { CreateContexte } from 'Context';
-import DirectionSnackbar from 'Control/SnackBar';
+import { Alert } from '../../../node_modules/@mui/lab/index';
 
 function ReponsesComponent({ update }) {
   const [intial, setInitial] = React.useState({
@@ -38,7 +38,6 @@ function ReponsesComponent({ update }) {
   }
 
   const reponse = useSelector((state) => state.reponse);
-  const [open, setOpen] = React.useState(true);
 
   const checkStatut = (chiffre) => {
     setInitial({
@@ -172,9 +171,9 @@ function ReponsesComponent({ update }) {
 
   return (
     <Grid>
-      {reponse.postDemande === 'rejected' && <DirectionSnackbar message={reponse.postDemandeError} open={open} setOpen={setOpen} />}
+      {reponse.postDemande === 'rejected' && <Alert severity="warning">{reponse.postDemandeError}</Alert>}
+      {openSnack && <Alert severity="warning">{message}</Alert>}
 
-      {openSnack && <DirectionSnackbar message={message} open={openSnack} setOpen={setOpenSnack} />}
       <TextField
         style={{ marginTop: '10px' }}
         onChange={(e) => onChange(e)}
@@ -267,7 +266,6 @@ function ReponsesComponent({ update }) {
         value={payement}
         label="Statut Payement"
       />
-
       <div style={{ marginTop: '10px' }}>
         <Button
           disabled={!demande && !update ? true : false}
