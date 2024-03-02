@@ -82,25 +82,17 @@ function Parametre() {
         nombre = nombre + 1;
         dataSend.push(excelData[i]);
         if (nombre == 100) {
-          const response = await axios.post(
-            lien + '/paramatre',
-            {
-              data: dataSend
-            },
-            config
-          );
+          const response = await axios.post(lien + '/paramatre', {
+            data: dataSend
+          });
           console.log(response);
           nombre = 0;
           dataSend = [];
         }
         if (i === excelData.length - 1) {
-          const response = await axios.post(
-            lien + '/paramatre',
-            {
-              data: dataSend
-            },
-            config
-          );
+          const response = await axios.post(lien + '/paramatre', {
+            data: dataSend
+          });
           console.log(response);
         }
       }
