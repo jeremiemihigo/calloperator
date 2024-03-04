@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Paper } from '@mui/material';
+import { Button, Paper, Typography } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import axios from 'axios';
 import { lien, config } from 'static/Lien';
@@ -46,11 +46,9 @@ function Rapport() {
     }
   };
   const retourDate = (date) => {
-    let dates = new Date(date).getDate();
-    let month = parseInt(new Date(date).getMonth()) + 1;
-    let year = new Date(date).getFullYear();
-    return `${dates}/${month}/${year}`;
+    return { dates: new Date(date).toLocaleString().split(',')[0], heure: new Date(date).toLocaleString().split(',')[1] };
   };
+
   const [loading, setLoading] = React.useState(false);
 
   const searchData = React.useCallback(
@@ -83,15 +81,11 @@ function Rapport() {
                 'CODE AGENT': response.data[i].demandeur.codeAgent,
                 'NOMS DU DEMANDEUR': response.data[i].demandeur.nom,
                 'SA & TECH': response.data[i].demandeur.fonction !== 'tech' ? 'SA' : 'TECH',
-                DATE: retourDate(response.data[i].createdAt),
+                DATE: new Date(retourDate(response.data[i].createdAt).dates),
                 'C.O': response.data[i].agent?.nom,
                 'STATUT DE LA DEMANDE': response.data[i].demande.typeImage,
-                "HEURE D'ENVOI": `${new Date(response.data[i].demande.createdAt).getHours()}:${new Date(
-                  response.data[i].demande.createdAt
-                ).getMinutes()}`,
-                'HEURE DE REPONSE': `${new Date(response.data[i].createdAt).getHours()}:${new Date(
-                  response.data[i].createdAt
-                ).getMinutes()}`,
+                "HEURE D'ENVOI": `${retourDate(response.data[i].demande.createdAt).heure}`,
+                'HEURE DE REPONSE': `${retourDate(response.data[i].createdAt).heure}`,
                 LONGITUDE: chekValue(response.data[i].demande?.coordonnes.longitude),
                 LATITUDE: chekValue(response.data[i].demande?.coordonnes.latitude),
                 ALTITUDE: chekValue(response.data[i].demande?.coordonnes.altitude),
@@ -102,7 +96,7 @@ function Rapport() {
                 AVENUE: response.data[i].demande?.cell,
                 REFERENCE: response.data[i].demande?.reference,
                 SAT: response.data[i].demande?.sat,
-                CONTACT: response.data[i].demande?.numero
+                CONTACT: response.data[i].demande?.numero !== 'undefined' ? response.data[i].demande?.numero : ''
               });
             }
             setLoading(false);
@@ -172,8 +166,6 @@ function Rapport() {
               <td>code</td>
               <td>Date</td>
               <td>c.o</td>
-              <td>H.E</td>
-              <td>H.R</td>
               <td>Statut</td>
               <td>Raison</td>
             </tr>
@@ -187,14 +179,21 @@ function Rapport() {
                     <td>{index.clientStatut}</td>
                     <td>{index.PayementStatut}</td>
                     <td>{Math.abs(index.consExpDays)}</td>
-                    <td>{index.demandeur.nom}</td>
+                    <td>
+                      <Typography noWrap sx={{ width: '10rem' }}>
+                        {index.demandeur.nom}
+                      </Typography>
+                    </td>
                     <td>{index.demandeur.codeAgent}</td>
-                    <td>{retourDate(index.createdAt)}</td>
+                    <td>{retourDate(index.createdAt).dates}</td>
                     <td>{index.agent.nom}</td>
-                    <td>{`${new Date(index.demande.createdAt).getHours()}:${new Date(index.demande.createdAt).getMinutes()}`}</td>
-                    <td>{`${new Date(index.createdAt).getHours()}:${new Date(index.createdAt).getMinutes()}`}</td>
+
                     <td>{index.demande.statut}</td>
-                    <td>{index.demande.raison}</td>
+                    <td>
+                      <Typography noWrap sx={{ width: '10rem' }}>
+                        {index.demande.raison}
+                      </Typography>
+                    </td>
                   </tr>
                 );
               })
