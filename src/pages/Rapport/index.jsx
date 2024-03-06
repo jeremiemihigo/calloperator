@@ -20,15 +20,17 @@ function Rapport() {
         if (date1.getFullYear() === date2.getFullYear()) {
           if (date1.getMonth() == date2.getMonth()) {
             if (date1.getDate() === date2.getDate()) {
-              return `du ${date2.getDate()}/${date2.getMonth() + 1}/${date2.getFullYear()}`;
+              return `Visites ménages du ${date2.getDate()}/${date2.getMonth() + 1}/${date2.getFullYear()}`;
             } else {
-              return `du ${date1.getDate()} au ${date2.getDate()}/${date2.getMonth() + 1}/${date2.getFullYear()}`;
+              return `Visites ménages allant du ${date1.getDate()} au ${date2.getDate()}/${date2.getMonth() + 1}/${date2.getFullYear()}`;
             }
           } else {
-            return `du ${date1.getDate()}/${date1.getMonth() + 1} au ${date2.getDate()}/${date2.getMonth() + 1}/${date2.getFullYear()}`;
+            return `Visites ménages allant du ${date1.getDate()}/${date1.getMonth() + 1} au ${date2.getDate()}/${
+              date2.getMonth() + 1
+            }/${date2.getFullYear()}`;
           }
         } else {
-          return `du ${date1.getDate()}/${date1.getMonth() + 1}/${date1.getFullYear()} au ${date2.getDate()}/${
+          return `Visites ménages allant du ${date1.getDate()}/${date1.getMonth() + 1}/${date1.getFullYear()} au ${date2.getDate()}/${
             date2.getMonth() + 1
           }/${date2.getFullYear()}`;
         }
@@ -99,9 +101,9 @@ function Rapport() {
                 CONTACT: response.data[i].demande?.numero !== 'undefined' ? response.data[i].demande?.numero : ''
               });
             }
-            setLoading(false);
             setSample(donner);
             setNomFile(generateNomFile());
+            setLoading(false);
           }
         })
         .catch(function (err) {
@@ -152,7 +154,7 @@ function Rapport() {
           <Search fontSize="small" /> {loading ? 'Loading...' : 'Recherche'}
         </Button>
         <ExcelButton data={samplejson2} title="Export to Excel" fileName={`${nomFile}.xlsx`} />
-        <p style={{ textAlign: 'center', fontSize: '15px', marginLeft: '10px' }}>{donnerFound.length} demande(s)</p>
+        <p style={{ textAlign: 'center', fontSize: '15px', marginLeft: '10px' }}>{donnerFound.length} Visite(s)</p>
       </div>
       <div>
         <table>

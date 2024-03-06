@@ -133,7 +133,7 @@ function ReponsesComponent({ update }) {
         {
           idReponse: update._id,
           data: {
-            codeClient,
+            codeclient: codeClient,
             nomClient,
             codeCu,
             clientStatut: statut,
@@ -156,7 +156,7 @@ function ReponsesComponent({ update }) {
     if (update) {
       let valeur = {
         consExpDays: update.consExpDays,
-        codeClient: update.codeClient,
+        codeClient: update.codeclient,
         codeCu: update.codeCu
       };
 

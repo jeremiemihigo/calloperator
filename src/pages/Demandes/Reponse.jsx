@@ -12,6 +12,7 @@ import FeedbackComponent from './FeedBack';
 import ReponsesComponent from './ReponseComponent';
 import { Grid } from '@mui/material';
 import { Image, Space } from 'antd';
+import ChercherDemande from './ChercherDemande';
 
 function ReponseAdmin(props) {
   const { update } = props;
@@ -19,39 +20,40 @@ function ReponseAdmin(props) {
 
   const titres = [
     { id: 0, label: 'Reponse' },
-    { id: 1, label: 'Feedback' }
+    { id: 1, label: 'Feedback' },
+    { id: 2, label: 'Demande' }
   ];
   const components = [
     { id: 0, component: <ReponsesComponent update={update} /> },
     {
       id: 1,
       component: <FeedbackComponent demande={demande} update={update} />
+    },
+    {
+      id: 2,
+      component: <ChercherDemande />
     }
   ];
 
+  const getColor = (item) => {
+    return !item && 'red';
+  };
+
   function AfficherJsx({ demandes }) {
     return (
-      <div style={{ textAlign: 'justify' }}>
-        <p>{demandes.codeclient && <span>{demandes.codeclient};</span>}</p>
+      <div className="demandeJsx" style={{ textAlign: 'justify' }}>
+        <p>ID demande : {demandes.idDemande}</p>
+        <p style={{ color: getColor(demandes.codeclient) }}>code client : {demandes.codeclient && demandes.codeclient.toUpperCase()}</p>
 
-        <p>
-          <span>{demandes.sector};</span>
-          <span>{demandes.commune + '; '}</span>
+        <p style={{ color: getColor(demandes.sector) }}>Secteur : {demandes.sector}</p>
+        <p style={{ color: getColor(demandes.commune) }}>Commune : {demandes.commune}</p>
 
-          <span>{demandes.cell + '; '}</span>
+        <p style={{ color: getColor(demandes.cell) }}>Cell : {demandes.cell}</p>
 
-          <span>{demandes.reference + '; '}</span>
-          <span>contact : {demandes.numero + '; '}</span>
-        </p>
-        <p>
-          <span> {`${demandes.statut === 'allumer' ? 'client allumé;' : 'client éteint;'}`} </span>
-          {demandes.raison && (
-            <span>
-              <span style={style.span}></span>
-              {demandes.raison}
-            </span>
-          )}
-        </p>
+        <p>Référence : {demandes.reference}</p>
+        <p style={{ color: getColor(demandes.numero) }}>Numéro joignable du client: {demandes.numero}</p>
+        <p>Statut du client : {`${demandes.statut === 'allumer' ? 'allumé' : 'éteint'}`} </p>
+        <p>Feedback : {demandes.raison.toLowerCase()}</p>
       </div>
     );
   }

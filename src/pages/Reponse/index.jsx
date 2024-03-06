@@ -110,7 +110,6 @@ function Deja() {
                         </p>
                         <p>consExpDays : {index.consExpDays} jour(s)</p>
                         <p>C.O : {index.co.nom}</p>
-
                         <p className="retard">
                           Date {dateFrancais(index.createdAt)} à {index.createdAt.split('T')[1].split(':')[0]}:
                           {index.createdAt.split('T')[1].split(':')[1]}
