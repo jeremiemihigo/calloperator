@@ -12,6 +12,44 @@ function Rapport() {
   const [donnerFound, setDonnerFound] = React.useState([]);
   const [samplejson2, setSample] = React.useState();
   const [nomFile, setNomFile] = React.useState('');
+  const returnMois = (chiffre) => {
+    if (chiffre === 0) {
+      return 'Janvier';
+    }
+    if (chiffre === 1) {
+      return 'Février';
+    }
+    if (chiffre === 2) {
+      return 'Mars';
+    }
+    if (chiffre === 3) {
+      return 'Avril';
+    }
+    if (chiffre === 4) {
+      return 'Mai';
+    }
+    if (chiffre === 5) {
+      return 'Juin';
+    }
+    if (chiffre === 6) {
+      return 'Juillet';
+    }
+    if (chiffre === 7) {
+      return 'Aout';
+    }
+    if (chiffre === 8) {
+      return 'Septembre';
+    }
+    if (chiffre === 9) {
+      return 'Octobre';
+    }
+    if (chiffre === 10) {
+      return 'Novembre';
+    }
+    if (chiffre === 12) {
+      return 'Décembre';
+    }
+  };
   const generateNomFile = () => {
     try {
       if (dates.debut !== '' && dates.fin !== '') {
@@ -20,19 +58,21 @@ function Rapport() {
         if (date1.getFullYear() === date2.getFullYear()) {
           if (date1.getMonth() == date2.getMonth()) {
             if (date1.getDate() === date2.getDate()) {
-              return `Visites ménages du ${date2.getDate()}/${date2.getMonth() + 1}/${date2.getFullYear()}`;
+              return `Visites ménages du ${date2.getDate()} ${returnMois(date2.getMonth())} ${date2.getFullYear()}`;
             } else {
-              return `Visites ménages allant du ${date1.getDate()} au ${date2.getDate()}/${date2.getMonth() + 1}/${date2.getFullYear()}`;
+              return `Visites ménages allant du ${date1.getDate()} au ${date2.getDate()} ${returnMois(
+                date2.getMonth()
+              )} ${date2.getFullYear()}`;
             }
           } else {
-            return `Visites ménages allant du ${date1.getDate()}/${date1.getMonth() + 1} au ${date2.getDate()}/${
-              date2.getMonth() + 1
-            }/${date2.getFullYear()}`;
+            return `Visites ménages allant du ${date1.getDate()} ${returnMois(date1.getMonth())} au ${date2.getDate()} ${returnMois(
+              date2.getMonth()
+            )} ${date2.getFullYear()}`;
           }
         } else {
-          return `Visites ménages allant du ${date1.getDate()}/${date1.getMonth() + 1}/${date1.getFullYear()} au ${date2.getDate()}/${
-            date2.getMonth() + 1
-          }/${date2.getFullYear()}`;
+          return `Visites ménages allant du ${date1.getDate()} ${returnMois(
+            date1.getMonth()
+          )} ${date1.getFullYear()} au ${date2.getDate()} ${returnMois(date2.getMonth())} ${date2.getFullYear()}`;
         }
       }
     } catch (error) {
