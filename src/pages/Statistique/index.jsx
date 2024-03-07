@@ -4,15 +4,17 @@ import React from 'react';
 import '../style.css';
 import { useSelector } from 'react-redux';
 import AutoComplement from 'Control/AutoComplet';
-import AffichageStat from './AffichageStat';
 import _ from 'lodash';
-import { Alert, Button, Grid, Card, Fab } from '@mui/material';
+import { Alert, Button, Grid, Card } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import Graphique from './Graphique';
 import axios from 'axios';
 import { lien, config } from 'static/Lien';
-
+import BasicTabs from 'Control/Tabs';
 import MainCard from 'components/MainCard';
+import Regions from './Regions';
+import Agents from './Agents';
+import AffichageStat from './AffichageStat';
 
 function Statistiques() {
   const region = useSelector((state) => state.zone);
@@ -96,17 +98,27 @@ function Statistiques() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [donner]);
 
+  const titres = [
+    { id: 0, label: 'Graphique' },
+    { id: 1, label: 'Régions' },
+    { id: 2, label: 'Agents' }
+  ];
+
   return (
     <MainCard>
       {valeur && <Alert severity="error">{message}</Alert>}
       <Grid container sx={{ margin: '10px' }}>
         <Grid item lg={6}>
-          <AutoComplement value={value} setValue={setValue} options={region.zone} title="Selectionnez la region" propr="denomination" />
-          <div style={{ marginTop: '5px' }}>
-            {agentRegion && (
-              <AutoComplement value={agentSelect} setValue={setAgentSelect} options={agentRegion} title="Agent" propr="nom" />
-            )}
-          </div>
+          <Grid container>
+            <Grid item lg={4}>
+              <AutoComplement value={value} setValue={setValue} options={region.zone} title="Selectionnez la region" propr="denomination" />
+            </Grid>
+            <Grid item lg={8} sx={{ paddingLeft: '5px' }}>
+              {agentRegion && (
+                <AutoComplement value={agentSelect} setValue={setAgentSelect} options={agentRegion} title="Agent" propr="nom" />
+              )}
+            </Grid>
+          </Grid>
         </Grid>
         <Grid lg={6} sx={{ paddingLeft: '5px' }}>
           <Grid container>
@@ -124,29 +136,29 @@ function Statistiques() {
                   </Grid>
                 );
               })}
-          </Grid>
-          <Grid sx={{ marginTop: '3px' }}>
-            <Button color="primary" variant="contained" onClick={(e) => sendDataFectch(e)}>
-              <Search fontSize="small" /> <span style={{ marginLeft: '5px' }}>Recherche</span>
-            </Button>
+            <Grid item lg={3} sx={{ marginTop: '3px' }}>
+              <Button color="primary" variant="contained" onClick={(e) => sendDataFectch(e)}>
+                <Search fontSize="small" /> <span style={{ marginLeft: '5px' }}>Recherche</span>
+              </Button>
+            </Grid>
           </Grid>
         </Grid>
       </Grid>
 
       <Grid container>
         <Grid item lg={12}>
-          <Fab size="small" color="primary">
-            <Search fontSize="small" />
-          </Fab>
           {listeDemande && (
-            <>
-              <div>
-                <Graphique donner={listeDemande} recherche={donner} />
-              </div>
-              <div>
-                <AffichageStat listeDemande={listeDemande} />
-              </div>
-            </>
+            <Grid>
+              <AffichageStat listeDemande={listeDemande} />
+              <BasicTabs
+                titres={titres}
+                components={[
+                  { id: 0, component: <Graphique donner={listeDemande} recherche={donner} /> },
+                  { id: 1, component: <Regions listeDemande={listeDemande} /> },
+                  { id: 2, component: <Agents listeDemande={listeDemande} /> }
+                ]}
+              />
+            </Grid>
           )}
         </Grid>
       </Grid>

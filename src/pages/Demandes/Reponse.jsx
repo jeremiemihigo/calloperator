@@ -12,7 +12,6 @@ import FeedbackComponent from './FeedBack';
 import ReponsesComponent from './ReponseComponent';
 import { Grid } from '@mui/material';
 import { Image, Space } from 'antd';
-import ChercherDemande from './ChercherDemande';
 
 function ReponseAdmin(props) {
   const { update } = props;
@@ -20,18 +19,13 @@ function ReponseAdmin(props) {
 
   const titres = [
     { id: 0, label: 'Reponse' },
-    { id: 1, label: 'Feedback' },
-    { id: 2, label: 'Demande' }
+    { id: 1, label: 'Feedback' }
   ];
   const components = [
     { id: 0, component: <ReponsesComponent update={update} /> },
     {
       id: 1,
       component: <FeedbackComponent demande={demande} update={update} />
-    },
-    {
-      id: 2,
-      component: <ChercherDemande />
     }
   ];
 
@@ -44,13 +38,6 @@ function ReponseAdmin(props) {
       <div className="demandeJsx" style={{ textAlign: 'justify' }}>
         <p>ID demande : {demandes.idDemande}</p>
         <p style={{ color: getColor(demandes.codeclient) }}>code client : {demandes.codeclient && demandes.codeclient.toUpperCase()}</p>
-
-        <p style={{ color: getColor(demandes.sector) }}>Secteur : {demandes.sector}</p>
-        <p style={{ color: getColor(demandes.commune) }}>Commune : {demandes.commune}</p>
-
-        <p style={{ color: getColor(demandes.cell) }}>Cell : {demandes.cell}</p>
-
-        <p>Référence : {demandes.reference}</p>
         <p style={{ color: getColor(demandes.numero) }}>Numéro joignable du client: {demandes.numero}</p>
         <p>Statut du client : {`${demandes.statut === 'allumer' ? 'allumé' : 'éteint'}`} </p>
         <p>Feedback : {demandes.raison.toLowerCase()}</p>

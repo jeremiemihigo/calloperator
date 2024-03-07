@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 
 // material-ui
@@ -13,35 +14,42 @@ import axios from 'axios';
 
 const ReportAreaChart = () => {
   const [options, setOptions] = useState();
-
   const [series, setSerie] = useState();
+  const [donner, setDonner] = useState();
 
+  const loadingData = () => {
+    if (donner && donner.length > 0) {
+      try {
+        let table = [];
+        let option = [];
+        for (let i = 0; i < donner.length; i++) {
+          table.push(donner[i].total);
+          option.push(donner[i]._id);
+        }
+
+        setOptions({
+          chart: {
+            id: 'basic-bar'
+          },
+          xaxis: {
+            categories: option
+          }
+        });
+        setSerie([
+          {
+            name: 'Demande au total',
+            data: table
+          }
+        ]);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
   const loading = async () => {
     try {
       const response = await axios.get(lien + '/demandePourChaquePeriode', config);
-
-      let table = [];
-      let option = [];
-      if (response.data.length > 0) {
-        for (let i = 0; i < response.data.length; i++) {
-          table.push(response.data[i].total);
-          option.push(response.data[i]._id);
-        }
-      }
-      setOptions({
-        chart: {
-          id: 'basic-bar'
-        },
-        xaxis: {
-          categories: option
-        }
-      });
-      setSerie([
-        {
-          name: 'Demande au total',
-          data: table
-        }
-      ]);
+      setDonner(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -49,8 +57,11 @@ const ReportAreaChart = () => {
   useEffect(() => {
     loading();
   }, []);
+  useEffect(() => {
+    loadingData();
+  }, [donner]);
 
-  return <>{options && series && options.length > 0 && series.length > 0 && <ReactApexChart options={options} series={series} type="line" height={345} />}</>;
+  return <>{options && series && <ReactApexChart options={options} series={series} type="line" height={345} />}</>;
 };
 
 export default ReportAreaChart;
