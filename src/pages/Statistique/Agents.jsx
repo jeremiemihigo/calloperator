@@ -1,6 +1,10 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
-import { Typography } from '@mui/material';
+import { Typography, Fab, Tooltip } from '@mui/material';
+import MedicalInformationIcon from '@mui/icons-material/MedicalInformation';
+import _ from 'lodash';
+import Popup from 'static/Popup';
+import AfficheInfo from './AfficheInfo';
 
 function Agents({ listeDemande }) {
   const [data, setData] = React.useState({ valeur: [], keys: [] });
@@ -44,6 +48,13 @@ function Agents({ listeDemande }) {
       console.log(error);
     }
   };
+  const [show, setShow] = React.useState(false);
+  const [dataToShow, setDataToShow] = React.useState();
+  const sendDetails = (e, code) => {
+    e.preventDefault();
+    setDataToShow(_.filter(listeDemande, { codeAgent: code }));
+    setShow(true);
+  };
   return (
     <div>
       <table>
@@ -54,6 +65,7 @@ function Agents({ listeDemande }) {
             <td>Repondue(s)</td>
             <td>Attente(s)</td>
             <td>Max</td>
+            <td>Détails</td>
           </tr>
         </thead>
         <tbody>
@@ -69,11 +81,21 @@ function Agents({ listeDemande }) {
                 <td>{reponduNonRepondu(cle).repondu}</td>
                 <td>{reponduNonRepondu(cle).nonRepondu}</td>
                 <td>{reponduNonRepondu(cle).repondu + reponduNonRepondu(cle).nonRepondu}</td>
+                <td>
+                  <Tooltip title="Plus les détails" onClick={(e) => sendDetails(e, cle)}>
+                    <Fab size="small" color="primary">
+                      <MedicalInformationIcon fontSize="small" />
+                    </Fab>
+                  </Tooltip>
+                </td>
               </tr>
             );
           })}
         </tbody>
       </table>
+      <Popup open={show} setOpen={setShow} title="Detail">
+        <AfficheInfo data={dataToShow} />
+      </Popup>
     </div>
   );
 }
