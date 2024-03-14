@@ -132,8 +132,9 @@ function Rapport() {
                 DATE: new Date(retourDate(response.data[i].createdAt).dates),
                 'C.O': response.data[i].agent?.nom,
                 'STATUT DE LA DEMANDE': response.data[i].demande.typeImage,
+                "DATE D'ENVOIE": new Date(retourDate(response.data[i].demande?.createdAt).dates),
                 "HEURE D'ENVOI": `${retourDate(response.data[i].demande.createdAt).heure}`,
-                'DATE DE REPONSE': new Date(retourDate(response.data[i].createdAt).dates),
+                
                 'HEURE DE REPONSE': `${retourDate(response.data[i].createdAt).heure}`,
                 'TEMPS MOYEN': `${returnTime(response.data[i].demande.createdAt, response.data[i].createdAt).toFixed(0)}`,
                 LONGITUDE: chekValue(response.data[i].demande?.coordonnes.longitude),
