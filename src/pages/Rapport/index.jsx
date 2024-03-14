@@ -93,6 +93,10 @@ function Rapport() {
 
   const [loading, setLoading] = React.useState(false);
 
+  const returnTime = (date1, date2) => {
+    return (new Date(date2).getTime() - new Date(date1).getTime()) / 60000;
+  };
+  const [temps, setTemps] = React.useState(0);
   const searchData = React.useCallback(
     (e) => {
       e.preventDefault();
@@ -109,8 +113,10 @@ function Rapport() {
             alert(response.data.message);
           } else {
             setDonnerFound(response.data);
-            const donner = [];
+            let times = 0;
+            let donner = [];
             for (let i = 0; i < response.data.length; i++) {
+              times = times + returnTime(response.data[i].demande.createdAt, response.data[i].createdAt);
               donner.push({
                 ID: response.data[i].codeclient,
                 NOMS: response.data[i].nomClient,
@@ -127,7 +133,9 @@ function Rapport() {
                 'C.O': response.data[i].agent?.nom,
                 'STATUT DE LA DEMANDE': response.data[i].demande.typeImage,
                 "HEURE D'ENVOI": `${retourDate(response.data[i].demande.createdAt).heure}`,
+                'DATE DE REPONSE': new Date(retourDate(response.data[i].createdAt).dates),
                 'HEURE DE REPONSE': `${retourDate(response.data[i].createdAt).heure}`,
+                'TEMPS MOYEN': `${returnTime(response.data[i].demande.createdAt, response.data[i].createdAt).toFixed(0)}`,
                 LONGITUDE: chekValue(response.data[i].demande?.coordonnes.longitude),
                 LATITUDE: chekValue(response.data[i].demande?.coordonnes.latitude),
                 ALTITUDE: chekValue(response.data[i].demande?.coordonnes.altitude),
@@ -141,6 +149,7 @@ function Rapport() {
                 CONTACT: response.data[i].demande?.numero !== 'undefined' ? response.data[i].demande?.numero : ''
               });
             }
+            setTemps((times / donner.length).toFixed(0));
             setSample(donner);
             setNomFile(generateNomFile());
             setLoading(false);
@@ -164,7 +173,7 @@ function Rapport() {
           marginBottom: '10px'
         }}
       >
-        <div style={{ display: 'flex', width: '50%' }}>
+        <div style={{ display: 'flex', width: '45%' }}>
           <div style={{ width: '50%', paddingRight: '5px' }}>
             <Input
               type="date"
@@ -194,7 +203,9 @@ function Rapport() {
           <Search fontSize="small" /> {loading ? 'Loading...' : 'Recherche'}
         </Button>
         <ExcelButton data={samplejson2} title="Export to Excel" fileName={`${nomFile}.xlsx`} />
-        <p style={{ textAlign: 'center', fontSize: '15px', marginLeft: '10px' }}>{donnerFound.length} Visite(s)</p>
+        <p style={{ textAlign: 'center', fontSize: '15px', marginLeft: '10px' }}>
+          {donnerFound.length} Visite(s) <span style={{ marginLeft: '20px', color: 'blue', fontWeight: 'bolder' }}>{temps}m</span>
+        </p>
       </div>
       <div>
         <table>
