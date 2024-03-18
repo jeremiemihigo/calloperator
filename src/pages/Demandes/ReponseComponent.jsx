@@ -11,13 +11,14 @@ import { Alert } from '../../../node_modules/@mui/lab/index';
 import AutoComplement from 'Control/AutoComplet';
 import { Checkbox, FormControl, FormControlLabel, FormGroup, Box } from '@mui/material';
 import DirectionSnackbar from 'Control/SnackBar';
+import SearchIcon from '@mui/icons-material/Search';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function ReponsesComponent({ update }) {
   const regions = useSelector((state) => state.zone.zone);
   const shopSelector = useSelector((state) => state.shop.shop);
   const [valueRegionSelect, setValueRegionSelect] = React.useState('');
   const [valueShopSelect, setValueShopSelect] = React.useState('');
-  console.log(valueRegionSelect, valueShopSelect);
   const [intial, setInitial] = React.useState({
     codeCu: '',
     codeClient: '',
@@ -79,35 +80,6 @@ function ReponsesComponent({ update }) {
     setStatut({ payement, statut });
     return { payement, statut };
   };
-
-  const parametres = useSelector((state) => state.parametre);
-  React.useEffect(() => {
-    if (codeClient !== '') {
-      setStatut({ payement: '', statut: '' });
-
-      let cus = parametres.parametre.filter((x) => x.customer === codeClient);
-
-      if (cus.length > 0) {
-        setInitial({
-          ...intial,
-          codeCu: cus[0].customer_cu,
-          nomClient: cus[0].nomClient,
-
-          consExpDays: ''
-        });
-        setValueShopSelect(_.filter(shopSelector, { shop: cus[0].shop })[0]);
-        setValueRegionSelect(_.filter(regions, { denomination: cus[0].region })[0]);
-      } else {
-        setInitial({
-          ...intial,
-          codeCu: '',
-          nomClient: '',
-          consExpDays: ''
-        });
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [codeClient]);
 
   const userConnect = useSelector((state) => state.user?.user);
   const dispatch = useDispatch();
@@ -192,20 +164,55 @@ function ReponsesComponent({ update }) {
       setStatut({ payement: 'pending fulfliment', statut: 'pending activation' });
     }
   };
+  const [fetching, setFeching] = React.useState(false);
+  const fetchCustomer = async (e) => {
+    e.preventDefault();
+    setFeching(true);
+    const response = await axios.get(`${lien}/customer/${codeClient}`);
+    if (response.status === 200) {
+      setInitial({
+        ...intial,
+        codeCu: response.data.customer_cu,
+        nomClient: response.data.nomClient,
+
+        consExpDays: ''
+      });
+      setValueShopSelect(_.filter(shopSelector, { shop: response.data.shop })[0]);
+      setValueRegionSelect(_.filter(regions, { denomination: response.data.region })[0]);
+      setFeching(false);
+    } else {
+      setFeching(false);
+      setInitial({
+        ...intial,
+        codeCu: '',
+        nomClient: '',
+        consExpDays: ''
+      });
+      setValueRegionSelect('');
+      setValueShopSelect('');
+    }
+  };
   return (
     <Grid>
       {reponse.postDemande === 'rejected' && <Alert severity="warning">{reponse.postDemandeError}</Alert>}
       {openSnack && <DirectionSnackbar message={message} open={openSnack} setOpen={setOpenSnack} />}
+      <Grid container>
+        <Grid item lg={10} xs={10}>
+          <TextField
+            style={{ marginTop: '10px' }}
+            onChange={(e) => onChange(e)}
+            name="codeClient"
+            autoComplete="off"
+            fullWidth
+            value={codeClient}
+            label="Code du Client"
+          />
+        </Grid>
+        <Grid item lg={2} xs={2} sx={{ display: 'flex', cursor: 'pointer', alignItems: 'center', justifyContent: 'center' }}>
+          {fetching ? <CircularProgress size={15} /> : <SearchIcon onClick={(e) => fetchCustomer(e)} fontSize="small" />}
+        </Grid>
+      </Grid>
 
-      <TextField
-        style={{ marginTop: '10px' }}
-        onChange={(e) => onChange(e)}
-        name="codeClient"
-        autoComplete="off"
-        fullWidth
-        value={codeClient}
-        label="Code du Client"
-      />
       <TextField
         style={{ marginTop: '10px' }}
         onChange={(e) => onChange(e)}
@@ -226,14 +233,20 @@ function ReponsesComponent({ update }) {
       />
       <Grid container>
         <Grid item lg={6} sm={6} xs={12} sx={{ marginTop: '10px' }}>
-          <AutoComplement value={valueRegionSelect} setValue={setValueRegionSelect} options={regions} title="Région" propr="denomination" />
+          <AutoComplement
+            value={valueRegionSelect}
+            setValue={setValueRegionSelect}
+            options={regions}
+            title={regions && regions.length < 1 ? 'Loading...' : 'Regions'}
+            propr="denomination"
+          />
         </Grid>
         <Grid item lg={6} sm={6} xs={12} sx={{ marginTop: '10px' }}>
-          {valueRegionSelect !== '' && (
+          {valueRegionSelect !== '' && valueRegionSelect !== null && (
             <AutoComplement
               value={valueShopSelect}
               setValue={setValueShopSelect}
-              options={valueRegionSelect.shop}
+              options={valueRegionSelect && valueRegionSelect.shop}
               title="Shop"
               propr="shop"
             />
