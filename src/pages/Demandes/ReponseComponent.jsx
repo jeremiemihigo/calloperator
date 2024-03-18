@@ -19,6 +19,7 @@ function ReponsesComponent({ update }) {
   const shopSelector = useSelector((state) => state.shop.shop);
   const [valueRegionSelect, setValueRegionSelect] = React.useState('');
   const [valueShopSelect, setValueShopSelect] = React.useState('');
+  const [sending, setSending] = React.useState(false);
   const [intial, setInitial] = React.useState({
     codeCu: '',
     codeClient: '',
@@ -84,6 +85,7 @@ function ReponsesComponent({ update }) {
   const userConnect = useSelector((state) => state.user?.user);
   const dispatch = useDispatch();
   const reponseData = (e) => {
+    e.preventDefault();
     if (valueRegionSelect && valueShopSelect && valueRegionSelect.idZone !== valueShopSelect.idZone) {
       setMessage('Veuillez vérifier si le shop est enregistré dans la region selectionée');
       setOpenSnack(true);
@@ -92,7 +94,8 @@ function ReponsesComponent({ update }) {
         setMessage('Cette espace est reservée aux C.O');
         setOpenSnack(true);
       } else {
-        e.preventDefault();
+        setSending(true);
+
         const datass = {
           idDemande: demande.idDemande,
           codeClient: codeClient.toUpperCase(),
@@ -106,6 +109,7 @@ function ReponsesComponent({ update }) {
           shop: valueShopSelect.shop
         };
         dispatch(postReponse(datass));
+        setSending(false);
         reset();
       }
     }
@@ -316,7 +320,7 @@ function ReponsesComponent({ update }) {
       />
       <div style={{ marginTop: '10px' }}>
         <Button
-          disabled={!demande && !update ? true : false}
+          disabled={(!demande && !update) || sending ? true : false}
           fullWidth
           variant="contained"
           color="primary"

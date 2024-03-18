@@ -25,11 +25,11 @@ const reducers = combineReducers({
   raison,
   statShop,
   agent,
-  parametre,
   reponse,
   periodeStore,
   periodeActive,
-  shop
+  shop,
+  parametre
 });
 
 export default reducers;
