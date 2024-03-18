@@ -49,6 +49,7 @@ function Statistiques() {
     }
   };
 
+  const [fetch, setFetch] = React.useState(false);
   const [donner, setDonner] = React.useState();
   const [error, setError] = React.useState({ message: '', valeur: false });
   const { valeur, message } = error;
@@ -83,6 +84,7 @@ function Statistiques() {
 
   const [listeDemande, setListeDemande] = React.useState();
   const loadingDemandes = async () => {
+    setFetch(true);
     try {
       axios.post(lien + '/demandeAgentAll', donner, config).then((response) => {
         if (response.data === 'token expired') {
@@ -90,6 +92,7 @@ function Statistiques() {
           window.location.replace('/login');
         } else {
           setListeDemande(response.data);
+          setFetch(false);
         }
       });
     } catch (error) {
@@ -142,8 +145,8 @@ function Statistiques() {
                 );
               })}
             <Grid item lg={3} sx={{ marginTop: '3px' }}>
-              <Button color="primary" variant="contained" onClick={(e) => sendDataFectch(e)}>
-                <Search fontSize="small" /> <span style={{ marginLeft: '5px' }}>Recherche</span>
+              <Button color="primary" variant="contained" disabled={fetch} onClick={(e) => sendDataFectch(e)}>
+                <Search fontSize="small" /> <span style={{ marginLeft: '5px' }}>{fetch ? 'Loading...' : 'Rechercher'}</span>
               </Button>
             </Grid>
           </Grid>
