@@ -1,23 +1,33 @@
 import React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import { Edit, Delete } from '@mui/icons-material';
+import { Edit } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { Fab } from '@mui/material';
+import Popup from 'static/Popup';
+import FormRaison from './FormRaison';
 
 function Tables() {
   const data = useSelector((state) => state.raison?.raison);
+  const [open, setOpen] = React.useState(false);
+  const [dataUpdate, setData] = React.useState({ id: null, raison: null });
+
+  const functionOpen = (e, raison) => {
+    e.preventDefault();
+    setData({ id: raison._id, raison: raison.raison });
+    setOpen(true);
+  };
   const columns = [
     {
       field: 'id',
       headerName: 'ID',
-      width: 100,
+      width: 150,
       editable: false
     },
 
     {
       field: 'raison',
       headerName: 'Raison',
-      width: 200,
+      width: 300,
       editable: false
     },
 
@@ -27,14 +37,10 @@ function Tables() {
       width: 150,
       editable: false,
       renderCell: (params) => {
-        console.log(params);
         return (
           <>
-            <Fab size="small" color="primary">
+            <Fab onClick={(e) => functionOpen(e, params.row)} size="small" color="primary" sx={{ marginRight: '10px' }}>
               <Edit fontSize="small" />
-            </Fab>
-            <Fab size="small" color="secondary">
-              <Delete fontSize="small" />
             </Fab>
           </>
         );
@@ -58,6 +64,11 @@ function Tables() {
           checkboxSelection
           disableRowSelectionOnClick
         />
+      )}
+      {dataUpdate.raison !== null && (
+        <Popup open={open} setOpen={setOpen} title="Modifier le feedback">
+          <FormRaison id={dataUpdate.id} raisonUpdate={dataUpdate.raison} />
+        </Popup>
       )}
     </div>
   );

@@ -85,7 +85,12 @@ function Statistiques() {
   const loadingDemandes = async () => {
     try {
       axios.post(lien + '/demandeAgentAll', donner, config).then((response) => {
-        setListeDemande(response.data);
+        if (response.data === 'token expired') {
+          localStorage.removeItem('auth');
+          window.location.replace('/login');
+        } else {
+          setListeDemande(response.data);
+        }
       });
     } catch (error) {
       console.log(error);

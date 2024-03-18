@@ -33,8 +33,13 @@ function ReponseComponent() {
       setLoading(true);
       setData();
       const reponse = await axios.get(`${lien}/oneReponse/${value}`, config);
-      setData(reponse.data);
-      setLoading(false);
+      if (reponse.data === 'token expired') {
+        localStorage.removeItem('auth');
+        window.location.replace('/token');
+      } else {
+        setData(reponse.data);
+        setLoading(false);
+      }
     } catch (error) {
       setLoading(false);
     }

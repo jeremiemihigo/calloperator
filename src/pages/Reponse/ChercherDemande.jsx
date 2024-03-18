@@ -3,7 +3,7 @@ import React from 'react';
 import { Grid } from '@mui/material';
 import axios from 'axios';
 import { Input } from 'antd';
-import { lien, lien_image } from 'static/Lien';
+import { config, lien, lien_image } from 'static/Lien';
 import { Image, Space } from 'antd';
 
 function ChercherDemande() {
@@ -14,9 +14,13 @@ function ChercherDemande() {
     if (e.keyCode === 13 && id !== '') {
       try {
         setLoading(true);
-        const resspanonse = await axios.get(lien + `/idDemande/${id}`);
-        setData(resspanonse);
-        console.log(load);
+        const resspanonse = await axios.get(lien + `/idDemande/${id}`, config);
+        if (resspanonse.data === 'token expired') {
+          localStorage.removeItem('auth');
+          window.location.replace('/login');
+        } else {
+          setData(resspanonse);
+        }
       } catch (error) {
         console.log(error);
       }
@@ -27,7 +31,6 @@ function ChercherDemande() {
     setValue(e.target.value);
     setData();
   };
-  console.log(data);
   function AfficheReponse({ item }) {
     return (
       <div className="reponseListe" style={{ paddingLeft: '30px' }}>
@@ -73,7 +76,14 @@ function ChercherDemande() {
         <>
           <Grid container sx={{ marginBottom: '12px' }}>
             <Grid item lg={12}>
-              <Input type="text" value={id} onChange={(e) => key(e)} onKeyUp={(e) => postData(e)} placeholder="Demande Id" />
+              <Input
+                type="text"
+                disabled={load}
+                value={id}
+                onChange={(e) => key(e)}
+                onKeyUp={(e) => postData(e)}
+                placeholder="Demande Id"
+              />
             </Grid>
           </Grid>
           <Grid container>

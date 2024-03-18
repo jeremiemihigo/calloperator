@@ -10,9 +10,7 @@ const initialState = {
   postRaison: '',
   postRaisonError: '',
   updateRaison: '',
-  updateRaisonError: '',
-  deleteRaison: '',
-  deleteRaisonError: ''
+  updateRaisonError: ''
 };
 export const AddRaison = createAsyncThunk('raison/AddRaison', async (data, { rejectWithValue }) => {
   try {
@@ -39,15 +37,6 @@ export const updateRaison = createAsyncThunk('raison/updateRaison', async (data,
     return rejectWithValue(error.response.data);
   }
 });
-export const deleteRaison = createAsyncThunk('raison/deleteRaison', async (data, { rejectWithValue }) => {
-  try {
-    const { id } = data;
-    const response = await axios.delete(lien + '/raison', { id });
-    return response.data;
-  } catch (error) {
-    return rejectWithValue(error.response.data);
-  }
-});
 
 const demande = createSlice({
   name: 'demande',
@@ -62,9 +51,7 @@ const demande = createSlice({
         postRaison: 'pending',
         postRaisonError: '',
         updateRaison: '',
-        updateRaisonError: '',
-        deleteRaison: '',
-        deleteRaisonError: ''
+        updateRaisonError: ''
       };
     },
     [AddRaison.fulfilled]: (state, action) => {
@@ -76,9 +63,7 @@ const demande = createSlice({
         postRaison: 'success',
         postRaisonError: '',
         updateRaison: '',
-        updateRaisonError: '',
-        deleteRaison: '',
-        deleteRaisonError: ''
+        updateRaisonError: ''
       };
     },
     [AddRaison.rejected]: (state, action) => {
@@ -89,9 +74,7 @@ const demande = createSlice({
         postRaison: 'rejected',
         postRaisonError: action.payload,
         updateRaison: '',
-        updateRaisonError: '',
-        deleteRaison: '',
-        deleteRaisonError: ''
+        updateRaisonError: ''
       };
     },
     [ReadRaison.pending]: (state, action) => {
@@ -102,9 +85,7 @@ const demande = createSlice({
         postRaison: '',
         postRaisonError: '',
         updateRaison: '',
-        updateRaisonError: '',
-        deleteRaison: '',
-        deleteRaisonError: ''
+        updateRaisonError: ''
       };
     },
     [ReadRaison.fulfilled]: (state, action) => {
@@ -116,9 +97,7 @@ const demande = createSlice({
         postRaison: '',
         postRaisonError: '',
         updateRaison: '',
-        updateRaisonError: '',
-        deleteRaison: '',
-        deleteRaisonError: ''
+        updateRaisonError: ''
       };
     },
     [ReadRaison.rejected]: (state, action) => {
@@ -129,9 +108,7 @@ const demande = createSlice({
         postRaison: '',
         postRaisonError: '',
         updateRaison: '',
-        updateRaisonError: '',
-        deleteRaison: '',
-        deleteRaisonError: ''
+        updateRaisonError: ''
       };
     },
     [updateRaison.pending]: (state, action) => {
@@ -142,13 +119,11 @@ const demande = createSlice({
         postRaison: '',
         postRaisonError: '',
         updateRaison: 'pending',
-        updateRaisonError: '',
-        deleteRaison: '',
-        deleteRaisonError: ''
+        updateRaisonError: ''
       };
     },
     [updateRaison.fulfilled]: (state, action) => {
-      const donner = state.raison.map(x=>x._id === action.payload._id ? action.payload : x)
+      const donner = state.raison.map((x) => (x._id === action.payload._id ? action.payload : x));
       return {
         ...state,
         raison: donner,
@@ -157,63 +132,18 @@ const demande = createSlice({
         postRaison: '',
         postRaisonError: '',
         updateRaison: 'success',
-        updateRaisonError: '',
-        deleteRaison: '',
-        deleteRaisonError: ''
+        updateRaisonError: ''
       };
     },
     [updateRaison.rejected]: (state, action) => {
       return {
         ...state,
         readRaison: '',
-        readRaisonError: "",
+        readRaisonError: '',
         postRaison: '',
         postRaisonError: '',
         updateRaison: 'rejected',
-        updateRaisonError: action.payload,
-        deleteRaison: '',
-        deleteRaisonError: ''
-      };
-    },
-    [deleteRaison.pending]: (state, action) => {
-      return {
-        ...state,
-        readRaison: '',
-        readRaisonError: '',
-        postRaison: '',
-        postRaisonError: '',
-        updateRaison: '',
-        updateRaisonError: '',
-        deleteRaison: 'pending',
-        deleteRaisonError: ''
-      };
-    },
-    [deleteRaison.fulfilled]: (state, action) => {
-      const donner = state.raison.filter(x=>x!== action.payload._id)
-      return {
-        ...state,
-        raison: donner,
-        readRaison: '',
-        readRaisonError: '',
-        postRaison: '',
-        postRaisonError: '',
-        updateRaison: '',
-        updateRaisonError: '',
-        deleteRaison: 'success',
-        deleteRaisonError: ''
-      };
-    },
-    [deleteRaison.rejected]: (state, action) => {
-      return {
-        ...state,
-        readRaison: '',
-        readRaisonError: "",
-        postRaison: '',
-        postRaisonError: '',
-        updateRaison: '',
-        updateRaisonError: "",
-        deleteRaison: 'rejected',
-        deleteRaisonError: action.payload
+        updateRaisonError: action.payload
       };
     }
   }

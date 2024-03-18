@@ -95,7 +95,6 @@ function ReponsesComponent({ update }) {
         setOpenSnack(true);
       } else {
         setSending(true);
-
         const datass = {
           idDemande: demande.idDemande,
           codeClient: codeClient.toUpperCase(),

@@ -127,52 +127,59 @@ function Rapport() {
       };
       axios
         .post(lien + '/rapport', data, config)
+
         .then((response) => {
-          if (response.data.error) {
-            setLoading(false);
-            alert(response.data.message);
+          console.log(response);
+          if (response.data === 'token expired') {
+            localStorage.removeItem('auth');
+            window.location.replace('/login');
           } else {
-            setDonnerFound(response.data);
-            let times = 0;
-            let donner = [];
-            for (let i = 0; i < response.data.length; i++) {
-              times = times + returnTime(response.data[i].demande, response.data[i]);
-              donner.push({
-                ID: response.data[i].codeclient,
-                NOMS: response.data[i].nomClient,
-                'SERIAL NUMBER': chekValue(response.data[i].codeCu),
-                'CLIENT STATUS': response.data[i].clientStatut,
-                'PAYMENT STATUS': response.data[i].PayementStatut,
-                'CONS. EXP. DAYS': response.data[i].PayementStatut === 'normal' ? 0 : Math.abs(response.data[i].consExpDays),
-                REGION: response.data[i].region,
-                SHOP: response.data[i].shop,
-                'CODE AGENT': response.data[i].demandeur.codeAgent,
-                'NOMS DU DEMANDEUR': response.data[i].demandeur.nom,
-                'SA & TECH': response.data[i].demandeur.fonction !== 'tech' ? 'SA' : 'TECH',
-                DATE: new Date(retourDate(response.data[i].createdAt).dates),
-                'C.O': response.data[i].agent?.nom,
-                'STATUT DE LA DEMANDE': response.data[i].demande.typeImage,
-                "DATE D'ENVOIE": new Date(retourDate(response.data[i].demande.updatedAt).dates),
-                "HEURE D'ENVOI": `${retourDateUpdates(response.data[i].demande).heure}`,
-                'HEURE DE REPONSE': `${retourDate(response.data[i].createdAt).heure}`,
-                'TEMPS MOYEN': `${returnTime(response.data[i].demande, response.data[i]).toFixed(0)}`,
-                LONGITUDE: chekValue(response.data[i].demande?.coordonnes.longitude),
-                LATITUDE: chekValue(response.data[i].demande?.coordonnes.latitude),
-                ALTITUDE: chekValue(response.data[i].demande?.coordonnes.altitude),
-                'ETAT PHYSIQUE': response.data[i].demande?.statut,
-                RAISON: response.data[i].demande?.raison,
-                COMMUNE: response.data[i].demande?.commune,
-                QUARTIER: response.data[i].demande?.sector,
-                AVENUE: response.data[i].demande?.cell,
-                REFERENCE: response.data[i].demande?.reference,
-                SAT: response.data[i].demande?.sat,
-                CONTACT: response.data[i].demande?.numero !== 'undefined' ? response.data[i].demande?.numero : ''
-              });
+            if (response.data.error) {
+              setLoading(false);
+              alert(response.data.message);
+            } else {
+              setDonnerFound(response.data);
+              let times = 0;
+              let donner = [];
+              for (let i = 0; i < response.data.length; i++) {
+                times = times + returnTime(response.data[i].demande, response.data[i]);
+                donner.push({
+                  ID: response.data[i].codeclient,
+                  NOMS: response.data[i].nomClient,
+                  'SERIAL NUMBER': chekValue(response.data[i].codeCu),
+                  'CLIENT STATUS': response.data[i].clientStatut,
+                  'PAYMENT STATUS': response.data[i].PayementStatut,
+                  'CONS. EXP. DAYS': response.data[i].PayementStatut === 'normal' ? 0 : Math.abs(response.data[i].consExpDays),
+                  REGION: response.data[i].region,
+                  SHOP: response.data[i].shop,
+                  'CODE AGENT': response.data[i].demandeur.codeAgent,
+                  'NOMS DU DEMANDEUR': response.data[i].demandeur.nom,
+                  'SA & TECH': response.data[i].demandeur.fonction !== 'tech' ? 'SA' : 'TECH',
+                  DATE: new Date(retourDate(response.data[i].createdAt).dates),
+                  'C.O': response.data[i].agent?.nom,
+                  'STATUT DE LA DEMANDE': response.data[i].demande.typeImage,
+                  "DATE D'ENVOIE": new Date(retourDate(response.data[i].demande.updatedAt).dates),
+                  "HEURE D'ENVOI": `${retourDateUpdates(response.data[i].demande).heure}`,
+                  'HEURE DE REPONSE': `${retourDate(response.data[i].createdAt).heure}`,
+                  'TEMPS MOYEN': `${returnTime(response.data[i].demande, response.data[i]).toFixed(0)}`,
+                  LONGITUDE: chekValue(response.data[i].demande?.coordonnes.longitude),
+                  LATITUDE: chekValue(response.data[i].demande?.coordonnes.latitude),
+                  ALTITUDE: chekValue(response.data[i].demande?.coordonnes.altitude),
+                  'ETAT PHYSIQUE': response.data[i].demande?.statut,
+                  RAISON: response.data[i].demande?.raison,
+                  COMMUNE: response.data[i].demande?.commune,
+                  QUARTIER: response.data[i].demande?.sector,
+                  AVENUE: response.data[i].demande?.cell,
+                  REFERENCE: response.data[i].demande?.reference,
+                  SAT: response.data[i].demande?.sat,
+                  CONTACT: response.data[i].demande?.numero !== 'undefined' ? response.data[i].demande?.numero : ''
+                });
+              }
+              setTemps((times / donner.length).toFixed(0));
+              setSample(donner);
+              setNomFile(generateNomFile());
+              setLoading(false);
             }
-            setTemps((times / donner.length).toFixed(0));
-            setSample(donner);
-            setNomFile(generateNomFile());
-            setLoading(false);
           }
         })
         .catch(function (err) {

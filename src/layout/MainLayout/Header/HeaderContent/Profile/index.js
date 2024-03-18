@@ -85,6 +85,9 @@ const Profile = () => {
 
   const iconBackColorOpen = 'grey.300';
   const userConnect = useSelector((state) => state.user?.user);
+  const userCo = useSelector((state) => state.user);
+
+  console.log(userCo);
 
   return (
     <Box sx={{ flexShrink: 0, ml: 0.75 }}>

@@ -5,7 +5,6 @@ import { combineReducers } from 'redux';
 import menu from './menu';
 import zone from 'Redux/Zone';
 import agent from 'Redux/Agent';
-import parametre from 'Redux/Parametre';
 import reponse from 'Redux/Reponses';
 import periodeStore from 'Redux/PeriodeDossier';
 import periodeActive from 'Redux/PeriodeActive';
@@ -28,8 +27,7 @@ const reducers = combineReducers({
   reponse,
   periodeStore,
   periodeActive,
-  shop,
-  parametre
+  shop
 });
 
 export default reducers;

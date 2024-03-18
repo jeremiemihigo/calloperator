@@ -7,7 +7,6 @@ import { useTheme } from '@mui/material/styles';
 import { List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 
 // assets
-import { ProfileOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import { Settings, ChatBubble, PeopleAlt, Language, Person } from '@mui/icons-material';
 
@@ -33,9 +32,9 @@ const ProfileTab = () => {
     if (index === 3) {
       navigation('/raison', { replace: true });
     }
-    if (index === 4) {
-      navigation('/corbeille', { replace: true });
-    }
+    // if (index === 4) {
+    //   navigation('/corbeille', { replace: true });
+    // }
     if (index === 5) {
       navigation('/access', { replace: true });
     }
@@ -76,14 +75,7 @@ const ProfileTab = () => {
         </ListItemIcon>
         <ListItemText primary="Feedback de nos clients" />
       </ListItemButton>
-      {userConenct && userConenct.fonction === 'superUser' && (
-        <ListItemButton selected={selectedIndex === 4} onClick={(event) => handleListItemClick(event, 4)}>
-          <ListItemIcon>
-            <ProfileOutlined />
-          </ListItemIcon>
-          <ListItemText primary="Corbeille" />
-        </ListItemButton>
-      )}
+
       {userConenct && userConenct.fonction === 'superUser' && (
         <ListItemButton selected={selectedIndex === 5} onClick={(event) => handleListItemClick(event, 5)}>
           <ListItemIcon>

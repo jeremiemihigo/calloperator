@@ -1,7 +1,6 @@
 import React from 'react';
 import * as xlsx from 'xlsx';
 import { Alert, Button, Grid, CircularProgress, Paper } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
 import axios from 'axios';
 import { lien, config } from 'static/Lien';
 import { useSelector } from 'react-redux';
@@ -35,40 +34,6 @@ function Parametre() {
       reader.readAsArrayBuffer(e.target.files[0]);
     }
   };
-
-  const columns = [
-    {
-      field: 'customer',
-      headerName: 'Customer',
-      width: 180,
-      editable: false
-    },
-
-    {
-      field: 'customer_cu',
-      headerName: 'CUSTOMER CU',
-      width: 200,
-      editable: false
-    },
-    {
-      field: 'nomClient',
-      headerName: 'Nom du client',
-      width: 250,
-      editable: false
-    },
-    {
-      field: 'region',
-      headerName: 'Region',
-      width: 150,
-      editable: false
-    },
-    {
-      field: 'shop',
-      headerName: 'SHOP',
-      width: 200,
-      editable: false
-    }
-  ];
 
   const dataParams = useSelector((state) => state.parametre);
 
@@ -153,22 +118,6 @@ function Parametre() {
         <Grid sx={{ marginTop: '12px' }}>
           <Paper>
             {dataParams.getParametre === 'pending' && <p style={{ textAlign: 'center', color: 'blue', fontSize: '14px' }}>Loading...</p>}
-            {dataParams.parametre && dataParams.getParametre !== 'pending' && (
-              <DataGrid
-                rows={dataParams.parametre}
-                columns={columns}
-                initialState={{
-                  pagination: {
-                    paginationModel: {
-                      pageSize: 7
-                    }
-                  }
-                }}
-                pageSizeOptions={[7]}
-                checkboxSelection
-                disableRowSelectionOnClick
-              />
-            )}
           </Paper>
         </Grid>
       </form>

@@ -1,35 +1,27 @@
 import React from 'react';
-import { Paper, TextField, Button } from '@mui/material';
+import { Paper, Fab } from '@mui/material';
 import Table from './Table';
-import { useDispatch } from 'react-redux';
-import { AddRaison } from 'Redux/Raison';
+import { Add } from '../../../node_modules/@mui/icons-material/index';
+import Popup from 'static/Popup';
+import FormRaison from './FormRaison';
 
 function Index() {
-  const [raison, setRaison] = React.useState('');
-  const dispatch = useDispatch();
-  const addRaisons = (e) => {
-    e.preventDefault();
-    try {
-      dispatch(AddRaison({ raison, codeAgent: localStorage.getItem('bboxxSupportCodeAgent') }));
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const [open, setOpen] = React.useState(false);
   return (
     <div style={{ display: 'flex', justifyContent: 'center' }}>
-      <Paper elevation={3} sx={{ width: '50%', padding: '10px' }}>
+      <Paper elevation={3} sx={{ width: '70%', padding: '10px' }}>
         <div style={{ display: 'flex' }}>
-          <div style={{ width: '70%' }}>
-            <TextField fullWidth placeholder="Raison" value={raison} onChange={(e) => setRaison(e.target.value)} />
-          </div>
-          <Button onClick={(e) => addRaisons(e)} variant="contained" color="primary" sx={{ marginLeft: '10px' }}>
-            Save
-          </Button>
+          <Fab size="medium" color="primary" onClick={() => setOpen(true)}>
+            <Add fontSize="small" />
+          </Fab>
         </div>
         <div>
           <Table />
         </div>
       </Paper>
+      <Popup open={open} setOpen={setOpen} title="Ajoutez un feedback">
+        <FormRaison />
+      </Popup>
     </div>
   );
 }
