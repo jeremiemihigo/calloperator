@@ -13,6 +13,7 @@ import statShop from 'Redux/StatShop';
 import raison from 'Redux/Raison';
 import user from 'Redux/user';
 import agentAdmin from 'Redux/AgentAdmin';
+import shop from 'Redux/Shop';
 
 // ==============================|| COMBINE REDUCERS ||============================== //
 
@@ -27,7 +28,8 @@ const reducers = combineReducers({
   parametre,
   reponse,
   periodeStore,
-  periodeActive
+  periodeActive,
+  shop
 });
 
 export default reducers;

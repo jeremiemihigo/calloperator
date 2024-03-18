@@ -13,6 +13,7 @@ import { ReadStat } from 'Redux/StatShop';
 import { ReadRaison } from 'Redux/Raison';
 import { ReadUser } from 'Redux/user';
 import { ReadAgentAdmin } from 'Redux/AgentAdmin';
+import { ReadShop } from 'Redux/Shop';
 
 // ==============================|| REDUX TOOLKIT - MAIN STORE ||============================== //
 
@@ -23,7 +24,6 @@ const store = configureStore({
 const { dispatch } = store;
 dispatch(ReadUser());
 dispatch(ReadReponse());
-dispatch(ReadParametre());
 dispatch(ReadAgent());
 dispatch(ReadAllZone());
 dispatch(ReadPeriode());
@@ -31,5 +31,7 @@ dispatch(ReadPeriodeActive());
 dispatch(ReadStat());
 dispatch(ReadRaison());
 dispatch(ReadAgentAdmin());
+dispatch(ReadShop());
+dispatch(ReadParametre());
 
 export { store, dispatch };

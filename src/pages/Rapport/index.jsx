@@ -1,11 +1,14 @@
 import React from 'react';
-import { Button, Paper, Typography } from '@mui/material';
+import { Button, Paper, Grid, Typography } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import axios from 'axios';
-import { lien, config } from 'static/Lien';
+import { lien, config, dateFrancais } from 'static/Lien';
 import ExcelButton from 'static/ExcelButton';
 import { Input } from 'antd';
-import '../style.css';
+import './style.css';
+import Plaintes from './Plaintes';
+import StatistiqueCO from './StatistiqueCO';
+import Analyse from './Analyse';
 
 function Rapport() {
   const [dates, setDates] = React.useState({ debut: '', fin: '' });
@@ -90,16 +93,33 @@ function Rapport() {
   const retourDate = (date) => {
     return { dates: new Date(date).toLocaleString().split(',')[0], heure: new Date(date).toLocaleString().split(',')[1] };
   };
+  const retourDateUpdates = (date) => {
+    if (!date.updatedAt) {
+      return {
+        dates: new Date(date.createdAt).toLocaleString().split(',')[0],
+        heure: new Date(date.createdAt).toLocaleString().split(',')[1]
+      };
+    } else {
+      return {
+        dates: new Date(date.updatedAt).toLocaleString().split(',')[0],
+        heure: new Date(date.updatedAt).toLocaleString().split(',')[1]
+      };
+    }
+  };
 
   const [loading, setLoading] = React.useState(false);
 
   const returnTime = (date1, date2) => {
-    return (new Date(date2).getTime() - new Date(date1).getTime()) / 60000;
+    let resultat = (new Date(date2.createdAt).getTime() - new Date(date1.createdAt).getTime()) / 60000;
+    if (resultat < 1) {
+      return 1;
+    } else {
+      return resultat;
+    }
   };
   const [temps, setTemps] = React.useState(0);
   const searchData = React.useCallback(
-    (e) => {
-      e.preventDefault();
+    () => {
       setLoading(true);
       let data = {
         debut: dates.debut,
@@ -116,7 +136,7 @@ function Rapport() {
             let times = 0;
             let donner = [];
             for (let i = 0; i < response.data.length; i++) {
-              times = times + returnTime(response.data[i].demande.createdAt, response.data[i].createdAt);
+              times = times + returnTime(response.data[i].demande, response.data[i]);
               donner.push({
                 ID: response.data[i].codeclient,
                 NOMS: response.data[i].nomClient,
@@ -132,11 +152,10 @@ function Rapport() {
                 DATE: new Date(retourDate(response.data[i].createdAt).dates),
                 'C.O': response.data[i].agent?.nom,
                 'STATUT DE LA DEMANDE': response.data[i].demande.typeImage,
-                "DATE D'ENVOIE": new Date(retourDate(response.data[i].demande?.createdAt).dates),
-                "HEURE D'ENVOI": `${retourDate(response.data[i].demande.createdAt).heure}`,
-                
+                "DATE D'ENVOIE": new Date(retourDate(response.data[i].demande.updatedAt).dates),
+                "HEURE D'ENVOI": `${retourDateUpdates(response.data[i].demande).heure}`,
                 'HEURE DE REPONSE': `${retourDate(response.data[i].createdAt).heure}`,
-                'TEMPS MOYEN': `${returnTime(response.data[i].demande.createdAt, response.data[i].createdAt).toFixed(0)}`,
+                'TEMPS MOYEN': `${returnTime(response.data[i].demande, response.data[i]).toFixed(0)}`,
                 LONGITUDE: chekValue(response.data[i].demande?.coordonnes.longitude),
                 LATITUDE: chekValue(response.data[i].demande?.coordonnes.latitude),
                 ALTITUDE: chekValue(response.data[i].demande?.coordonnes.altitude),
@@ -166,16 +185,9 @@ function Rapport() {
   );
   return (
     <Paper sx={{ padding: '5px' }} elevation={3}>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginBottom: '10px'
-        }}
-      >
-        <div style={{ display: 'flex', width: '45%' }}>
-          <div style={{ width: '50%', paddingRight: '5px' }}>
+      <div>
+        <Grid container>
+          <Grid item lg={3} sm={3} xs={12} sx={{ marginTop: '5px', paddingRight: '5px' }}>
             <Input
               type="date"
               onChange={(e) =>
@@ -186,8 +198,8 @@ function Rapport() {
               }
               placeholder="Date"
             />
-          </div>
-          <div style={{ width: '50%', paddingRight: '5px' }}>
+          </Grid>
+          <Grid item lg={3} sm={3} xs={12} sx={{ marginTop: '5px', paddingRight: '5px' }}>
             <Input
               onChange={(e) =>
                 setDates({
@@ -198,70 +210,40 @@ function Rapport() {
               type="date"
               placeholder="Date"
             />
-          </div>
-        </div>
-        <Button disabled={loading} color="primary" variant="contained" onClick={(e) => searchData(e)}>
-          <Search fontSize="small" /> {loading ? 'Loading...' : 'Recherche'}
-        </Button>
-        <ExcelButton data={samplejson2} title="Export to Excel" fileName={`${nomFile}.xlsx`} />
-        <p style={{ textAlign: 'center', fontSize: '15px', marginLeft: '10px' }}>
-          {donnerFound.length} Visite(s) <span style={{ marginLeft: '20px', color: 'blue', fontWeight: 'bolder' }}>{temps}m</span>
-        </p>
+          </Grid>
+          <Grid item lg={2} sm={2} xs={12} sx={{ marginTop: '5px', paddingRight: '5px' }}>
+            <Button disabled={loading} fullWidth color="primary" variant="contained" onClick={() => searchData()}>
+              <Search fontSize="small" /> {loading ? 'Loading...' : 'Recherche'}
+            </Button>
+          </Grid>
+          <Grid item lg={2} sm={2} xs={12} sx={{ marginTop: '5px' }}>
+            <ExcelButton data={samplejson2} title="Excel" fileName={`${nomFile}.xlsx`} />
+          </Grid>
+          <Grid item lg={2} sm={2} xs={12} sx={{ marginTop: '5px' }}>
+            <p style={{ textAlign: 'center', fontSize: '15px', marginLeft: '10px' }}>
+              {donnerFound.length} Visite(s) <span style={{ marginLeft: '20px', color: 'blue', fontWeight: 'bolder' }}>{temps}m</span>
+            </p>
+          </Grid>
+        </Grid>
       </div>
-      <div>
-        <table>
-          <thead>
-            <tr>
-              <td>Code client</td>
-              <td>stat.client</td>
-              <td>Pay.stat</td>
-              <td>DAYS</td>
-              <td>demandeur</td>
-              <td>code</td>
-              <td>Date</td>
-              <td>c.o</td>
-              <td>Statut</td>
-              <td>Raison</td>
-            </tr>
-          </thead>
-          <tbody>
-            {donnerFound.length > 0 ? (
-              donnerFound.map((index) => {
-                return (
-                  <tr key={index._id}>
-                    <td>{index.codeclient}</td>
-                    <td>{index.clientStatut}</td>
-                    <td>{index.PayementStatut}</td>
-                    <td>{Math.abs(index.consExpDays)}</td>
-                    <td>
-                      <Typography noWrap sx={{ width: '10rem' }}>
-                        {index.demandeur.nom}
-                      </Typography>
-                    </td>
-                    <td>{index.demandeur.codeAgent}</td>
-                    <td>{retourDate(index.createdAt).dates}</td>
-                    <td>{index.agent.nom}</td>
-
-                    <td>{index.demande.statut}</td>
-                    <td>
-                      <Typography noWrap sx={{ width: '10rem' }}>
-                        {index.demande.raison}
-                      </Typography>
-                    </td>
-                  </tr>
-                );
-              })
-            ) : (
-              <tr>
-                <td style={{ color: 'red' }} colSpan="12">
-                  Aucun résultat...
-                </td>
-              </tr>
-            )}
-            <tr></tr>
-          </tbody>
-        </table>
-      </div>
+      {donnerFound.length > 0 && (
+        <Grid container>
+          <Grid item lg={6}>
+            <Plaintes data={donnerFound} loadings={searchData} dates={dates} />
+          </Grid>
+          <Grid item lg={6}>
+            <StatistiqueCO data={donnerFound} />
+          </Grid>
+          <Grid item lg={7} sm={7} xs={12}>
+            <Grid className="pagesTitle">
+              <Typography>
+                Analyse des visites ménages du {dateFrancais(dates.debut)} au {dateFrancais(dates.fin)}
+              </Typography>
+            </Grid>
+            <Analyse data={donnerFound} />
+          </Grid>
+        </Grid>
+      )}
     </Paper>
   );
 }

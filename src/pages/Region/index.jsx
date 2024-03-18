@@ -2,15 +2,18 @@ import axios from 'axios';
 import AddZone from './AddZone';
 import { lien, config } from 'static/Lien';
 import { useEffect, useState } from 'react';
-import { Details } from '@mui/icons-material';
+import { Details, Edit } from '@mui/icons-material';
 import { Fab, Paper } from '@mui/material';
 import Popup from 'static/Popup';
 import AgentListe from '../Agent/AgentListe';
 import { DataGrid } from '@mui/x-data-grid';
-import Chats from 'pages/Region/Chat';
+import Shop from './Shop';
+import { useSelector } from 'react-redux';
+import { Button } from 'antd';
 
 function Region() {
   const [data, setData] = useState();
+  const [openShop, setOpenShop] = useState(false);
   const loading = async () => {
     const response = await axios.get(lien + '/zone', config);
     setData(response.data);
@@ -24,6 +27,7 @@ function Region() {
     setdonner(donne);
     setOpen(true);
   };
+  const shop = useSelector((state) => state.shop.shop);
   const columns = [
     {
       field: 'idZone',
@@ -69,6 +73,44 @@ function Region() {
       }
     }
   ];
+  const columnsShop = [
+    {
+      field: 'region',
+      headerName: 'REGION',
+      width: 100,
+      editable: false,
+      renderCell: (params) => {
+        return params.row.region.denomination;
+      }
+    },
+    {
+      field: 'shop',
+      headerName: 'SHOP',
+      width: 70,
+      editable: false
+    },
+    {
+      field: 'tech',
+      headerName: 'Techniciens',
+      width: 70,
+      editable: false
+    },
+    {
+      field: 'agents',
+      headerName: 'Agents',
+      width: 70,
+      editable: false
+    },
+    {
+      field: 'detail',
+      headerName: 'Actions',
+      width: 70,
+      editable: false,
+      renderCell: () => {
+        return <Edit fontSize="small" color="primary" />;
+      }
+    }
+  ];
   return (
     <Paper elevation={3} sx={{ padding: '10px' }}>
       <AddZone />
@@ -91,9 +133,30 @@ function Region() {
             />
           )}
         </div>
-        <div>
-          <Chats />
+        <div style={{ width: '50%' }}>
+          <Button type="primary" onClick={() => setOpenShop(true)}>
+            Ajoutez un shop
+          </Button>
+          {shop && (
+            <DataGrid
+              rows={shop}
+              columns={columnsShop}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 6
+                  }
+                }
+              }}
+              pageSizeOptions={[6]}
+              checkboxSelection
+              disableRowSelectionOnClick
+            />
+          )}
         </div>
+        {/* <div>
+          <Shop />
+        </div> */}
       </div>
 
       {donner && (
@@ -101,6 +164,9 @@ function Region() {
           <AgentListe liste={donner} />
         </Popup>
       )}
+      <Popup open={openShop} setOpen={setOpenShop} title="Ajoutez un shop">
+        <Shop />
+      </Popup>
     </Paper>
   );
 }

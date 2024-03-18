@@ -3,7 +3,6 @@ import React from 'react';
 import Chart from 'react-apexcharts';
 
 function Chats({ series }) {
-  console.log(series);
   const options = {
     chart: {
       id: 'basic-bar'

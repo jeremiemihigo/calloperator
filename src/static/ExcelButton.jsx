@@ -14,13 +14,7 @@ function ExcelButton({ data, title, fileName }) {
   };
   return (
     <>
-      <Button
-        color="success"
-        sx={{ marginLeft: '5px' }}
-        variant="contained"
-        disabled={data ? false : true}
-        onClick={() => downloadExcel(data)}
-      >
+      <Button color="success" variant="contained" fullWidth disabled={data ? false : true} onClick={() => downloadExcel(data)}>
         <FileCopy fontSize="small" /> <span className="ml-2">{title}</span>
       </Button>
     </>

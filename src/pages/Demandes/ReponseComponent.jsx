@@ -8,15 +8,21 @@ import { postReponse } from 'Redux/Reponses';
 import { lien, config } from 'static/Lien';
 import { CreateContexte } from 'Context';
 import { Alert } from '../../../node_modules/@mui/lab/index';
+import AutoComplement from 'Control/AutoComplet';
+import { Checkbox, FormControl, FormControlLabel, FormGroup, Box } from '@mui/material';
+import DirectionSnackbar from 'Control/SnackBar';
 
 function ReponsesComponent({ update }) {
+  const regions = useSelector((state) => state.zone.zone);
+  const shopSelector = useSelector((state) => state.shop.shop);
+  const [valueRegionSelect, setValueRegionSelect] = React.useState('');
+  const [valueShopSelect, setValueShopSelect] = React.useState('');
+  console.log(valueRegionSelect, valueShopSelect);
   const [intial, setInitial] = React.useState({
     codeCu: '',
     codeClient: '',
     consExpDays: '',
-    nomClient: '',
-    region: '',
-    shop: ''
+    nomClient: ''
   });
   const onChange = (e) => {
     const { name, value } = e.target;
@@ -26,20 +32,24 @@ function ReponsesComponent({ update }) {
     });
   };
   const { demande } = useContext(CreateContexte);
-  const { codeCu, codeClient, consExpDays, nomClient, region, shop } = intial;
+  const { codeCu, codeClient, consExpDays, nomClient } = intial;
   let [status, setStatut] = React.useState({ payement: '', statut: '' });
   const { payement, statut } = status;
   const [message, setMessage] = React.useState('');
   const [openSnack, setOpenSnack] = React.useState(false);
 
   function reset() {
-    setInitial({ codeCu: '', codeClient: '', consExpDays: '', shop: '', region: '', nomClient: '' });
+    setInitial({ codeCu: '', codeClient: '', consExpDays: '', nomClient: '' });
     setStatut({ payement: '', statut: '' });
+    setValueRegionSelect('');
+    setValueShopSelect('');
   }
 
   const reponse = useSelector((state) => state.reponse);
+  const [boxes, setBoxes] = React.useState('');
 
   const checkStatut = (chiffre) => {
+    setBoxes('');
     setInitial({
       ...intial,
       consExpDays: chiffre
@@ -82,18 +92,17 @@ function ReponsesComponent({ update }) {
           ...intial,
           codeCu: cus[0].customer_cu,
           nomClient: cus[0].nomClient,
-          region: cus[0].region,
-          shop: cus[0].shop,
+
           consExpDays: ''
         });
+        setValueShopSelect(_.filter(shopSelector, { shop: cus[0].shop })[0]);
+        setValueRegionSelect(_.filter(regions, { denomination: cus[0].region })[0]);
       } else {
         setInitial({
           ...intial,
           codeCu: '',
           nomClient: '',
-          consExpDays: '',
-          region: '',
-          shop: ''
+          consExpDays: ''
         });
       }
     }
@@ -103,25 +112,30 @@ function ReponsesComponent({ update }) {
   const userConnect = useSelector((state) => state.user?.user);
   const dispatch = useDispatch();
   const reponseData = (e) => {
-    if (userConnect && userConnect.fonction !== 'co') {
-      setMessage('Cette espace est reservée aux C.O');
+    if (valueRegionSelect && valueShopSelect && valueRegionSelect.idZone !== valueShopSelect.idZone) {
+      setMessage('Veuillez vérifier si le shop est enregistré dans la region selectionée');
       setOpenSnack(true);
     } else {
-      e.preventDefault();
-      const datass = {
-        idDemande: demande.idDemande,
-        codeClient,
-        codeCu,
-        codeAgent: userConnect?.codeAgent,
-        clientStatut: statut,
-        PayementStatut: payement,
-        consExpDays,
-        nomClient,
-        region,
-        shop
-      };
-      dispatch(postReponse(datass));
-      reset();
+      if (userConnect && userConnect.fonction !== 'co') {
+        setMessage('Cette espace est reservée aux C.O');
+        setOpenSnack(true);
+      } else {
+        e.preventDefault();
+        const datass = {
+          idDemande: demande.idDemande,
+          codeClient: codeClient.toUpperCase(),
+          codeCu,
+          codeAgent: userConnect?.codeAgent,
+          clientStatut: statut,
+          PayementStatut: payement,
+          consExpDays,
+          nomClient,
+          region: valueRegionSelect.denomination,
+          shop: valueShopSelect.shop
+        };
+        dispatch(postReponse(datass));
+        reset();
+      }
     }
   };
   const modifier = async () => {
@@ -169,10 +183,19 @@ function ReponsesComponent({ update }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [update]);
 
+  const functioncheckBox = (valueItem, e) => {
+    e.preventDefault();
+    setBoxes(valueItem);
+    if (valueItem === 'inactive') {
+      setStatut({ payement: 'terminated', statut: 'inactive' });
+    } else {
+      setStatut({ payement: 'pending fulfliment', statut: 'pending activation' });
+    }
+  };
   return (
     <Grid>
       {reponse.postDemande === 'rejected' && <Alert severity="warning">{reponse.postDemandeError}</Alert>}
-      {openSnack && <Alert severity="warning">{message}</Alert>}
+      {openSnack && <DirectionSnackbar message={message} open={openSnack} setOpen={setOpenSnack} />}
 
       <TextField
         style={{ marginTop: '10px' }}
@@ -201,28 +224,20 @@ function ReponsesComponent({ update }) {
         fullWidth
         label="Code CU"
       />
-      <Grid container sx={{ marginTop: '10px' }}>
-        <Grid item lg={6}>
-          <TextField
-            style={{ marginTop: '10px', paddingRight: '5px' }}
-            onChange={(e) => onChange(e)}
-            value={region}
-            name="region"
-            autoComplete="off"
-            fullWidth
-            label="Région"
-          />
+      <Grid container>
+        <Grid item lg={6} sm={6} xs={12} sx={{ marginTop: '10px' }}>
+          <AutoComplement value={valueRegionSelect} setValue={setValueRegionSelect} options={regions} title="Région" propr="denomination" />
         </Grid>
-        <Grid item lg={6}>
-          <TextField
-            style={{ marginTop: '10px' }}
-            onChange={(e) => onChange(e)}
-            value={shop}
-            name="shop"
-            autoComplete="off"
-            fullWidth
-            label="Shop"
-          />
+        <Grid item lg={6} sm={6} xs={12} sx={{ marginTop: '10px' }}>
+          {valueRegionSelect !== '' && (
+            <AutoComplement
+              value={valueShopSelect}
+              setValue={setValueShopSelect}
+              options={valueRegionSelect.shop}
+              title="Shop"
+              propr="shop"
+            />
+          )}
         </Grid>
       </Grid>
       <div className="expiredDate">
@@ -235,6 +250,26 @@ function ReponsesComponent({ update }) {
           value={consExpDays}
           label="consExpDays"
         />
+        <Box sx={{ display: 'flex' }}>
+          <FormControl component="fieldset" variant="standard">
+            <FormGroup>
+              <FormControlLabel
+                onClick={(e) => functioncheckBox('inactive', e)}
+                control={<Checkbox name="inactive" checked={boxes === 'inactive'} />}
+                label="Inactive"
+              />
+            </FormGroup>
+          </FormControl>
+          <FormControl component="fieldset" variant="standard">
+            <FormGroup>
+              <FormControlLabel
+                onClick={(e) => functioncheckBox('pending', e)}
+                control={<Checkbox name="pending" checked={boxes === 'pending'} />}
+                label="Pending activation"
+              />
+            </FormGroup>
+          </FormControl>
+        </Box>
       </div>
       <TextField
         style={{ marginTop: '10px' }}
