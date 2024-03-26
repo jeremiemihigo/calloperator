@@ -21,6 +21,7 @@
     "antd": "^5.12.2",
     "apexcharts": "^3.35.5",
     "axios": "^1.6.2",
+    "dayjs": "^1.11.10",
     "formik": "^2.2.9",
     "framer-motion": "^7.10.3",
     "history": "^5.3.0",

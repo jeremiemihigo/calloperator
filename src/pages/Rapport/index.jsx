@@ -9,6 +9,7 @@ import './style.css';
 import Plaintes from './Plaintes';
 import StatistiqueCO from './StatistiqueCO';
 import Analyse from './Analyse';
+import dayjs from 'dayjs';
 
 function Rapport() {
   const [dates, setDates] = React.useState({ debut: '', fin: '' });
@@ -91,20 +92,9 @@ function Rapport() {
     }
   };
   const retourDate = (date) => {
-    return { dates: new Date(date).toLocaleString().split(',')[0], heure: new Date(date).toLocaleString().split(',')[1] };
-  };
-  const retourDateUpdates = (date) => {
-    if (!date.updatedAt) {
-      return {
-        dates: new Date(date.createdAt).toLocaleString().split(',')[0],
-        heure: new Date(date.createdAt).toLocaleString().split(',')[1]
-      };
-    } else {
-      return {
-        dates: new Date(date.updatedAt).toLocaleString().split(',')[0],
-        heure: new Date(date.updatedAt).toLocaleString().split(',')[1]
-      };
-    }
+    console.log(date);
+    console.log(dayjs(date).format('DD/MM/YYYY'));
+    return { dates: dayjs(date).format('DD/MM/YYYY'), heure: dayjs(date).format('hh:mm') };
   };
 
   const [loading, setLoading] = React.useState(false);
@@ -117,6 +107,7 @@ function Rapport() {
       return resultat;
     }
   };
+
   const [temps, setTemps] = React.useState(0);
   const searchData = React.useCallback(
     () => {
@@ -142,7 +133,7 @@ function Rapport() {
               let times = 0;
               let donner = [];
               for (let i = 0; i < response.data.length; i++) {
-                times = times + returnTime(response.data[i].demande, response.data[i]);
+                // times = times + returnTime(response.data[i].demande, response.data[i]);
                 donner.push({
                   ID: response.data[i].codeclient,
                   NOMS: response.data[i].nomClient,
@@ -155,11 +146,11 @@ function Rapport() {
                   'CODE AGENT': response.data[i].demandeur.codeAgent,
                   'NOMS DU DEMANDEUR': response.data[i].demandeur.nom,
                   'SA & TECH': response.data[i].demandeur.fonction !== 'tech' ? 'SA' : 'TECH',
-                  DATE: new Date(retourDate(response.data[i].createdAt).dates),
+                  DATE: dayjs(response.data[i].createdAt).format('DD/MM/YYYY'),
                   'C.O': response.data[i].agent?.nom,
                   'STATUT DE LA DEMANDE': response.data[i].demande.typeImage,
-                  "DATE D'ENVOIE": new Date(retourDate(response.data[i].demande.updatedAt).dates),
-                  "HEURE D'ENVOI": `${retourDateUpdates(response.data[i].demande).heure}`,
+                  "DATE D'ENVOIE": retourDate(response.data[i].demande.updatedAt).dates,
+                  "HEURE D'ENVOI": `${retourDate(response.data[i].demande.createdAt).heure}`,
                   'HEURE DE REPONSE': `${retourDate(response.data[i].createdAt).heure}`,
                   'TEMPS MOYEN': `${returnTime(response.data[i].demande, response.data[i]).toFixed(0)}`,
                   LONGITUDE: chekValue(response.data[i].demande?.coordonnes.longitude),
