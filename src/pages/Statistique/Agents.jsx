@@ -7,21 +7,11 @@ import Popup from 'static/Popup';
 import AfficheInfo from './AfficheInfo';
 
 function Agents({ listeDemande }) {
-  const [data, setData] = React.useState({ valeur: [], keys: [] });
+  const [data, setData] = React.useState({ valeur: [] });
+  const [donnee, setDonnees] = React.useState();
 
-  const { valeur, keys } = data;
-  const analyse = () => {
-    try {
-      const donne = _.groupBy(listeDemande, 'codeAgent');
-      setData({ valeur: donne, keys: Object.keys(donne) });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  React.useEffect(() => {
-    analyse();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [listeDemande]);
+  const { valeur } = data;
+
   const showNameCode = (index) => {
     try {
       return {
@@ -43,7 +33,7 @@ function Agents({ listeDemande }) {
           nonRepondu = nonRepondu + 1;
         }
       }
-      return { repondu, nonRepondu };
+      return { repondu, nonRepondu, total: repondu + nonRepondu };
     } catch (error) {
       console.log(error);
     }
@@ -55,6 +45,31 @@ function Agents({ listeDemande }) {
     setDataToShow(_.filter(listeDemande, { codeAgent: code }));
     setShow(true);
   };
+  const analyse = () => {
+    try {
+      const donne = _.groupBy(listeDemande, 'codeAgent');
+      setData({ valeur: donne });
+      let table = [];
+      let donnerKey = Object.keys(donne);
+      for (let i = 0; i < donnerKey.length; i++) {
+        table.push({
+          nom: showNameCode(donnerKey[i]).nom,
+          code: showNameCode(donnerKey[i]).code,
+          nonRepondu: reponduNonRepondu(donnerKey[i]).nonRepondu,
+          repondu: reponduNonRepondu(donnerKey[i]).repondu,
+          total: reponduNonRepondu(donnerKey[i]).total
+        });
+      }
+
+      setDonnees(_.orderBy(table, 'total', 'desc'));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  React.useEffect(() => {
+    analyse();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listeDemande]);
   return (
     <div>
       <table>
@@ -69,28 +84,29 @@ function Agents({ listeDemande }) {
           </tr>
         </thead>
         <tbody>
-          {keys.map((cle) => {
-            return (
-              <tr key={cle}>
-                <td className="nom">
-                  <Typography noWrap component="span" fontSize="12px">
-                    {showNameCode(cle).nom}
-                  </Typography>
-                </td>
-                <td>{showNameCode(cle).code}</td>
-                <td>{reponduNonRepondu(cle).repondu}</td>
-                <td>{reponduNonRepondu(cle).nonRepondu}</td>
-                <td>{reponduNonRepondu(cle).repondu + reponduNonRepondu(cle).nonRepondu}</td>
-                <td>
-                  <Tooltip title="Plus les détails" onClick={(e) => sendDetails(e, cle)}>
-                    <Fab size="small" color="primary">
-                      <MedicalInformationIcon fontSize="small" />
-                    </Fab>
-                  </Tooltip>
-                </td>
-              </tr>
-            );
-          })}
+          {donnee &&
+            donnee.map((cle) => {
+              return (
+                <tr key={cle.code}>
+                  <td className="nom">
+                    <Typography noWrap component="span" fontSize="12px">
+                      {cle.nom}
+                    </Typography>
+                  </td>
+                  <td>{cle.code}</td>
+                  <td>{cle.repondu}</td>
+                  <td>{cle.nonRepondu}</td>
+                  <td>{cle.total}</td>
+                  <td>
+                    <Tooltip title="Plus les détails" onClick={(e) => sendDetails(e, cle)}>
+                      <Fab size="small" color="primary">
+                        <MedicalInformationIcon fontSize="small" />
+                      </Fab>
+                    </Tooltip>
+                  </td>
+                </tr>
+              );
+            })}
         </tbody>
       </table>
       {dataToShow && (

@@ -30,14 +30,13 @@ function ExcelFile() {
   const sendData = async () => {
     setLoading(true);
     let dataSend = [];
-
     let nombre = 0;
     try {
       for (let i = 0; i < excelData.length; i++) {
         nombre = nombre + 1;
+        console.log(nombre);
         dataSend.push(excelData[i]);
-        if (nombre == 100) {
-          console.log(dataSend);
+        if (nombre === 90) {
           const response = await axios.post(
             lien + '/manyAgent',
             {
@@ -49,7 +48,7 @@ function ExcelFile() {
           nombre = 0;
           dataSend = [];
         }
-        if (i === excelData.length - 1) {
+        if (nombre < 100 && i === excelData.length - 1) {
           const response = await axios.post(
             lien + '/manyAgent',
             {
@@ -60,11 +59,50 @@ function ExcelFile() {
           console.log(response);
         }
       }
-      window.location.replace('/bboxx/agent');
+      // window.location.replace('/parametre');
     } catch (error) {
       setLoading(false);
+      setExcelFileError(error);
     }
   };
+
+  // const sendDatas = async () => {
+  //   setLoading(true);
+  //   let dataSend = [];
+
+  //   let nombre = 0;
+  //   try {
+  //     for (let i = 0; i < excelData.length; i++) {
+  //       nombre = nombre + 1;
+  //       dataSend.push(excelData[i]);
+  //       if (nombre == 100) {
+  //         const response = await axios.post(
+  //           lien + '/manyAgent',
+  //           {
+  //             data: dataSend
+  //           },
+  //           config
+  //         );
+  //         console.log(response);
+  //         nombre = 0;
+  //         dataSend = [];
+  //       }
+  //       if (i === excelData.length - 1) {
+  //         const response = await axios.post(
+  //           lien + '/manyAgent',
+  //           {
+  //             data: dataSend
+  //           },
+  //           config
+  //         );
+  //         console.log(response);
+  //       }
+  //     }
+  //     window.location.replace('/bboxx/agent');
+  //   } catch (error) {
+  //     setLoading(false);
+  //   }
+  // };
   return (
     <div>
       <Grid container>

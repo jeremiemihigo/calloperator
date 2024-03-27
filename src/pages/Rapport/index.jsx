@@ -92,22 +92,7 @@ function Rapport() {
     }
   };
   const retourDate = (date) => {
-    console.log(date);
-    console.log(dayjs(date).format('DD/MM/YYYY'));
-    return { dates: dayjs(date).format('DD/MM/YYYY'), heure: dayjs(date).format('hh/mm') };
-  };
-  const retourDateUpdates = (date) => {
-    if (!date.updatedAt) {
-      return {
-        dates: new Date(date.createdAt).toLocaleString().split(',')[0],
-        heure: new Date(date.createdAt).toLocaleString().split(',')[1]
-      };
-    } else {
-      return {
-        dates: new Date(date.updatedAt).toLocaleString().split(',')[0],
-        heure: new Date(date.updatedAt).toLocaleString().split(',')[1]
-      };
-    }
+    return { dates: dayjs(date).format('DD/MM/YYYY'), heure: dayjs(date).format('hh:mm:ss') };
   };
 
   const [loading, setLoading] = React.useState(false);
@@ -157,17 +142,17 @@ function Rapport() {
                   'CODE AGENT': response.data[i].demandeur.codeAgent,
                   'NOMS DU DEMANDEUR': response.data[i].demandeur.nom,
                   'SA & TECH': response.data[i].demandeur.fonction !== 'tech' ? 'SA' : 'TECH',
-                  DATE: dayjs(response.data[i].createdAt).format('DD/MM/YYYY'),
+                  DATE: retourDate(response.data[i].createdAt).dates,
                   'C.O': response.data[i].agent?.nom,
                   'STATUT DE LA DEMANDE': response.data[i].demande.typeImage,
-                  "DATE D'ENVOIE": dayjs(response.data[i].demande.updatedAt).format('DD/MM/YYYY'),
-                  "HEURE D'ENVOI": `${retourDateUpdates(response.data[i].demande).heure}`,
+                  "DATE D'ENVOIE": retourDate(response.data[i].demande.createdAt).dates,
+                  "HEURE D'ENVOI": `${retourDate(response.data[i].demande.updatedAt).heure}`,
                   'HEURE DE REPONSE': `${retourDate(response.data[i].createdAt).heure}`,
                   'TEMPS MOYEN': `${returnTime(response.data[i].demande, response.data[i]).toFixed(0)}`,
                   LONGITUDE: chekValue(response.data[i].demande?.coordonnes.longitude),
                   LATITUDE: chekValue(response.data[i].demande?.coordonnes.latitude),
                   ALTITUDE: chekValue(response.data[i].demande?.coordonnes.altitude),
-                  'ETAT PHYSIQUE': response.data[i].demande?.statut,
+                  'ETAT PHYSIQUE': response.data[i].demande?.statut === 'allumer' ? 'allumé' : 'eteint',
                   RAISON: response.data[i].demande?.raison,
                   COMMUNE: response.data[i].demande?.commune,
                   QUARTIER: response.data[i].demande?.sector,
