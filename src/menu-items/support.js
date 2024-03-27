@@ -7,7 +7,6 @@ const icons = {
   BgColorsOutlined,
   FileOutlined,
   RollbackOutlined,
-
   BarChartOutlined
 };
 
@@ -45,13 +44,6 @@ const utilities = {
       type: 'item',
       url: '/rapport',
       icon: icons.FileOutlined
-    },
-    {
-      id: 'Actions',
-      title: 'Actions',
-      type: 'item',
-      url: '/actions',
-      icon: icons.RollbackOutlined
     }
   ]
 };
