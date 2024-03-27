@@ -19,7 +19,7 @@ const Raison = Loadable(lazy(() => import('pages/Raison')));
 const Corbeille = Loadable(lazy(() => import('pages/Corbeille')));
 const Access = Loadable(lazy(() => import('pages/Access')));
 const CongeRH = Loadable(lazy(() => import('pages/CongeRH')));
-const Actions = Loadable(lazy(() => import('pages/Actions')));
+// const Actions = Loadable(lazy(() => import('pages/Actions')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -74,11 +74,11 @@ const MainRoutes = {
     {
       path: '/congeRH',
       element: <CongeRH />
-    },
-    {
-      path: '/actions',
-      element: <Actions />
     }
+    // {
+    //   path: '/actions',
+    //   element: <Actions />
+    // }
   ]
 };
 

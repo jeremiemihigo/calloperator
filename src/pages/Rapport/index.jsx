@@ -152,7 +152,7 @@ function Rapport() {
                   'CLIENT STATUS': response.data[i].clientStatut,
                   'PAYMENT STATUS': response.data[i].PayementStatut,
                   'CONS. EXP. DAYS': response.data[i].PayementStatut === 'normal' ? 0 : Math.abs(response.data[i].consExpDays),
-                  REGION: response.data[i].region.region,
+                  REGION: response.data[i].region.denomination,
                   SHOP: response.data[i].shop.shop,
                   'CODE AGENT': response.data[i].demandeur.codeAgent,
                   'NOMS DU DEMANDEUR': response.data[i].demandeur.nom,
