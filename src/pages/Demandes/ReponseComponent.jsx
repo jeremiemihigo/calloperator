@@ -85,7 +85,6 @@ function ReponsesComponent({ update }) {
 
   const userConnect = useSelector((state) => state.user?.user);
   const dispatch = useDispatch();
-  const [openBackdrop, setBackDrop] = React.useState(false);
   const reponseData = (e) => {
     e.preventDefault();
     if (valueRegionSelect && valueShopSelect && valueRegionSelect.idZone !== valueShopSelect.idZone) {
@@ -104,7 +103,6 @@ function ReponsesComponent({ update }) {
           setOpenSnack(true);
         } else {
           setSending(true);
-          setBackDrop(true);
           const datass = {
             idDemande: demande.idDemande,
             codeClient: codeClient.toUpperCase(),
@@ -120,7 +118,6 @@ function ReponsesComponent({ update }) {
           dispatch(postReponse(datass));
           setSending(false);
           setDemande();
-          setBackDrop(false);
           reset();
         }
       }
@@ -212,11 +209,13 @@ function ReponsesComponent({ update }) {
 
   return (
     <Grid>
-      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={openBackdrop}>
-        <div>
-          <p style={{ textAlign: 'center', margin: '0px', padding: '0px' }}>Sending {demande?.idDemande}...</p>
-        </div>
-      </Backdrop>
+      {reponse.postDemande === 'pending' && (
+        <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={true}>
+          <div>
+            <p style={{ textAlign: 'center', margin: '0px', padding: '0px' }}>Sending {demande?.idDemande}...</p>
+          </div>
+        </Backdrop>
+      )}
 
       {reponse.postDemande === 'rejected' && <Alert severity="warning">{reponse.postDemandeError}</Alert>}
       {openSnack && <DirectionSnackbar message={message} open={openSnack} setOpen={setOpenSnack} />}
