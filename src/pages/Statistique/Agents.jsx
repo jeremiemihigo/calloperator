@@ -7,37 +7,8 @@ import Popup from 'static/Popup';
 import AfficheInfo from './AfficheInfo';
 
 function Agents({ listeDemande }) {
-  const [data, setData] = React.useState({ valeur: [] });
   const [donnee, setDonnees] = React.useState();
 
-  const { valeur } = data;
-
-  const showNameCode = (index) => {
-    try {
-      return {
-        nom: valeur['' + index][0].agent.nom,
-        code: valeur['' + index][0].agent.codeAgent
-      };
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const reponduNonRepondu = (index) => {
-    try {
-      let repondu = 0;
-      let nonRepondu = 0;
-      for (let i = 0; i < valeur['' + index].length; i++) {
-        if (valeur['' + index][i].reponse.length > 0) {
-          repondu = repondu + 1;
-        } else {
-          nonRepondu = nonRepondu + 1;
-        }
-      }
-      return { repondu, nonRepondu, total: repondu + nonRepondu };
-    } catch (error) {
-      console.log(error);
-    }
-  };
   const [show, setShow] = React.useState(false);
   const [dataToShow, setDataToShow] = React.useState();
   const sendDetails = (e, code) => {
@@ -46,21 +17,19 @@ function Agents({ listeDemande }) {
     setShow(true);
   };
   const analyse = () => {
+    const donne = _.groupBy(listeDemande, 'codeAgent');
     try {
-      const donne = _.groupBy(listeDemande, 'codeAgent');
-      setData({ valeur: donne });
       let table = [];
       let donnerKey = Object.keys(donne);
       for (let i = 0; i < donnerKey.length; i++) {
         table.push({
-          nom: showNameCode(donnerKey[i]).nom,
-          code: showNameCode(donnerKey[i]).code,
-          nonRepondu: reponduNonRepondu(donnerKey[i]).nonRepondu,
-          repondu: reponduNonRepondu(donnerKey[i]).repondu,
-          total: reponduNonRepondu(donnerKey[i]).total
+          nom: listeDemande.filter((x) => x.agent.codeAgent === donnerKey[i])[0].agent.nom,
+          code: donnerKey[i],
+          nonRepondu: listeDemande.filter((x) => x.agent.codeAgent === donnerKey[i] && x.reponse.length === 0).length,
+          repondu: listeDemande.filter((x) => x.agent.codeAgent === donnerKey[i] && x.reponse.length > 0).length,
+          total: listeDemande.filter((x) => x.agent.codeAgent === donnerKey[i]).length
         });
       }
-
       setDonnees(_.orderBy(table, 'total', 'desc'));
     } catch (error) {
       console.log(error);
@@ -84,7 +53,7 @@ function Agents({ listeDemande }) {
           </tr>
         </thead>
         <tbody>
-          {donnee &&
+          {donnee ? (
             donnee.map((cle) => {
               return (
                 <tr key={cle.code}>
@@ -98,7 +67,7 @@ function Agents({ listeDemande }) {
                   <td>{cle.nonRepondu}</td>
                   <td>{cle.total}</td>
                   <td>
-                    <Tooltip title="Plus les détails" onClick={(e) => sendDetails(e, cle)}>
+                    <Tooltip title="Plus les détails" onClick={(e) => sendDetails(e, cle.code)}>
                       <Fab size="small" color="primary">
                         <MedicalInformationIcon fontSize="small" />
                       </Fab>
@@ -106,7 +75,12 @@ function Agents({ listeDemande }) {
                   </td>
                 </tr>
               );
-            })}
+            })
+          ) : (
+            <tr>
+              <td>Loading...</td>
+            </tr>
+          )}
         </tbody>
       </table>
       {dataToShow && (
