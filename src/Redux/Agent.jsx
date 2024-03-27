@@ -10,7 +10,9 @@ const initialState = {
   getAgent: '',
   getAgentError: '',
   updateAgent: '',
-  updateAgentError: ''
+  updateAgentError: '',
+  bloquer: '',
+  bloquerError: ''
 };
 export const ReadAgent = createAsyncThunk('agent/ReadAgent', async (id, { rejectWithValue }) => {
   try {
@@ -36,6 +38,14 @@ export const UpdateAgent = createAsyncThunk('agent/UpdateAgent', async (data, { 
     return rejectWithValue(error.response.data);
   }
 });
+export const BloquerAgent = createAsyncThunk('agent/UpdateAgent', async (data, { rejectWithValue }) => {
+  try {
+    const response = await axios.put(lien + '/bloquer', data, config);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error.response.data);
+  }
+});
 
 const agent = createSlice({
   name: 'agent',
@@ -50,7 +60,9 @@ const agent = createSlice({
         getAgent: 'pending',
         getAgentError: '',
         updateAgent: '',
-        updateAgentError: ''
+        updateAgentError: '',
+        bloquer: '',
+        bloquerError: ''
       };
     },
     [ReadAgent.fulfilled]: (state, action) => {
@@ -62,7 +74,9 @@ const agent = createSlice({
         getAgent: 'success',
         getAgentError: '',
         updateAgent: '',
-        updateAgentError: ''
+        updateAgentError: '',
+        bloquer: '',
+        bloquerError: ''
       };
     },
     [ReadAgent.rejected]: (state, action) => {
@@ -73,7 +87,9 @@ const agent = createSlice({
         getAgent: 'rejected',
         getAgentError: action.payload,
         updateAgent: '',
-        updateAgentError: ''
+        updateAgentError: '',
+        bloquer: '',
+        bloquerError: ''
       };
     },
     [AjouterAgent.pending]: (state, action) => {
@@ -84,7 +100,9 @@ const agent = createSlice({
         getAgent: '',
         getAgentError: '',
         updateAgent: '',
-        updateAgentError: ''
+        updateAgentError: '',
+        bloquer: '',
+        bloquerError: ''
       };
     },
     [AjouterAgent.fulfilled]: (state, action) => {
@@ -95,7 +113,9 @@ const agent = createSlice({
         getAgent: '',
         getAgentError: '',
         updateAgent: '',
-        updateAgentError: ''
+        updateAgentError: '',
+        bloquer: '',
+        bloquerError: ''
       };
     },
     [AjouterAgent.rejected]: (state, action) => {
@@ -107,7 +127,9 @@ const agent = createSlice({
         getAgent: '',
         getAgentError: '',
         updateAgent: '',
-        updateAgentError: ''
+        updateAgentError: '',
+        bloquer: '',
+        bloquerError: ''
       };
     },
     [UpdateAgent.pending]: (state, action) => {
@@ -118,7 +140,9 @@ const agent = createSlice({
         getAgent: '',
         getAgentError: '',
         updateAgent: 'pending',
-        updateAgentError: ''
+        updateAgentError: '',
+        bloquer: '',
+        bloquerError: ''
       };
     },
     [UpdateAgent.fulfilled]: (state, action) => {
@@ -130,7 +154,9 @@ const agent = createSlice({
         getAgent: '',
         getAgentError: '',
         updateAgent: 'success',
-        updateAgentError: ''
+        updateAgentError: '',
+        bloquer: '',
+        bloquerError: ''
       };
     },
     [UpdateAgent.rejected]: (state, action) => {
@@ -142,7 +168,50 @@ const agent = createSlice({
         getAgent: '',
         getAgentError: '',
         updateAgent: 'rejected',
-        updateAgentError: action.payload
+        updateAgentError: action.payload,
+        bloquer: '',
+        bloquerError: ''
+      };
+    },
+    [BloquerAgent.pending]: (state, action) => {
+      return {
+        ...state,
+        addAgent: '',
+        addAgentError: '',
+        getAgent: '',
+        getAgentError: '',
+        updateAgent: '',
+        updateAgentError: '',
+        bloquer: 'pending',
+        bloquerError: ''
+      };
+    },
+    [BloquerAgent.fulfilled]: (state, action) => {
+      const updatingsb = state.agent.map((x) => (x._id === action.payload._id ? action.payload : x));
+      return {
+        agent: updatingsb,
+        addAgent: '',
+        addAgentError: '',
+        getAgent: '',
+        getAgentError: '',
+        updateAgent: '',
+        updateAgentError: '',
+        bloquer: 'success',
+        bloquerError: ''
+      };
+    },
+    [BloquerAgent.rejected]: (state, action) => {
+      return {
+        ...state,
+
+        addAgent: '',
+        addAgentError: '',
+        getAgent: '',
+        getAgentError: '',
+        updateAgent: '',
+        updateAgentError: '',
+        bloquer: 'rejected',
+        bloquerError: action.payload
       };
     }
   }

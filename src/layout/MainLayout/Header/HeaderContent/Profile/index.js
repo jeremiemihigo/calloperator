@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -84,10 +84,28 @@ const Profile = () => {
   };
 
   const iconBackColorOpen = 'grey.300';
-  const userConnect = useSelector((state) => state.user?.user);
-  const userCo = useSelector((state) => state.user);
+  const userConnect = useSelector((state) => state.user);
 
-  console.log(userCo);
+  useEffect(() => {
+    if (userConnect && userConnect.user.length < 1 && userConnect.readUser !== 'pending') {
+      localStorage.removeItem('user');
+      window.location.replace('/login');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userConnect]);
+
+  const retourFonction = (text) => {
+    if (text === 'superUser') {
+      return 'Super utilisateur';
+    }
+    if (text === 'admin') {
+      return 'Administrateur';
+    }
+    if (text === 'co') {
+      return 'Call Operator';
+    }
+    return '';
+  };
 
   return (
     <Box sx={{ flexShrink: 0, ml: 0.75 }}>
@@ -106,7 +124,7 @@ const Profile = () => {
       >
         <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
           <Avatar alt="profile user" src={userImage} sx={{ width: 32, height: 32 }} />
-          <Typography variant="subtitle1">{userConnect?.nom}</Typography>
+          <Typography variant="subtitle1">{userConnect?.user.nom}</Typography>
         </Stack>
       </ButtonBase>
       <Popper
@@ -151,7 +169,7 @@ const Profile = () => {
                             <Stack>
                               <Typography variant="h6">BBOXX_Support team</Typography>
                               <Typography variant="body2" color="textSecondary">
-                                {userConnect?.nom}
+                                {retourFonction(userConnect?.user.fonction)}
                               </Typography>
                             </Stack>
                           </Stack>

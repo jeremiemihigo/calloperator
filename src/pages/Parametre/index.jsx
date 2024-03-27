@@ -1,9 +1,8 @@
 import React from 'react';
 import * as xlsx from 'xlsx';
-import { Alert, Button, Grid, CircularProgress, Paper } from '@mui/material';
+import { Alert, Button, Grid, CircularProgress } from '@mui/material';
 import axios from 'axios';
 import { lien, config } from 'static/Lien';
-import { useSelector } from 'react-redux';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
 import { Input } from 'antd';
@@ -34,8 +33,6 @@ function Parametre() {
       reader.readAsArrayBuffer(e.target.files[0]);
     }
   };
-
-  const dataParams = useSelector((state) => state.parametre);
 
   const sendData = async () => {
     setLoading(true);
@@ -73,7 +70,7 @@ function Parametre() {
       .delete(lien + '/deleteParams', config)
       .then((response) => {
         if (response) {
-          window.location.replace('/bboxx/parametre');
+          window.location.replace('/clients');
         }
       })
       .catch(function (err) {
@@ -114,11 +111,6 @@ function Parametre() {
               <DeleteIcon fontSize="small" /> Delete all
             </Button>
           </Grid>
-        </Grid>
-        <Grid sx={{ marginTop: '12px' }}>
-          <Paper>
-            {dataParams.getParametre === 'pending' && <p style={{ textAlign: 'center', color: 'blue', fontSize: '14px' }}>Loading...</p>}
-          </Paper>
         </Grid>
       </form>
     </div>

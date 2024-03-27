@@ -1,21 +1,14 @@
 // assets
-import {
-  AppstoreAddOutlined,
-  AntDesignOutlined,
-  BarcodeOutlined,
-  BgColorsOutlined,
-  FontSizeOutlined,
-  LoadingOutlined
-} from '@ant-design/icons';
+import { BarChartOutlined, BgColorsOutlined, FontSizeOutlined, RollbackOutlined, FileOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
   FontSizeOutlined,
   BgColorsOutlined,
-  BarcodeOutlined,
-  AntDesignOutlined,
-  LoadingOutlined,
-  AppstoreAddOutlined
+  FileOutlined,
+  RollbackOutlined,
+
+  BarChartOutlined
 };
 
 // ==============================|| MENU ITEMS - UTILITIES ||============================== //
@@ -44,14 +37,21 @@ const utilities = {
       title: 'Statistiques',
       type: 'item',
       url: '/statistiques',
-      icon: icons.BarcodeOutlined
+      icon: icons.BarChartOutlined
     },
     {
       id: 'rapport',
       title: 'Rapport',
       type: 'item',
       url: '/rapport',
-      icon: icons.BarcodeOutlined
+      icon: icons.FileOutlined
+    },
+    {
+      id: 'Actions',
+      title: 'Actions',
+      type: 'item',
+      url: '/actions',
+      icon: icons.RollbackOutlined
     }
   ]
 };

@@ -18,9 +18,15 @@ const AnalyticEcommerce = ({ color, title, count, percentage, isLoss }) => (
       </Typography>
       <Grid container alignItems="center">
         <Grid item>
-          <Typography variant="h4" color="inherit">
-            {count}
-          </Typography>
+          {count ? (
+            <Typography variant="h4" color="inherit">
+              {count}
+            </Typography>
+          ) : (
+            <Typography variant="h6" sx={{ textAlign: 'center' }} color="inherit">
+              Loading
+            </Typography>
+          )}
         </Grid>
         {percentage && (
           <Grid item>

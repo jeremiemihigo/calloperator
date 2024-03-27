@@ -1,8 +1,7 @@
 .message{
- border-radius: 10px;
   background-color: #c5e6c1;
-  margin-bottom: 1px;
-  cursor: pointer;
+  margin-bottom: 2px;
+  padding: 0px 4px;
 }
 .messageTitle{
   background-color: #29afdf;

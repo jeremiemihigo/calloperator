@@ -5,8 +5,8 @@ import { lien, config } from 'static/Lien';
 
 const initialState = {
   stat: [],
-  getStat:'',
-  getStatError:""
+  getStat: '',
+  getStatError: ''
 };
 export const ReadStat = createAsyncThunk('StatShop/ReadStat', async (id, { rejectWithValue }) => {
   try {
@@ -25,22 +25,22 @@ const stat = createSlice({
     [ReadStat.pending]: (state, action) => {
       return {
         ...state,
-        getStat:'pending',
-        getStatError:""
+        getStat: 'pending',
+        getStatError: ''
       };
     },
     [ReadStat.fulfilled]: (state, action) => {
       return {
         ...state,
-        stat : action.payload,
-        getStat:'success',
-        getStatError:""
+        stat: action.payload,
+        getStat: 'success',
+        getStatError: ''
       };
     },
     [ReadStat.rejected]: (state, action) => {
       return {
         ...state,
-        getStat:'rejected',
+        getStat: 'rejected',
         getStatError: action.payload
       };
     }

@@ -1,0 +1,10 @@
+.options{
+  background-color: rgb(16, 16, 122);
+  color: white;
+  border-radius: 3px;
+  font-weight: bolder;
+  font-size: 12px;
+  padding: 4px 10px;
+  margin: 0;
+  cursor: pointer;
+}

@@ -11,9 +11,11 @@ function AffichageStat({ listeDemande }) {
               {listeDemande.filter((x) => x.reponse.length > 0).length}
             </span>
             demande(s) repondue(s) sur
-            <span style={{ color: 'red', margin: '7px', fontSize: '1rem' }}>{listeDemande.length}</span> demande(s) envoyée(s) soit{' '}
+            <span style={{ color: 'red', margin: '7px', fontSize: '1rem' }}>{listeDemande.length}</span> demande(s) envoyée(s)
             <span style={{ color: 'red', margin: '7px', fontSize: '1rem' }}>
-              {((listeDemande.filter((x) => x.reponse.length > 0).length * 100) / listeDemande.length).toFixed(0)}%
+              {isNaN(((listeDemande.filter((x) => x.reponse.length > 0).length * 100) / listeDemande.length).toFixed(0))
+                ? ''
+                : 'Soit ' + ((listeDemande.filter((x) => x.reponse.length > 0).length * 100) / listeDemande.length).toFixed(0) + '%'}
             </span>
           </p>
         )}

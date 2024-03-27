@@ -13,6 +13,7 @@ import raison from 'Redux/Raison';
 import user from 'Redux/user';
 import agentAdmin from 'Redux/AgentAdmin';
 import shop from 'Redux/Shop';
+import contrat from 'Redux/Contrat';
 
 // ==============================|| COMBINE REDUCERS ||============================== //
 
@@ -27,7 +28,8 @@ const reducers = combineReducers({
   reponse,
   periodeStore,
   periodeActive,
-  shop
+  shop,
+  contrat
 });
 
 export default reducers;

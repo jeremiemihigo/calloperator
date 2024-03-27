@@ -8,7 +8,6 @@ import axios from 'axios';
 function ExcelFile() {
   const [loading, setLoading] = React.useState(false);
   const [excelData, setExcelData] = React.useState();
-  const [excelError, setExcelFileError] = React.useState('');
 
   const readUploadFile = (e) => {
     e.preventDefault();
@@ -64,10 +63,8 @@ function ExcelFile() {
       window.location.replace('/bboxx/agent');
     } catch (error) {
       setLoading(false);
-      setExcelFileError(error);
     }
   };
-  console.log(excelError);
   return (
     <div>
       <Grid container>

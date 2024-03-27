@@ -93,9 +93,11 @@ function Agents({ listeDemande }) {
           })}
         </tbody>
       </table>
-      <Popup open={show} setOpen={setShow} title="Detail">
-        <AfficheInfo data={dataToShow} />
-      </Popup>
+      {dataToShow && (
+        <Popup open={show} setOpen={setShow} title={`pour ${dataToShow[0].agent.nom} -------- code : ${dataToShow[0].agent.codeAgent}`}>
+          <AfficheInfo data={dataToShow} />
+        </Popup>
+      )}
     </div>
   );
 }

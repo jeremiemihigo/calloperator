@@ -13,6 +13,7 @@ import { ReadRaison } from 'Redux/Raison';
 import { ReadUser } from 'Redux/user';
 import { ReadAgentAdmin } from 'Redux/AgentAdmin';
 import { ReadShop } from 'Redux/Shop';
+import { ReadContrat } from 'Redux/Contrat';
 
 // ==============================|| REDUX TOOLKIT - MAIN STORE ||============================== //
 
@@ -31,5 +32,6 @@ dispatch(ReadStat());
 dispatch(ReadRaison());
 dispatch(ReadAgentAdmin());
 dispatch(ReadShop());
+dispatch(ReadContrat());
 
 export { store, dispatch };

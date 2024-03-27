@@ -9,11 +9,13 @@ import { CreateContexte } from 'Context';
 import axios from 'axios';
 import _ from 'lodash';
 import TabComponent from 'Control/Tabs';
+import { Alert } from 'antd';
 
 function DemandeListe() {
   const { setDemande, demande, setChat } = useContext(CreateContexte);
   const [data, setData] = React.useState([]);
   const [dataChat, setDataChat] = React.useState();
+  const [error, setError] = React.useState('');
 
   const loadings = async () => {
     try {
@@ -25,8 +27,11 @@ function DemandeListe() {
       }
       let donner = _.filter(response.data.response, { feedback: 'new' });
       setData(_.groupBy(donner, 'zone.denomination'));
+      setError('');
     } catch (error) {
-      console.log(error);
+      if (error.code === 'ERR_NETWORK') {
+        setError('Rassurez-vous que votre appareil a une connexion active');
+      }
     }
   };
 
@@ -85,14 +90,14 @@ function DemandeListe() {
 
   const ListeDemandeFeedBack = () => {
     return (
-      <>
+      <div className="listeDemandeFeedback">
         {dataChat &&
           dataChat.map((index) => {
             return (
               <div key={index._id}>
                 <Card
                   onClick={(event) => {
-                    event.stopPropagation();
+                    event.preventDefault();
                     setDemande(index);
                   }}
                   style={{
@@ -128,7 +133,7 @@ function DemandeListe() {
               </div>
             );
           })}
-      </>
+      </div>
     );
   };
 
@@ -143,6 +148,8 @@ function DemandeListe() {
 
   return (
     <>
+      {error !== '' && <Alert type="warning" message={error} />}
+
       <TabComponent titres={title} components={component} />
     </>
   );

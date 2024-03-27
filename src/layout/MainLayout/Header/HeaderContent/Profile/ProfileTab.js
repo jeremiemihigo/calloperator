@@ -5,10 +5,10 @@ import { useNavigate } from 'react-router-dom';
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import { List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
-
 // assets
 import { useSelector } from 'react-redux';
 import { Settings, ChatBubble, PeopleAlt, Language, Person } from '@mui/icons-material';
+// import {  FreeBreakfast, } from '@mui/icons-material';
 
 // ==============================|| HEADER PROFILE - PROFILE TAB ||============================== //
 
@@ -37,6 +37,9 @@ const ProfileTab = () => {
     // }
     if (index === 5) {
       navigation('/access', { replace: true });
+    }
+    if (index === 6) {
+      navigation('/congeRH', { replace: true });
     }
   };
 
@@ -84,6 +87,12 @@ const ProfileTab = () => {
           <ListItemText primary="Accès" />
         </ListItemButton>
       )}
+      {/* <ListItemButton selected={selectedIndex === 6} onClick={(event) => handleListItemClick(event, 6)}>
+        <ListItemIcon>
+          <FreeBreakfast fontSize="small" />
+        </ListItemIcon>
+        <ListItemText primary="Congé" />
+      </ListItemButton> */}
     </List>
   );
 };

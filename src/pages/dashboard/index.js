@@ -50,7 +50,7 @@ const DashboardDefault = () => {
       <Grid item xs={12} md={7} lg={8}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
-            <Typography variant="h5">Recent Orders</Typography>
+            <Typography variant="h5">Variation</Typography>
           </Grid>
           <Grid item />
         </Grid>
@@ -61,12 +61,13 @@ const DashboardDefault = () => {
       <Grid item xs={12} md={5} lg={4}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
-            <Typography variant="h5">Analytics Report Call Opérator</Typography>
+            <Typography variant="h5">Début du mois à date</Typography>
           </Grid>
           <Grid item />
         </Grid>
         <MainCard sx={{ mt: 2 }} content={false}>
           <List sx={{ p: 0, '& .MuiListItemButton-root': { py: 2 } }}>
+            {!statReponse && <p style={{ textAlign: 'center' }}>Loading...</p>}
             {statReponse &&
               statReponse.map((index, key) => {
                 return (

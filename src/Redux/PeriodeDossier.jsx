@@ -10,7 +10,7 @@ const initialState = {
 };
 export const ReadPeriode = createAsyncThunk('PeriodeDossier/ReadPeriode', async (id, { rejectWithValue }) => {
   try {
-    const response = await axios.get(lien + '/paquet/tout', config);
+    const response = await axios.get(lien + '/lot', config);
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response.data);

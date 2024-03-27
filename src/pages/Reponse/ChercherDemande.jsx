@@ -5,6 +5,7 @@ import axios from 'axios';
 import { Input } from 'antd';
 import { config, lien, lien_image } from 'static/Lien';
 import { Image, Space } from 'antd';
+import moment from 'moment';
 
 function ChercherDemande() {
   const [id, setValue] = React.useState('');
@@ -20,12 +21,14 @@ function ChercherDemande() {
           window.location.replace('/login');
         } else {
           setData(resspanonse);
+          setLoading(false);
         }
       } catch (error) {
         console.log(error);
       }
     }
   };
+  console.log(data);
   const key = (e) => {
     e.preventDefault();
     setValue(e.target.value);
@@ -51,21 +54,35 @@ function ChercherDemande() {
     );
   }
   function AfficherJsx({ demandes }) {
+    console.log(demandes);
     return (
-      <div className="demandeJsx" style={{ textAlign: 'justify', marginLeft: '10px' }}>
-        <span>code client : {demandes.codeclient && demandes.codeclient.toUpperCase() + '; '}</span>
+      <>
+        <div className="demandeJsx" style={{ textAlign: 'justify', marginLeft: '10px' }}>
+          <span>code client : {demandes.codeclient && demandes.codeclient.toUpperCase() + '; '}</span>
 
-        <span>Secteur : {demandes.sector + '; '}</span>
-        <span>Commune : {demandes.commune + '; '}</span>
+          <span>Secteur : {demandes.sector + '; '}</span>
+          <span>Commune : {demandes.commune + '; '}</span>
 
-        <span>Cell : {demandes.cell + '; '}</span>
+          <span>Cell : {demandes.cell + '; '}</span>
 
-        <span>Référence : {demandes.reference + '; '}</span>
-        <span>Numéro joignable du client: {demandes.numero + '; '}</span>
-        <span>Statut du client : {`${demandes.statut === 'allumer ' ? 'allumé' : 'éteint '}`} </span>
-        <span>{demandes.raison.toLowerCase() + '; '}</span>
-        <p>{demandes.agent.nom + '....... ' + demandes.agent.codeAgent}</p>
-      </div>
+          <span>Référence : {demandes.reference + '; '}</span>
+          <span>Numéro joignable du client: {demandes.numero + '; '}</span>
+          <span>Statut du client : {`${demandes.statut === 'allumer ' ? 'allumé' : 'éteint '}`} </span>
+          <span>{demandes.raison.toLowerCase() + '; '}</span>
+          <p>{demandes.agent.nom + '....... ' + demandes.agent.codeAgent}</p>
+          {demandes.messages.map((index) => {
+            return (
+              <div key={index._id} className={index.sender === 'co' ? 'co' : 'agent'}>
+                <p className={index.sender === 'co' ? 'message' : 'messageAgent'}>{index.message}</p>
+                <p className="heures">
+                  {index.codeAgent + ' ----------- '}
+                  {moment(index.createdAt).fromNow()}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      </>
     );
   }
   return (

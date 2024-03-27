@@ -8,11 +8,11 @@ import Box from '@mui/material/Box';
 import DemandeReponse from './DemandeReponse';
 import Attente from './Attente';
 
-function TabPanel(props) {
+function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
 
   return (
-    <div role="tabpanel" hidden={value !== index} id={`vertical-tabpanel-${index}`} aria-labelledby={`vertical-tab-${index}`} {...other}>
+    <div role="tabpanel" hidden={value !== index} id={`simple-tabpanel-${index}`} aria-labelledby={`simple-tab-${index}`} {...other}>
       {value === index && (
         <Box sx={{ p: 3 }}>
           <Typography>{children}</Typography>
@@ -22,7 +22,7 @@ function TabPanel(props) {
   );
 }
 
-TabPanel.propTypes = {
+CustomTabPanel.propTypes = {
   children: PropTypes.node,
   index: PropTypes.number.isRequired,
   value: PropTypes.number.isRequired
@@ -30,12 +30,12 @@ TabPanel.propTypes = {
 
 function a11yProps(index) {
   return {
-    id: `vertical-tab-${index}`,
-    'aria-controls': `vertical-tabpanel-${index}`
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`
   };
 }
 
-export default function AfficheInfo({ data }) {
+export default function BasicTabs({ data }) {
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
@@ -43,24 +43,20 @@ export default function AfficheInfo({ data }) {
   };
 
   return (
-    <Box sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex' }}>
-      <Tabs
-        orientation="vertical"
-        variant="scrollable"
-        value={value}
-        onChange={handleChange}
-        aria-label="Vertical tabs example"
-        sx={{ borderRight: 1, borderColor: 'divider' }}
-      >
-        <Tab label="Valide" {...a11yProps(0)} />
-        <Tab label="En attente" {...a11yProps(1)} />
-      </Tabs>
-      <TabPanel value={value} index={0}>
+    <Box sx={{ width: '100%', minWidth: '30rem' }}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+          <Tab label="Valide" {...a11yProps(0)} />
+          <Tab label="Attente" {...a11yProps(1)} />
+        </Tabs>
+      </Box>
+
+      <CustomTabPanel value={value} index={0}>
         <DemandeReponse data={data} />
-      </TabPanel>
-      <TabPanel value={value} index={1}>
+      </CustomTabPanel>
+      <CustomTabPanel value={value} index={1}>
         <Attente data={data} />
-      </TabPanel>
+      </CustomTabPanel>
     </Box>
   );
 }

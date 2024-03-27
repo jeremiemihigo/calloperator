@@ -1,44 +1,37 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
-import _ from 'lodash';
+import { useSelector } from 'react-redux';
 
 function Analyse({ data }) {
   const returnValue = (type) => {
     return data.filter((x) => x.demandeur.fonction === type).length;
   };
-  const [region, setRegion] = React.useState();
-  const loading = () => {
-    let region = _.groupBy(data, 'region');
-    let regions = Object.keys(region);
-    let table = [];
-    for (let i = 0; i < regions.length; i++) {
-      table.push({
-        region: regions[i],
-        technicien: region['' + regions[i]].filter((x) => x.demandeur.fonction === 'tech').length,
-        agents: region['' + regions[i]].filter((x) => x.demandeur.fonction === 'agent').length
-      });
-    }
-    setRegion(table);
+  const zones = useSelector((state) => state.zone.zone);
+  const loadingRegion = (codeZone, fonction) => {
+    let region = [];
+    let agentTech = [];
+    region = data.filter((x) => x.region.idZone === codeZone);
+    agentTech = data.filter((x) => x.region.idZone === codeZone && x.demandeur.fonction === fonction);
+    return { region: region.length, agentTech: agentTech.length };
   };
-  React.useEffect(() => {
-    loading();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  const loadingShop = (idShop, fonction) => {
+    return data.filter((x) => x.shop.idShop === idShop && x.demandeur.fonction === fonction).length;
+  };
 
-  const retournShop = (item) => {
-    //item = region
-    let tableau = [];
-    let region = _.filter(data, { region: item });
-    let shop = Object.keys(_.groupBy(region, 'shop'));
-    for (let i = 0; i < shop.length; i++) {
-      tableau.push({
-        shop: shop[i],
-        agent: region.filter((x) => x.shop === shop[i] && x.demandeur.fonction == 'agent').length,
-        tech: region.filter((x) => x.shop === shop[i] && x.demandeur.fonction == 'tech').length
-      });
-    }
-    return tableau;
-  };
+  // const retournShop = (item) => {
+  //   //item = region
+  //   let tableau = [];
+  //   let region = _.filter(data, { region: item });
+  //   let shop = Object.keys(_.groupBy(region, 'shop'));
+  //   for (let i = 0; i < shop.length; i++) {
+  //     tableau.push({
+  //       shop: shop[i],
+  //       agent: region.filter((x) => x.shop === shop[i] && x.demandeur.fonction == 'agent').length,
+  //       tech: region.filter((x) => x.shop === shop[i] && x.demandeur.fonction == 'tech').length
+  //     });
+  //   }
+  //   return tableau;
+  // };
   return (
     <table>
       <thead>
@@ -50,23 +43,24 @@ function Analyse({ data }) {
         </tr>
       </thead>
       <tbody>
-        {region &&
-          region.map((index, key) => {
+        {zones &&
+          zones.length > 0 &&
+          zones.map((index, key) => {
             return (
               <React.Fragment key={key}>
                 <tr>
-                  <td style={{ backgroundColor: '#dedede' }}>{index.region}</td>
-                  <td style={{ backgroundColor: '#dedede' }}>{index.agents}</td>
-                  <td style={{ backgroundColor: '#dedede' }}>{index.technicien}</td>
-                  <td style={{ backgroundColor: '#dedede' }}>{index.technicien + index.agents}</td>
+                  <td style={{ backgroundColor: '#dedede' }}>{index.denomination}</td>
+                  <td style={{ backgroundColor: '#dedede' }}>{loadingRegion(index.idZone, 'agent').agentTech}</td>
+                  <td style={{ backgroundColor: '#dedede' }}>{loadingRegion(index.idZone, 'tech').agentTech}</td>
+                  <td style={{ backgroundColor: '#dedede' }}>{loadingRegion(index.idZone).region}</td>
                 </tr>
-                {retournShop(index.region).map((item, cle) => {
+                {index.shop.map((item, cle) => {
                   return (
                     <tr key={cle}>
                       <td>{item.shop}</td>
-                      <td>{item.agent}</td>
-                      <td>{item.tech}</td>
-                      <td>{item.tech + item.agent}</td>
+                      <td>{loadingShop(item.idShop, 'agent')}</td>
+                      <td>{loadingShop(item.idShop, 'tech')}</td>
+                      <td>{loadingShop(item.idShop, 'tech') + loadingShop(item.idShop, 'agent')}</td>
                     </tr>
                   );
                 })}

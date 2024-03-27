@@ -4,8 +4,7 @@ import React from 'react';
 import '../style.css';
 import { useSelector } from 'react-redux';
 import AutoComplement from 'Control/AutoComplet';
-import _ from 'lodash';
-import { Alert, Button, Grid, Card } from '@mui/material';
+import { Alert, Button, Grid } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import Graphique from './Graphique';
 import axios from 'axios';
@@ -15,40 +14,28 @@ import MainCard from 'components/MainCard';
 import Regions from './Regions';
 import Agents from './Agents';
 import AffichageStat from './AffichageStat';
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 
 function Statistiques() {
   const region = useSelector((state) => state.zone);
   const [value, setValue] = React.useState('');
-
-  const agent = useSelector((state) => state.agent);
-  const [agentRegion, setAgentRegion] = React.useState();
-  const fetchAgent = () => {
-    if (agent.agent) {
-      const fetc = _.filter(agent.agent, {
-        codeZone: value ? value.idZone : ''
-      });
-      setAgentRegion(fetc);
-    }
-  };
-  React.useEffect(() => {
-    fetchAgent();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
+  const [shopSelect, setShopSelect] = React.useState('');
 
   const [lot, setLot] = React.useState();
-  const [agentSelect, setAgentSelect] = React.useState();
   const periode = useSelector((state) => state.periodeStore);
 
-  const click = (e, index) => {
-    e.preventDefault();
-
-    if (lot && lot == index) {
+  const handleChange = (event) => {
+    event.preventDefault();
+    if (event.target.value === 'aucun') {
       setLot();
     } else {
-      setLot(index);
+      setLot(event.target.value);
     }
   };
-
   const [fetch, setFetch] = React.useState(false);
   const [donner, setDonner] = React.useState();
   const [error, setError] = React.useState({ message: '', valeur: false });
@@ -57,7 +44,7 @@ function Statistiques() {
     e.preventDefault();
     const donner = {
       region: value ? value.idZone : undefined,
-      agent: agentSelect ? agentSelect.codeAgent : undefined,
+      idShop: shopSelect ? shopSelect.idShop : undefined,
       paquet: lot ? lot : undefined
     };
     const { region, agent, paquet } = donner;
@@ -69,8 +56,8 @@ function Statistiques() {
     } else {
       setError({ valeur: false, message: '' });
       let sended = {};
-      if (donner.agent !== undefined) {
-        sended.codeAgent = donner.agent;
+      if (donner.idShop !== undefined) {
+        sended.idShop = donner.idShop;
       }
       if (donner.region !== undefined) {
         sended.codeZone = donner.region;
@@ -78,6 +65,7 @@ function Statistiques() {
       if (donner.paquet !== undefined) {
         sended.lot = donner.paquet;
       }
+
       setDonner(sended);
     }
   };
@@ -111,45 +99,45 @@ function Statistiques() {
     { id: 1, label: 'Régions' },
     { id: 2, label: 'Agents' }
   ];
-
   return (
     <MainCard>
       {valeur && <Alert severity="error">{message}</Alert>}
-      <Grid container sx={{ margin: '10px' }}>
-        <Grid item lg={6}>
-          <Grid container>
-            <Grid item lg={4}>
-              <AutoComplement value={value} setValue={setValue} options={region.zone} title="Selectionnez la region" propr="denomination" />
-            </Grid>
-            <Grid item lg={8} sx={{ paddingLeft: '5px' }}>
-              {agentRegion && (
-                <AutoComplement value={agentSelect} setValue={setAgentSelect} options={agentRegion} title="Agent" propr="nom" />
-              )}
-            </Grid>
+      <Grid container>
+        {region?.zone.length > 0 && (
+          <Grid item lg={3} md={3} xs={12} sx={{ marginTop: '5px' }}>
+            <AutoComplement value={value} setValue={setValue} options={region.zone} title="Régions" propr="denomination" />
           </Grid>
-        </Grid>
-        <Grid lg={6} sx={{ paddingLeft: '5px' }}>
-          <Grid container>
-            {periode.getPeriode === 'success' &&
-              periode.periode.length > 0 &&
-              periode.periode.map((index) => {
-                return (
-                  <Grid lg={3} key={index._id} onClick={(e) => click(e, index._id)}>
-                    <Card
-                      style={lot === index._id ? style.lotGreen : style.lotWhite}
-                      sx={{ textAlign: 'center', marginRight: '4px', cursor: 'pointer' }}
-                    >
-                      {index._id}
-                    </Card>
-                  </Grid>
-                );
-              })}
-            <Grid item lg={3} sx={{ marginTop: '3px' }}>
-              <Button color="primary" variant="contained" disabled={fetch} onClick={(e) => sendDataFectch(e)}>
-                <Search fontSize="small" /> <span style={{ marginLeft: '5px' }}>{fetch ? 'Loading...' : 'Rechercher'}</span>
-              </Button>
-            </Grid>
+        )}
+        {value && (
+          <Grid item lg={3} md={3} xs={12} sx={{ paddingLeft: '5px', marginTop: '5px' }}>
+            <AutoComplement value={shopSelect} setValue={setShopSelect} options={value.shop} title="Shop" propr="shop" />
           </Grid>
+        )}
+
+        {periode.getPeriode === 'success' && periode.periode.length > 0 && (
+          <Grid item lg={3} md={3} xs={12}>
+            <Box sx={{ minWidth: 120, paddingLeft: '5px', marginTop: '5px', paddingRight: '5px' }}>
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">Mois</InputLabel>
+                <Select labelId="demo-simple-select-label" id="demo-simple-select" value={lot} label="Age" onChange={handleChange}>
+                  <MenuItem value="aucun">Aucun</MenuItem>
+                  {periode.periode.map((index) => {
+                    return (
+                      <MenuItem key={index._id} value={index._id}>
+                        {index._id}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </FormControl>
+            </Box>
+          </Grid>
+        )}
+
+        <Grid item lg={3} sx={{ marginTop: '5px', paddingLeft: '5px' }}>
+          <Button color="primary" variant="contained" disabled={fetch} onClick={(e) => sendDataFectch(e)}>
+            <Search fontSize="small" /> <span style={{ marginLeft: '5px' }}>{fetch ? 'Loading...' : 'Rechercher'}</span>
+          </Button>
         </Grid>
       </Grid>
 
@@ -162,7 +150,7 @@ function Statistiques() {
                 titres={titres}
                 components={[
                   { id: 0, component: <Graphique donner={listeDemande} recherche={donner} /> },
-                  { id: 1, component: <Regions listeDemande={listeDemande} /> },
+                  { id: 1, component: <Regions region={value} listeDemande={listeDemande} /> },
                   { id: 2, component: <Agents listeDemande={listeDemande} /> }
                 ]}
               />
@@ -173,29 +161,5 @@ function Statistiques() {
     </MainCard>
   );
 }
-const style = {
-  agentListe: {
-    backgroundColor: '#dedede',
-    marginTop: '5px',
-    borderRadius: '10px',
-    padding: '5px',
-    cursor: 'pointer',
-    width: '98%'
-  },
-  agentListeSelect: {
-    backgroundColor: '#d9fdd3',
-    marginTop: '5px',
-    borderRadius: '10px',
-    padding: '5px',
-    cursor: 'pointer',
-    width: '98%'
-  },
-  lotGreen: {
-    backgroundColor: '#d9fdd3'
-  },
-  lotWhite: {
-    backgroundColor: '#fff'
-  }
-};
 
 export default Statistiques;

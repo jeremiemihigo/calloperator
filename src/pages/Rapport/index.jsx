@@ -9,6 +9,7 @@ import './style.css';
 import Plaintes from './Plaintes';
 import StatistiqueCO from './StatistiqueCO';
 import Analyse from './Analyse';
+import dayjs from 'dayjs';
 
 function Rapport() {
   const [dates, setDates] = React.useState({ debut: '', fin: '' });
@@ -91,7 +92,9 @@ function Rapport() {
     }
   };
   const retourDate = (date) => {
-    return { dates: new Date(date).toLocaleString().split(',')[0], heure: new Date(date).toLocaleString().split(',')[1] };
+    console.log(date);
+    console.log(dayjs(date).format('DD/MM/YYYY'));
+    return { dates: dayjs(date).format('DD/MM/YYYY'), heure: dayjs(date).format('hh/mm') };
   };
   const retourDateUpdates = (date) => {
     if (!date.updatedAt) {
@@ -129,7 +132,6 @@ function Rapport() {
         .post(lien + '/rapport', data, config)
 
         .then((response) => {
-          console.log(response);
           if (response.data === 'token expired') {
             localStorage.removeItem('auth');
             window.location.replace('/login');
@@ -155,10 +157,10 @@ function Rapport() {
                   'CODE AGENT': response.data[i].demandeur.codeAgent,
                   'NOMS DU DEMANDEUR': response.data[i].demandeur.nom,
                   'SA & TECH': response.data[i].demandeur.fonction !== 'tech' ? 'SA' : 'TECH',
-                  DATE: new Date(retourDate(response.data[i].createdAt).dates),
+                  DATE: dayjs(response.data[i].createdAt).format('DD/MM/YYYY'),
                   'C.O': response.data[i].agent?.nom,
                   'STATUT DE LA DEMANDE': response.data[i].demande.typeImage,
-                  "DATE D'ENVOIE": new Date(retourDate(response.data[i].demande.updatedAt).dates),
+                  "DATE D'ENVOIE": dayjs(response.data[i].demande.updatedAt).format('DD/MM/YYYY'),
                   "HEURE D'ENVOI": `${retourDateUpdates(response.data[i].demande).heure}`,
                   'HEURE DE REPONSE': `${retourDate(response.data[i].createdAt).heure}`,
                   'TEMPS MOYEN': `${returnTime(response.data[i].demande, response.data[i]).toFixed(0)}`,
@@ -235,10 +237,10 @@ function Rapport() {
       </div>
       {donnerFound.length > 0 && (
         <Grid container>
-          <Grid item lg={6}>
+          <Grid item lg={5}>
             <Plaintes data={donnerFound} loadings={searchData} dates={dates} />
           </Grid>
-          <Grid item lg={6}>
+          <Grid item lg={7}>
             <StatistiqueCO data={donnerFound} />
           </Grid>
           <Grid item lg={7} sm={7} xs={12}>

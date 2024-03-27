@@ -77,16 +77,22 @@ function Region() {
     {
       field: 'region',
       headerName: 'REGION',
-      width: 100,
+      width: 80,
       editable: false,
       renderCell: (params) => {
         return params.row.region.denomination;
       }
     },
     {
+      field: 'idShop',
+      headerName: 'ID SHOP',
+      width: 100,
+      editable: false
+    },
+    {
       field: 'shop',
       headerName: 'SHOP',
-      width: 70,
+      width: 100,
       editable: false
     },
     {

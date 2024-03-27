@@ -6,12 +6,12 @@ import { lien_image } from 'static/Lien';
 // import { PostDemandeFunction, ReadDemande } from "../Redux/Demande";
 import { CreateContexte } from 'Context';
 import './style.css';
-
+import moment from 'moment';
 import BasicTabs from 'Control/Tabs';
 import FeedbackComponent from './FeedBack';
 import ReponsesComponent from './ReponseComponent';
-import { Grid } from '@mui/material';
-import { Image, Space } from 'antd';
+import { Grid, Typography } from '@mui/material';
+import { Image, Space, message } from 'antd';
 
 function ReponseAdmin(props) {
   const { update } = props;
@@ -33,19 +33,55 @@ function ReponseAdmin(props) {
     return !item && 'red';
   };
 
+  const [messageApi, contextHolder] = message.useMessage();
+  const success = (texte) => {
+    navigator.clipboard.writeText(texte);
+    messageApi.open({
+      type: 'success',
+      content: 'Done ' + texte,
+      duration: 2
+    });
+  };
+
   function AfficherJsx({ demandes }) {
     return (
-      <div className="demandeJsx" style={{ textAlign: 'justify' }}>
-        <p>ID demande : {demandes.idDemande}</p>
-        <p style={{ color: getColor(demandes.codeclient) }}>code client : {demandes.codeclient && demandes.codeclient.toUpperCase()}</p>
-        <p style={{ color: getColor(demandes.numero) }}>Numéro joignable du client: {demandes.numero}</p>
-        <p>Statut du client : {`${demandes.statut === 'allumer' ? 'allumé' : 'éteint'}`} </p>
-        <p>Feedback : {demandes.raison.toLowerCase()}</p>
-      </div>
+      <>
+        <div className="demandeJsx" style={{ textAlign: 'justify' }}>
+          <p>ID demande : {demandes.idDemande}</p>
+          <Typography
+            component="p"
+            className="codeClient"
+            onClick={() => success(demandes.codeclient)}
+            style={{ color: getColor(demandes.codeclient) }}
+          >
+            code client : {demandes.codeclient && demandes.codeclient.toUpperCase()}
+          </Typography>
+          <p style={{ color: getColor(demandes.numero) }}>Numéro joignable du client: {demandes.numero}</p>
+          <p>Statut du client : {`${demandes.statut === 'allumer' ? 'allumé' : 'éteint'}`} </p>
+          <p>Feedback : {demandes.raison.toLowerCase()}</p>
+        </div>
+
+        {demandes.conversation.length > 0 && (
+          <div>
+            {demandes.conversation.map((index) => {
+              return (
+                <div key={index._id} className={index.sender === 'co' ? 'co' : 'agent'}>
+                  <p className={index.sender === 'co' ? 'message' : 'messageAgent'}>{index.message}</p>
+                  <p className="heures">
+                    {index.codeAgent + ' ----------- '}
+                    {moment(index.createdAt).fromNow()}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </>
     );
   }
   return (
     <Grid container>
+      <>{contextHolder}</>
       <Grid item lg={6}>
         {demande || update ? (
           <>

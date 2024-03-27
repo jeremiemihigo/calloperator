@@ -13,13 +13,14 @@ import { Checkbox, FormControl, FormControlLabel, FormGroup, Box } from '@mui/ma
 import DirectionSnackbar from 'Control/SnackBar';
 import SearchIcon from '@mui/icons-material/Search';
 import CircularProgress from '@mui/material/CircularProgress';
+import Backdrop from '@mui/material/Backdrop';
 
 function ReponsesComponent({ update }) {
   const regions = useSelector((state) => state.zone.zone);
-  const shopSelector = useSelector((state) => state.shop.shop);
   const [valueRegionSelect, setValueRegionSelect] = React.useState('');
   const [valueShopSelect, setValueShopSelect] = React.useState('');
   const [sending, setSending] = React.useState(false);
+  const [fetching, setFeching] = React.useState(false);
   const [intial, setInitial] = React.useState({
     codeCu: '',
     codeClient: '',
@@ -33,7 +34,7 @@ function ReponsesComponent({ update }) {
       [name]: value
     });
   };
-  const { demande } = useContext(CreateContexte);
+  const { demande, setDemande } = useContext(CreateContexte);
   const { codeCu, codeClient, consExpDays, nomClient } = intial;
   let [status, setStatut] = React.useState({ payement: '', statut: '' });
   const { payement, statut } = status;
@@ -84,6 +85,7 @@ function ReponsesComponent({ update }) {
 
   const userConnect = useSelector((state) => state.user?.user);
   const dispatch = useDispatch();
+  const [openBackdrop, setBackDrop] = React.useState(false);
   const reponseData = (e) => {
     e.preventDefault();
     if (valueRegionSelect && valueShopSelect && valueRegionSelect.idZone !== valueShopSelect.idZone) {
@@ -93,23 +95,34 @@ function ReponsesComponent({ update }) {
       if (userConnect && userConnect.fonction !== 'co') {
         setMessage('Cette espace est reservée aux C.O');
         setOpenSnack(true);
+        setFeching(false);
       } else {
-        setSending(true);
-        const datass = {
-          idDemande: demande.idDemande,
-          codeClient: codeClient.toUpperCase(),
-          codeCu,
-          codeAgent: userConnect?.codeAgent,
-          clientStatut: statut,
-          PayementStatut: payement,
-          consExpDays,
-          nomClient,
-          region: valueRegionSelect.denomination,
-          shop: valueShopSelect.shop
-        };
-        dispatch(postReponse(datass));
-        setSending(false);
-        reset();
+        if (demande.shopAgent.idShop !== valueShopSelect.idShop) {
+          setMessage(
+            `y a pas une conformité entre le shop du client << ${valueShopSelect.shop} >> et celui de l'agent << ${demande.shopAgent.shop} >>`
+          );
+          setOpenSnack(true);
+        } else {
+          setSending(true);
+          setBackDrop(true);
+          const datass = {
+            idDemande: demande.idDemande,
+            codeClient: codeClient.toUpperCase(),
+            codeCu,
+            codeAgent: userConnect?.codeAgent,
+            clientStatut: statut,
+            PayementStatut: payement,
+            consExpDays,
+            nomClient,
+            idZone: valueRegionSelect.idZone,
+            idShop: valueShopSelect.idShop
+          };
+          dispatch(postReponse(datass));
+          setSending(false);
+          setDemande();
+          setBackDrop(false);
+          reset();
+        }
       }
     }
   };
@@ -167,36 +180,44 @@ function ReponsesComponent({ update }) {
       setStatut({ payement: 'pending fulfliment', statut: 'pending activation' });
     }
   };
-  const [fetching, setFeching] = React.useState(false);
+
   const fetchCustomer = async (e) => {
     e.preventDefault();
-    setFeching(true);
-    const response = await axios.get(`${lien}/customer/${codeClient}`);
-    if (response.status === 200) {
-      setInitial({
-        ...intial,
-        codeCu: response.data.customer_cu,
-        nomClient: response.data.nomClient,
-
-        consExpDays: ''
-      });
-      setValueShopSelect(_.filter(shopSelector, { shop: response.data.shop })[0]);
-      setValueRegionSelect(_.filter(regions, { denomination: response.data.region })[0]);
-      setFeching(false);
-    } else {
-      setFeching(false);
-      setInitial({
-        ...intial,
-        codeCu: '',
-        nomClient: '',
-        consExpDays: ''
-      });
-      setValueRegionSelect('');
-      setValueShopSelect('');
+    if (codeClient.length > 10) {
+      setFeching(true);
+      const response = await axios.get(`${lien}/customer/${codeClient}`);
+      if (response.status === 200) {
+        setInitial({
+          ...intial,
+          codeCu: response.data.customer_cu,
+          nomClient: response.data.nomClient,
+          consExpDays: ''
+        });
+        setValueShopSelect(response.data.shop);
+        setValueRegionSelect(response.data.region);
+        setFeching(false);
+      } else {
+        setFeching(false);
+        setInitial({
+          ...intial,
+          codeCu: '',
+          nomClient: '',
+          consExpDays: ''
+        });
+        setValueRegionSelect('');
+        setValueShopSelect('');
+      }
     }
   };
+
   return (
     <Grid>
+      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={openBackdrop}>
+        <div>
+          <p style={{ textAlign: 'center', margin: '0px', padding: '0px' }}>Sending {demande?.idDemande}...</p>
+        </div>
+      </Backdrop>
+
       {reponse.postDemande === 'rejected' && <Alert severity="warning">{reponse.postDemandeError}</Alert>}
       {openSnack && <DirectionSnackbar message={message} open={openSnack} setOpen={setOpenSnack} />}
       <Grid container>

@@ -46,10 +46,13 @@ const ReportAreaChart = () => {
       }
     }
   };
+  const [load, setLoad] = useState(false);
   const loading = async () => {
+    setLoad(true);
     try {
       const response = await axios.get(lien + '/demandePourChaquePeriode', config);
       setDonner(response.data);
+      setLoad(false);
     } catch (error) {
       console.log(error);
     }
@@ -61,7 +64,17 @@ const ReportAreaChart = () => {
     loadingData();
   }, [donner]);
 
-  return <>{options && series && <ReactApexChart options={options} series={series} type="line" height={345} />}</>;
+  return (
+    <div>
+      {load ? (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '20rem' }}>
+          <p style={{ textAlign: 'center' }}>Loading...</p>
+        </div>
+      ) : (
+        options && series && <ReactApexChart options={options} series={series} type="line" height={345} />
+      )}
+    </div>
+  );
 };
 
 export default ReportAreaChart;

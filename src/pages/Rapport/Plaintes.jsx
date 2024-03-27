@@ -39,7 +39,7 @@ function Plaintes({ data, loadings, dates }) {
     {
       field: 'nombre',
       headerName: 'Nombre',
-      width: 100,
+      width: 50,
       editable: false
     }
   ];
