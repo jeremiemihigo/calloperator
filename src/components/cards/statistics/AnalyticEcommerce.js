@@ -1,16 +1,15 @@
 import PropTypes from 'prop-types';
 // material-ui
-import { Chip, Grid, Stack, Typography } from '@mui/material';
+import { Grid, Stack, Typography } from '@mui/material';
 
 // project import
 import MainCard from 'components/MainCard';
 
 // assets
-import { RiseOutlined, FallOutlined } from '@ant-design/icons';
 
 // ==============================|| STATISTICS - ECOMMERCE CARD  ||============================== //
 
-const AnalyticEcommerce = ({ color, title, count, percentage, isLoss }) => (
+const AnalyticEcommerce = ({ title, count }) => (
   <MainCard contentSX={{ p: 2.25 }}>
     <Stack spacing={0.5}>
       <Typography variant="h6" color="textSecondary">
@@ -28,35 +27,13 @@ const AnalyticEcommerce = ({ color, title, count, percentage, isLoss }) => (
             </Typography>
           )}
         </Grid>
-        {percentage && (
-          <Grid item>
-            <Chip
-              variant="combined"
-              color={color}
-              icon={
-                <>
-                  {!isLoss && <RiseOutlined style={{ fontSize: '0.75rem', color: 'inherit' }} />}
-                  {isLoss && <FallOutlined style={{ fontSize: '0.75rem', color: 'inherit' }} />}
-                </>
-              }
-              label={`${percentage}%`}
-              sx={{ ml: 1.25, pl: 1 }}
-              size="small"
-            />
-          </Grid>
-        )}
       </Grid>
     </Stack>
   </MainCard>
 );
-
 AnalyticEcommerce.propTypes = {
-  color: PropTypes.string,
   title: PropTypes.string,
-  count: PropTypes.string,
-  percentage: PropTypes.number,
-  isLoss: PropTypes.bool,
-  extra: PropTypes.oneOfType([PropTypes.node, PropTypes.string])
+  count: PropTypes.string
 };
 
 AnalyticEcommerce.defaultProps = {

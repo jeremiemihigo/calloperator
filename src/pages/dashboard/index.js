@@ -8,14 +8,17 @@ import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
 import { useSelector } from 'react-redux';
 import _ from 'lodash';
 import ReportAreaChart from './ReportAreaChart';
+import FirstLogin from './FirstLogin.jsx';
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
 const DashboardDefault = () => {
+  const userConnect = useSelector((state) => state.user.user);
   const region = useSelector((state) => state.zone);
   const agent = useSelector((state) => state.agent);
   const periode = useSelector((state) => state.periodeActive);
   const reponse = useSelector((state) => state.reponse);
+
   const [statReponse, setStatReponse] = React.useState();
 
   React.useEffect(() => {
@@ -27,6 +30,7 @@ const DashboardDefault = () => {
   }, [reponse]);
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
+      {userConnect && userConnect.first && <FirstLogin />}
       {/* row 1 */}
       <Grid item xs={12} sx={{ mb: -2.25 }}>
         <Typography variant="h5">Dashboard</Typography>
@@ -35,13 +39,13 @@ const DashboardDefault = () => {
         <AnalyticEcommerce title="Régions enregistrées" count={region?.zone?.length} />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Agent & Techniciens" count={agent?.agent?.length} />
+        <AnalyticEcommerce title="Agents & Techniciens" count={agent?.agent?.length} />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Mois actif" count={periode?.periodeActive?.periode} isLoss color="warning" />
+        <AnalyticEcommerce title="Mois actif" count={periode?.periodeActive?.periode} />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Demandes" count={reponse?.reponse.length} isLoss color="warning" />
+        <AnalyticEcommerce title="Visites début du mois à date" count={reponse?.reponse.length} />
       </Grid>
 
       <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
@@ -50,7 +54,7 @@ const DashboardDefault = () => {
       <Grid item xs={12} md={7} lg={8}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
-            <Typography variant="h5">Variation</Typography>
+            <Typography variant="h5">Variation des visites</Typography>
           </Grid>
           <Grid item />
         </Grid>
@@ -61,7 +65,7 @@ const DashboardDefault = () => {
       <Grid item xs={12} md={5} lg={4}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
-            <Typography variant="h5">Début du mois à date</Typography>
+            <Typography variant="h5">stat C.O début du mois à date</Typography>
           </Grid>
           <Grid item />
         </Grid>
@@ -73,7 +77,7 @@ const DashboardDefault = () => {
                 return (
                   <ListItemButton divider key={key}>
                     <ListItemText primary={index[0]} />
-                    <Typography variant="h5">{((index[1].length * 100) / reponse?.reponse.length).toFixed(1)}%</Typography>
+                    <Typography variant="h5">{((index[1].length * 100) / reponse?.reponse.length).toFixed(0)}%</Typography>
                   </ListItemButton>
                 );
               })}

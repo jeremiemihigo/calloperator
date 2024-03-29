@@ -8,7 +8,7 @@ function Chats() {
   const { chat, setDemande } = React.useContext(CreateContexte);
 
   return (
-    <div>
+    <div className="chatscomponent">
       {chat &&
         chat.length > 0 &&
         chat.map((index) => {

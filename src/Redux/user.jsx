@@ -11,6 +11,7 @@ const initialState = {
 export const ReadUser = createAsyncThunk('user/ReadUser', async (id, { rejectWithValue }) => {
   try {
     const response = await axios.get(lien + '/userAdmin', config);
+    console.log(response);
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response.data);
