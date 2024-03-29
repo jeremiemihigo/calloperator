@@ -3,7 +3,7 @@
 import { Card, Grid } from '@mui/material';
 import './style.css';
 import React, { useContext, useEffect } from 'react';
-import { lien } from 'static/Lien';
+import { lien, config } from 'static/Lien';
 import moment from 'moment';
 import { CreateContexte } from 'Context';
 import axios from 'axios';
@@ -19,15 +19,17 @@ function DemandeListe() {
 
   const loadings = async () => {
     try {
-      const response = await axios.get(`${lien}/toutesDemandeAttente`);
-
-      if (response.data) {
+      const response = await axios.get(`${lien}/toutesDemandeAttente`, config);
+      if (response.status === 201 && response.data === 'token expired') {
+        localStorage.removeItem('auth');
+        window.location.replace('/login');
+      } else {
         setDataChat(_.filter(response.data.response, { feedback: 'chat' }));
         setChat(response.data.reclamation);
+        let donner = _.filter(response.data.response, { feedback: 'new' });
+        setData(_.groupBy(donner, 'zone.denomination'));
+        setError('');
       }
-      let donner = _.filter(response.data.response, { feedback: 'new' });
-      setData(_.groupBy(donner, 'zone.denomination'));
-      setError('');
     } catch (error) {
       if (error.code === 'ERR_NETWORK') {
         setError('Rassurez-vous que votre appareil a une connexion active');
@@ -38,7 +40,7 @@ function DemandeListe() {
   useEffect(() => {
     const interval = setInterval(() => {
       loadings();
-    }, 2000);
+    }, 3000);
     return () => clearInterval(interval);
   }, []);
   const [regionSelect, setRegionSelect] = React.useState('');

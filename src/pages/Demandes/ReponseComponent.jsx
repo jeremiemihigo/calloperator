@@ -7,7 +7,7 @@ import axios from 'axios';
 import { postReponse } from 'Redux/Reponses';
 import { lien, config } from 'static/Lien';
 import { CreateContexte } from 'Context';
-import { Alert } from '../../../node_modules/@mui/lab/index';
+import { Alert } from '@mui/lab';
 import AutoComplement from 'Control/AutoComplet';
 import { Checkbox, FormControl, FormControlLabel, FormGroup, Box } from '@mui/material';
 import DirectionSnackbar from 'Control/SnackBar';
@@ -34,7 +34,7 @@ function ReponsesComponent({ update }) {
       [name]: value
     });
   };
-  const { demande, setDemande } = useContext(CreateContexte);
+  const { demande } = useContext(CreateContexte);
   const { codeCu, codeClient, consExpDays, nomClient } = intial;
   let [status, setStatut] = React.useState({ payement: '', statut: '' });
   const { payement, statut } = status;
@@ -117,7 +117,6 @@ function ReponsesComponent({ update }) {
           };
           dispatch(postReponse(datass));
           setSending(false);
-          setDemande();
           reset();
         }
       }
@@ -217,7 +216,11 @@ function ReponsesComponent({ update }) {
         </Backdrop>
       )}
 
-      {reponse.postDemande === 'rejected' && <Alert severity="warning">{reponse.postDemandeError}</Alert>}
+      {reponse.postDemande === 'rejected' && (
+        <Alert variant="filled" severity="error">
+          {reponse.postDemandeError}
+        </Alert>
+      )}
       {openSnack && <DirectionSnackbar message={message} open={openSnack} setOpen={setOpenSnack} />}
       <Grid container>
         <Grid item lg={10} xs={10}>
