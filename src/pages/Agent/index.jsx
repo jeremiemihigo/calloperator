@@ -39,6 +39,7 @@ function AgentListe() {
     dispatch(BloquerAgent(data));
     setWait(false);
   };
+  const user = useSelector((state) => state.user?.user);
 
   const columns = [
     {
@@ -113,11 +114,14 @@ function AgentListe() {
                 <Edit fontSize="small" />
               </Fab>
             </Tooltip>
-            <Tooltip title="Réinitialisez ses accès" sx={{ margin: '10px' }}>
-              <Fab color="success" size="small" onClick={() => resetPassword(params.row)}>
-                <RestartAlt fontSize="small" />
-              </Fab>
-            </Tooltip>
+            {user.fonction === 'superUser' && (
+              <Tooltip title="Réinitialisez ses accès" sx={{ margin: '10px' }}>
+                <Fab color="success" size="small" onClick={() => resetPassword(params.row)}>
+                  <RestartAlt fontSize="small" />
+                </Fab>
+              </Tooltip>
+            )}
+
             {wait ? (
               'Wait...'
             ) : (
