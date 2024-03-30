@@ -61,6 +61,7 @@ const NouvelleInscription = () => {
         {message !== '' && <p style={{ fontSize: '12px', marginBottom: '10px', color: 'red' }}>{message}</p>}
         <div style={{ marginBottom: '10px' }}>
           <Input
+            type="password"
             placeholder="Mot de passe"
             onChange={(e) =>
               setPassword({
@@ -72,6 +73,7 @@ const NouvelleInscription = () => {
         </div>
         <div style={{ marginBottom: '10px' }}>
           <Input
+            type="password"
             placeholder="Repeter le mot de passe"
             onChange={(e) =>
               setPassword({
