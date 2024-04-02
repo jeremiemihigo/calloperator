@@ -63,6 +63,19 @@ function AgentListeAdmin() {
       width: 90,
       editable: false
     },
+    {
+      field: 'first',
+      headerName: 'Log',
+      width: 50,
+      editable: false,
+      renderCell: (params) => {
+        return params.row.first ? (
+          <p style={{ backgroundColor: 'red', borderRadius: '50%', height: '10px', width: '50%' }}>.</p>
+        ) : (
+          <p style={{ backgroundColor: 'green', color: 'green', height: '10px', borderRadius: '50%', width: '50%' }}>.</p>
+        );
+      }
+    },
 
     {
       field: 'reset',

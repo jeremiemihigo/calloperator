@@ -4,10 +4,12 @@ import { useState } from 'react';
 import { lien, config } from 'static/Lien';
 import { Input } from 'antd';
 import Chats from './Chats';
+import { useSelector } from 'react-redux';
 const { TextArea } = Input;
 
 function FeedbackComponent({ demande, update }) {
   const [reclamation, setReclamation] = useState('');
+  const user = useSelector((state) => state.user?.user);
 
   const sendReclamation = (e) => {
     if (update && e.keyCode === 13 && reclamation !== '') {
@@ -16,7 +18,7 @@ function FeedbackComponent({ demande, update }) {
         _id: update.demande._id,
         message: reclamation,
         sender: 'co',
-        codeAgent: update.demande.codeAgent
+        codeAgent: user?.codeAgent
       };
       axios
         .post(lien + '/reclamation', data, config)

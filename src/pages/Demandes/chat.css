@@ -1,25 +1,27 @@
-.message{
-  background-color: #c5e6c1;
-  margin-bottom: 2px;
-  padding: 0px 4px;
+.chats{
+  background-color: #def1ef;
+  padding: 10px;
 }
-.messageTitle{
-  background-color: #29afdf;
-  padding: 0px 4px;
-  margin: 0px;
-  font-size: 11px;
+.chats .agent{
+  background-color: #d3d7ee;
+  border-radius: 20px;
+  margin-left: 40px;
 }
-.messageBody >p{
-  padding: 0px 4px;
-  margin: 0px;
+.chats .co{
+  background-color: #f0f1f3;
+  padding: 0px 5px;
+  border-radius: 20px;
+  margin-right: 40px;
+}
+.chats >div>p{
   font-size: 12px;
+  padding: 0;
+  margin: 0px 20px;
+  text-align: justify;
+  font-weight: 700;
 }
-.messageBody >.messageBody_date{
+.chats > div .heures{
+  font-size: 10px;
   text-align: right;
-  font-size: 11px;
-}
-.chatscomponent{
-  height: 90vh;
-  overflow-y: auto;
-  overflow-x: auto;
+  font-weight: 700;
 }

@@ -98,7 +98,7 @@ function Rapport() {
   const [loading, setLoading] = React.useState(false);
 
   const returnTime = (date1, date2) => {
-    let resultat = (new Date(date2.createdAt).getTime() - new Date(date1.createdAt).getTime()) / 60000;
+    let resultat = (new Date(date2.createdAt).getTime() - new Date(date1.updatedAt).getTime()) / 60000;
     if (resultat < 1) {
       return 1;
     } else {
@@ -146,8 +146,8 @@ function Rapport() {
                   'C.O': response.data[i].agent?.nom,
                   'STATUT DE LA DEMANDE': response.data[i].demande.typeImage,
                   "DATE D'ENVOIE": retourDate(response.data[i].demande.createdAt).dates,
-                  "HEURE D'ENVOI": `${retourDate(response.data[i].demande.updatedAt).heure}`,
-                  'HEURE DE REPONSE': `${retourDate(response.data[i].createdAt).heure}`,
+                  "HEURE D'ENVOI": `${dayjs(response.data[i].demande.updatedAt).format('hh:mm:ss')}`,
+                  'HEURE DE REPONSE': `${dayjs(response.data[i].createdAt).format('hh:mm:ss')}`,
                   'TEMPS MOYEN': `${returnTime(response.data[i].demande, response.data[i]).toFixed(0)}`,
                   LONGITUDE: chekValue(response.data[i].demande?.coordonnes.longitude),
                   LATITUDE: chekValue(response.data[i].demande?.coordonnes.latitude),

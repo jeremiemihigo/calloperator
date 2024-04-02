@@ -60,22 +60,21 @@ function ReponseAdmin(props) {
           <p>Statut du client : {`${demandes.statut === 'allumer' ? 'allumé' : 'éteint'}`} </p>
           <p>Feedback : {demandes.raison.toLowerCase()}</p>
         </div>
-
-        {demandes.conversation.length > 0 && (
-          <div>
-            {demandes.conversation.map((index) => {
-              return (
-                <div key={index._id} className={index.sender === 'co' ? 'co' : 'agent'}>
-                  <p className={index.sender === 'co' ? 'message' : 'messageAgent'}>{index.message}</p>
-                  <p className="heures">
-                    {index.codeAgent + ' ----------- '}
-                    {moment(index.createdAt).fromNow()}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        )}
+        <div className="chats">
+          {demandes.conversation.length > 0 && (
+            <>
+              {demandes.conversation.map((index) => {
+                console.log(index);
+                return (
+                  <div key={index._id} className={index.sender === 'co' ? 'co' : 'agent'}>
+                    <p>{index.message}</p>
+                    <p className="heures">{moment(index.createdAt).fromNow()}</p>
+                  </div>
+                );
+              })}
+            </>
+          )}
+        </div>
       </>
     );
   }

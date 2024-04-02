@@ -63,14 +63,13 @@ const ProfileTab = () => {
           <ListItemText primary="Regions" />
         </ListItemButton>
       )}
-      
-        <ListItemButton selected={selectedIndex === 2} onClick={(event) => handleListItemClick(event, 2)}>
-          <ListItemIcon>
-            <PeopleAlt fontSize="small" />
-          </ListItemIcon>
-          <ListItemText primary="Clients" />
-        </ListItemButton>
-      
+
+      <ListItemButton selected={selectedIndex === 2} onClick={(event) => handleListItemClick(event, 2)}>
+        <ListItemIcon>
+          <PeopleAlt fontSize="small" />
+        </ListItemIcon>
+        <ListItemText primary="Clients" />
+      </ListItemButton>
 
       <ListItemButton selected={selectedIndex === 3} onClick={(event) => handleListItemClick(event, 3)}>
         <ListItemIcon>

@@ -70,15 +70,19 @@ function DemandeListe() {
                           marginBottom: '4px'
                         }}
                         key={cle}
-                        className={demande && demande._id === e._id && 'colorGreen'}
+                        className={demande && demande._id === e._id ? 'colorGreen' : ''}
                       >
                         <div className="allP">
                           <p>
                             {' '}
-                            {e.idDemande}; {e.codeclient && e.codeclient} {e.statut}
+                            {e.shopAgent?.shop}; {e.codeclient && e.codeclient !== 'undefined' && e.codeclient} {e.statut}{' '}
+                            {e.agent.codeAgent}
                           </p>
 
-                          <p style={{ fontSize: '9px', textAlign: 'right' }}>{moment(e.createdAt).fromNow()}</p>
+                          <p style={{ fontSize: '9px' }}>
+                            {e.agent.nom}
+                            <span style={{ fontSize: '9px', float: 'right' }}>{moment(e.createdAt).fromNow()}</span>
+                          </p>
                         </div>
                       </Card>
                     );

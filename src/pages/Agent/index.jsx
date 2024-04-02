@@ -1,8 +1,7 @@
 import Popup from 'static/Popup';
 import React, { memo } from 'react';
 import AddAgent from './Agent';
-import axios from 'axios';
-import { lien, config } from 'static/Lien';
+
 import { DataGrid } from '@mui/x-data-grid';
 import { Fab, Tooltip, Paper } from '@mui/material';
 import { Edit, Block, RestartAlt } from '@mui/icons-material';
@@ -10,7 +9,7 @@ import DirectionSnackbar from 'Control/SnackBar';
 import { useSelector, useDispatch } from 'react-redux';
 import ExcelFile from './ExcelFile';
 import { Button } from 'antd';
-import { BloquerAgent } from 'Redux/Agent';
+import { BloquerAgent, Reinitialiser } from 'Redux/Agent';
 
 function AgentListe() {
   const [openAgent, setOpenAgent] = React.useState(false);
@@ -20,11 +19,12 @@ function AgentListe() {
   const allListe = useSelector((state) => state.agent);
 
   const resetPassword = (agent) => {
-    axios.put(lien + '/reset', { id: agent._id }, config).then((result) => {
-      if (result.status === 200) {
-        setOpen(true);
-      }
-    });
+    dispatch(Reinitialiser({ id: agent._id }));
+    // axios.put(lien + '/reset', { id: agent._id }, config).then((result) => {
+    //   if (result.status === 200) {
+    //     setOpen(true);
+    //   }
+    // });
   };
   const [dataTo, setDataTo] = React.useState();
   const update = (donner, e) => {
@@ -115,11 +115,17 @@ function AgentListe() {
               </Fab>
             </Tooltip>
             {user.fonction === 'superUser' && (
-              <Tooltip title="Réinitialisez ses accès" sx={{ margin: '10px' }}>
-                <Fab color="success" size="small" onClick={() => resetPassword(params.row)}>
-                  <RestartAlt fontSize="small" />
-                </Fab>
-              </Tooltip>
+              <>
+                {allListe.reinitialiser === 'pending' ? (
+                  <>Wait...</>
+                ) : (
+                  <Tooltip title="Réinitialisez ses accès" sx={{ margin: '10px' }}>
+                    <Fab color="success" size="small" onClick={() => resetPassword(params.row)}>
+                      <RestartAlt fontSize="small" />
+                    </Fab>
+                  </Tooltip>
+                )}
+              </>
             )}
 
             {wait ? (
