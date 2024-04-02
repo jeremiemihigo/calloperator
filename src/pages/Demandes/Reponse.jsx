@@ -6,7 +6,6 @@ import { lien_image } from 'static/Lien';
 // import { PostDemandeFunction, ReadDemande } from "../Redux/Demande";
 import { CreateContexte } from 'Context';
 import './style.css';
-import moment from 'moment';
 import BasicTabs from 'Control/Tabs';
 import FeedbackComponent from './FeedBack';
 import ReponsesComponent from './ReponseComponent';
@@ -61,19 +60,17 @@ function ReponseAdmin(props) {
           <p>Feedback : {demandes.raison.toLowerCase()}</p>
         </div>
         <div className="chats">
-          {demandes.conversation.length > 0 && (
-            <>
-              {demandes.conversation.map((index) => {
-                console.log(index);
-                return (
-                  <div key={index._id} className={index.sender === 'co' ? 'co' : 'agent'}>
-                    <p>{index.message}</p>
-                    <p className="heures">{moment(index.createdAt).fromNow()}</p>
-                  </div>
-                );
-              })}
-            </>
-          )}
+          {demandes.conversation.length > 0 &&
+            demandes.conversation.map((index) => {
+              return (
+                <div key={index._id} className={index.sender === 'co' ? 'co' : 'agent'}>
+                  <p>{index.message}</p>
+                  <p className="heures">
+                    <span>{index.codeAgent}</span>
+                  </p>
+                </div>
+              );
+            })}
         </div>
       </>
     );

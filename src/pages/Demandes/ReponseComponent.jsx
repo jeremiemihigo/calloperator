@@ -115,6 +115,7 @@ function ReponsesComponent({ update }) {
             idZone: valueRegionSelect.idZone,
             idShop: valueShopSelect.idShop
           };
+
           dispatch(postReponse(datass));
           setSending(false);
           reset();

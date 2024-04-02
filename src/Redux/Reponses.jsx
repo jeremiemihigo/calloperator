@@ -7,7 +7,8 @@ const initialState = {
   getReponse: '',
   getReponseError: '',
   postDemande: '',
-  postDemandeError: ''
+  postDemandeError: '',
+  postId: ''
 };
 const config = {
   headers: {
@@ -43,7 +44,8 @@ const reponse = createSlice({
         getReponse: 'pending',
         getReponseError: '',
         postDemande: '',
-        postDemandeError: ''
+        postDemandeError: '',
+        postId: ''
       };
     },
 
@@ -53,7 +55,8 @@ const reponse = createSlice({
         getReponse: 'success',
         getReponseError: '',
         postDemande: '',
-        postDemandeError: ''
+        postDemandeError: '',
+        postId: ''
       };
     },
     [ReadReponse.rejected]: (state, action) => {
@@ -62,7 +65,8 @@ const reponse = createSlice({
         getReponse: 'rejected',
         getReponseError: action.payload,
         postDemande: '',
-        postDemandeError: ''
+        postDemandeError: '',
+        postId: ''
       };
     },
     [postReponse.pending]: (state, action) => {
@@ -71,19 +75,17 @@ const reponse = createSlice({
         getReponse: '',
         getReponseError: '',
         postDemande: 'pending',
-        postDemandeError: ''
+        postDemandeError: '',
+        postId: ''
       };
     },
     [postReponse.fulfilled]: (state, action) => {
-      // const updatings = state.reponse.map((x) =>
-      //   x.idDemande === action.payload.idDemande ? action.payload : x
-      // );
-
       return {
-        reponse: [action.payload, ...state.reponse],
+        ...state,
         getReponse: '',
         getReponseError: '',
         postDemande: 'success',
+        postId: action.payload,
         postDemandeError: ''
       };
     },
@@ -93,7 +95,8 @@ const reponse = createSlice({
         getReponse: '',
         getReponseError: '',
         postDemande: 'rejected',
-        postDemandeError: action.payload
+        postDemandeError: action.payload,
+        postId: ''
       };
     }
   }

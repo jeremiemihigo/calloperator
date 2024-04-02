@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useState } from 'react';
 import { lien, config } from 'static/Lien';
 import { Input } from 'antd';
-import Chats from './Chats';
 import { useSelector } from 'react-redux';
 const { TextArea } = Input;
 
@@ -35,7 +34,7 @@ function FeedbackComponent({ demande, update }) {
         _id: demande._id,
         message: reclamation,
         sender: 'co',
-        codeAgent: demande.codeAgent
+        codeAgent: user?.codeAgent
       };
       axios
         .post(lien + '/reclamation', data, config)
@@ -65,7 +64,6 @@ function FeedbackComponent({ demande, update }) {
           }}
         />
       </div>
-      <Chats />
     </div>
   );
 }

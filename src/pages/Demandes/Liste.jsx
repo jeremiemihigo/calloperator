@@ -10,12 +10,15 @@ import axios from 'axios';
 import _ from 'lodash';
 import TabComponent from 'Control/Tabs';
 import { Alert } from 'antd';
+import ListeDemandeFeedBack from './DemandeFeedback';
+import { useSelector } from 'react-redux';
 
 function DemandeListe() {
-  const { setDemande, demande, setChat } = useContext(CreateContexte);
+  const { setDemande, demande } = useContext(CreateContexte);
   const [data, setData] = React.useState([]);
-  const [dataChat, setDataChat] = React.useState();
+  const [donnes, setDonner] = React.useState([]);
   const [error, setError] = React.useState('');
+  const postId = useSelector((state) => state.reponse?.postId);
 
   const loadings = async () => {
     try {
@@ -24,10 +27,8 @@ function DemandeListe() {
         localStorage.removeItem('auth');
         window.location.replace('/login');
       } else {
-        setDataChat(_.filter(response.data.response, { feedback: 'chat' }));
-        setChat(response.data.reclamation);
-        let donner = _.filter(response.data.response, { feedback: 'new' });
-        setData(_.groupBy(donner, 'zone.denomination'));
+        setDonner(response.data);
+        setData(_.groupBy(response.data, 'zone.denomination'));
         setError('');
       }
     } catch (error) {
@@ -36,6 +37,10 @@ function DemandeListe() {
       }
     }
   };
+  useEffect(() => {
+    let donner = donnes.filter((x) => x.idDemande !== postId);
+    setData(_.groupBy(donner, 'zone.denomination'));
+  }, [postId]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -94,62 +99,13 @@ function DemandeListe() {
     );
   };
 
-  const ListeDemandeFeedBack = () => {
-    return (
-      <div className="listeDemandeFeedback">
-        {dataChat &&
-          dataChat.map((index) => {
-            return (
-              <div key={index._id}>
-                <Card
-                  onClick={(event) => {
-                    event.preventDefault();
-                    setDemande(index);
-                  }}
-                  style={{
-                    cursor: 'pointer',
-                    padding: '5px',
-                    marginBottom: '4px'
-                  }}
-                >
-                  <div className="allP">
-                    <p>
-                      {' '}
-                      {index.idDemande}; {index.codeclient && index.codeclient}{' '}
-                    </p>
-                    <p>
-                      {index.statut}; {index.raison && index.raison}
-                    </p>
-
-                    <p style={{ fontSize: '9px', textAlign: 'right' }}>{moment(index.createdAt).fromNow()}</p>
-                  </div>
-                  <div>
-                    {index.conversation?.map((item) => {
-                      return (
-                        <div key={item._id} className={item.sender === 'co' ? 'messageCo' : 'messageAgent'}>
-                          <p style={{ margin: '0px' }}>{item.message}</p>
-                          <p style={{ margin: '0px' }} className="alignLeft">
-                            {moment(item.createdAt).fromNow()}
-                          </p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </Card>
-              </div>
-            );
-          })}
-      </div>
-    );
-  };
-
   const title = [
     { id: 0, label: 'En attente' },
     { id: 1, label: 'Non conforme' }
   ];
   const component = [
     { id: 0, component: <ListeDemande /> },
-    { id: 1, component: <ListeDemandeFeedBack feedback={dataChat} /> }
+    { id: 1, component: <ListeDemandeFeedBack setError={setError} /> }
   ];
 
   return (
