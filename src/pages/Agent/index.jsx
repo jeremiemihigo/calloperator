@@ -27,12 +27,12 @@ function AgentListe() {
     setDataTo(donner);
     setOpenAgentUpdate(true);
   };
-  const [wait, setWait] = React.useState(false);
+  const [wait, setWait] = React.useState('');
   const bloquer = (agent) => {
-    setWait(true);
+    setWait(agent._id);
     let data = { id: agent._id, value: !agent.active };
     dispatch(BloquerAgent(data));
-    setWait(false);
+    setWait('');
   };
   const user = useSelector((state) => state.user?.user);
 
@@ -123,12 +123,10 @@ function AgentListe() {
                 </Tooltip>
               )}
             </>
-            {user?.fonction === 'superUser' && wait ? (
-              'Wait...'
-            ) : (
+            {user?.fonction === 'superUser' && (
               <Tooltip title={params.row.active ? 'Bloquer' : 'Débloquer'}>
                 <Fab color="warning" size="small" onClick={() => bloquer(params.row)}>
-                  <Block fontSize="small" />
+                  {wait === params.row._id ? 'Wait' : <Block fontSize="small" />}
                 </Fab>
               </Tooltip>
             )}
