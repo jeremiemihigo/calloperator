@@ -63,7 +63,7 @@ function AgentListe() {
       }
     },
     {
-      field: 'region',
+      field: 'region.0.denomination',
       headerName: 'Region',
       width: 100,
       editable: false,

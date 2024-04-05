@@ -86,8 +86,7 @@ function ReponsesComponent({ update }) {
 
   const userConnect = useSelector((state) => state.user?.user);
   const dispatch = useDispatch();
-  const reponseData = (e) => {
-    e.preventDefault();
+  const reponseData = () => {
     if (valueRegionSelect && valueShopSelect && valueRegionSelect.idZone !== valueShopSelect.idZone) {
       setMessage('Veuillez vérifier si le shop est enregistré dans la region selectionée');
       setOpenSnack(true);
@@ -179,8 +178,7 @@ function ReponsesComponent({ update }) {
     }
   };
 
-  const fetchCustomer = async (e) => {
-    e.preventDefault();
+  const fetchCustomer = async () => {
     if (codeClient.length > 10) {
       setFeching(true);
       const response = await axios.get(`${lien}/customer/${codeClient}`);
@@ -207,6 +205,17 @@ function ReponsesComponent({ update }) {
       }
     }
   };
+  const fecthEnter = (e) => {
+    if (e.keyCode === 13) {
+      fetchCustomer();
+    }
+  };
+  const postReponseEnter = (e) => {
+    if (e.keyCode === 13) {
+      reponseData();
+    }
+  };
+  const nothing = () => {};
 
   return (
     <Grid>
@@ -230,6 +239,7 @@ function ReponsesComponent({ update }) {
             style={{ marginTop: '10px' }}
             onChange={(e) => onChange(e)}
             name="codeClient"
+            onKeyUp={(e) => fecthEnter(e)}
             autoComplete="off"
             fullWidth
             value={codeClient}
@@ -288,6 +298,7 @@ function ReponsesComponent({ update }) {
           name="consExpDays"
           autoComplete="off"
           fullWidth
+          onKeyUp={!update ? (e) => postReponseEnter(e) : () => nothing()}
           value={consExpDays}
           label="consExpDays"
         />
@@ -348,7 +359,14 @@ function ReponsesComponent({ update }) {
           fullWidth
           variant="contained"
           color="primary"
-          onClick={update ? () => modifier() : (e) => reponseData(e)}
+          onClick={
+            update
+              ? () => modifier()
+              : (e) => {
+                  e.preventDefault();
+                  reponseData();
+                }
+          }
         >
           {update ? <Edit fontSize="small" /> : <Save fontSize="small" />}{' '}
           <span style={{ marginLeft: '10px' }}> {update ? 'Update' : 'Save'}</span>
