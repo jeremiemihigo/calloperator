@@ -5,7 +5,7 @@ import axios from 'axios';
 import { Input } from 'antd';
 import { config, lien, lien_image } from 'static/Lien';
 import { Image, Space } from 'antd';
-import moment from 'moment';
+import Chat from 'pages/Demandes/Chat';
 
 function ChercherDemande() {
   const [id, setValue] = React.useState('');
@@ -54,7 +54,6 @@ function ChercherDemande() {
     );
   }
   function AfficherJsx({ demandes }) {
-    console.log(demandes);
     return (
       <>
         <div className="demandeJsx" style={{ textAlign: 'justify', marginLeft: '10px' }}>
@@ -70,17 +69,7 @@ function ChercherDemande() {
           <span>Statut du client : {`${demandes.statut === 'allumer ' ? 'allumé' : 'éteint '}`} </span>
           <span>{demandes.raison.toLowerCase() + '; '}</span>
           <p>{demandes.agent.nom + '....... ' + demandes.agent.codeAgent}</p>
-          {demandes.messages.map((index) => {
-            return (
-              <div key={index._id} className={index.sender === 'co' ? 'co' : 'agent'}>
-                <p className={index.sender === 'co' ? 'message' : 'messageAgent'}>{index.message}</p>
-                <p className="heures">
-                  {index.codeAgent + ' ----------- '}
-                  {moment(index.createdAt).fromNow()}
-                </p>
-              </div>
-            );
-          })}
+          <Chat demandes={demandes.messages} />
         </div>
       </>
     );
@@ -130,7 +119,6 @@ function ChercherDemande() {
             </Grid>
           </Grid>
           <div className="marge" style={{ marginTop: '5px' }}></div>
-          <Grid>{/* <p style={{ fontSize: '14px', fontWeight: 'bolder' }}>Conversations liées à la demande</p> */}</Grid>
         </>
       )}
     </div>

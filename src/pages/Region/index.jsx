@@ -28,6 +28,7 @@ function Region() {
     setOpen(true);
   };
   const shop = useSelector((state) => state.shop.shop);
+  const user = useSelector((state) => state.user.user);
   const columns = [
     {
       field: 'idZone',
@@ -119,7 +120,8 @@ function Region() {
   ];
   return (
     <Paper elevation={3} sx={{ padding: '10px' }}>
-      <AddZone />
+      {user?.fonction === 'superUser' && <AddZone />}
+
       <div style={{ display: 'flex' }}>
         <div style={{ width: '50%' }}>
           {data && (
@@ -140,9 +142,12 @@ function Region() {
           )}
         </div>
         <div style={{ width: '50%' }}>
-          <Button type="primary" onClick={() => setOpenShop(true)}>
-            Ajoutez un shop
-          </Button>
+          {user?.fonction === 'superUser' && (
+            <Button type="primary" onClick={() => setOpenShop(true)}>
+              Ajoutez un shop
+            </Button>
+          )}
+
           {shop && (
             <DataGrid
               rows={shop}

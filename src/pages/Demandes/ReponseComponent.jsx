@@ -40,6 +40,7 @@ function ReponsesComponent({ update }) {
   const { payement, statut } = status;
   const [message, setMessage] = React.useState('');
   const [openSnack, setOpenSnack] = React.useState(false);
+  console.log(demande);
 
   function reset() {
     setInitial({ codeCu: '', codeClient: '', consExpDays: '', nomClient: '' });

@@ -12,6 +12,7 @@ import TabComponent from 'Control/Tabs';
 import { Alert } from 'antd';
 import ListeDemandeFeedBack from './DemandeFeedback';
 import { useSelector } from 'react-redux';
+import { Helmet } from 'react-helmet';
 
 function DemandeListe() {
   const { setDemande, demande } = useContext(CreateContexte);
@@ -110,6 +111,9 @@ function DemandeListe() {
 
   return (
     <>
+      <Helmet>
+        <title>({'' + donnes.length}) demandes</title>
+      </Helmet>
       {error !== '' && <Alert type="warning" message={error} />}
 
       <TabComponent titres={title} components={component} />

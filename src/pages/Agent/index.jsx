@@ -20,11 +20,6 @@ function AgentListe() {
 
   const resetPassword = (agent) => {
     dispatch(Reinitialiser({ id: agent._id }));
-    // axios.put(lien + '/reset', { id: agent._id }, config).then((result) => {
-    //   if (result.status === 200) {
-    //     setOpen(true);
-    //   }
-    // });
   };
   const [dataTo, setDataTo] = React.useState();
   const update = (donner, e) => {
@@ -109,26 +104,26 @@ function AgentListe() {
       renderCell: (params) => {
         return (
           <p>
-            <Tooltip title="Modifiez">
-              <Fab color="primary" size="small" onClick={(e) => update(params.row, e)}>
-                <Edit fontSize="small" />
-              </Fab>
-            </Tooltip>
-            {user.fonction === 'superUser' && (
-              <>
-                {allListe.reinitialiser === 'pending' ? (
-                  <>Wait...</>
-                ) : (
-                  <Tooltip title="Réinitialisez ses accès" sx={{ margin: '10px' }}>
-                    <Fab color="success" size="small" onClick={() => resetPassword(params.row)}>
-                      <RestartAlt fontSize="small" />
-                    </Fab>
-                  </Tooltip>
-                )}
-              </>
+            {user?.fonction === 'superUser' && (
+              <Tooltip title="Modifiez">
+                <Fab color="primary" size="small" onClick={(e) => update(params.row, e)}>
+                  <Edit fontSize="small" />
+                </Fab>
+              </Tooltip>
             )}
 
-            {wait ? (
+            <>
+              {allListe.reinitialiser === 'pending' ? (
+                <>Wait...</>
+              ) : (
+                <Tooltip title="Réinitialisez ses accès" sx={{ margin: '10px' }}>
+                  <Fab color="success" size="small" onClick={() => resetPassword(params.row)}>
+                    <RestartAlt fontSize="small" />
+                  </Fab>
+                </Tooltip>
+              )}
+            </>
+            {user?.fonction === 'superUser' && wait ? (
               'Wait...'
             ) : (
               <Tooltip title={params.row.active ? 'Bloquer' : 'Débloquer'}>
@@ -144,14 +139,16 @@ function AgentListe() {
   ];
   return (
     <Paper elevation={3} sx={{ padding: '5px' }}>
-      <div style={{ display: 'flex' }}>
-        <div style={{ marginRight: '10px' }}>
-          <Button onClick={() => setOpenAgent(true)} type="primary">
-            Ajoutez un agent
-          </Button>
+      {user?.fonction === 'superUser' && (
+        <div style={{ display: 'flex' }}>
+          <div style={{ marginRight: '10px' }}>
+            <Button onClick={() => setOpenAgent(true)} type="primary">
+              Ajoutez un agent
+            </Button>
+          </div>
+          <ExcelFile />
         </div>
-        <ExcelFile />
-      </div>
+      )}
 
       {open && <DirectionSnackbar open={open} setOpen={setOpen} message="Opération effectuée" />}
 

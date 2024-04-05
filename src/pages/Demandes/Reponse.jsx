@@ -11,6 +11,7 @@ import FeedbackComponent from './FeedBack';
 import ReponsesComponent from './ReponseComponent';
 import { Grid, Typography } from '@mui/material';
 import { Image, Space, message } from 'antd';
+import Chat from './Chat';
 
 function ReponseAdmin(props) {
   const { update } = props;
@@ -60,17 +61,7 @@ function ReponseAdmin(props) {
           <p>Feedback : {demandes.raison.toLowerCase()}</p>
         </div>
         <div className="chats">
-          {demandes.conversation.length > 0 &&
-            demandes.conversation.map((index) => {
-              return (
-                <div key={index._id} className={index.sender === 'co' ? 'co' : 'agent'}>
-                  <p>{index.message}</p>
-                  <p className="heures">
-                    <span>{index.codeAgent}</span>
-                  </p>
-                </div>
-              );
-            })}
+          <Chat demandes={demandes} />
         </div>
       </>
     );

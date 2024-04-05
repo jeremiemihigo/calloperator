@@ -1,11 +1,12 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
 import { Grid } from '@mui/material';
-import { Input, Button } from 'antd';
+import { Input } from 'antd';
 import { Checkbox, Typography, FormControl, FormControlLabel, FormGroup } from '@mui/material';
 import axios from 'axios';
 import { lien } from 'static/Lien';
 import { Alert, Space } from 'antd';
+import BoutonComponent from 'Control/Bouton';
 
 function Ajustage({ feedback, loading }) {
   const [value, setValue] = React.useState([]);
@@ -20,13 +21,8 @@ function Ajustage({ feedback, loading }) {
     }
   };
   const [raison, setRaison] = React.useState('');
-  const [loadings, setLoadings] = React.useState([]);
-  const enterLoading = async (index) => {
-    setLoadings((prevLoadings) => {
-      const newLoadings = [...prevLoadings];
-      newLoadings[index] = true;
-      return newLoadings;
-    });
+
+  const sending = async () => {
     const data = {
       table: value,
       value: raison
@@ -35,12 +31,8 @@ function Ajustage({ feedback, loading }) {
     loading();
     setMessage(response);
     setRaison('');
-    setLoadings((prevLoadings) => {
-      const newLoadings = [...prevLoadings];
-      newLoadings[index] = false;
-      return newLoadings;
-    });
   };
+
   React.useEffect(() => {
     setMessage();
     setValue([]);
@@ -82,9 +74,7 @@ function Ajustage({ feedback, loading }) {
         </Grid>
       </Grid>
       <Grid sx={{ marginTop: '12px' }}>
-        <Button type="primary" disabled={value.length < 1 || raison === ''} loading={loadings[0]} onClick={() => enterLoading(0)}>
-          Modifier
-        </Button>
+        <BoutonComponent type="primary" title="Midifier" disabled={value.length < 1 || raison === ''} fonction={sending} />
       </Grid>
     </div>
   );

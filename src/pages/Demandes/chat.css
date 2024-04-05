@@ -1,26 +1,27 @@
-.chats{
-  background-color: #def1ef;
+.chats {
+  background-color: #d3d8d7;
   padding: 10px;
 }
-.chats .agent{
+.chats .agent {
   background-color: #d3d7ee;
   border-radius: 20px;
   margin-left: 40px;
+  margin-top: 5px;
 }
-.chats .co{
+.chats .co {
   background-color: #f0f1f3;
   padding: 0px 5px;
   border-radius: 20px;
+  margin-top: 5px;
   margin-right: 40px;
 }
-.chats >div>p{
+.chats > div > p {
   font-size: 12px;
   padding: 0;
   margin: 0px 20px;
   text-align: justify;
-  font-weight: 700;
 }
-.chats > div .heures{
+.chats > div .heures {
   font-size: 10px;
   text-align: right;
   font-weight: 700;

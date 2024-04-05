@@ -8,6 +8,7 @@ import { lien, config } from 'static/Lien';
 import { CircularProgress, Grid } from '../../../node_modules/@mui/material/index';
 import { Save } from '@mui/icons-material';
 import { Input } from 'antd';
+import Chat from './Chat';
 
 function ListeDemandeFeedBack({ setError }) {
   const { setDemande } = React.useContext(CreateContexte);
@@ -30,24 +31,26 @@ function ListeDemandeFeedBack({ setError }) {
       }
     }
   };
+
   const [filterFn, setFilterFn] = React.useState({
     fn: (items) => {
       return items;
     }
   });
   const handleChanges = (e) => {
-    let target = e.target.value;
+    let target = e.target.value.toLowerCase();
 
     setFilterFn({
       fn: (items) => {
         if (target === '') {
           return items;
         } else {
-          return items.filter((x) => x.message.includes(target));
+          return items.filter((x) => x.idDemande.includes(target));
         }
       }
     });
   };
+
   return (
     <div className="listeDemandeFeedback">
       <Grid container>
@@ -61,7 +64,7 @@ function ListeDemandeFeedBack({ setError }) {
         </Grid>
       </Grid>
       {dataChat &&
-        dataChat.map((index) => {
+        filterFn.fn(dataChat).map((index) => {
           return (
             <div key={index._id}>
               <Card
@@ -90,16 +93,7 @@ function ListeDemandeFeedBack({ setError }) {
                   </p>
                 </div>
                 <div>
-                  {filterFn.fn(index.conversation)?.map((item) => {
-                    return (
-                      <div key={item._id} className={item.sender === 'co' ? 'messageCo' : 'messageAgent'}>
-                        <p style={{ margin: '0px' }}>{item.message}</p>
-                        <p style={{ margin: '0px' }} className="alignLeft">
-                          {moment(item.createdAt).fromNow()}
-                        </p>
-                      </div>
-                    );
-                  })}
+                  <Chat demandes={index.conversation} />
                 </div>
               </Card>
             </div>
