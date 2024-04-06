@@ -1,12 +1,12 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
 import React from 'react';
-import { Card, Fab } from '@mui/material';
+import { Card } from '@mui/material';
 import moment from 'moment';
 import { CreateContexte } from 'Context';
 import axios from 'axios';
 import { lien, config } from 'static/Lien';
-import { CircularProgress, Grid } from '../../../node_modules/@mui/material/index';
-import { Save } from '@mui/icons-material';
+import { Grid } from '../../../node_modules/@mui/material/index';
 import { Input } from 'antd';
 import Chat from './Chat';
 
@@ -31,6 +31,9 @@ function ListeDemandeFeedBack({ setError }) {
       }
     }
   };
+  React.useEffect(() => {
+    loading();
+  }, []);
 
   const [filterFn, setFilterFn] = React.useState({
     fn: (items) => {
@@ -54,15 +57,12 @@ function ListeDemandeFeedBack({ setError }) {
   return (
     <div className="listeDemandeFeedback">
       <Grid container>
-        <Grid item lg={2}>
-          <Fab onClick={() => loading()} size="small" color="primary">
-            {load ? <CircularProgress color="inherit" size={15} /> : <Save fontSize="small" color="inherit" />}
-          </Fab>
-        </Grid>
-        <Grid item lg={10} sx={{ paddingRight: '10px' }}>
+        <Grid item lg={12} sx={{ paddingRight: '10px' }}>
           <Input onChange={(e) => handleChanges(e)} placeholder="Cherchez un message" />
         </Grid>
       </Grid>
+      {load && <p style={{ textAlign: 'center', fontWeight: 'bolder' }}>Please wait...</p>}
+
       {dataChat &&
         filterFn.fn(dataChat).map((index) => {
           return (

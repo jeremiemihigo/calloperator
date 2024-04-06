@@ -44,7 +44,6 @@ function ReponseAdmin(props) {
   };
 
   function AfficherJsx({ demandes }) {
-   
     return (
       <>
         <div className="demandeJsx" style={{ textAlign: 'justify' }}>
@@ -61,7 +60,7 @@ function ReponseAdmin(props) {
           <p>Statut du client : {`${demandes.statut === 'allumer' ? 'allumé' : 'éteint'}`} </p>
           <p>Feedback : {demandes.raison.toLowerCase()}</p>
         </div>
-          <Chat demandes={demandes.conversation} />
+        <Chat demandes={demandes.conversation} />
       </>
     );
   }
