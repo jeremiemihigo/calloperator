@@ -63,19 +63,18 @@ const ProfileTab = () => {
           <ListItemText primary="Regions" />
         </ListItemButton>
       )}
-
       <ListItemButton selected={selectedIndex === 2} onClick={(event) => handleListItemClick(event, 2)}>
         <ListItemIcon>
           <PeopleAlt fontSize="small" />
         </ListItemIcon>
-        <ListItemText primary="Clients" />
+        <ListItemText primary="Customers" />
       </ListItemButton>
 
       <ListItemButton selected={selectedIndex === 3} onClick={(event) => handleListItemClick(event, 3)}>
         <ListItemIcon>
           <ChatBubble fontSize="small" />
         </ListItemIcon>
-        <ListItemText primary="Feedback de nos clients" />
+        <ListItemText primary="feedback from our customers" />
       </ListItemButton>
 
       {userConenct && userConenct.fonction === 'superUser' && (
@@ -83,7 +82,7 @@ const ProfileTab = () => {
           <ListItemIcon>
             <Settings fontSize="small" />
           </ListItemIcon>
-          <ListItemText primary="Accès" />
+          <ListItemText primary="Permissions" />
         </ListItemButton>
       )}
       {/* <ListItemButton selected={selectedIndex === 6} onClick={(event) => handleListItemClick(event, 6)}>

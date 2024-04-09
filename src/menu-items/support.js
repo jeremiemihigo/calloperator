@@ -19,28 +19,28 @@ const utilities = {
   children: [
     {
       id: 'demande',
-      title: 'Demandes',
+      title: 'Request',
       type: 'item',
       url: '/demandes',
       icon: icons.FontSizeOutlined
     },
     {
       id: 'reponses',
-      title: 'Visites',
+      title: 'Answer',
       type: 'item',
       url: '/reponses',
       icon: icons.BgColorsOutlined
     },
     {
       id: 'statistiques',
-      title: 'Statistiques',
+      title: 'Statistics',
       type: 'item',
       url: '/statistiques',
       icon: icons.BarChartOutlined
     },
     {
       id: 'rapport',
-      title: 'Rapport',
+      title: 'Report',
       type: 'item',
       url: '/rapport',
       icon: icons.FileOutlined

@@ -10,12 +10,26 @@ const initialState = {
   updateShop: '',
   updateShopError: '',
   readShop: '',
-  readShopError: ''
+  readShopError: '',
+  permissionTicket: '',
+  permissionTicketError: ''
 };
 export const ReadShop = createAsyncThunk('shop/ReadShop', async (id, { rejectWithValue }) => {
   try {
     const response = await axios.get(lien + '/shop', config);
     return response.data;
+  } catch (error) {
+    return rejectWithValue(error.response.data);
+  }
+});
+export const Tickets = createAsyncThunk('shop/Tickets', async (data, { rejectWithValue }) => {
+  try {
+    const response = await axios.put(lien + '/responsableTicket', data, config);
+    if (response.data === 'token expired') {
+      window.location.replace('/login');
+    } else {
+      return response.data;
+    }
   } catch (error) {
     return rejectWithValue(error.response.data);
   }
@@ -50,7 +64,9 @@ const zone = createSlice({
         updateShop: '',
         updateShopError: '',
         readShop: 'pending',
-        readShopError: ''
+        readShopError: '',
+        permissionTicket: '',
+        permissionTicketError: ''
       };
     },
     [ReadShop.fulfilled]: (state, action) => {
@@ -62,7 +78,9 @@ const zone = createSlice({
         updateShop: '',
         updateShopError: '',
         readShop: 'success',
-        readShopError: ''
+        readShopError: '',
+        permissionTicket: '',
+        permissionTicketError: ''
       };
     },
     [ReadShop.rejected]: (state, action) => {
@@ -73,7 +91,9 @@ const zone = createSlice({
         updateShop: '',
         updateShopError: '',
         readShop: 'rejected',
-        readShopError: action.payload
+        readShopError: action.payload,
+        permissionTicket: '',
+        permissionTicketError: ''
       };
     },
     [AjouterShop.pending]: (state, action) => {
@@ -84,7 +104,9 @@ const zone = createSlice({
         updateShop: '',
         updateShopError: '',
         readShop: '',
-        readShopError: ''
+        readShopError: '',
+        permissionTicket: '',
+        permissionTicketError: ''
       };
     },
     [AjouterShop.fulfilled]: (state, action) => {
@@ -96,7 +118,9 @@ const zone = createSlice({
         updateShop: '',
         updateShopError: '',
         readShop: '',
-        readShopError: ''
+        readShopError: '',
+        permissionTicket: '',
+        permissionTicketError: ''
       };
     },
     [AjouterShop.rejected]: (state, action) => {
@@ -107,7 +131,9 @@ const zone = createSlice({
         updateShop: '',
         updateShopError: '',
         readShop: '',
-        readShopError: ''
+        readShopError: '',
+        permissionTicket: '',
+        permissionTicketError: ''
       };
     },
     [UpdateShop.pending]: (state, action) => {
@@ -118,11 +144,13 @@ const zone = createSlice({
         updateShop: 'pending',
         updateShopError: '',
         readShop: '',
-        readShopError: ''
+        readShopError: '',
+        permissionTicket: '',
+        permissionTicketError: ''
       };
     },
     [UpdateShop.fulfilled]: (state, action) => {
-      let sho = state.shop.map((x) => (x._id === action.payload._id ? x : action.payload));
+      let sho = state.shop.map((x) => (x._id === action.payload._id ? action.payload : x));
       return {
         ...state,
         shop: sho,
@@ -131,7 +159,9 @@ const zone = createSlice({
         updateShop: 'success',
         updateShopError: '',
         readShop: '',
-        readShopError: ''
+        readShopError: '',
+        permissionTicket: '',
+        permissionTicketError: ''
       };
     },
     [UpdateShop.rejected]: (state, action) => {
@@ -142,7 +172,50 @@ const zone = createSlice({
         updateShop: 'rejected',
         updateShopError: action.payload,
         readShop: '',
-        readShopError: ''
+        readShopError: '',
+        permissionTicket: '',
+        permissionTicketError: ''
+      };
+    },
+    [Tickets.pending]: (state, action) => {
+      return {
+        ...state,
+        addShop: '',
+        addShopError: '',
+        updateShop: '',
+        updateShopError: '',
+        readShop: '',
+        readShopError: '',
+        permissionTicket: 'pending',
+        permissionTicketError: ''
+      };
+    },
+    [Tickets.fulfilled]: (state, action) => {
+      let sho = state.shop.map((x) => (x.idShop === action.payload.idShop ? action.payload : x));
+      return {
+        ...state,
+        shop: sho,
+        addShop: '',
+        addShopError: '',
+        updateShop: '',
+        updateShopError: '',
+        readShop: '',
+        readShopError: '',
+        permissionTicket: 'success',
+        permissionTicketError: ''
+      };
+    },
+    [Tickets.rejected]: (state, action) => {
+      return {
+        ...state,
+        addShop: '',
+        addShopError: '',
+        updateShop: '',
+        updateShopError: '',
+        readShop: '',
+        readShopError: '',
+        permissionTicket: 'rejected',
+        permissionTicketError: action.payload
       };
     }
   }

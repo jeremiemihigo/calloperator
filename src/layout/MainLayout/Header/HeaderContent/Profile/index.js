@@ -26,9 +26,11 @@ import ProfileTab from './ProfileTab';
 import userImage from 'assets/images/users/user.png';
 
 // assets
-import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
+import { LogoutOutlined, SettingOutlined } from '@ant-design/icons';
+// import {  RedoOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+// import Ticket from './Ticket';
 
 // tab panel wrapper
 function TabPanel({ children, value, index, ...other }) {
@@ -193,15 +195,30 @@ const Profile = () => {
                                 alignItems: 'center',
                                 textTransform: 'capitalize'
                               }}
-                              icon={<UserOutlined style={{ marginBottom: 0, marginRight: '10px' }} />}
-                              label="Profile"
+                              icon={<SettingOutlined style={{ marginBottom: 0, marginRight: '10px' }} />}
+                              label="Settings"
                               {...a11yProps(0)}
                             />
+                            {/* <Tab
+                              sx={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                textTransform: 'capitalize'
+                              }}
+                              icon={<RedoOutlined style={{ marginBottom: 0, marginRight: '10px' }} />}
+                              label="Ticket"
+                              {...a11yProps(1)}
+                            /> */}
                           </Tabs>
                         </Box>
                         <TabPanel value={value} index={0} dir={theme.direction}>
                           <ProfileTab handleLogout={handleLogout} />
                         </TabPanel>
+                        {/* <TabPanel value={value} index={1} dir={theme.direction}>
+                          <Ticket handleLogout={handleLogout} />
+                        </TabPanel> */}
                       </>
                     )}
                   </MainCard>

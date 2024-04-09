@@ -1,10 +1,12 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
-import { Typography, Fab, Tooltip } from '@mui/material';
+import { Fab, Tooltip, Paper } from '@mui/material';
 import MedicalInformationIcon from '@mui/icons-material/MedicalInformation';
 import _ from 'lodash';
 import Popup from 'static/Popup';
 import AfficheInfo from './AfficheInfo';
+import { Input } from 'antd';
+import { DataGrid } from '@mui/x-data-grid';
 
 function Agents({ listeDemande }) {
   const [donnee, setDonnees] = React.useState();
@@ -27,7 +29,8 @@ function Agents({ listeDemande }) {
           code: donnerKey[i],
           nonRepondu: listeDemande.filter((x) => x.agent.codeAgent === donnerKey[i] && x.reponse.length === 0).length,
           repondu: listeDemande.filter((x) => x.agent.codeAgent === donnerKey[i] && x.reponse.length > 0).length,
-          total: listeDemande.filter((x) => x.agent.codeAgent === donnerKey[i]).length
+          total: listeDemande.filter((x) => x.agent.codeAgent === donnerKey[i]).length,
+          id: i
         });
       }
       setDonnees(_.orderBy(table, 'total', 'desc'));
@@ -39,56 +42,105 @@ function Agents({ listeDemande }) {
     analyse();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listeDemande]);
+  const [filterFn, setFilterFn] = React.useState({
+    fn: (items) => {
+      return items;
+    }
+  });
+  const handleChanges = (e) => {
+    let target = e.target.value.toUpperCase();
+
+    setFilterFn({
+      fn: (items) => {
+        if (target === '') {
+          return items;
+        } else {
+          return items.filter((x) => x.code.includes(target) || x.nom.includes(target));
+        }
+      }
+    });
+  };
+  const columns = [
+    {
+      field: 'nom',
+      headerName: 'Nom Agent',
+      width: 250,
+      editable: false
+    },
+
+    {
+      field: 'code',
+      headerName: 'Code Agent',
+      width: 100,
+      editable: false
+    },
+    {
+      field: 'repondu',
+      headerName: 'Conformes',
+      width: 80,
+      editable: false
+    },
+    {
+      field: 'nonRepondu',
+      headerName: 'Attentes',
+      width: 70,
+      editable: false
+    },
+    {
+      field: 'total',
+      headerName: 'Total',
+      width: 70,
+      editable: false
+    },
+
+    {
+      field: 'action',
+      headerName: 'Action',
+      width: 100,
+      editable: false,
+      renderCell: (params) => {
+        return (
+          <>
+            <Tooltip title="Plus les détails" onClick={(e) => sendDetails(e, params.row.code)}>
+              <Fab size="small" color="primary">
+                <MedicalInformationIcon fontSize="small" />
+              </Fab>
+            </Tooltip>
+          </>
+        );
+      }
+    }
+  ];
   return (
-    <div>
-      <table>
-        <thead>
-          <tr>
-            <td>Nom Agent</td>
-            <td>Code agent</td>
-            <td>Repondue(s)</td>
-            <td>Attente(s)</td>
-            <td>Max</td>
-            <td>Détails</td>
-          </tr>
-        </thead>
-        <tbody>
-          {donnee ? (
-            donnee.map((cle) => {
-              return (
-                <tr key={cle.code}>
-                  <td className="nom">
-                    <Typography noWrap component="span" fontSize="12px">
-                      {cle.nom}
-                    </Typography>
-                  </td>
-                  <td>{cle.code}</td>
-                  <td>{cle.repondu}</td>
-                  <td>{cle.nonRepondu}</td>
-                  <td>{cle.total}</td>
-                  <td>
-                    <Tooltip title="Plus les détails" onClick={(e) => sendDetails(e, cle.code)}>
-                      <Fab size="small" color="primary">
-                        <MedicalInformationIcon fontSize="small" />
-                      </Fab>
-                    </Tooltip>
-                  </td>
-                </tr>
-              );
-            })
-          ) : (
-            <tr>
-              <td>Loading...</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+    <Paper elevation={3} sx={{ padding: '10px' }}>
+      <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: '30%' }}>
+          <Input onChange={(e) => handleChanges(e)} placeholder="Cherchez le Code agent ou nom Agent" />
+        </div>
+      </div>
+      {donnee && (
+        <DataGrid
+          rows={filterFn.fn(donnee)}
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 7
+              }
+            }
+          }}
+          pageSizeOptions={[7]}
+          checkboxSelection
+          disableRowSelectionOnClick
+        />
+      )}
+
       {dataToShow && (
         <Popup open={show} setOpen={setShow} title={`pour ${dataToShow[0].agent.nom} -------- code : ${dataToShow[0].agent.codeAgent}`}>
           <AfficheInfo data={dataToShow} />
         </Popup>
       )}
-    </div>
+    </Paper>
   );
 }
 
