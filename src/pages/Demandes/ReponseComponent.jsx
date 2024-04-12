@@ -179,15 +179,17 @@ function ReponsesComponent({ update }) {
   };
 
   const fetchCustomer = async () => {
-    if (codeClient.length > 10) {
+    let clients = codeClient.length === 12 ? codeClient : codeClient.length === 8 ? 'BDRC' + codeClient : '';
+    if (clients !== '') {
       setFeching(true);
-      const response = await axios.get(`${lien}/customer/${codeClient}`);
+      const response = await axios.get(`${lien}/customer/${clients}`);
       if (response.status === 200) {
         setInitial({
           ...intial,
           codeCu: response.data.customer_cu,
           nomClient: response.data.nomClient,
-          consExpDays: ''
+          consExpDays: '',
+          codeClient: clients
         });
         setValueShopSelect(response.data.shop);
         setValueRegionSelect(response.data.region);

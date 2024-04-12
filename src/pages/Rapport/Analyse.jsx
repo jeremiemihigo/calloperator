@@ -2,7 +2,8 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-function Analyse({ data }) {
+function Analyse({ data, shop }) {
+  console.log(shop);
   const returnValue = (type) => {
     return data.filter((x) => x.demandeur.fonction === type).length;
   };
