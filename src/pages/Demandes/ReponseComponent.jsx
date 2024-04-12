@@ -218,6 +218,7 @@ function ReponsesComponent({ update }) {
     }
   };
   const nothing = () => {};
+  const [open, setOpen] = React.useState(true);
 
   return (
     <Grid>
@@ -228,6 +229,7 @@ function ReponsesComponent({ update }) {
           </div>
         </Backdrop>
       )}
+      <DirectionSnackbar open={open} setOpen={setOpen} message="Mise à jour : Tu peux chercher un client via les chiffres de son code" />
 
       {reponse.postDemande === 'rejected' && (
         <Alert variant="filled" severity="error">
