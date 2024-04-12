@@ -114,15 +114,15 @@ function Rapport() {
   const [shopSelect, setShopSelect] = React.useState('');
   const searchData = React.useCallback(
     () => {
-      setLoading(true);
       let data = {
         debut: dates.debut,
         fin: dates.fin,
-        shop: shopSelect.idShop
+        shop: shopSelect?.idShop
       };
-      if (!data.shop || !data.debut || !data.fin) {
-        alert('Veuillez selectionner le shop ainsi que les dates');
+      if (!shopSelect || !data.debut || !data.fin) {
+        setOpen(true);
       } else {
+        setLoading(true);
         axios
           .post(lien + '/rapport', data, config)
 
