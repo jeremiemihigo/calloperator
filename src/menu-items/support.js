@@ -37,14 +37,14 @@ const utilities = {
       type: 'item',
       url: '/statistiques',
       icon: icons.BarChartOutlined
+    },
+    {
+      id: 'rapport',
+      title: 'Report',
+      type: 'item',
+      url: '/rapport',
+      icon: icons.FileOutlined
     }
-    // {
-    //   id: 'rapport',
-    //   title: 'Report',
-    //   type: 'item',
-    //   url: '/rapport',
-    //   icon: icons.FileOutlined
-    // }
   ]
 };
 
