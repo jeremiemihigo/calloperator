@@ -2,8 +2,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-function Analyse({ data, shop }) {
-  console.log(shop);
+function Analyse({ data }) {
   const returnValue = (type) => {
     return data.filter((x) => x.demandeur.fonction === type).length;
   };
@@ -11,12 +10,12 @@ function Analyse({ data, shop }) {
   const loadingRegion = (codeZone, fonction) => {
     let region = [];
     let agentTech = [];
-    region = data.filter((x) => x.region.idZone === codeZone);
-    agentTech = data.filter((x) => x.region.idZone === codeZone && x.demandeur.fonction === fonction);
+    region = data.filter((x) => x.idZone === codeZone);
+    agentTech = data.filter((x) => x.idZone === codeZone && x.demandeur.fonction === fonction);
     return { region: region.length, agentTech: agentTech.length };
   };
   const loadingShop = (idShop, fonction) => {
-    return data.filter((x) => x.shop.idShop === idShop && x.demandeur.fonction === fonction).length;
+    return data.filter((x) => x.idShop === idShop && x.demandeur.fonction === fonction).length;
   };
 
   return (

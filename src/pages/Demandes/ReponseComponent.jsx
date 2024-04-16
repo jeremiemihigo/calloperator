@@ -108,8 +108,13 @@ function ReponsesComponent({ update }) {
           consExpDays,
           nomClient,
           idZone: valueRegionSelect.idZone,
-          idShop: valueShopSelect.idShop
+          idShop: valueShopSelect.idShop,
+          fonctionAgent: demande.agent.fonction,
+          codeAgentDemandeur: demande.agent.codeAgent,
+          _idDemande: demande._id,
+          nomAgentSave: userConnect?.nom
         };
+        console.log(datass);
 
         dispatch(postReponse(datass));
         setSending(false);
@@ -131,7 +136,9 @@ function ReponsesComponent({ update }) {
             codeCu,
             clientStatut: statut,
             PayementStatut: payement,
-            consExpDays
+            consExpDays,
+            idZone: valueRegionSelect.idZone,
+            idShop: valueShopSelect.idShop
           }
         },
         config

@@ -88,7 +88,6 @@ function Doublon() {
                   <td>{index.agentPrecedent.nom}</td>
                   <td>{index.precedent.sat}</td>
                   <td>{dayjs(index.precedent.createdAt).format('DD/MM/YYYY')}</td>
-
                   <td>{index.agentPresent.codeAgent}</td>
                   <td>{index.agentPresent.nom}</td>
                   <td>{index.presents.sat}</td>

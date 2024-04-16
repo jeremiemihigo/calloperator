@@ -4,8 +4,9 @@ import { Grid } from '@mui/material';
 import axios from 'axios';
 import { Input } from 'antd';
 import { config, lien, lien_image } from 'static/Lien';
-import { Image, Space } from 'antd';
+import { Space } from 'antd';
 import Chat from 'pages/Demandes/Chat';
+import ImageComponent from 'Control/ImageComponent';
 
 function ChercherDemande() {
   const [id, setValue] = React.useState('');
@@ -16,11 +17,12 @@ function ChercherDemande() {
       try {
         setLoading(true);
         const resspanonse = await axios.get(lien + `/idDemande/${id}`, config);
+        console.log(resspanonse);
         if (resspanonse.data === 'token expired') {
           localStorage.removeItem('auth');
           window.location.replace('/login');
         } else {
-          setData(resspanonse);
+          setData(resspanonse.data);
           setLoading(false);
         }
       } catch (error) {
@@ -46,9 +48,7 @@ function ChercherDemande() {
           consExpDays : {item.consExpDays} {`${item.consExpDays === 1 ? 'Jour' : 'Jours'}`}
         </p>
 
-        <p>
-          {item.region}/{item.shop}
-        </p>
+        <p>{/* {item.region}/{item.shop} */}</p>
         <p>{item?.codeCu}</p>
       </div>
     );
@@ -57,17 +57,17 @@ function ChercherDemande() {
     return (
       <>
         <div className="demandeJsx" style={{ textAlign: 'justify', marginLeft: '10px' }}>
-          <span>code client : {demandes.codeclient && demandes.codeclient.toUpperCase() + '; '}</span>
+          <p>code client : {demandes.codeclient && demandes.codeclient.toUpperCase() + '; '}</p>
 
-          <span>Secteur : {demandes.sector + '; '}</span>
-          <span>Commune : {demandes.commune + '; '}</span>
+          <p>Secteur : {demandes.sector + '; '}</p>
+          <p>Commune : {demandes.commune + '; '}</p>
 
-          <span>Cell : {demandes.cell + '; '}</span>
+          <p>Cell : {demandes.cell + '; '}</p>
 
-          <span>Référence : {demandes.reference + '; '}</span>
-          <span>Numéro joignable du client: {demandes.numero + '; '}</span>
-          <span>Statut du client : {`${demandes.statut === 'allumer ' ? 'allumé' : 'éteint '}`} </span>
-          <span>{demandes.raison.toLowerCase() + '; '}</span>
+          <p>Référence : {demandes.reference + '; '}</p>
+          <p>Numéro joignable du client: {demandes.numero + '; '}</p>
+          <p>Statut du client : {`${demandes.statut === 'allumer ' ? 'allumé' : 'éteint '}`} </p>
+          <p>{demandes.raison.toLowerCase() + '; '}</p>
           <p>{demandes.agent.nom + '....... ' + demandes.agent.codeAgent}</p>
           <Chat demandes={demandes.messages} />
         </div>
@@ -76,8 +76,8 @@ function ChercherDemande() {
   }
   return (
     <div>
-      {data && data.status === 201 ? (
-        <p style={{ textAlign: 'center', color: 'red' }}>{data && data.status === 201 && data.data}</p>
+      {data && data.length < 1 ? (
+        <p style={{ textAlign: 'center', color: 'red' }}>Code introuvable</p>
       ) : (
         <>
           <Grid container sx={{ marginBottom: '12px' }}>
@@ -95,24 +95,19 @@ function ChercherDemande() {
           <Grid container>
             <Grid item lg={8} sm={12} sx={12}>
               <p style={{ fontSize: '14px', fontWeight: 'bolder' }}>Demande</p>
-              {data && data.status !== 201 && data.data.demande.length > 0 && (
+              {data && data.length > 0 && (
                 <Grid sx={{ display: 'flex' }}>
                   <Space size={12}>
-                    <Image
-                      width={250}
-                      height={200}
-                      src={`${lien_image}/${data.data.demande[0].file}`}
-                      placeholder={<Image preview={false} src={`${lien_image}/${data.data.demande[0].file}`} width={200} />}
-                    />
+                    <ImageComponent src={`${lien_image}/${data.file}`} taille={200} />
                   </Space>
-                  <AfficherJsx demandes={data.data.demande[0]} />
+                  <AfficherJsx demandes={data[0]} />
                 </Grid>
               )}
             </Grid>
             <Grid item lg={4}>
               <p style={{ fontSize: '14px', fontWeight: 'bolder', paddingLeft: '30px' }}>Réponse</p>
-              {data && data.data?.demande[0]?.reponse.length > 0 ? (
-                <AfficheReponse item={data.data.demande[0].reponse[0]} />
+              {data && data[0].reponse.length > 0 ? (
+                <AfficheReponse item={data[0].reponse[0]} />
               ) : (
                 <p style={{ textAlign: 'center', color: 'red' }}>La demande est en attente</p>
               )}

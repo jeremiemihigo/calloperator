@@ -9,10 +9,10 @@ function StatistiqueCallOperator({ data }) {
   const loading = () => {
     let table = [];
     let series = [];
-    let objects = _.toArray(Object.keys(_.countBy(data, 'agent.nom')));
+    let objects = _.toArray(Object.keys(_.countBy(data, 'agentSave.nom')));
     for (let i = 0; i < objects.length; i++) {
       table.push(objects[i]);
-      series.push(data.filter((x) => x.agent.nom === objects[i]).length);
+      series.push(data.filter((x) => x.agentSave.nom === objects[i]).length);
     }
     setResult({ series, options: table });
   };

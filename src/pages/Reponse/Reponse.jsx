@@ -8,6 +8,7 @@ import { Image, Space } from 'antd';
 import { Search, Clear } from '@mui/icons-material';
 import Popup from 'static/Popup';
 import './style.css';
+import _ from 'lodash';
 
 function ReponseComponent() {
   const [value, setValue] = React.useState('');
@@ -33,11 +34,13 @@ function ReponseComponent() {
       setLoading(true);
       setData();
       const reponse = await axios.get(`${lien}/oneReponse/${value}`, config);
+      console.log(_.groupBy(reponse.data, 'demande.lot'));
+
       if (reponse.data === 'token expired') {
         localStorage.removeItem('auth');
         window.location.replace('/token');
       } else {
-        setData(reponse.data);
+        setData(_.groupBy(reponse.data, 'demande.lot'));
         setLoading(false);
       }
     } catch (error) {
@@ -49,7 +52,7 @@ function ReponseComponent() {
       sendDonner(e);
     }
   };
-
+  console.log(data);
   return (
     <>
       <Grid container>
@@ -78,77 +81,82 @@ function ReponseComponent() {
 
       <Grid sx={{ marginTop: '10px' }}>
         {data &&
-          data.length > 0 &&
-          !show &&
-          data.map((index) => {
+          Object.keys(data).map((item, key) => {
             return (
-              <div key={index._id}>
-                <div className="lot">mois de {index.demande.lot}</div>
-                <Grid container>
-                  <Grid item lg={6}>
-                    <Tooltip title="Cliquez pour modifier la reponse">
-                      <Card
-                        className="reponseClasse"
-                        onClick={() => openData(index)}
-                        variant="outlined"
-                        sx={{ padding: '5px', cursor: 'pointer' }}
-                      >
-                        <p className="code">{index.codeclient};</p>
-                        <p>{index.nomClient} </p>
-                        <p>Statut du compte:</p>
-                        <p>
-                          statut client : <span style={{ fontWeight: 'bolder' }}>{index.clientStatut}</span>
-                        </p>
-                        <p>
-                          statut payement : <span style={{ fontWeight: 'bolder' }}>{index.PayementStatut}</span>
-                        </p>
-                        <p>consExpDays : {index.consExpDays} jour(s)</p>
-                        <p>C.O : {index.co.nom}</p>
-                        <p className="retard">
-                          Date {dateFrancais(index.createdAt)} à {index.createdAt.split('T')[1].split(':')[0]}:
-                          {index.createdAt.split('T')[1].split(':')[1]}
-                        </p>
-                      </Card>
-                    </Tooltip>
-                  </Grid>
-                  <Grid item lg={6}>
-                    <Grid container>
-                      <Grid item lg={6} sx={{ padding: '5px' }}>
-                        <Space size={12}>
-                          <Image
-                            width={100}
-                            height={150}
-                            src={`${lien_image}/${index.demande.file}`}
-                            placeholder={<Image preview={false} src={`${lien_image}/${index.demande.file}`} width={200} height={100} />}
-                          />
-                        </Space>
+              <div key={key}>
+                <div className="lot">{item}</div>
+                {data['' + item].map((index, cle) => {
+                  return (
+                    <Grid container key={cle + 1}>
+                      <Grid item lg={6}>
+                        <Tooltip title="Cliquez pour modifier la reponse">
+                          <Card
+                            className="reponseClasse"
+                            onClick={() => openData(index)}
+                            variant="outlined"
+                            sx={{ padding: '5px', cursor: 'pointer' }}
+                          >
+                            <p className="code">{index.codeclient};</p>
+                            <p>{index.nomClient} </p>
+                            <p>Statut du compte:</p>
+                            <p>
+                              statut client : <span style={{ fontWeight: 'bolder' }}>{index.clientStatut}</span>
+                            </p>
+                            <p>
+                              statut payement : <span style={{ fontWeight: 'bolder' }}>{index.PayementStatut}</span>
+                            </p>
+                            <p>consExpDays : {index.consExpDays} jour(s)</p>
+                            <p>C.O : {index.agentSave.nom}</p>
+                            <p className="retard">
+                              Date {dateFrancais(index.createdAt)} à {index.createdAt.split('T')[1].split(':')[0]}:
+                              {index.createdAt.split('T')[1].split(':')[1]}
+                            </p>
+                          </Card>
+                        </Tooltip>
                       </Grid>
                       <Grid item lg={6}>
-                        <Grid className="reponseClasse">
-                          <Typography component="p">
-                            Client {index.demande.statut};
-                            <p>
-                              {' '}
-                              Feedback : <span style={{ fontWeight: 'bolder' }}>{index.demande?.raison.toLowerCase()}</span>;
-                            </p>
-                            <p>
-                              {index.demande?.sector}, {index.demande?.cell}, {index.demande?.sat}, {index.demande.reference}{' '}
-                            </p>
-                          </Typography>
-                          <p>
-                            {index.agent.fonction} {index.agent.codeAgent}; {index.agent.nom}; {index.agent.telephone}
-                          </p>
+                        <Grid container>
+                          <Grid item lg={6} sx={{ padding: '5px' }}>
+                            <Space size={12}>
+                              <Image
+                                width={100}
+                                height={150}
+                                src={`${lien_image}/${index.demande?.file}`}
+                                placeholder={
+                                  <Image preview={false} src={`${lien_image}/${index.demande?.file}`} width={200} height={100} />
+                                }
+                              />
+                            </Space>
+                          </Grid>
+                          <Grid item lg={6}>
+                            <Grid className="reponseClasse">
+                              <Typography component="p">
+                                Client {index.demande.statut};
+                                <p>
+                                  {' '}
+                                  Feedback : <span style={{ fontWeight: 'bolder' }}>{index.demande?.raison.toLowerCase()}</span>;
+                                </p>
+                                <p>
+                                  {index.demande?.sector}, {index.demande?.cell}, {index.demande?.sat}, {index.demande.reference}{' '}
+                                </p>
+                              </Typography>
+                              <p>
+                                {index.demandeur.fonction} {index.demandeur.codeAgent}; {index.demandeur.nom};{' '}
+                              </p>
 
-                          <p>Numero joignable du client : {index.demande?.numero}</p>
-                          <p className="retard">
-                            Date {dateFrancais(index.demande.createdAt)} à {index.demande.createdAt.split('T')[1].split(':')[0]}:
-                            {index.demande.createdAt.split('T')[1].split(':')[1]}
-                          </p>
+                              <p>Numero joignable du client : {index.demande?.numero}</p>
+                              <p className="retard">
+                                Date {dateFrancais(index.demande.createdAt)} à {index.demande.createdAt.split('T')[1].split(':')[0]}:
+                                {index.demande.createdAt.split('T')[1].split(':')[1]}
+                              </p>
+                            </Grid>
+                          </Grid>
                         </Grid>
                       </Grid>
                     </Grid>
-                  </Grid>
-                </Grid>
+                  );
+                })}
+
                 <div className="marge"></div>
               </div>
             );

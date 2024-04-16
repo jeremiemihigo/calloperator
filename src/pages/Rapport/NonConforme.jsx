@@ -32,7 +32,7 @@ function Doublon() {
       setLoad(true);
       let recherche = {};
       recherche.key = valueSelect;
-      recherche.value = valueSelect === 'idShop' ? idShop?.idShop : valueSelect === 'codeZone' && idZone?.codeZone;
+      recherche.value = valueSelect === 'idShop' ? idShop?.idShop : valueSelect === 'codeZone' && idZone?.idZone;
       let dataTosearch = {};
       if (recherche.key !== 'overall') {
         dataTosearch.key = recherche.key;
