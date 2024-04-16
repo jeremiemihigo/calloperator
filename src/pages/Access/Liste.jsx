@@ -3,16 +3,17 @@
 import { DataGrid } from '@mui/x-data-grid';
 import axios from 'axios';
 import { lien } from 'static/Lien';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import DirectionSnackbar from 'Control/SnackBar';
-import { Typography, Grid } from '@mui/material';
+import { Typography } from '@mui/material';
 import { config } from 'static/Lien';
 import { useSelector } from 'react-redux';
 import { Button } from 'antd';
 import Popup from 'static/Popup';
 import AgentAdmin from './AgentAdmin';
-import Chats from './Chat';
-import _ from 'lodash';
+
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
 
 function AgentListeAdmin() {
   const userAdmin = useSelector((state) => state.agentAdmin?.agentAdmin);
@@ -26,17 +27,6 @@ function AgentListeAdmin() {
       }
     });
   };
-  const [series, setSeries] = useState();
-  const seach = () => {
-    let series = [];
-    series.push(_.filter(userAdmin, { fonction: 'superUser' }).length);
-    series.push(_.filter(userAdmin, { fonction: 'admin' }).length);
-    series.push(_.filter(userAdmin, { fonction: 'co' }).length);
-    setSeries(series);
-  };
-  useEffect(() => {
-    seach();
-  }, [userAdmin]);
 
   const columns = [
     {
@@ -51,17 +41,15 @@ function AgentListeAdmin() {
       width: 150,
       editable: false
     },
+
     {
-      field: 'telephone',
-      headerName: 'Telephone',
-      width: 100,
-      editable: false
-    },
-    {
-      field: 'fonction',
-      headerName: 'Fonction',
-      width: 90,
-      editable: false
+      field: 'departement',
+      headerName: 'Departement',
+      width: 50,
+      editable: false,
+      renderCell: (params) => {
+        return params.row.departements.length > 0 ? params.row.departements[0].departement : '';
+      }
     },
     {
       field: 'first',
@@ -76,7 +64,6 @@ function AgentListeAdmin() {
         );
       }
     },
-
     {
       field: 'reset',
       headerName: 'Reset',
@@ -106,6 +93,21 @@ function AgentListeAdmin() {
           </>
         );
       }
+    },
+    {
+      field: 'Taches',
+      headerName: 'Tâches',
+      width: 500,
+      editable: false,
+      renderCell: (params) => {
+        return (
+          <Stack direction="row" spacing={1} sx={{ marginRight: '5px' }}>
+            {params.row?.tache.map((index) => {
+              return <Chip key={index._id} label={index.title} />;
+            })}
+          </Stack>
+        );
+      }
     }
   ];
 
@@ -115,29 +117,22 @@ function AgentListeAdmin() {
       <Button type="primary" onClick={() => setOpenForm(true)}>
         Ajoutez un agent
       </Button>
-      <Grid container>
-        <Grid item lg={7}>
-          {userAdmin && (
-            <DataGrid
-              rows={userAdmin}
-              columns={columns}
-              initialState={{
-                pagination: {
-                  paginationModel: {
-                    pageSize: 7
-                  }
+      <div>
+        {userAdmin && (
+          <DataGrid
+            rows={userAdmin}
+            columns={columns}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 7
                 }
-              }}
-              pageSizeOptions={[7]}
-              checkboxSelection
-              disableRowSelectionOnClick
-            />
-          )}
-        </Grid>
-        <Grid item lg={5}>
-          {series && <Chats series={series} />}
-        </Grid>
-      </Grid>
+              }
+            }}
+            pageSizeOptions={[7]}
+          />
+        )}
+      </div>
       <Popup open={openForm} setOpen={setOpenForm} title="Agent">
         <AgentAdmin />
       </Popup>

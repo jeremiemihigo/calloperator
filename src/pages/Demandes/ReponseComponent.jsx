@@ -91,35 +91,29 @@ function ReponsesComponent({ update }) {
       setMessage('Veuillez vérifier si le shop est enregistré dans la region selectionée');
       setOpenSnack(true);
     } else {
-      if (userConnect && userConnect.fonction !== 'co') {
-        setMessage('Cette espace est reservée aux C.O');
+      if (demande.shopAgent.idShop !== valueShopSelect.idShop) {
+        setMessage(
+          `y a pas une conformité entre le shop du client << ${valueShopSelect.shop} >> et celui de l'agent << ${demande.shopAgent.shop} >>`
+        );
         setOpenSnack(true);
-        setFeching(false);
       } else {
-        if (demande.shopAgent.idShop !== valueShopSelect.idShop) {
-          setMessage(
-            `y a pas une conformité entre le shop du client << ${valueShopSelect.shop} >> et celui de l'agent << ${demande.shopAgent.shop} >>`
-          );
-          setOpenSnack(true);
-        } else {
-          setSending(true);
-          const datass = {
-            idDemande: demande.idDemande,
-            codeClient: codeClient.toUpperCase(),
-            codeCu,
-            codeAgent: userConnect?.codeAgent,
-            clientStatut: statut,
-            PayementStatut: payement,
-            consExpDays,
-            nomClient,
-            idZone: valueRegionSelect.idZone,
-            idShop: valueShopSelect.idShop
-          };
+        setSending(true);
+        const datass = {
+          idDemande: demande.idDemande,
+          codeClient: codeClient.toUpperCase(),
+          codeCu,
+          codeAgent: userConnect?.codeAgent,
+          clientStatut: statut,
+          PayementStatut: payement,
+          consExpDays,
+          nomClient,
+          idZone: valueRegionSelect.idZone,
+          idShop: valueShopSelect.idShop
+        };
 
-          dispatch(postReponse(datass));
-          setSending(false);
-          reset();
-        }
+        dispatch(postReponse(datass));
+        setSending(false);
+        reset();
       }
     }
   };

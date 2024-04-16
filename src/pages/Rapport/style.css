@@ -48,3 +48,8 @@ table tbody tr:last-child td {
   color: white!important;
   font-weight: bolder;
 }
+.messageItem{
+  padding: 0;
+  margin: 0;
+  border-top: 1px solid black;
+}

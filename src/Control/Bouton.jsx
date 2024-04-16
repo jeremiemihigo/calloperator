@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from 'antd';
 function BoutonComponent({ disabled, fonction, title, type }) {
   const [loadings, setLoadings] = React.useState([]);
-  const enterLoading = async (index) => {
+  const enterLoading = (index) => {
     setLoadings((prevLoadings) => {
       const newLoadings = [...prevLoadings];
       newLoadings[index] = true;

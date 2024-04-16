@@ -10,6 +10,7 @@ import { Provider as ReduxProvider } from 'react-redux';
 
 // apex-chart
 import 'assets/third-party/apex-chart.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 // project import
 import App from './App';
