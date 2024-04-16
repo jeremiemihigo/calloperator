@@ -23,7 +23,7 @@ const DashboardDefault = () => {
 
   React.useEffect(() => {
     if (reponse && reponse.reponse.length > 0) {
-      let stat = _.groupBy(reponse.reponse, 'agent.nom');
+      let stat = _.groupBy(reponse.reponse, 'agentSave.nom');
       setStatReponse(Object.entries(stat));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -9,7 +9,6 @@ import './style.css';
 import Plaintes from './Plaintes';
 import StatistiqueCO from './StatistiqueCO';
 import Analyse from './Analyse';
-import dayjs from 'dayjs';
 import { useSelector } from 'react-redux';
 import AutoComplement from 'Control/AutoComplet';
 import DirectionSnackbar from 'Control/SnackBar';
@@ -110,13 +109,14 @@ function Rapport() {
     }
   };
   const retourDate = (date) => {
-    return { dates: dayjs(date).format('DD/MM/YYYY'), heure: dayjs(date).format('hh:mm:ss') };
+    console.log(date);
+    return `${date.split('T')[0]}`;
   };
 
   const [loading, setLoading] = React.useState(false);
 
   const returnTime = (date1, date2) => {
-    let resultat = (new Date(date2.updatedAt).getTime() - new Date(date1.updatedAt).getTime()) / 60000;
+    let resultat = (new Date(date2.createdAt).getTime() - new Date(date1.createdAt).getTime()) / 60000;
     if (resultat < 1) {
       return 1;
     } else {
@@ -135,7 +135,7 @@ function Rapport() {
     }
   };
   const retournDateHeure = (valeur) => {
-    return `${valeur.split('T')[1].split(':')[0]}:${valeur.split('T')[1].split(':')[1]}:${valeur.split('T')[1].split(':')[2]}`;
+    return `${valeur.split('T')[1].split(':')[0]}:${valeur.split('T')[1].split(':')[1]}`;
   };
   const searchData = async () => {
     try {
@@ -176,12 +176,12 @@ function Rapport() {
             'CODE AGENT': response.data[i].demandeur.codeAgent,
             'NOMS DU DEMANDEUR': response.data[i].demandeur.nom,
             'SA & TECH': response.data[i].demandeur.fonction !== 'tech' ? 'SA' : 'TECH',
-            'DATE DE REPONSE': retourDate(response.data[i].updatedAt).dates,
+            'DATE DE REPONSE': retourDate(response.data[i].dateSave),
             'C.O': response.data[i].agentSave?.nom,
             'STATUT DE LA DEMANDE': response.data[i].demande.typeImage,
-            "DATE D'ENVOIE": retourDate(response.data[i].demande.updatedAt).dates,
-            "HEURE D'ENVOI": retournDateHeure(response.data[i].demande.updatedAt),
-            'HEURE DE REPONSE': retournDateHeure(response.data[i].updatedAt),
+            "DATE D'ENVOIE": retourDate(response.data[i].demande.createdAt),
+            "HEURE D'ENVOI": retournDateHeure(response.data[i].demande.createdAt),
+            'HEURE DE REPONSE': retournDateHeure(response.data[i].createdAt),
             'TEMPS MOYEN': `${returnTime(response.data[i].demande, response.data[i]).toFixed(0)}`,
             LONGITUDE: chekValue(response.data[i].coordonnee?.longitude),
             LATITUDE: chekValue(response.data[i].coordonnee?.latitude),
