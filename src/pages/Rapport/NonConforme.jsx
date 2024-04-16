@@ -110,10 +110,7 @@ function Doublon() {
                   <td>{index.sector}</td>
                   <td>{index.cell}</td>
                   <td>{index.sat}</td>
-                  <td>
-                    {dayjs(index.createdAt).format('DD/MM/YYYY')}
-                    <br />à {dayjs(index.createdAt).format('HH:MM')}
-                  </td>
+                  <td>{dayjs(index.createdAt).format('DD/MM/YYYY')}</td>
 
                   <td>
                     {index.conversation.map((item) => {

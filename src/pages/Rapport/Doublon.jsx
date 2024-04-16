@@ -87,18 +87,12 @@ function Doublon() {
                   <td>{index.agentPrecedent.codeAgent}</td>
                   <td>{index.agentPrecedent.nom}</td>
                   <td>{index.precedent.sat}</td>
-                  <td>
-                    {dayjs(index.precedent.createdAt).format('DD/MM/YYYY')}
-                    <br />à {dayjs(index.precedent.createdAt).format('HH:MM')}
-                  </td>
+                  <td>{dayjs(index.precedent.createdAt).format('DD/MM/YYYY')}</td>
 
                   <td>{index.agentPresent.codeAgent}</td>
                   <td>{index.agentPresent.nom}</td>
                   <td>{index.presents.sat}</td>
-                  <td>
-                    {dayjs(index.presents.createdAt).format('DD/MM/YYYY')}
-                    <br />à {dayjs(index.presents.createdAt).format('HH:MM')}
-                  </td>
+                  <td>{dayjs(index.presents.createdAt).format('DD/MM/YYYY')}</td>
                   <td>
                     {index.conversation.map((item) => {
                       return (
