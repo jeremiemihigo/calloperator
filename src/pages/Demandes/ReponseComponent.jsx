@@ -87,7 +87,7 @@ function ReponsesComponent({ update }) {
   const userConnect = useSelector((state) => state.user?.user);
   const dispatch = useDispatch();
   const reponseData = () => {
-    if (codeClient.length !== 12 || !codeClient.startsWith('BDRC')) {
+    if (codeClient.length !== 12 || !codeClient.toUpperCase().startsWith('BDRC')) {
       setMessage("Le code client n'est pas conforme");
       setOpenSnack(true);
     } else {
