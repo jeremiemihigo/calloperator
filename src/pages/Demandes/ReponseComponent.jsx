@@ -87,38 +87,42 @@ function ReponsesComponent({ update }) {
   const userConnect = useSelector((state) => state.user?.user);
   const dispatch = useDispatch();
   const reponseData = () => {
-    if (valueRegionSelect && valueShopSelect && valueRegionSelect.idZone !== valueShopSelect.idZone) {
-      setMessage('Veuillez vérifier si le shop est enregistré dans la region selectionée');
+    if (codeClient.length !== 12 || !codeClient.startsWith('BDRC')) {
+      setMessage("Le code client n'est pas conforme");
       setOpenSnack(true);
     } else {
-      if (demande.shopAgent.idShop !== valueShopSelect.idShop) {
-        setMessage(
-          `y a pas une conformité entre le shop du client << ${valueShopSelect.shop} >> et celui de l'agent << ${demande.shopAgent.shop} >>`
-        );
+      if (valueRegionSelect && valueShopSelect && valueRegionSelect.idZone !== valueShopSelect.idZone) {
+        setMessage('Veuillez vérifier si le shop est enregistré dans la region selectionée');
         setOpenSnack(true);
       } else {
-        setSending(true);
-        const datass = {
-          idDemande: demande.idDemande,
-          codeClient: codeClient.toUpperCase(),
-          codeCu,
-          codeAgent: userConnect?.codeAgent,
-          clientStatut: statut,
-          PayementStatut: payement,
-          consExpDays,
-          nomClient,
-          idZone: valueRegionSelect.idZone,
-          idShop: valueShopSelect.idShop,
-          fonctionAgent: demande.agent.fonction,
-          codeAgentDemandeur: demande.agent.codeAgent,
-          _idDemande: demande._id,
-          nomAgentSave: userConnect?.nom
-        };
-        console.log(datass);
+        if (demande.shopAgent.idShop !== valueShopSelect.idShop) {
+          setMessage(
+            `y a pas une conformité entre le shop du client << ${valueShopSelect.shop} >> et celui de l'agent << ${demande.shopAgent.shop} >>`
+          );
+          setOpenSnack(true);
+        } else {
+          setSending(true);
+          const datass = {
+            idDemande: demande.idDemande,
+            codeClient: codeClient.toUpperCase(),
+            codeCu,
+            codeAgent: userConnect?.codeAgent,
+            clientStatut: statut,
+            PayementStatut: payement,
+            consExpDays,
+            nomClient,
+            idZone: valueRegionSelect.idZone,
+            idShop: valueShopSelect.idShop,
+            fonctionAgent: demande.agent.fonction,
+            codeAgentDemandeur: demande.agent.codeAgent,
+            _idDemande: demande._id,
+            nomAgentSave: userConnect?.nom
+          };
 
-        dispatch(postReponse(datass));
-        setSending(false);
-        reset();
+          dispatch(postReponse(datass));
+          setSending(false);
+          reset();
+        }
       }
     }
   };
