@@ -109,7 +109,6 @@ function Rapport() {
     }
   };
   const retourDate = (date) => {
-    console.log(date);
     return `${date.split('T')[0]}`;
   };
 
@@ -137,7 +136,6 @@ function Rapport() {
   const retournDateHeure = (valeur) => {
     return `${valeur.split('T')[1].split(':')[0]}:${valeur.split('T')[1].split(':')[1]}`;
   };
-  const [tempMoyen, setTemMoyen] = React.useState(0);
   const searchData = async () => {
     try {
       let recherche = {};
@@ -155,16 +153,14 @@ function Rapport() {
       };
       setLoading(true);
       const response = await axios.post(lien + '/rapport', data, config);
-      console.log(response.data);
+
       if (response.data === 'token expired') {
         localStorage.removeItem('auth');
         window.location.replace('/login');
       } else {
         setDonnerFound(response.data);
-        let times = 0;
         let donner = [];
         for (let i = 0; i < response.data.length; i++) {
-          times = times + returnTime(response.data[i].demande, response.data[i]);
           donner.push({
             ID: response.data[i].codeclient,
             NOMS: response.data[i].nomClient,
@@ -183,7 +179,7 @@ function Rapport() {
             "DATE D'ENVOIE": retourDate(response.data[i].demande.updatedAt),
             "HEURE D'ENVOI": retournDateHeure(response.data[i].demande.updatedAt),
             'HEURE DE REPONSE': retournDateHeure(response.data[i].createdAt),
-            'TEMPS MOYEN': `${returnTime(response.data[i].demande, response.data[i]).toFixed(0)}`,
+            TEMPS: `${returnTime(response.data[i].demande, response.data[i]).toFixed(0)}`,
             LONGITUDE: chekValue(response.data[i].coordonnee?.longitude),
             LATITUDE: chekValue(response.data[i].coordonnee?.latitude),
             ALTITUDE: chekValue(response.data[i].coordonnee?.altitude),
@@ -197,8 +193,6 @@ function Rapport() {
             CONTACT: response.data[i].demande?.numero !== 'undefined' ? response.data[i].demande?.numero : ''
           });
         }
-        setTemMoyen(times / donner.length);
-        times = 0;
         setLoading(false);
         setSample(donner);
         setNomFile(generateNomFile());
@@ -211,92 +205,95 @@ function Rapport() {
   };
   return (
     <Paper sx={{ padding: '5px' }} elevation={3}>
-      <DirectionSnackbar message="Veuillez renseigner le shop ainsi que les dates" open={open} setOpen={setOpen} />
-      <div>
-        <Grid container>
-          <Grid item lg={2} sm={2} xs={12}>
-            <Selected label="Filtrer par" data={select} value={valueSelect} setValue={setValueSelect} />
-          </Grid>
+      {shop && shop.length > 0 && zone && zone.length > 0 ? (
+        <>
+          <DirectionSnackbar message="Veuillez renseigner le shop ainsi que les dates" open={open} setOpen={setOpen} />
+          <div>
+            <Grid container>
+              <Grid item lg={2} sm={2} xs={12}>
+                <Selected label="Filtrer par" data={select} value={valueSelect} setValue={setValueSelect} />
+              </Grid>
 
-          {region && valueSelect === 'idZone' && (
-            <Grid item lg={2} sx={{ padding: '0px 10px' }}>
-              <AutoComplement
-                value={idZone}
-                setValue={setValeurRegion}
-                options={region}
-                title="Selectionnez la region"
-                propr="denomination"
-              />
-            </Grid>
-          )}
-          {shop && valueSelect === 'idShop' && (
-            <Grid item lg={2} sx={{ padding: '0px 10px' }}>
-              <AutoComplement value={idShop} setValue={setValeurShop} options={shop} title="Shop" propr="shop" />
-            </Grid>
-          )}
+              {region && valueSelect === 'idZone' && (
+                <Grid item lg={2} sx={{ padding: '0px 10px' }}>
+                  <AutoComplement
+                    value={idZone}
+                    setValue={setValeurRegion}
+                    options={region}
+                    title="Selectionnez la region"
+                    propr="denomination"
+                  />
+                </Grid>
+              )}
+              {shop && valueSelect === 'idShop' && (
+                <Grid item lg={2} sx={{ padding: '0px 10px' }}>
+                  <AutoComplement value={idShop} setValue={setValeurShop} options={shop} title="Shop" propr="shop" />
+                </Grid>
+              )}
 
-          <Grid item lg={2} sm={3} xs={12} sx={{ display: 'flex', alignItems: 'center', marginTop: '5px', padding: '0px 5px' }}>
-            <Input
-              type="date"
-              onChange={(e) =>
-                setDates({
-                  ...dates,
-                  debut: e.target.value
-                })
-              }
-              placeholder="Date"
-            />
-          </Grid>
-          <Grid item lg={2} sm={3} xs={12} sx={{ marginTop: '5px', display: 'flex', alignItems: 'center', paddingRight: '5px' }}>
-            <Input
-              onChange={(e) =>
-                setDates({
-                  ...dates,
-                  fin: e.target.value
-                })
-              }
-              type="date"
-              placeholder="Date"
-            />
-          </Grid>
-          <Grid item lg={1} sm={1} xs={1} sx={{ marginTop: '5px', display: 'flex', alignItems: 'center', paddingRight: '5px' }}>
-            <Button disabled={loading} fullWidth color="primary" variant="contained" onClick={() => searchData()}>
-              {loading ? <CircularProgress size={12} /> : <Search fontSize="small" />}
-            </Button>
-          </Grid>
-          <Grid item lg={1} sm={1} xs={1} sx={{ marginTop: '5px', display: 'flex', alignItems: 'center' }}>
-            <ExcelButton data={samplejson2} title="" fileName={`${nomFile}.xlsx`} />
-          </Grid>
-          <Grid item lg={1} sm={1} xs={1} sx={{ marginTop: '5px', display: 'flex', alignItems: 'center', paddingLeft: '10px' }}>
-            <div>
-              <p style={{ fontSize: '10px', padding: '0px', fontWeight: 'bolder', margin: '0px' }}>Temps moyen </p>
-              <p>{tempMoyen > 1 ? tempMoyen.toFixed(0) + ' minutes' : tempMoyen.toFixed(0) + ' minute'}</p>
-            </div>
-          </Grid>
-          {/*<Grid item lg={2} sm={2} xs={12} sx={{ marginTop: '5px' }}>
+              <Grid item lg={2} sm={3} xs={12} sx={{ display: 'flex', alignItems: 'center', marginTop: '5px', padding: '0px 5px' }}>
+                <Input
+                  type="date"
+                  onChange={(e) =>
+                    setDates({
+                      ...dates,
+                      debut: e.target.value
+                    })
+                  }
+                  placeholder="Date"
+                />
+              </Grid>
+              <Grid item lg={2} sm={3} xs={12} sx={{ marginTop: '5px', display: 'flex', alignItems: 'center', paddingRight: '5px' }}>
+                <Input
+                  onChange={(e) =>
+                    setDates({
+                      ...dates,
+                      fin: e.target.value
+                    })
+                  }
+                  type="date"
+                  placeholder="Date"
+                />
+              </Grid>
+              <Grid item lg={1} sm={1} xs={1} sx={{ marginTop: '5px', display: 'flex', alignItems: 'center', paddingRight: '5px' }}>
+                <Button disabled={loading} fullWidth color="primary" variant="contained" onClick={() => searchData()}>
+                  {loading ? <CircularProgress size={12} /> : <Search fontSize="small" />}
+                </Button>
+              </Grid>
+              <Grid item lg={1} sm={1} xs={1} sx={{ marginTop: '5px', display: 'flex', alignItems: 'center' }}>
+                <ExcelButton data={samplejson2} title="" fileName={`${nomFile}.xlsx`} />
+              </Grid>
+
+              {/*<Grid item lg={2} sm={2} xs={12} sx={{ marginTop: '5px' }}>
              <p style={{ textAlign: 'center', fontSize: '15px', marginLeft: '10px' }}>
               {donnerFound.length} Visite(s) <span style={{ marginLeft: '20px', color: 'blue', fontWeight: 'bolder' }}>{temps}m</span>
             </p> 
           </Grid>*/}
-        </Grid>
-      </div>
-      {donnerFound.length > 0 && (
-        <Grid container>
-          <Grid item lg={5} sm={5} xs={12}>
-            <Plaintes data={donnerFound} loadings={searchData} dates={dates} />
-          </Grid>
-          <Grid item lg={7} sm={7} xs={12}>
-            <StatistiqueCO data={donnerFound} />
-          </Grid>
-          <Grid item lg={7} sm={7} xs={12}>
-            <Grid className="pagesTitle">
-              <Typography>
-                Analyse des visites ménages du {dateFrancais(dates.debut)} au {dateFrancais(dates.fin)}
-              </Typography>
             </Grid>
-            <Analyse data={donnerFound} />
-          </Grid>
-        </Grid>
+          </div>
+          {donnerFound.length > 0 && (
+            <Grid container>
+              <Grid item lg={5} sm={5} xs={12}>
+                <Plaintes data={donnerFound} loadings={searchData} dates={dates} />
+              </Grid>
+              <Grid item lg={7} sm={7} xs={12}>
+                <StatistiqueCO data={donnerFound} />
+              </Grid>
+              <Grid item lg={7} sm={7} xs={12}>
+                <Grid className="pagesTitle">
+                  <Typography>
+                    Analyse des visites ménages du {dateFrancais(dates.debut)} au {dateFrancais(dates.fin)}
+                  </Typography>
+                </Grid>
+                <Analyse data={donnerFound} />
+              </Grid>
+            </Grid>
+          )}
+        </>
+      ) : (
+        <>
+          <p style={{ textAlign: 'center' }}>Patientez le Chargement des shops et regions....</p>
+        </>
       )}
     </Paper>
   );
