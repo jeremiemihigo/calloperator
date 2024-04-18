@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Paper, Grid, Typography } from '@mui/material';
+import { Button, Paper, Grid, Typography, CircularProgress } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import axios from 'axios';
 import { lien, config, dateFrancais } from 'static/Lien';
@@ -137,6 +137,7 @@ function Rapport() {
   const retournDateHeure = (valeur) => {
     return `${valeur.split('T')[1].split(':')[0]}:${valeur.split('T')[1].split(':')[1]}`;
   };
+  const [tempMoyen, setTemMoyen] = React.useState(0);
   const searchData = async () => {
     try {
       let recherche = {};
@@ -196,6 +197,8 @@ function Rapport() {
             CONTACT: response.data[i].demande?.numero !== 'undefined' ? response.data[i].demande?.numero : ''
           });
         }
+        setTemMoyen(times / donner.length);
+        times = 0;
         setLoading(false);
         setSample(donner);
         setNomFile(generateNomFile());
@@ -256,13 +259,19 @@ function Rapport() {
               placeholder="Date"
             />
           </Grid>
-          <Grid item lg={2} sm={2} xs={12} sx={{ marginTop: '5px', display: 'flex', alignItems: 'center', paddingRight: '5px' }}>
+          <Grid item lg={1} sm={1} xs={1} sx={{ marginTop: '5px', display: 'flex', alignItems: 'center', paddingRight: '5px' }}>
             <Button disabled={loading} fullWidth color="primary" variant="contained" onClick={() => searchData()}>
-              <Search fontSize="small" /> {loading ? 'Loading...' : 'Recherche'}
+              {loading ? <CircularProgress size={12} /> : <Search fontSize="small" />}
             </Button>
           </Grid>
-          <Grid item lg={2} sm={2} xs={12} sx={{ marginTop: '5px', display: 'flex', alignItems: 'center' }}>
-            <ExcelButton data={samplejson2} title="Excel" fileName={`${nomFile}.xlsx`} />
+          <Grid item lg={1} sm={1} xs={1} sx={{ marginTop: '5px', display: 'flex', alignItems: 'center' }}>
+            <ExcelButton data={samplejson2} title="" fileName={`${nomFile}.xlsx`} />
+          </Grid>
+          <Grid item lg={1} sm={1} xs={1} sx={{ marginTop: '5px', display: 'flex', alignItems: 'center', paddingLeft: '10px' }}>
+            <div>
+              <p style={{ fontSize: '10px', padding: '0px', fontWeight: 'bolder', margin: '0px' }}>Temps moyen </p>
+              <p>{tempMoyen > 1 ? tempMoyen.toFixed(0) + ' minutes' : tempMoyen.toFixed(0) + ' minute'}</p>
+            </div>
           </Grid>
           {/*<Grid item lg={2} sm={2} xs={12} sx={{ marginTop: '5px' }}>
              <p style={{ textAlign: 'center', fontSize: '15px', marginLeft: '10px' }}>
