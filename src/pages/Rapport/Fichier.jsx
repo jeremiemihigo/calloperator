@@ -179,7 +179,7 @@ function Rapport() {
             "DATE D'ENVOIE": retourDate(response.data[i].demande.updatedAt),
             "HEURE D'ENVOI": retournDateHeure(response.data[i].demande.updatedAt),
             'HEURE DE REPONSE': retournDateHeure(response.data[i].createdAt),
-            TEMPS: `${returnTime(response.data[i].demande, response.data[i]).toFixed(0)}`,
+            "TEMPS MOYEN": `${returnTime(response.data[i].demande, response.data[i]).toFixed(0)}`,
             LONGITUDE: chekValue(response.data[i].coordonnee?.longitude),
             LATITUDE: chekValue(response.data[i].coordonnee?.latitude),
             ALTITUDE: chekValue(response.data[i].coordonnee?.altitude),
@@ -260,9 +260,11 @@ function Rapport() {
                   {loading ? <CircularProgress size={12} /> : <Search fontSize="small" />}
                 </Button>
               </Grid>
-              <Grid item lg={1} sm={1} xs={1} sx={{ marginTop: '5px', display: 'flex', alignItems: 'center' }}>
-                <ExcelButton data={samplejson2} title="" fileName={`${nomFile}.xlsx`} />
-              </Grid>
+              {!loading && (
+                <Grid item lg={1} sm={1} xs={1} sx={{ marginTop: '5px', display: 'flex', alignItems: 'center' }}>
+                  <ExcelButton data={samplejson2} title="" fileName={`${nomFile}.xlsx`} />
+                </Grid>
+              )}
 
               {/*<Grid item lg={2} sm={2} xs={12} sx={{ marginTop: '5px' }}>
              <p style={{ textAlign: 'center', fontSize: '15px', marginLeft: '10px' }}>

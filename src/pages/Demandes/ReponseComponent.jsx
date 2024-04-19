@@ -87,7 +87,7 @@ function ReponsesComponent({ update }) {
   const userConnect = useSelector((state) => state.user?.user);
   const dispatch = useDispatch();
   const reponseData = () => {
-    if (codeClient.length !== 12 || !codeClient.toUpperCase().startsWith('BDRC')) {
+    if (codeClient.length !== 12 || !codeClient.toUpperCase().trim().startsWith('BDRC')) {
       setMessage("Le code client n'est pas conforme");
       setOpenSnack(true);
     } else {
@@ -104,7 +104,7 @@ function ReponsesComponent({ update }) {
           setSending(true);
           const datass = {
             idDemande: demande.idDemande,
-            codeClient: codeClient.toUpperCase(),
+            codeClient: codeClient.toUpperCase().trim(),
             codeCu,
             codeAgent: userConnect?.codeAgent,
             clientStatut: statut,
@@ -184,7 +184,8 @@ function ReponsesComponent({ update }) {
   };
 
   const fetchCustomer = async () => {
-    let clients = codeClient.length === 12 ? codeClient : codeClient.length === 8 ? 'BDRC' + codeClient : '';
+    let clients =
+      codeClient.trim().length === 12 ? codeClient.toUpperCase().trim() : codeClient.length === 8 ? 'BDRC' + codeClient.trim() : '';
     if (clients !== '') {
       setFeching(true);
       const response = await axios.get(`${lien}/customer/${clients}`);
