@@ -89,12 +89,28 @@ function ListeDemandeFeedBack({ setError }) {
 
                   <p style={{ fontSize: '9px', width: '100%' }}>
                     <span>{index.agent?.nom}</span>
-                    <span style={{ float: 'right' }}>{moment(index.createdAt).fromNow()}</span>
+                    <span style={{ float: 'right' }}>{moment(index.updatedAt).fromNow()}</span>
                   </p>
                 </div>
-                <div>
-                  <Chat demandes={index.conversation} />
-                </div>
+
+                {index.double && (
+                  <div style={{ margin: '0px', background: '#4684D3' }}>
+                    <p
+                      style={{
+                        fontSize: '12px',
+                        color: '#FFFFFF',
+                        textAlign: 'center'
+                      }}
+                    >
+                      Doublon, elle est attachée à la visite numero {index.double?.valeur}
+                    </p>
+                  </div>
+                )}
+                {index.conversation.length > 0 && (
+                  <div>
+                    <Chat demandes={index.conversation} />
+                  </div>
+                )}
               </Card>
             </div>
           );
