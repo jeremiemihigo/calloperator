@@ -1,14 +1,15 @@
 import React from 'react';
 import axios from 'axios';
-import { config, lien, lien_image } from 'static/Lien';
-import Table from 'react-bootstrap/Table';
+import { config, lien } from 'static/Lien';
+// import Table from 'react-bootstrap/Table';
 import dayjs from 'dayjs';
 import './style.css';
-import ImageComponent from 'Control/ImageComponent';
+// import ImageComponent from 'Control/ImageComponent';
 import Selected from 'static/Select';
 import { Button, Grid } from '@mui/material';
 import { useSelector } from 'react-redux';
 import AutoComplement from 'Control/AutoComplet';
+import ReactHTMLTableToExcel from 'react-html-table-to-excel';
 
 function Doublon() {
   const [load, setLoad] = React.useState(false);
@@ -73,18 +74,27 @@ function Doublon() {
           </Grid>
         )}
 
-        <Grid item lg={3} sx={{ padding: '0px 10px' }}>
+        <Grid item lg={2} sx={{ padding: '0px 10px' }}>
           <Button variant="contained" color="primary" onClick={(e) => laoding(e)}>
             Chercher
           </Button>
         </Grid>
-        <Grid item lg={3}>
-          {data && data.length + ' visite(s)'}
-        </Grid>
+        {data && data.length > 0 && (
+          <Grid item lg={2} sx={{ padding: '0px 10px', paddingLeft: '10px' }}>
+            <ReactHTMLTableToExcel
+              id="test-table-xls-button"
+              className="btn btn-success"
+              table="theTable"
+              filename="Non conforme"
+              sheet="Feuil 1"
+              buttonText={`Export to Excel, ${data.length}`}
+            />
+          </Grid>
+        )}
       </Grid>
       {load && <p style={{ textAlign: 'center', fontSize: '13px', color: 'blue', fontWeight: 'bolder' }}>Please wait...</p>}
       {data && (
-        <Table striped>
+        <table id="theTable">
           <thead>
             <tr>
               <th>ID demande</th>
@@ -96,7 +106,7 @@ function Doublon() {
               <th>SAT</th>
               <th>Date</th>
               <th>Feedback</th>
-              <th>File</th>
+              {/* <th>File</th> */}
             </tr>
           </thead>
           <tbody>
@@ -121,14 +131,14 @@ function Doublon() {
                       );
                     })}
                   </td>
-                  <td>
+                  {/* <td>
                     <ImageComponent src={lien_image + '/' + index.file} taille={70} />
-                  </td>
+                  </td> */}
                 </tr>
               );
             })}
           </tbody>
-        </Table>
+        </table>
       )}
     </div>
   );

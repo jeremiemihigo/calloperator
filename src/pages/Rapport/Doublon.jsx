@@ -1,11 +1,10 @@
 import React from 'react';
 import axios from 'axios';
 import { config, lien } from 'static/Lien';
-import Table from 'react-bootstrap/Table';
 import dayjs from 'dayjs';
 import './style.css';
-import { motion } from 'framer-motion';
 import { Input } from 'antd';
+import ReactHTMLTableToExcel from 'react-html-table-to-excel';
 
 function Doublon() {
   const [load, setLoad] = React.useState(false);
@@ -53,22 +52,38 @@ function Doublon() {
         <div style={{ width: '40%' }}>
           <Input onChange={(e) => handleChanges(e)} placeholder="Cherchez le Code client ou le deuxieme agent" />
         </div>
+        {data && data.length > 0 && (
+          <div style={{ width: '40%', marginLeft: '10px' }}>
+            <ReactHTMLTableToExcel
+              id="test-table-xls-button"
+              className="btn btn-success"
+              table="theTable"
+              filename="Doublons"
+              sheet="Feuil 1"
+              buttonText={`Export to Excel, ${data.length}`}
+            />
+          </div>
+        )}
       </div>
       {data && (
-        <Table striped>
+        <table id="theTable">
           <thead>
             <tr>
-              <th rowSpan="2">code client</th>
-              <th colSpan="4">Premiere soumission</th>
-              <th colSpan="4">Deuxieme soumission</th>
+              <th rowSpan="2">ID</th>
+              <th colSpan="4" style={{ textAlign: 'center' }}>
+                Premiere soumission
+              </th>
+              <th colSpan="4" style={{ textAlign: 'center' }}>
+                Deuxieme soumission
+              </th>
               <th rowSpan="2">Feedback</th>
             </tr>
             <tr>
-              <th>code agent</th>
+              <th>agent</th>
               <th>Nom</th>
               <th>SAT</th>
               <th>Date</th>
-              <th>code agent</th>
+              <th>agent</th>
               <th>Nom</th>
               <th>SAT</th>
               <th>Date</th>
@@ -77,12 +92,7 @@ function Doublon() {
           <tbody>
             {filterFn.fn(data).map((index, key) => {
               return (
-                <motion.tr
-                  initial={{ x: '-100vw' }}
-                  animate={{ x: 0 }}
-                  key={key}
-                  transition={{ type: 'spring', delay: 0.5, duration: 5, stiffness: 80 }}
-                >
+                <tr key={key}>
                   <td>{index.codeclient}</td>
                   <td>{index.agentPrecedent.codeAgent}</td>
                   <td>{index.agentPrecedent.nom}</td>
@@ -101,11 +111,11 @@ function Doublon() {
                       );
                     })}
                   </td>
-                </motion.tr>
+                </tr>
               );
             })}
           </tbody>
-        </Table>
+        </table>
       )}
     </div>
   );
