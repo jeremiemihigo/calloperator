@@ -46,7 +46,7 @@ function DemandeListe() {
   useEffect(() => {
     const interval = setInterval(() => {
       loadings();
-    }, 30000);
+    }, 60000);
     return () => clearInterval(interval);
   }, []);
   const [regionSelect, setRegionSelect] = React.useState('');
