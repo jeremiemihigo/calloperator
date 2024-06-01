@@ -51,6 +51,7 @@ const ReportAreaChart = () => {
     setLoad(true);
     try {
       const response = await axios.get(lien + '/demandePourChaquePeriode', config);
+      console.log(response);
       setDonner(response.data);
       setLoad(false);
     } catch (error) {

@@ -4,13 +4,20 @@ import { TextField, Button } from '@mui/material';
 import { AddRaison, updateRaison } from 'Redux/Raison';
 import { useDispatch, useSelector } from 'react-redux';
 import { Alert, Space } from 'antd';
+import Selected from 'static/Select';
 
-function FormRaison({ raisonUpdate, id }) {
+function FormRaison({ raisonUpdate, id, type }) {
   const [raison, setRaison] = React.useState('');
   const user = useSelector((state) => state.user);
   const raisonStore = useSelector((state) => state.raison);
   const dispatch = useDispatch();
 
+  const [selectType, setSelectType] = React.useState('');
+
+  const types = [
+    { id: 1, title: 'Technique', value: 'technique' },
+    { id: 2, title: 'Non technique', value: 'nonTechnique' }
+  ];
   const addRaisons = (e) => {
     e.preventDefault();
     try {
@@ -18,7 +25,7 @@ function FormRaison({ raisonUpdate, id }) {
         localStorage.removeItem('auth');
         window.location.replace('/login');
       } else {
-        dispatch(AddRaison({ raison, codeAgent: user.user.codeAgent }));
+        dispatch(AddRaison({ raison, type: selectType, codeAgent: user.user.codeAgent }));
       }
     } catch (error) {
       console.log(error);
@@ -31,11 +38,12 @@ function FormRaison({ raisonUpdate, id }) {
   React.useEffect(() => {
     if (raisonUpdate && id) {
       setRaison(raisonUpdate);
+      setSelectType(type);
     }
-  }, [id, raisonUpdate]);
+  }, [id, raisonUpdate, type]);
 
   return (
-    <div>
+    <div style={{ width: '20rem' }}>
       {raisonStore.postRaison === 'success' ||
         (raisonStore.updateRaison === 'success' && (
           <Space
@@ -72,6 +80,9 @@ function FormRaison({ raisonUpdate, id }) {
         </Space>
       )}
       <TextField fullWidth placeholder="Raison" value={raison} onChange={(e) => setRaison(e.target.value)} />
+      <div style={{ margin: '10px 0px' }}>
+        <Selected label="Type" data={types} value={selectType} setValue={setSelectType} />
+      </div>
 
       <Button
         fullWidth

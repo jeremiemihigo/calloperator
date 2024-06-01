@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import PropTypes from 'prop-types';
 // material-ui
 import { Grid, Stack, Typography } from '@mui/material';
@@ -32,8 +33,7 @@ const AnalyticEcommerce = ({ title, count }) => (
   </MainCard>
 );
 AnalyticEcommerce.propTypes = {
-  title: PropTypes.string,
-  count: PropTypes.string
+  title: PropTypes.string
 };
 
 AnalyticEcommerce.defaultProps = {

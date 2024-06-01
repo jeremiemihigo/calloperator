@@ -9,11 +9,11 @@ import FormRaison from './FormRaison';
 function Tables() {
   const data = useSelector((state) => state.raison?.raison);
   const [open, setOpen] = React.useState(false);
-  const [dataUpdate, setData] = React.useState({ id: null, raison: null });
+  const [dataUpdate, setData] = React.useState({ id: null, raison: null, type: '' });
 
   const functionOpen = (e, raison) => {
     e.preventDefault();
-    setData({ id: raison._id, raison: raison.raison });
+    setData({ id: raison._id, raison: raison.raison, type: raison.type });
     setOpen(true);
   };
   const columns = [
@@ -28,6 +28,12 @@ function Tables() {
       field: 'raison',
       headerName: 'Raison',
       width: 300,
+      editable: false
+    },
+    {
+      field: 'type',
+      headerName: 'Type',
+      width: 150,
       editable: false
     },
 
@@ -67,7 +73,7 @@ function Tables() {
       )}
       {dataUpdate.raison !== null && (
         <Popup open={open} setOpen={setOpen} title="Modifier le feedback">
-          <FormRaison id={dataUpdate.id} raisonUpdate={dataUpdate.raison} />
+          <FormRaison id={dataUpdate.id} raisonUpdate={dataUpdate.raison} type={dataUpdate.type} />
         </Popup>
       )}
     </div>

@@ -30,8 +30,8 @@ export const ReadRaison = createAsyncThunk('raison/ReadRaison', async (data, { r
 });
 export const updateRaison = createAsyncThunk('raison/updateRaison', async (data, { rejectWithValue }) => {
   try {
-    const { id, raison } = data;
-    const response = await axios.put(lien + '/raison', { id, raison });
+    const { id, raison, type } = data;
+    const response = await axios.put(lien + '/raison', { id, raison, type });
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response.data);

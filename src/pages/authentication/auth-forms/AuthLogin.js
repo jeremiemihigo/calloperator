@@ -50,23 +50,16 @@ const AuthLogin = () => {
         })}
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
           try {
-            axios
-              .post(lien + '/loginUserAdmin', { username: values.email, password: values.password })
-              .then((result) => {
-                if (result.status === 200 && result.data.token) {
-                  localStorage.setItem('auth', result.data.token);
-                  window.location.replace('/');
-                } else {
-                  setStatus({ success: false });
-                  setErrors({ submit: result.data });
-                  setSubmitting(false);
-                }
-              })
-              .catch(function (err) {
-                console.log(err);
-                setStatus({ success: false });
-                setSubmitting(false);
-              });
+            const result = await axios.post(lien + '/loginUserAdmin', { username: values.email, password: values.password });
+            if (result.status === 200 && result.data.token) {
+              localStorage.setItem('auth', result.data.token);
+              window.location.replace('/');
+            } else {
+              setErrors({ submit: result.data });
+              setStatus({ success: false });
+
+              setSubmitting(false);
+            }
           } catch (err) {
             setStatus({ success: false });
             setErrors({ submit: err.message });

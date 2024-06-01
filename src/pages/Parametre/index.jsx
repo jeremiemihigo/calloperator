@@ -53,10 +53,10 @@ function Parametre() {
     let nombre = 0;
     try {
       for (let i = 0; i < excelData.length; i++) {
-        nombre = nombre + 1;
+        nombre = nombre + i;
         dataSend.push(excelData[i]);
         if (nombre == 100) {
-          const response = await axios.post(lien + '/paramatre', {
+          const response = await axios.post(lien + '/addsat', {
             data: dataSend
           });
           console.log(response);
@@ -64,7 +64,7 @@ function Parametre() {
           dataSend = [];
         }
         if (i === excelData.length - 1) {
-          const response = await axios.post(lien + '/paramatre', {
+          const response = await axios.post(lien + '/addsat', {
             data: dataSend
           });
           console.log(response);
