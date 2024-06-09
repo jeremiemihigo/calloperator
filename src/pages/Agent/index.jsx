@@ -1,15 +1,14 @@
-import Popup from 'static/Popup';
-import React, { memo } from 'react';
-import AddAgent from './Agent';
-
+import { Block, Edit, RestartAlt } from '@mui/icons-material';
+import { Button, Fab, Grid, Paper, Tooltip } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import { Fab, Tooltip, Paper } from '@mui/material';
-import { Edit, Block, RestartAlt } from '@mui/icons-material';
 import DirectionSnackbar from 'Control/SnackBar';
-import { useSelector, useDispatch } from 'react-redux';
-import ExcelFile from './ExcelFile';
-import { Button } from 'antd';
 import { BloquerAgent, Reinitialiser } from 'Redux/Agent';
+import React, { memo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import ExcelButton from 'static/ExcelButton';
+import Popup from 'static/Popup';
+import AddAgent from './Agent';
+import BloqueOrNo from './BloqueOrNo.jsx';
 
 function AgentListe() {
   const [openAgent, setOpenAgent] = React.useState(false);
@@ -135,17 +134,28 @@ function AgentListe() {
       }
     }
   ];
+
+  const [openBloque, setOpenBloque] = React.useState(false);
+
   return (
     <Paper elevation={3} sx={{ padding: '5px' }}>
       {user?.fonction === 'superUser' && (
-        <div style={{ display: 'flex' }}>
-          <div style={{ marginRight: '10px' }}>
-            <Button onClick={() => setOpenAgent(true)} type="primary">
+        <Grid container>
+          <Grid item lg={2}>
+            <Button fullWidth onClick={() => setOpenAgent(true)} variant="contained" color="primary">
               Ajoutez un agent
             </Button>
-          </div>
-          <ExcelFile />
-        </div>
+          </Grid>
+          <Grid item lg={2} style={{ margin: '0px 5px' }}>
+            {allListe && <ExcelButton data={allListe.agent} title="agent" fileName="agents.xlsx" />}
+          </Grid>
+          <Grid>
+            <Button fullWidth variant="contained" color="primary" onClick={() => setOpenBloque(true)}>
+              Bloquer | Debloquer
+            </Button>
+          </Grid>
+          {/* <ExcelFile /> */}
+        </Grid>
       )}
 
       {open && <DirectionSnackbar open={open} setOpen={setOpen} message="Opération effectuée" />}
@@ -172,6 +182,9 @@ function AgentListe() {
       </Popup>
       <Popup open={openAgentUpdate} setOpen={setOpenAgentUpdate} title="Modifier l'agent">
         <AddAgent data={dataTo} />
+      </Popup>
+      <Popup open={openBloque} setOpen={setOpenBloque}>
+        <BloqueOrNo />
       </Popup>
     </Paper>
   );

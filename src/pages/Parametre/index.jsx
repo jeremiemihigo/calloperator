@@ -1,15 +1,15 @@
-import React from 'react';
-import * as xlsx from 'xlsx';
-import { Alert, Button, Grid, CircularProgress, Fab } from '@mui/material';
-import axios from 'axios';
-import { lien, config } from 'static/Lien';
 import { Delete, Edit, Search } from '@mui/icons-material';
 import SendIcon from '@mui/icons-material/Send';
-import { Input } from 'antd';
-import './style.css';
-import { useSelector } from 'react-redux';
-import Popup from 'static/Popup';
+import { Alert, Button, CircularProgress, Fab, Grid } from '@mui/material';
 import AutoComplement from 'Control/AutoComplet';
+import { Input } from 'antd';
+import axios from 'axios';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { config, lien } from 'static/Lien';
+import Popup from 'static/Popup';
+import * as xlsx from 'xlsx';
+import './style.css';
 // import DirectionSnackbar from "../static/SnackBar";
 
 function Parametre() {
@@ -45,36 +45,42 @@ function Parametre() {
       reader.readAsArrayBuffer(e.target.files[0]);
     }
   };
-
+  console.log(excelData);
   const sendData = async () => {
     setLoading(true);
-    let dataSend = [];
-
-    let nombre = 0;
     try {
-      for (let i = 0; i < excelData.length; i++) {
-        nombre = nombre + i;
-        dataSend.push(excelData[i]);
-        if (nombre == 100) {
-          const response = await axios.post(lien + '/addsat', {
-            data: dataSend
-          });
-          console.log(response);
-          nombre = 0;
-          dataSend = [];
-        }
-        if (i === excelData.length - 1) {
-          const response = await axios.post(lien + '/addsat', {
-            data: dataSend
-          });
-          console.log(response);
-        }
-      }
-      // window.location.replace('/parametre');
+      const response = await axios.post(lien + '/paramatre', {
+        data: excelData
+      });
+      console.log(response);
     } catch (error) {
-      setLoading(false);
       setExcelFileError(error);
     }
+
+    // try {
+    //   for (let i = 0; i < excelData.length; i++) {
+    //     nombre = nombre + i;
+    //     dataSend.push(excelData[i]);
+    //     if (nombre == 100) {
+    //       const response = await axios.post(lien + '/parametre', {
+    //         data: dataSend
+    //       });
+    //       console.log(response);
+    //       nombre = 0;
+    //       dataSend = [];
+    //     }
+    //     if (i === excelData.length - 1) {
+    //       const response = await axios.post(lien + '/parametre', {
+    //         data: dataSend
+    //       });
+    //       console.log(response);
+    //     }
+    //   }
+    //   // window.location.replace('/parametre');
+    // } catch (error) {
+    //   setLoading(false);
+    //   setExcelFileError(error);
+    // }
   };
   const DeleteAll = () => {
     setDelete(true);
