@@ -1,15 +1,14 @@
-import React from 'react';
-import { Fab, Grid, Typography, Button } from '@mui/material';
-import { Add } from '@mui/icons-material';
-import Popup from 'static/Popup';
-import Departement from './Form/Departement';
-import RoleForm from './Form/Role';
-import { lien } from 'static/Lien';
-import axios from 'axios';
-import '../style.css';
-import { useSelector } from 'react-redux';
+import { Button, Grid } from '@mui/material';
 import AutoComplement from 'Control/AutoComplet';
 import ConfirmDialog from 'Control/ControlDialog';
+import axios from 'axios';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { lien } from 'static/Lien';
+import Popup from 'static/Popup';
+import '../style.css';
+import Departement from './Form/Departement';
+import RoleForm from './Form/Role';
 
 function Role() {
   const [addDepartementOpen, setAddDepartement] = React.useState(false);
@@ -33,50 +32,60 @@ function Role() {
       isOpen: false
     });
     const response = await axios.put(lien + '/addTache', { codeAgent: value?.codeAgent, tache: selected });
-    console.log(response);
+    if (response) {
+      window.location.replace('/access');
+    }
   };
+
+  const table = [{ id: 31660, title: 'SUPPORT' }];
   return (
     <div>
-      <Fab onClick={() => setAddDepartement(true)} color="primary" size="small" sx={{ marginRight: '10px' }}>
-        <Add fontSize="small" />
-      </Fab>
-
-      <Fab onClick={() => setOpen(true)} color="primary" size="small">
-        <Add fontSize="small" />
-      </Fab>
       <Grid container>
         <Grid item lg={6}>
           <div style={{ marginTop: '10px' }}>
             {!data ? (
               <p style={{ textAlign: 'center', color: 'blue', fontSize: '12px' }}>Loading...</p>
             ) : (
-              <table>
-                <tbody>
-                  {data.map((index) => {
-                    return (
-                      <tr key={index._id}>
-                        <td colSpan={'' + index.department.length}>{index.departement}</td>
-                        <td>
-                          <ol>
-                            {index.department.map((item) => {
-                              return (
-                                <Typography
-                                  component="li"
-                                  onClick={() => setSelected(item.id)}
-                                  sx={{ cursor: 'pointer', color: `${selected === item.id ? 'blue' : 'black'}` }}
-                                  key={item._id}
-                                >
-                                  {item.title}
-                                </Typography>
-                              );
-                            })}
-                          </ol>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+              <>
+                {table.map((index) => {
+                  return (
+                    <Grid
+                      key={index.id}
+                      onClick={() => setSelected(index.id)}
+                      className={selected === index.id ? 'selected' : 'notSelected'}
+                    >
+                      <p>{index.title}</p>
+                    </Grid>
+                  );
+                })}
+                {/* <table>
+                  <tbody>
+                    {data.map((index) => {
+                      return (
+                        <tr key={index._id}>
+                          <td colSpan={'' + index.department.length}>{index.departement}</td>
+                          <td>
+                            <ol>
+                              {index.department.map((item) => {
+                                return (
+                                  <Typography
+                                    component="li"
+                                    onClick={() => setSelected(item.id)}
+                                    sx={{ cursor: 'pointer', color: `${selected === item.id ? 'blue' : 'black'}` }}
+                                    key={item._id}
+                                  >
+                                    {item.title}
+                                  </Typography>
+                                );
+                              })}
+                            </ol>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table> */}
+              </>
             )}
           </div>
         </Grid>
@@ -91,8 +100,8 @@ function Role() {
               onClick={() => {
                 setConfirmDialog({
                   isOpen: true,
-                  title: 'Confirmer la suppression',
-                  subTitle: 'Supprimer',
+                  title: 'Cette opération donne la permission de répondre aux demandes des SA & TECH',
+                  subTitle: "Cliquez sur YES pour valider l'operation",
                   onConfirm: () => {
                     sendParametre();
                   }

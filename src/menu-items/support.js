@@ -1,5 +1,5 @@
 // assets
-import { BarChartOutlined, BgColorsOutlined, FontSizeOutlined, RollbackOutlined, FileOutlined } from '@ant-design/icons';
+import { BarChartOutlined, BgColorsOutlined, FileOutlined, FontSizeOutlined, RollbackOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
@@ -18,28 +18,28 @@ const utilities = {
   type: 'group',
   children: [
     {
-      id: 'demande',
+      id: 'Request',
       title: 'Request',
       type: 'item',
       url: '/demandes',
       icon: icons.FontSizeOutlined
     },
     {
-      id: 'reponses',
+      id: 'Answer',
       title: 'Answer',
       type: 'item',
       url: '/reponses',
       icon: icons.BgColorsOutlined
     },
     {
-      id: 'statistiques',
+      id: 'Statistics',
       title: 'Statistics',
       type: 'item',
       url: '/statistiques',
       icon: icons.BarChartOutlined
     },
     {
-      id: 'rapport',
+      id: 'Report',
       title: 'Report',
       type: 'item',
       url: '/rapport',

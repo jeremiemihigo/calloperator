@@ -15,10 +15,8 @@ const Statistiques = Loadable(lazy(() => import('pages/Statistique')));
 const Reponse = Loadable(lazy(() => import('pages/Reponse')));
 const Demande = Loadable(lazy(() => import('pages/Demandes')));
 const Rapport = Loadable(lazy(() => import('pages/Rapport')));
-const Raison = Loadable(lazy(() => import('pages/Raison')));
 const Corbeille = Loadable(lazy(() => import('pages/Corbeille')));
 const Access = Loadable(lazy(() => import('pages/Access')));
-const CongeRH = Loadable(lazy(() => import('pages/CongeRH')));
 // const Actions = Loadable(lazy(() => import('pages/Actions')));
 
 // ==============================|| MAIN ROUTING ||============================== //
@@ -39,10 +37,7 @@ const MainRoutes = {
       path: '/access',
       element: <Access />
     },
-    {
-      path: '/raison',
-      element: <Raison />
-    },
+
     {
       path: '/corbeille',
       element: <Corbeille />
@@ -70,10 +65,6 @@ const MainRoutes = {
     {
       path: '/rapport',
       element: <Rapport />
-    },
-    {
-      path: '/congeRH',
-      element: <CongeRH />
     }
 
     // {

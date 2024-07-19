@@ -1,15 +1,13 @@
-import axios from 'axios';
-import AddZone from './AddZone';
-import { lien, config } from 'static/Lien';
-import { useEffect, useState } from 'react';
-import { Details, Edit } from '@mui/icons-material';
-import { Fab, Paper } from '@mui/material';
-import Popup from 'static/Popup';
-import AgentListe from '../Agent/AgentListe';
+import { Paper } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import Shop from './Shop';
-import { useSelector } from 'react-redux';
 import { Button } from 'antd';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { config, lien } from 'static/Lien';
+import Popup from 'static/Popup';
+import AddZone from './AddZone';
+import Shop from './Shop';
 
 function Region() {
   const [data, setData] = useState();
@@ -21,12 +19,7 @@ function Region() {
   useEffect(() => {
     loading();
   }, []);
-  const [open, setOpen] = useState(false);
-  const [donner, setdonner] = useState(false);
-  const functionListe = (donne) => {
-    setdonner(donne);
-    setOpen(true);
-  };
+
   const shop = useSelector((state) => state.shop.shop);
   const user = useSelector((state) => state.user.user);
   const columns = [
@@ -41,37 +34,6 @@ function Region() {
       headerName: 'REGION',
       width: 150,
       editable: false
-    },
-    {
-      field: 'agent',
-      headerName: 'SA',
-      width: 70,
-      editable: false,
-      renderCell: (params) => {
-        return <span>{params.row.agentListe.length}</span>;
-      }
-    },
-    {
-      field: 'tech',
-      headerName: 'TECH',
-      width: 70,
-      editable: false,
-      renderCell: (params) => {
-        return <span>{params.row.techListe.length}</span>;
-      }
-    },
-    {
-      field: 'detail',
-      headerName: 'Détails',
-      width: 70,
-      editable: false,
-      renderCell: (params) => {
-        return (
-          <Fab color="primary" size="small" onClick={() => functionListe(params.row)}>
-            <Details fontSize="small" />
-          </Fab>
-        );
-      }
     }
   ];
   const columnsShop = [
@@ -95,27 +57,6 @@ function Region() {
       headerName: 'SHOP',
       width: 100,
       editable: false
-    },
-    {
-      field: 'tech',
-      headerName: 'Techniciens',
-      width: 70,
-      editable: false
-    },
-    {
-      field: 'agents',
-      headerName: 'Agents',
-      width: 70,
-      editable: false
-    },
-    {
-      field: 'detail',
-      headerName: 'Actions',
-      width: 70,
-      editable: false,
-      renderCell: () => {
-        return <Edit fontSize="small" color="primary" />;
-      }
     }
   ];
   return (
@@ -170,11 +111,6 @@ function Region() {
         </div> */}
       </div>
 
-      {donner && (
-        <Popup open={open} setOpen={setOpen} title={`Région ${donner.denomination}`}>
-          <AgentListe liste={donner} />
-        </Popup>
-      )}
       <Popup open={openShop} setOpen={setOpenShop} title="Ajoutez un shop">
         <Shop />
       </Popup>

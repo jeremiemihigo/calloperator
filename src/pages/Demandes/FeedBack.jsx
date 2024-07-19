@@ -1,32 +1,32 @@
 /* eslint-disable react/prop-types */
+import { Input } from 'antd';
 import axios from 'axios';
 import { useState } from 'react';
-import { lien, config } from 'static/Lien';
-import { Input } from 'antd';
 import { useSelector } from 'react-redux';
+import { lien } from 'static/Lien';
 const { TextArea } = Input;
 
 function FeedbackComponent({ demande, update }) {
   const [reclamation, setReclamation] = useState('');
   const user = useSelector((state) => state.user?.user);
+  // const { socket } = React.useContext(CreateContexteGlobal);
 
-  const sendReclamation = (e) => {
+  const sendReclamation = async (e) => {
     if (update && e.keyCode === 13 && reclamation !== '') {
       setReclamation('');
       const data = {
-        _id: update.demande._id,
         message: reclamation,
+        _id: update._id,
+        idDemande: update.idDemande,
         sender: 'co',
         codeAgent: user?.codeAgent
       };
-      axios
-        .post(lien + '/reclamation', data, config)
-        .then(() => {
-          setReclamation('');
-        })
-        .catch(function (err) {
-          console.log(err);
-        });
+      // socket.emit('reponse', data);
+      const response = await axios.post(lien + '/reclamation', data);
+      console.log(response);
+      if (response.status === 200) {
+        return;
+      }
     }
     if (demande && e.keyCode === 13 && reclamation !== '') {
       setReclamation('');
@@ -34,16 +34,14 @@ function FeedbackComponent({ demande, update }) {
         _id: demande._id,
         message: reclamation,
         sender: 'co',
+        idDemande: demande.idDemande,
         codeAgent: user?.codeAgent
       };
-      axios
-        .post(lien + '/reclamation', data, config)
-        .then(() => {
-          setReclamation('');
-        })
-        .catch(function (err) {
-          console.log(err);
-        });
+      const response = await axios.post(lien + '/reclamation', data);
+      if (response.status === 200) {
+        return;
+      }
+      // socket.emit('reponse', data);
     }
   };
   return (

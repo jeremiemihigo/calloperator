@@ -1,31 +1,43 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
-import { DataGrid } from '@mui/x-data-grid';
-import axios from 'axios';
-import { lien } from 'static/Lien';
-import { useState } from 'react';
-import DirectionSnackbar from 'Control/SnackBar';
 import { Typography } from '@mui/material';
-import { config } from 'static/Lien';
-import { useSelector } from 'react-redux';
+import { DataGrid } from '@mui/x-data-grid';
+import DirectionSnackbar from 'Control/SnackBar';
 import { Button } from 'antd';
+import axios from 'axios';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { config, lien } from 'static/Lien';
 import Popup from 'static/Popup';
 import AgentAdmin from './AgentAdmin';
 
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
+import Dot from 'components/@extended/Dot';
 
 function AgentListeAdmin() {
   const userAdmin = useSelector((state) => state.agentAdmin?.agentAdmin);
   const [open, setOpen] = useState(false);
   const [openForm, setOpenForm] = useState(false);
+  const [message, setMessage] = useState('');
 
-  const resetPassword = (agent) => {
-    axios.put(lien + '/reset', { id: agent._id }, config).then((result) => {
-      if (result.status === 200) {
-        setOpen(true);
-      }
-    });
+  const bloquerAgent = async (agent) => {
+    const response = await axios.put(lien + '/bloquerAgentAdmin', { id: agent._id, value: !agent.active }, config);
+    if (response.status === 200) {
+      window.location.replace('/access');
+    } else {
+      setMessage('' + response.data);
+      setOpen(true);
+    }
+  };
+  const resetPassword = async (agent) => {
+    const response = await axios.put(lien + '/resetAdmin', { id: agent._id }, config);
+    if (response.status === 200) {
+      window.location.replace('/access');
+    } else {
+      setMessage('' + response.data);
+      setOpen(true);
+    }
   };
 
   const columns = [
@@ -43,25 +55,12 @@ function AgentListeAdmin() {
     },
 
     {
-      field: 'departement',
-      headerName: 'Departement',
-      width: 50,
-      editable: false,
-      renderCell: (params) => {
-        return params.row.departements.length > 0 ? params.row.departements[0].departement : '';
-      }
-    },
-    {
       field: 'first',
       headerName: 'Log',
       width: 50,
       editable: false,
       renderCell: (params) => {
-        return params.row.first ? (
-          <p style={{ backgroundColor: 'red', borderRadius: '50%', height: '10px', width: '50%' }}>.</p>
-        ) : (
-          <p style={{ backgroundColor: 'green', color: 'green', height: '10px', borderRadius: '50%', width: '50%' }}>.</p>
-        );
+        return params.row.first ? <Dot color="error" /> : <Dot color="success" />;
       }
     },
     {
@@ -72,7 +71,7 @@ function AgentListeAdmin() {
       renderCell: (params) => {
         return (
           <>
-            <Typography sx={{ cursor: 'pointer', color: 'green' }} onClick={() => resetPassword(params.row)} className="cursor-pointer">
+            <Typography sx={{ cursor: 'pointer' }} onClick={() => resetPassword(params.row)} className="cursor-pointer">
               Reset
             </Typography>
           </>
@@ -82,12 +81,12 @@ function AgentListeAdmin() {
     {
       field: 'paswo',
       headerName: 'Bloquer',
-      width: 60,
+      width: 80,
       editable: false,
       renderCell: (params) => {
         return (
           <>
-            <Typography sx={{ cursor: 'pointer', color: 'red' }} onClick={() => resetPassword(params.row)} className="cursor-pointer">
+            <Typography sx={{ cursor: 'pointer' }} onClick={() => bloquerAgent(params.row)} className="cursor-pointer">
               {params.row.active ? 'Bloquer' : 'Débloquer'}
             </Typography>
           </>
@@ -102,7 +101,7 @@ function AgentListeAdmin() {
       renderCell: (params) => {
         return (
           <Stack direction="row" spacing={1} sx={{ marginRight: '5px' }}>
-            {params.row?.tache.map((index) => {
+            {params.row?.tache?.map((index) => {
               return <Chip key={index._id} label={index.title} />;
             })}
           </Stack>
@@ -113,7 +112,7 @@ function AgentListeAdmin() {
 
   return (
     <div style={{ padding: '5px' }}>
-      {open && <DirectionSnackbar open={open} setOpen={setOpen} message="Opération effectuée" />}
+      {open && message !== '' && <DirectionSnackbar open={open} setOpen={setOpen} message={message} />}
       <Button type="primary" onClick={() => setOpenForm(true)}>
         Ajoutez un agent
       </Button>

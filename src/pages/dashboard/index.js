@@ -1,14 +1,14 @@
 // material-ui
-import React from 'react';
 import { Grid, List, ListItemButton, ListItemText, Typography } from '@mui/material';
+import React from 'react';
 
 // project import
 import MainCard from 'components/MainCard';
 import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
-import { useSelector } from 'react-redux';
 import _ from 'lodash';
-import ReportAreaChart from './ReportAreaChart';
+import { useSelector } from 'react-redux';
 import FirstLogin from './FirstLogin.jsx';
+import ReportAreaChart from './ReportAreaChart';
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
@@ -28,6 +28,7 @@ const DashboardDefault = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reponse]);
+
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
       {userConnect && userConnect.first && <FirstLogin />}
@@ -77,7 +78,9 @@ const DashboardDefault = () => {
                 return (
                   <ListItemButton divider key={key}>
                     <ListItemText primary={index[0]} />
-                    <Typography variant="h5">{((index[1].length * 100) / reponse?.reponse.length).toFixed(0)}%</Typography>
+                    <Typography sx={{ marginLeft: '10px' }} variant="h5">
+                      {((index[1].length * 100) / reponse?.reponse.length).toFixed(0)}%
+                    </Typography>
                   </ListItemButton>
                 );
               })}

@@ -1,24 +1,41 @@
-import React from 'react';
-import { Paper } from '@mui/material';
-import Tabs from 'Control/Tabs';
-import Fichier from './Fichier';
-import Doublon from './Doublon';
-import NonConforme from './NonConforme';
+import { Call, MapsHomeWork } from '@mui/icons-material';
+import { Grid, Paper } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import './style.css';
+
 function Index() {
-  const titres = [
-    { id: 0, label: 'Fichier' },
-    { id: 1, label: 'Doublon' },
-    { id: 2, label: 'Non conforme' }
-  ];
-  const component = [
-    { id: 0, component: <Fichier /> },
-    { id: 1, component: <Doublon /> },
-    { id: 2, component: <NonConforme /> }
-  ];
+  const navigation = useNavigate();
+
+  const clic = (link) => {
+    navigation(link);
+  };
   return (
-    <Paper>
-      <Tabs titres={titres} components={component} />
-    </Paper>
+    <Grid container>
+      <Grid item lg={4}>
+        <Paper
+          onClick={() => clic('/rapport/visit')}
+          className="elementPaper"
+          sx={{ height: '5rem', margin: '5px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          <div className="element">
+            <MapsHomeWork />
+            <p>household visit</p>
+          </div>
+        </Paper>
+      </Grid>
+      <Grid item lg={4}>
+        <Paper
+          onClick={() => clic('/rapport/call')}
+          className="elementPaper"
+          sx={{ height: '5rem', margin: '5px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          <div className="element">
+            <Call />
+            <p>Call</p>
+          </div>
+        </Paper>
+      </Grid>
+    </Grid>
   );
 }
 

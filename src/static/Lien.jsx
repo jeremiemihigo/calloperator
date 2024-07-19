@@ -1,11 +1,13 @@
 // eslint-disable-next-line no-undef
-// export const lien = 'https://bboxxother.onrender.com/bboxx/support';
-// export const lien_image = 'https://bboxxother.onrender.com/bboxx/image';
-// export const lien_conge = 'https://bboxxother.onrender.com/admin/conge';
-const link = 'https://visite-menage.bboxxvm.com';
+// const link = 'http://localhost:4000';
+const link = 'http://localhost:40002';
+// const link = 'https://visite.bboxxvm.com';
+// const linkimg = 'https://visite.bboxxvm.com';
 
 export const lien = `${link}/bboxx/support`;
+export const lien_socket = link;
 export const lien_conge = `${link}/admin/conge`;
+export const lien_issue = `${link}/issue`;
 export const lien_image = `${link}/bboxx/image`;
 export const config = {
   headers: {

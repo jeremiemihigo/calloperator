@@ -3,6 +3,7 @@ import { Button, Fab, Grid, Paper, Tooltip } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import DirectionSnackbar from 'Control/SnackBar';
 import { BloquerAgent, Reinitialiser } from 'Redux/Agent';
+import Dot from 'components/@extended/Dot';
 import React, { memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import ExcelButton from 'static/ExcelButton';
@@ -54,11 +55,7 @@ function AgentListe() {
       width: 50,
       editable: false,
       renderCell: (params) => {
-        return params.row.first ? (
-          <p style={{ backgroundColor: 'red', borderRadius: '50%', height: '10px', width: '50%' }}>.</p>
-        ) : (
-          <p style={{ backgroundColor: 'green', color: 'green', height: '10px', borderRadius: '50%', width: '50%' }}>.</p>
-        );
+        return params.row.first ? <Dot color="error" /> : <Dot color="success" />;
       }
     },
     {
@@ -76,7 +73,7 @@ function AgentListe() {
       width: 100,
       editable: false,
       renderCell: (params) => {
-        return params.row.shop.shop;
+        return params.row.shop[0]?.shop;
       }
     },
     {

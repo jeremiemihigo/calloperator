@@ -4,14 +4,14 @@
 import React, { useContext } from 'react';
 import { lien_image } from 'static/Lien';
 // import { PostDemandeFunction, ReadDemande } from "../Redux/Demande";
-import { CreateContexte } from 'Context';
-import './style.css';
-import BasicTabs from 'Control/Tabs';
-import FeedbackComponent from './FeedBack';
-import ReponsesComponent from './ReponseComponent';
 import { Grid, Typography } from '@mui/material';
+import { CreateContexte } from 'Context';
+import BasicTabs from 'Control/Tabs';
 import { Image, Space, message } from 'antd';
 import Chat from './Chat';
+import FeedbackComponent from './FeedBack';
+import ReponsesComponent from './ReponseComponent';
+import './style.css';
 
 function ReponseAdmin(props) {
   const { update } = props;
@@ -47,17 +47,24 @@ function ReponseAdmin(props) {
     return (
       <>
         <div className="demandeJsx" style={{ textAlign: 'justify' }}>
-          <p>ID demande : {demandes.idDemande}</p>
-          <Typography
-            component="p"
-            className="codeClient"
-            onClick={() => success(demandes.codeclient)}
-            style={{ color: getColor(demandes.codeclient) }}
-          >
-            code client : {demandes.codeclient && demandes.codeclient.toUpperCase()}
-          </Typography>
-          <p style={{ color: getColor(demandes.numero) }}>Numéro joignable du client: {demandes.numero}</p>
+          {demandes.codeclient !== 'undefined' && (
+            <Typography
+              component="p"
+              className="codeClient"
+              onClick={() => success(demandes.codeclient)}
+              style={{ color: getColor(demandes.codeclient), fontSize: '15px', fontWeight: 'bolder' }}
+            >
+              code client : {demandes.codeclient && demandes.codeclient.toUpperCase()}
+            </Typography>
+          )}
+
+          {demandes.numero !== 'undefined' && <p>Numéro joignable du client: {demandes.numero}</p>}
+
           <p>Statut du client : {`${demandes.statut === 'allumer' ? 'allumé' : 'éteint'}`} </p>
+          <p>Sector : {demandes?.sector} </p>
+          <p>Cell : {demandes?.cell} </p>
+          <p>Sat : {demandes?.sat} </p>
+          <p>Reference : {demandes?.reference} </p>
           <p>Feedback : {demandes.raison.toLowerCase()}</p>
         </div>
         <Chat demandes={demandes.conversation} />
@@ -81,7 +88,7 @@ function ReponseAdmin(props) {
             {update && <AfficherJsx demandes={update.demande} />}
           </>
         ) : (
-          <p style={style.center}>Veuillez selectionner la demande</p>
+          <p style={style.center}>Please select the request</p>
         )}
       </Grid>
       <Grid item lg={6}>

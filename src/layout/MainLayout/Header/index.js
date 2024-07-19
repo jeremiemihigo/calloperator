@@ -22,7 +22,7 @@ const Header = ({ open, handleDrawerToggle }) => {
 
   // common header
   const mainHeader = (
-    <Toolbar>
+    <Toolbar sx={{ backgroundColor: 'rgb(0, 169, 224)' }}>
       <IconButton
         disableRipple
         aria-label="open drawer"

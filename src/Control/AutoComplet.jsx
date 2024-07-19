@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
-import TextField from '@mui/material/TextField';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 
 const filter = createFilterOptions();
 
@@ -46,7 +46,11 @@ function AutoComplement({ value, setValue, options, title, propr }) {
         // Regular option
         return option['' + propr];
       }}
-      renderOption={(props, option) => <li {...props}>{option['' + propr]}</li>}
+      renderOption={(props, option) => (
+        <li key={option.id} {...props}>
+          {option['' + propr]}
+        </li>
+      )}
       sx={{ width: '100%' }}
       freeSolo
       renderInput={(params) => <TextField {...params} label={title || 'Titre'} />}

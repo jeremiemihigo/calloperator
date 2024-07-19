@@ -1,32 +1,21 @@
 /* eslint-disable react/prop-types */
-import * as Yup from 'yup';
+import { Button, FormHelperText, Grid, OutlinedInput, Stack } from '@mui/material';
+import { AjouterAgentAdmin } from 'Redux/AgentAdmin';
 import { Formik } from 'formik';
 import React from 'react';
-import { FormHelperText, Grid, Button, OutlinedInput, Stack } from '@mui/material';
 import { useDispatch } from 'react-redux';
-import { AjouterAgentAdmin } from 'Redux/AgentAdmin';
-import axios from 'axios';
-import { lien } from 'static/Lien';
-import AutoComplement from 'Control/AutoComplet';
+import Selected from 'static/Select';
+import * as Yup from 'yup';
 
 function AgentAdmin() {
   const dispatch = useDispatch();
-  const [listeDepartement, setListeDepartement] = React.useState();
-  const [departement, setDepartement] = React.useState('');
-  const loadingDepartement = async () => {
-    setListeDepartement();
-    try {
-      const response = await axios.get(lien + '/departement');
-      if (response.status === 200) {
-        setListeDepartement(response.data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  React.useEffect(() => {
-    loadingDepartement();
-  }, []);
+
+  const fonction = [
+    { id: 1, title: 'Super utilisateur', value: 'superUser' },
+    { id: 2, title: 'Admin', value: 'admin' },
+    { id: 3, title: 'Call operator', value: 'co' }
+  ];
+  const [fonctionSelect, setFonctionSelect] = React.useState('');
   return (
     <div style={{ width: '25rem' }}>
       <Formik
@@ -40,17 +29,15 @@ function AgentAdmin() {
         })}
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
           try {
-            dispatch(
-              AjouterAgentAdmin({
-                nom: values.nom,
-                fonction: fonctionSelect,
-                code: values.code,
-                departement: departement.idDepartement
-              })
-            );
+            const data = {
+              nom: values.nom,
+              fonction: fonctionSelect,
+              codeAgent: values.code
+            };
+            dispatch(AjouterAgentAdmin(data));
           } catch (error) {
             setStatus({ success: false });
-            setErrors({ submit: err.message });
+            setErrors({ submit: error.message });
             setSubmitting(false);
           }
         }}
@@ -78,6 +65,9 @@ function AgentAdmin() {
                   )}
                 </Stack>
               </Grid>
+              <Grid item xs={12}>
+                <Selected label="Fonction" data={fonction} value={fonctionSelect} setValue={setFonctionSelect} />
+              </Grid>
 
               <Grid item xs={12}>
                 <Stack>
@@ -98,16 +88,6 @@ function AgentAdmin() {
                     </FormHelperText>
                   )}
                 </Stack>
-              </Grid>
-
-              <Grid item xs={12}>
-                <AutoComplement
-                  value={departement}
-                  setValue={setDepartement}
-                  options={listeDepartement}
-                  title="Département"
-                  propr="departement"
-                />
               </Grid>
 
               <Grid item xs={12}>

@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
-import React from 'react';
+import { Grid, Typography } from '@mui/material';
 import _ from 'lodash';
+import React from 'react';
 import Chart from 'react-apexcharts';
-import { Typography, Grid } from '@mui/material';
 
 function StatistiqueCallOperator({ data }) {
   const [result, setResult] = React.useState({ options: [], series: [] });

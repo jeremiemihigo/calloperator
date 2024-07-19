@@ -1,25 +1,26 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
 import { Card, Grid } from '@mui/material';
-import './style.css';
-import React, { useContext, useEffect } from 'react';
-import { lien, config } from 'static/Lien';
-import moment from 'moment';
 import { CreateContexte } from 'Context';
-import axios from 'axios';
-import _ from 'lodash';
 import TabComponent from 'Control/Tabs';
+import { CreateContexteGlobal } from 'GlobalContext';
 import { Alert } from 'antd';
-import ListeDemandeFeedBack from './DemandeFeedback';
-import { useSelector } from 'react-redux';
+import axios from 'axios';
+import LoaderGif from 'components/LoaderGif';
+import _ from 'lodash';
+import moment from 'moment';
+import React, { useContext } from 'react';
 import { Helmet } from 'react-helmet';
+import { useSelector } from 'react-redux';
+import { config, lien } from 'static/Lien';
+import ListeDemandeFeedBack from './DemandeFeedback';
+import './style.css';
 
 function DemandeListe() {
   const { setDemande, demande } = useContext(CreateContexte);
-  const [data, setData] = React.useState([]);
-  const [donnes, setDonner] = React.useState([]);
+
+  const [data, setData] = React.useState();
   const [error, setError] = React.useState('');
-  const postId = useSelector((state) => state.reponse?.postId);
 
   const loadings = async () => {
     try {
@@ -28,8 +29,7 @@ function DemandeListe() {
         localStorage.removeItem('auth');
         window.location.replace('/login');
       } else {
-        setDonner(response.data);
-        setData(_.groupBy(response.data, 'zone.denomination'));
+        setData(response.data);
         setError('');
       }
     } catch (error) {
@@ -38,32 +38,105 @@ function DemandeListe() {
       }
     }
   };
-  useEffect(() => {
-    let donner = donnes.filter((x) => x.idDemande !== postId);
-    setData(_.groupBy(donner, 'zone.denomination'));
+
+  // React.useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     loadings();
+  //   }, 60000);
+  //   return () => clearInterval(interval);
+  // }, []);
+  React.useEffect(() => {
+    loadings();
+  }, []);
+
+  const { socket } = useContext(CreateContexteGlobal);
+  const [datasocket, setDatasocket] = React.useState();
+  React.useEffect(() => {
+    if (socket) {
+      socket.on('demande', (donner) => {
+        if (donner.length > 0) {
+          setDatasocket(donner[0]);
+        }
+      });
+    }
+  }, [socket]);
+  React.useEffect(() => {
+    if (datasocket) {
+      setData([...data, datasocket]);
+    }
+  }, [datasocket]);
+
+  // const [afterDelete, setAfter] = React.useState();
+
+  // React.useEffect(() => {
+  //   if (socket) {
+  //     socket.on('reponseEmit', (donner) => {
+  //       if (donner.type === 'success') {
+  //         setAfter(donner.content);
+  //       }
+  //     });
+  //   }
+  // }, [socket]);
+  // React.useEffect(() => {
+  //   if (donnes) {
+  //     let donner = donnes.filter((x) => x.idDemande !== afterDelete);
+  //     setDonner(donner);
+  //     setData(_.groupBy(donner, 'zone.denomination'));
+
+  //     if (demande && demande.idDemande === afterDelete) {
+  //       setDemande();
+  //     }
+  //     setAfter();
+  //   }
+  // }, [afterDelete]);
+
+  const postId = useSelector((state) => state.reponse?.postId);
+  React.useEffect(() => {
+    if (data) {
+      let donner = data.filter((x) => x.idDemande !== postId);
+      setData(donner);
+    }
   }, [postId]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      loadings();
-    }, 60000);
-    return () => clearInterval(interval);
-  }, []);
   const [regionSelect, setRegionSelect] = React.useState('');
+
+  const [reponse, setReponse] = React.useState();
+  React.useEffect(() => {
+    if (socket) {
+      socket.on('reponse', (donner) => {
+        if (donner) {
+          setReponse(donner);
+        }
+      });
+    }
+  }, [socket]);
+  React.useEffect(() => {
+    if (reponse) {
+      let nouvelle = data.filter((x) => x.idDemande !== reponse.idDemande);
+      setData(nouvelle);
+      if (demande.idDemande === reponse.idDemande) {
+        setDemande();
+      }
+    }
+  }, [reponse]);
+
   const ListeDemande = () => {
     return (
       <>
+        {data && data.length === 0 && (
+          <p style={{ fontSize: '12px', textAlign: 'center', color: 'blue', fontWeight: 'bolder' }}>Aucune demande en attente</p>
+        )}
         {data &&
-          Object.keys(data).map((index) => {
+          Object.keys(_.groupBy(data, 'zone.denomination')).map((index) => {
             return (
               <div key={index}>
                 <Grid className="regionDemande" onClick={() => setRegionSelect(index)}>
                   <p>
-                    {index} <span className="nombre">{data['' + index].length}</span>{' '}
+                    {index} <span className="nombre">{_.groupBy(data, 'zone.denomination')['' + index].length}</span>{' '}
                   </p>
                 </Grid>
                 {regionSelect === index &&
-                  data['' + index].map((e, cle) => {
+                  _.groupBy(data, 'zone.denomination')['' + index].map((e, cle) => {
                     return (
                       <Card
                         onClick={(event) => {
@@ -81,13 +154,12 @@ function DemandeListe() {
                         <div className="allP">
                           <p>
                             {' '}
-                            {e.shopAgent?.shop}; {e.codeclient && e.codeclient !== 'undefined' && e.codeclient} {e.statut}{' '}
+                            {e.shopAgent[0]?.shop}; {e.codeclient && e.codeclient !== 'undefined' && e.codeclient} {e.statut}{' '}
                             {e.agent.codeAgent}
                           </p>
-
                           <p style={{ fontSize: '9px' }}>
                             {e.agent.nom}
-                            <span style={{ fontSize: '9px', float: 'right' }}>{moment(e.createdAt).fromNow()}</span>
+                            <span style={{ float: 'right' }}>{moment(e.createdAt).fromNow()}</span>
                           </p>
                         </div>
                       </Card>
@@ -111,14 +183,12 @@ function DemandeListe() {
 
   return (
     <>
-      <Helmet>
-        <title>({'' + donnes.length}) demandes</title>
-      </Helmet>
+      <Helmet>{data && <title>({'' + data.length}) demandes</title>}</Helmet>
       {error !== '' && <Alert type="warning" message={error} />}
 
-      <TabComponent titres={title} components={component} />
+      {!data ? <LoaderGif width={150} height={150} /> : <TabComponent titres={title} components={component} />}
     </>
   );
 }
 
-export default React.memo(DemandeListe);
+export default DemandeListe;

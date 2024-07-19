@@ -1,19 +1,20 @@
-import React from 'react';
-import { Button, Paper, Grid, Typography, CircularProgress } from '@mui/material';
 import { Search } from '@mui/icons-material';
-import axios from 'axios';
-import { lien, config, dateFrancais } from 'static/Lien';
-import ExcelButton from 'static/ExcelButton';
-import { Input } from 'antd';
-import './style.css';
-import Plaintes from './Plaintes';
-import StatistiqueCO from './StatistiqueCO';
-import Analyse from './Analyse';
-import { useSelector } from 'react-redux';
+import { Button, CircularProgress, Grid, Paper, Typography } from '@mui/material';
 import AutoComplement from 'Control/AutoComplet';
 import DirectionSnackbar from 'Control/SnackBar';
+import { Input } from 'antd';
+import axios from 'axios';
 import _ from 'lodash';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import ExcelButton from 'static/ExcelButton';
+import { config, dateFrancais, lien } from 'static/Lien';
 import Selected from 'static/Select';
+import Analyse from './Analyse';
+import { generateNomFile } from './NameFile';
+import Plaintes from './Plaintes';
+import StatistiqueCO from './StatistiqueCO';
+import './style.css';
 
 function Rapport() {
   const [dates, setDates] = React.useState({ debut: '', fin: '' });
@@ -32,74 +33,6 @@ function Rapport() {
   const region = useSelector((state) => state.zone?.zone);
   const [idShop, setValeurShop] = React.useState('');
   const [idZone, setValeurRegion] = React.useState('');
-
-  const returnMois = (chiffre) => {
-    if (chiffre === 0) {
-      return 'Janvier';
-    }
-    if (chiffre === 1) {
-      return 'Février';
-    }
-    if (chiffre === 2) {
-      return 'Mars';
-    }
-    if (chiffre === 3) {
-      return 'Avril';
-    }
-    if (chiffre === 4) {
-      return 'Mai';
-    }
-    if (chiffre === 5) {
-      return 'Juin';
-    }
-    if (chiffre === 6) {
-      return 'Juillet';
-    }
-    if (chiffre === 7) {
-      return 'Aout';
-    }
-    if (chiffre === 8) {
-      return 'Septembre';
-    }
-    if (chiffre === 9) {
-      return 'Octobre';
-    }
-    if (chiffre === 10) {
-      return 'Novembre';
-    }
-    if (chiffre === 12) {
-      return 'Décembre';
-    }
-  };
-  const generateNomFile = () => {
-    try {
-      if (dates.debut !== '' && dates.fin !== '') {
-        let date1 = new Date(dates.debut);
-        let date2 = new Date(dates.fin);
-        if (date1.getFullYear() === date2.getFullYear()) {
-          if (date1.getMonth() == date2.getMonth()) {
-            if (date1.getDate() === date2.getDate()) {
-              return `Visites ménages du ${date2.getDate()} ${returnMois(date2.getMonth())} ${date2.getFullYear()}`;
-            } else {
-              return `Visites ménages allant du ${date1.getDate()} au ${date2.getDate()} ${returnMois(
-                date2.getMonth()
-              )} ${date2.getFullYear()}`;
-            }
-          } else {
-            return `Visites ménages allant du ${date1.getDate()} ${returnMois(date1.getMonth())} au ${date2.getDate()} ${returnMois(
-              date2.getMonth()
-            )} ${date2.getFullYear()}`;
-          }
-        } else {
-          return `Visites ménages allant du ${date1.getDate()} ${returnMois(
-            date1.getMonth()
-          )} ${date1.getFullYear()} au ${date2.getDate()} ${returnMois(date2.getMonth())} ${date2.getFullYear()}`;
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const chekValue = (value) => {
     if (value === 'null' || value === 'undefined' || !value) {
@@ -130,11 +63,22 @@ function Rapport() {
     if (status === 'zone') {
       return _.filter(zone, { idZone: code })[0].denomination;
     } else {
-      return _.filter(shop, { idShop: code })[0].shop;
+      return _.filter(shop, { idShop: code })[0]?.shop;
     }
   };
   const retournDateHeure = (valeur) => {
     return `${valeur.split('T')[1].split(':')[0]}:${valeur.split('T')[1].split(':')[1]}`;
+  };
+  const returnFonction = (a) => {
+    if (a === 'tech') {
+      return 'TECH';
+    }
+    if (a === 'agent') {
+      return 'SA';
+    }
+    if (!['agent', 'tech'].includes(a)) {
+      return a;
+    }
   };
   const searchData = async () => {
     try {
@@ -169,10 +113,10 @@ function Rapport() {
             'PAYMENT STATUS': response.data[i].PayementStatut,
             'CONS. EXP. DAYS': response.data[i].PayementStatut === 'normal' ? 0 : Math.abs(response.data[i].consExpDays),
             REGION: returnShopRegion(response.data[i].idZone, 'zone'),
-            SHOP: returnShopRegion(response.data[i].idShop, 'shop'),
+            SHOP: returnShopRegion(response.data[i]?.idShop, 'shop'),
             'CODE AGENT': response.data[i].demandeur.codeAgent,
             'NOMS DU DEMANDEUR': response.data[i].demandeur.nom,
-            'SA & TECH': response.data[i].demandeur.fonction !== 'tech' ? 'SA' : 'TECH',
+            Fonction: returnFonction(response.data[i].demandeur.fonction),
             'DATE DE REPONSE': retourDate(response.data[i].dateSave),
             'C.O': response.data[i].agentSave?.nom,
             'STATUT DE LA DEMANDE': response.data[i].demande.typeImage,
@@ -190,12 +134,13 @@ function Rapport() {
             AVENUE: response.data[i].demande?.cell,
             REFERENCE: response.data[i].demande?.reference,
             SAT: response.data[i].demande?.sat,
-            CONTACT: response.data[i].demande?.numero !== 'undefined' ? response.data[i].demande?.numero : ''
+            CONTACT: response.data[i].demande?.numero !== 'undefined' ? response.data[i].demande?.numero : '',
+            Adresse: response.data[i]?.adresschange
           });
         }
         setLoading(false);
         setSample(donner);
-        setNomFile(generateNomFile());
+        setNomFile(generateNomFile(dates, 'Visite menage'));
       }
     } catch (error) {
       console.log(error);

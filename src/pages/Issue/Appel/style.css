@@ -1,0 +1,87 @@
+.create {
+  border: 1px dashed black;
+  padding: 20px 0px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.5s ease-in-out;
+  font-weight: bolder;
+}
+.create:hover {
+  background-color: rgb(12, 29, 98);
+  color: white;
+}
+.appel {
+  background-color: rgb(183, 183, 197);
+  color: #000;
+  margin-bottom: 2px;
+  border-radius: 10px;
+  padding: 4px;
+  position: relative;
+}
+.appel > p {
+  padding: 0px;
+  margin: 0px;
+  font-size: 11px;
+}
+.appel > div {
+  padding: 0px;
+  margin: 0px;
+}
+.appel .appelLast {
+  display: flex;
+  font-size: 11px;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+.appel .appelLast > p {
+  margin: 0;
+  padding: 0;
+}
+.out {
+  background-color: rgb(216, 154, 154);
+  font-weight: bolder;
+  padding: 0px 5px !important;
+  border-radius: 5px;
+  margin: 0px 10px !important;
+}
+.in {
+  background-color: rgb(177, 208, 177);
+  font-weight: bolder;
+  padding: 0px 5px !important;
+  border-radius: 5px;
+}
+.appelLast .heure {
+  text-align: center;
+  font-size: 10px;
+}
+.appelLast {
+  width: 100%;
+}
+
+.pCall {
+  background-color: black;
+  color: white;
+  text-align: center;
+  padding: 1px 0px;
+}
+.chrono {
+  background-color: black;
+  width: 100%;
+  padding: 10px 0px;
+  text-align: center;
+  color: white;
+  font-weight: bolder;
+  font-size: 15px;
+}
+.chrono > p {
+  padding: 0;
+  margin: 0;
+}
+.adresse {
+  background-color: rgb(15, 33, 92);
+  margin-top: 10px;
+  padding: 10px;
+  color: white;
+  text-align: center;
+}

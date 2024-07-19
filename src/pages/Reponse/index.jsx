@@ -1,13 +1,12 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
-import FormLabel from '@mui/material/FormLabel';
-import FormControl from '@mui/material/FormControl';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import ReponseComponent from './Reponse';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
 import MainCard from 'components/MainCard';
+import * as React from 'react';
 import ChercherDemande from './ChercherDemande';
+import ReponseComponent from './Reponse';
 
 export default function CheckboxesGroup() {
   const [check, setCheck] = React.useState('');
@@ -18,7 +17,7 @@ export default function CheckboxesGroup() {
   return (
     <MainCard>
       <Box sx={{ display: 'flex' }}>
-        <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
+        <FormControl component="fieldset" variant="standard">
           <FormGroup>
             <FormControlLabel
               onClick={() => onChanges('codeclient')}
@@ -27,8 +26,7 @@ export default function CheckboxesGroup() {
             />
           </FormGroup>
         </FormControl>
-        <FormControl component="fieldset" sx={{ m: 3 }} variant="standard">
-          <FormLabel component="legend"></FormLabel>
+        <FormControl component="fieldset" variant="standard">
           <FormGroup>
             <FormControlLabel
               onClick={() => onChanges('codevisite')}

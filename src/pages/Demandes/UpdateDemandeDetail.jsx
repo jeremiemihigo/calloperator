@@ -2,12 +2,11 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable react/prop-types */
-import { Button, TextField } from '@mui/material';
-import React from 'react';
-import { Checkbox } from '@mui/material';
-import axios from 'axios';
-import { lien, config } from 'static/Lien';
+import { Button, Checkbox, TextField } from '@mui/material';
 import DirectionSnackbar from 'Control/SnackBar';
+import axios from 'axios';
+import React from 'react';
+import { config, lien } from 'static/Lien';
 // eslint-disable-next-line react/prop-types
 function UpdateDemandeDetail({ data }) {
   const [value, setValue] = React.useState('');

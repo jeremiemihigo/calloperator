@@ -2,17 +2,16 @@
 import { combineReducers } from 'redux';
 
 // project import
-import menu from './menu';
-import zone from 'Redux/Zone';
 import agent from 'Redux/Agent';
-import reponse from 'Redux/Reponses';
-import periodeStore from 'Redux/PeriodeDossier';
-import periodeActive from 'Redux/PeriodeActive';
-import statShop from 'Redux/StatShop';
-import raison from 'Redux/Raison';
-import user from 'Redux/user';
 import agentAdmin from 'Redux/AgentAdmin';
+import periodeActive from 'Redux/PeriodeActive';
+import plainte from 'Redux/Plainte';
+import raison from 'Redux/Raison';
+import reponse from 'Redux/Reponses';
 import shop from 'Redux/Shop';
+import zone from 'Redux/Zone';
+import user from 'Redux/user';
+import menu from './menu';
 // import contrat from 'Redux/Contrat';
 
 // ==============================|| COMBINE REDUCERS ||============================== //
@@ -20,13 +19,12 @@ import shop from 'Redux/Shop';
 const reducers = combineReducers({
   menu,
   zone,
+  plainte,
   agentAdmin,
   user,
   raison,
-  statShop,
   agent,
   reponse,
-  periodeStore,
   periodeActive,
   shop
 });

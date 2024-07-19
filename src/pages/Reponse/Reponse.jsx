@@ -1,14 +1,15 @@
-import { Card, Grid, Typography, Button, Tooltip } from '@mui/material';
-import React from 'react';
+import { Clear, Search } from '@mui/icons-material';
+import { Button, Card, Divider, Grid, Tooltip } from '@mui/material';
+import { Image, Input, Space, message } from 'antd';
 import axios from 'axios';
-import { dateFrancais, config, lien, lien_image } from 'static/Lien';
+import dayjs from 'dayjs';
+import _ from 'lodash';
 import ReponseAdmin from 'pages/Demandes/Reponse';
-import { Input } from 'antd';
-import { Image, Space } from 'antd';
-import { Search, Clear } from '@mui/icons-material';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { config, lien, lien_image } from 'static/Lien';
 import Popup from 'static/Popup';
 import './style.css';
-import _ from 'lodash';
 
 function ReponseComponent() {
   const [value, setValue] = React.useState('');
@@ -16,10 +17,26 @@ function ReponseComponent() {
   const [load, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [show, setShow] = React.useState(true);
+  const user = useSelector((state) => state.user.user);
+
+  const [messageApi, contextHolder] = message.useMessage();
+  const success = (texte, type) => {
+    navigator.clipboard.writeText(texte);
+    messageApi.open({
+      type,
+      content: texte,
+      duration: 5
+    });
+  };
 
   const openData = (donner) => {
-    setUpdate(donner);
-    setOpen(true);
+    let table = ['lionel', 'p.jonathan'];
+    if (user?.fonction === 'superUser' || table.includes(user?.codeAgent)) {
+      setUpdate(donner);
+      setOpen(true);
+    } else {
+      success('Cette visite ne peut pas être modifier, veuillez contacter l’équipe support en cas de besoin', 'warning');
+    }
   };
 
   const [update, setUpdate] = React.useState();
@@ -52,9 +69,9 @@ function ReponseComponent() {
       sendDonner(e);
     }
   };
-  console.log(data);
   return (
     <>
+      {contextHolder}
       <Grid container>
         <Grid item lg={8}>
           <Input type="text" value={value} onChange={(e) => key(e)} onKeyUp={(e) => postData(e)} placeholder="Account ID" />
@@ -108,7 +125,7 @@ function ReponseComponent() {
                             <p>consExpDays : {index.consExpDays} jour(s)</p>
                             <p>C.O : {index.agentSave.nom}</p>
                             <p className="retard">
-                              Date {dateFrancais(index.createdAt)} à {index.createdAt.split('T')[1].split(':')[0]}:
+                              Date {dayjs(index.createdAt).format('DD/MM/YYYY')} à {index.createdAt.split('T')[1].split(':')[0]}:
                               {index.createdAt.split('T')[1].split(':')[1]}
                             </p>
                           </Card>
@@ -130,24 +147,37 @@ function ReponseComponent() {
                           </Grid>
                           <Grid item lg={6}>
                             <Grid className="reponseClasse">
-                              <Typography component="p">
-                                Client {index.demande.statut};
-                                <p>
-                                  {' '}
-                                  Feedback : <span style={{ fontWeight: 'bolder' }}>{index.demande?.raison.toLowerCase()}</span>;
-                                </p>
-                                <p>
-                                  {index.demande?.sector}, {index.demande?.cell}, {index.demande?.sat}, {index.demande.reference}{' '}
-                                </p>
-                              </Typography>
+                              <p>
+                                <span style={{ fontWeight: 'bolder' }}>Statut du client : </span> {index.demande.statut};
+                              </p>
+                              <Divider />
+                              <p>
+                                <span style={{ fontWeight: 'bolder' }}>Feedback : </span> {index.demande?.raison.toLowerCase()};
+                              </p>
+                              <Divider />
+                              <p>
+                                <span style={{ fontWeight: 'bolder' }}>Adresse </span>: {index.demande?.sector}, {index.demande?.cell},{' '}
+                                {index.demande?.sat}, {index.demande.reference}{' '}
+                              </p>
+                              <Divider />
                               <p>
                                 {index.demandeur.fonction} {index.demandeur.codeAgent}; {index.demandeur.nom};{' '}
                               </p>
-
-                              <p>Numero joignable du client : {index.demande?.numero}</p>
+                              {index.demande?.numero !== 'undefined' && (
+                                <p>
+                                  <span style={{ fontWeight: 'bolder' }}>Numero joignable du client</span> : {index.demande?.numero}
+                                </p>
+                              )}
+                              <Divider />
+                              <p>
+                                {index.coordonnee?.longitude !== 'undefined' && `long : ${index.coordonnee?.longitude}`}
+                                {index.coordonnee?.latitude !== 'undefined' && `lat : ${index.coordonnee?.latitude}`}
+                                {index.coordonnee?.altitude !== 'undefined' && `alt : ${index.coordonnee?.altitude}`}
+                              </p>
+                              <Divider />
                               <p className="retard">
-                                Date {dateFrancais(index.demande.createdAt)} à {index.demande.createdAt.split('T')[1].split(':')[0]}:
-                                {index.demande.createdAt.split('T')[1].split(':')[1]}
+                                <span style={{ fontWeight: 'bolder' }}>Date</span> {dayjs(index.demande.createdAt).format('DD/MM/YYYY')} à{' '}
+                                {index.demande.createdAt.split('T')[1].split(':')[0]}:{index.demande.createdAt.split('T')[1].split(':')[1]}
                               </p>
                             </Grid>
                           </Grid>

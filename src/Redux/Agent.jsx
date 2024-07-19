@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { lien, config } from 'static/Lien';
+import { config, lien } from 'static/Lien';
 
 const initialState = {
   agent: [],
@@ -40,7 +40,7 @@ export const UpdateAgent = createAsyncThunk('agent/UpdateAgent', async (data, { 
     return rejectWithValue(error.response.data);
   }
 });
-export const BloquerAgent = createAsyncThunk('agent/UpdateAgent', async (data, { rejectWithValue }) => {
+export const BloquerAgent = createAsyncThunk('agent/BloquerAgent', async (data, { rejectWithValue }) => {
   try {
     const response = await axios.put(lien + '/bloquer', data, config);
     return response.data;
@@ -141,7 +141,6 @@ const agent = createSlice({
     [AjouterAgent.rejected]: (state, action) => {
       return {
         ...state,
-
         addAgent: 'rejected',
         addAgentError: action.payload,
         getAgent: '',

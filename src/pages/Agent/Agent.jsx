@@ -1,11 +1,12 @@
 /* eslint-disable react/prop-types */
-import { Button, Checkbox, CircularProgress, Grid, Typography, TextField } from '@mui/material';
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { Edit, Save } from '@mui/icons-material';
+import { Button, Checkbox, CircularProgress, Grid, TextField, Typography } from '@mui/material';
+import AutoComplement from 'Control/AutoComplet';
 import DirectionSnackbar from 'Control/SnackBar';
 import { AjouterAgent, UpdateAgent } from 'Redux/Agent';
-import AutoComplement from 'Control/AutoComplet';
-import { Edit, Save } from '@mui/icons-material';
+import _ from 'lodash';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 function AddAgent({ data }) {
   const [values, setValue] = React.useState({
@@ -30,8 +31,13 @@ function AddAgent({ data }) {
   React.useEffect(() => {
     if (data) {
       setValue({ ...data });
-      setValueRegionSelect({ ...data?.region });
-      setValueShopSelect({ ...data?.shop });
+      let select = _.filter(zone.zone, { idZone: data.codeZone });
+      setValueRegionSelect(select[0]);
+      if (data?.shop.length > 0) {
+        setValueShopSelect(data?.shop[0]);
+      } else {
+        setValueShopSelect('');
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
@@ -44,6 +50,14 @@ function AddAgent({ data }) {
       //nom, codeAgent, fonction, telephone, idZone, idShop
       let donner = { nom, telephone, codeAgent, fonction, idZone: valueRegionSelect?.idZone, idShop: valueShopSelect?.idShop };
       dispatch(AjouterAgent(donner));
+      setValue({
+        nom: '',
+        telephone: '',
+        codeAgent: '',
+        fonction: ''
+      });
+      setValueRegionSelect('');
+      setValueShopSelect('');
       setOpen(true);
       // eslint-disable-next-line no-empty
     } catch (error) {}
@@ -51,23 +65,39 @@ function AddAgent({ data }) {
 
   const label = [
     { id: 1, title: 'Tech', value: 'tech' },
-    { id: 2, title: 'agent', value: 'agent' }
+    { id: 2, title: 'agent', value: 'agent' },
+    { id: 3, title: 'ZBM', value: 'ZBM' },
+    { id: 4, title: 'PO', value: 'PO' },
+    { id: 5, title: 'RS', value: 'RS' },
+    { id: 6, title: 'SM', value: 'SM' }
   ];
   const [errorAlert, setErrorAlert] = React.useState();
   const sendUpdate = () => {
     try {
-      if (valueRegionSelect.idZone !== valueShopSelect.idZone) {
-        setErrorAlert(`le shop << ${valueShopSelect.shop} >> n'est pas de la region << ${valueRegionSelect.denomination} >>`);
-        setOpen(true);
-      } else {
-        let donner = { values, zoneSelect: valueRegionSelect?.idZone, shop: valueShopSelect?.idShop };
+      if (['ZBM', 'PO'].includes(fonction)) {
+        let donner = {
+          values,
+          zoneSelect: valueRegionSelect?.idZone,
+          shop: ''
+        };
         dispatch(UpdateAgent(donner));
+      } else {
+        if (valueRegionSelect.idZone !== valueShopSelect.idZone) {
+          setErrorAlert(`le shop << ${valueShopSelect.shop} >> n'est pas de la region << ${valueRegionSelect.denomination} >>`);
+          setOpen(true);
+        } else {
+          let donner = {
+            values,
+            zoneSelect: valueRegionSelect?.idZone,
+            shop: ['ZBM', 'PO'].includes(fonction) ? '' : valueShopSelect?.idShop
+          };
+          dispatch(UpdateAgent(donner));
+        }
       }
     } catch (error) {
       console.log(error);
     }
   };
-
   return (
     <div style={{ padding: '10px', width: '23rem' }}>
       {agent.addAgent === 'rejected' && <DirectionSnackbar message={agent.addAgentError} open={open} setOpen={setOpen} />}
@@ -133,27 +163,19 @@ function AddAgent({ data }) {
             />
           )}
         </Grid>
-        <Grid sx={{ marginTop: '10px' }}>
-          {valueRegionSelect !== '' && valueRegionSelect !== null && (
-            <AutoComplement
-              value={valueShopSelect}
-              setValue={setValueShopSelect}
-              options={valueRegionSelect && valueRegionSelect.shop}
-              title="Shop"
-              propr="shop"
-            />
-          )}
-        </Grid>
-
-        {/* <div>
-            <TextField className="textField" onChange={onChange} value={shop} label="Shop" name="shop" autoComplete="on" fullWidth />
-          </div>
-
-          {zone.zone && (
-            <div>
-              <AutoComplement value={zoneSelect} setValue={setZone} options={zone.zone} title="Selectionnez la zone d'affectation" />
-            </div>
-          )} */}
+        {!['PO', 'ZBM'].includes(fonction) && (
+          <Grid sx={{ marginTop: '10px' }}>
+            {valueRegionSelect !== '' && valueRegionSelect !== null && (
+              <AutoComplement
+                value={valueShopSelect}
+                setValue={setValueShopSelect}
+                options={valueRegionSelect && valueRegionSelect.shop}
+                title="Shop"
+                propr="shop"
+              />
+            )}
+          </Grid>
+        )}
       </>
       <Button
         variant="contained"

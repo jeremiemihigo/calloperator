@@ -1,10 +1,11 @@
-import React from 'react';
-import axios from 'axios';
-import { config, lien } from 'static/Lien';
-import dayjs from 'dayjs';
-import './style.css';
+import ImageComponent from 'Control/ImageComponent';
 import { Input } from 'antd';
+import axios from 'axios';
+import dayjs from 'dayjs';
+import React from 'react';
 import ReactHTMLTableToExcel from 'react-html-table-to-excel';
+import { config, lien, lien_image } from 'static/Lien';
+import './style.css';
 
 function Doublon() {
   const [load, setLoad] = React.useState(false);
@@ -76,17 +77,18 @@ function Doublon() {
               <th colSpan="4" style={{ textAlign: 'center' }}>
                 Deuxieme soumission
               </th>
-              <th rowSpan="2">Feedback</th>
             </tr>
             <tr>
               <th>agent</th>
               <th>Nom</th>
               <th>SAT</th>
+              <th>File</th>
               <th>Date</th>
               <th>agent</th>
               <th>Nom</th>
               <th>SAT</th>
               <th>Date</th>
+              <th>File</th>
             </tr>
           </thead>
           <tbody>
@@ -97,19 +99,16 @@ function Doublon() {
                   <td>{index.agentPrecedent.codeAgent}</td>
                   <td>{index.agentPrecedent.nom}</td>
                   <td>{index.precedent.sat}</td>
+                  <td>
+                    <ImageComponent src={lien_image + '/' + index.precedent.file} taille={50} />
+                  </td>
                   <td>{dayjs(index.precedent.createdAt).format('DD/MM/YYYY')}</td>
                   <td>{index.agentPresent.codeAgent}</td>
                   <td>{index.agentPresent.nom}</td>
                   <td>{index.presents.sat}</td>
                   <td>{dayjs(index.presents.createdAt).format('DD/MM/YYYY')}</td>
                   <td>
-                    {index.conversation.map((item) => {
-                      return (
-                        <p className="messageItem" key={item._id}>
-                          {item.message}
-                        </p>
-                      );
-                    })}
+                    <ImageComponent src={lien_image + '/' + index.presents.file} taille={50} />
                   </td>
                 </tr>
               );

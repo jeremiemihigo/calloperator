@@ -1,25 +1,25 @@
 /* eslint-disable react/prop-types */
-import { useDispatch, useSelector } from 'react-redux';
-import { Button, TextField, Grid } from '@mui/material';
-import React, { useContext } from 'react';
 import { Edit, Save } from '@mui/icons-material';
-import axios from 'axios';
-import { postReponse } from 'Redux/Reponses';
-import { lien, config } from 'static/Lien';
-import { CreateContexte } from 'Context';
-import { Alert } from '@mui/lab';
-import AutoComplement from 'Control/AutoComplet';
-import { Checkbox, FormControl, FormControlLabel, FormGroup, Box } from '@mui/material';
-import DirectionSnackbar from 'Control/SnackBar';
 import SearchIcon from '@mui/icons-material/Search';
-import CircularProgress from '@mui/material/CircularProgress';
+import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, Grid, TextField } from '@mui/material';
 import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import { CreateContexte } from 'Context';
+import AutoComplement from 'Control/AutoComplet';
+import DirectionSnackbar from 'Control/SnackBar';
+// import { CreateContexteGlobal } from 'GlobalContext';
+import { postReponse } from 'Redux/Reponses';
+import axios from 'axios';
+import React, { useContext } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { config, lien } from 'static/Lien';
+import Selected from 'static/Select';
 
 function ReponsesComponent({ update }) {
   const regions = useSelector((state) => state.zone.zone);
+  // const { socket } = React.useContext(CreateContexteGlobal);
   const [valueRegionSelect, setValueRegionSelect] = React.useState('');
   const [valueShopSelect, setValueShopSelect] = React.useState('');
-  const [sending, setSending] = React.useState(false);
   const [fetching, setFeching] = React.useState(false);
   const [intial, setInitial] = React.useState({
     codeCu: '',
@@ -40,14 +40,15 @@ function ReponsesComponent({ update }) {
   const { payement, statut } = status;
   const [message, setMessage] = React.useState('');
   const [openSnack, setOpenSnack] = React.useState(false);
+  const [valueAdresse, setValueAdresse] = React.useState('');
 
   function reset() {
     setInitial({ codeCu: '', codeClient: '', consExpDays: '', nomClient: '' });
     setStatut({ payement: '', statut: '' });
     setValueRegionSelect('');
     setValueShopSelect('');
+    setValueAdresse('');
   }
-
   const reponse = useSelector((state) => state.reponse);
   const [boxes, setBoxes] = React.useState('');
 
@@ -85,7 +86,7 @@ function ReponsesComponent({ update }) {
 
   const userConnect = useSelector((state) => state.user?.user);
   const dispatch = useDispatch();
-  const reponseData = () => {
+  const reponseData = async () => {
     if (codeClient.length !== 12 || !codeClient.toUpperCase().trim().startsWith('BDRC')) {
       setMessage("Le code client n'est pas conforme");
       setOpenSnack(true);
@@ -94,21 +95,21 @@ function ReponsesComponent({ update }) {
         setMessage('Veuillez vérifier si le shop est enregistré dans la region selectionée');
         setOpenSnack(true);
       } else {
-        if (demande.shopAgent.idShop !== valueShopSelect.idShop) {
+        if (demande && !['PO', 'ZBM'].includes(demande.agent.fonction) && demande.shopAgent[0]?.idShop !== valueShopSelect.idShop) {
           setMessage(
-            `y a pas une conformité entre le shop du client << ${valueShopSelect.shop} >> et celui de l'agent << ${demande.shopAgent.shop} >>`
+            `y a pas une conformité entre le shop du client << ${valueShopSelect?.shop} >> et celui de l'agent << ${demande?.shopAgent[0]?.shop} >>`
           );
           setOpenSnack(true);
         } else {
-          setSending(true);
           const datass = {
             idDemande: demande.idDemande,
             codeClient: codeClient.toUpperCase().trim(),
-            codeCu,
+            codeCu: codeCu.trim(),
             codeAgent: userConnect?.codeAgent,
             clientStatut: statut,
             PayementStatut: payement,
-            consExpDays,
+            adresschange: valueAdresse,
+            consExpDays: consExpDays.trim(),
             nomClient,
             idZone: valueRegionSelect.idZone,
             idShop: valueShopSelect.idShop,
@@ -117,14 +118,18 @@ function ReponsesComponent({ update }) {
             _idDemande: demande._id,
             nomAgentSave: userConnect?.nom
           };
-
           dispatch(postReponse(datass));
-          setSending(false);
-          reset();
+
+          // socket.emit('reponse', datass);
         }
       }
     }
   };
+  React.useEffect(() => {
+    if (reponse.postDemande === 'success') {
+      reset();
+    }
+  }, [reponse]);
   const modifier = async () => {
     setOpenSnack(false);
 
@@ -224,20 +229,22 @@ function ReponsesComponent({ update }) {
   };
   const nothing = () => {};
 
+  const optionChange = [
+    { id: 1, title: 'Identifique à pulse', value: 'Identique' },
+    { id: 2, title: "N'est pas identifique à pulse", value: "N'est pas identique" }
+  ];
+  const reponseState = useSelector((state) => state.reponse);
+
   return (
     <Grid>
-      {reponse.postDemande === 'pending' && (
+      {reponseState.postDemande === 'pending' && (
         <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={true}>
           <div>
-            <p style={{ textAlign: 'center', margin: '0px', padding: '0px' }}>Sending {demande?.idDemande}...</p>
+            <p style={{ textAlign: 'center', margin: '0px', padding: '0px' }}>Please wait...</p>
           </div>
         </Backdrop>
       )}
-      {reponse.postDemande === 'rejected' && (
-        <Alert variant="filled" severity="error">
-          {reponse.postDemandeError}
-        </Alert>
-      )}
+
       {openSnack && <DirectionSnackbar message={message} open={openSnack} setOpen={setOpenSnack} />}
       <Grid container>
         <Grid item lg={10} xs={10}>
@@ -286,7 +293,7 @@ function ReponsesComponent({ update }) {
           />
         </Grid>
         <Grid item lg={6} sm={6} xs={12} sx={{ marginTop: '10px' }}>
-          {valueRegionSelect !== '' && valueRegionSelect !== null && (
+          {valueRegionSelect && valueRegionSelect !== '' && valueRegionSelect !== null && (
             <AutoComplement
               value={valueShopSelect}
               setValue={setValueShopSelect}
@@ -297,6 +304,9 @@ function ReponsesComponent({ update }) {
           )}
         </Grid>
       </Grid>
+      <div style={{ margin: '10px 0px' }}>
+        <Selected label="Adresse" data={optionChange} value={valueAdresse} setValue={setValueAdresse} />
+      </div>
       <div className="expiredDate">
         <TextField
           onChange={(e) => checkStatut(e.target.value)}
@@ -308,27 +318,28 @@ function ReponsesComponent({ update }) {
           value={consExpDays}
           label="consExpDays"
         />
-        <Box sx={{ display: 'flex' }}>
-          <FormControl component="fieldset" variant="standard">
-            <FormGroup>
-              <FormControlLabel
-                onClick={(e) => functioncheckBox('inactive', e)}
-                control={<Checkbox name="inactive" checked={boxes === 'inactive'} />}
-                label="Inactive"
-              />
-            </FormGroup>
-          </FormControl>
-          <FormControl component="fieldset" variant="standard">
-            <FormGroup>
-              <FormControlLabel
-                onClick={(e) => functioncheckBox('pending', e)}
-                control={<Checkbox name="pending" checked={boxes === 'pending'} />}
-                label="Pending activation"
-              />
-            </FormGroup>
-          </FormControl>
-        </Box>
       </div>
+
+      <Box sx={{ display: 'flex' }}>
+        <FormControl component="fieldset" variant="standard">
+          <FormGroup>
+            <FormControlLabel
+              onClick={(e) => functioncheckBox('inactive', e)}
+              control={<Checkbox name="inactive" checked={boxes === 'inactive'} />}
+              label="Inactive"
+            />
+          </FormGroup>
+        </FormControl>
+        <FormControl component="fieldset" variant="standard">
+          <FormGroup>
+            <FormControlLabel
+              onClick={(e) => functioncheckBox('pending', e)}
+              control={<Checkbox name="pending" checked={boxes === 'pending'} />}
+              label="Pending activation"
+            />
+          </FormGroup>
+        </FormControl>
+      </Box>
       <TextField
         style={{ marginTop: '10px' }}
         onChange={(e) => {
@@ -361,7 +372,7 @@ function ReponsesComponent({ update }) {
       />
       <div style={{ marginTop: '10px' }}>
         <Button
-          disabled={(!demande && !update) || sending ? true : false}
+          disabled={!demande && !update ? true : false}
           fullWidth
           variant="contained"
           color="primary"

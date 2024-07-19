@@ -1,15 +1,16 @@
-import React from 'react';
 import axios from 'axios';
-import { config, lien } from 'static/Lien';
+import React from 'react';
+import { config, lien, lien_image } from 'static/Lien';
 // import Table from 'react-bootstrap/Table';
 import dayjs from 'dayjs';
 import './style.css';
 // import ImageComponent from 'Control/ImageComponent';
-import Selected from 'static/Select';
 import { Button, Grid } from '@mui/material';
-import { useSelector } from 'react-redux';
 import AutoComplement from 'Control/AutoComplet';
+import ImageComponent from 'Control/ImageComponent';
 import ReactHTMLTableToExcel from 'react-html-table-to-excel';
+import { useSelector } from 'react-redux';
+import Selected from 'static/Select';
 
 function Doublon() {
   const [load, setLoad] = React.useState(false);
@@ -106,7 +107,7 @@ function Doublon() {
               <th>SAT</th>
               <th>Date</th>
               <th>Feedback</th>
-              {/* <th>File</th> */}
+              <th>File</th>
             </tr>
           </thead>
           <tbody>
@@ -131,9 +132,9 @@ function Doublon() {
                       );
                     })}
                   </td>
-                  {/* <td>
+                  <td>
                     <ImageComponent src={lien_image + '/' + index.file} taille={70} />
-                  </td> */}
+                  </td>
                 </tr>
               );
             })}

@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { lien, config } from 'static/Lien';
+import { config, lien } from 'static/Lien';
 
 const initialState = {
   user: [],
@@ -11,7 +11,6 @@ const initialState = {
 export const ReadUser = createAsyncThunk('user/ReadUser', async (id, { rejectWithValue }) => {
   try {
     const response = await axios.get(lien + '/userAdmin', config);
-    console.log(response);
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response.data);

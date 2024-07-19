@@ -44,7 +44,7 @@ function Analyse({ data }) {
                       <td style={{ backgroundColor: '#dedede' }}>{loadingRegion(index.idZone, 'tech').agentTech}</td>
                       <td style={{ backgroundColor: '#dedede' }}>{loadingRegion(index.idZone).region}</td>
                     </tr>
-                    {index.shop.map((item, cle) => {
+                    {index.shop?.map((item, cle) => {
                       return (
                         <tr key={cle}>
                           <td>{item.shop}</td>
