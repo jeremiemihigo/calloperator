@@ -4,9 +4,9 @@ import SearchIcon from '@mui/icons-material/Search';
 import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, Grid, TextField } from '@mui/material';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
-import { CreateContexte } from 'Context';
 import AutoComplement from 'Control/AutoComplet';
 import DirectionSnackbar from 'Control/SnackBar';
+import { CreateContexteGlobal } from 'GlobalContext';
 // import { CreateContexteGlobal } from 'GlobalContext';
 import { postReponse } from 'Redux/Reponses';
 import axios from 'axios';
@@ -17,7 +17,6 @@ import Selected from 'static/Select';
 
 function ReponsesComponent({ update }) {
   const regions = useSelector((state) => state.zone.zone);
-  // const { socket } = React.useContext(CreateContexteGlobal);
   const [valueRegionSelect, setValueRegionSelect] = React.useState('');
   const [valueShopSelect, setValueShopSelect] = React.useState('');
   const [fetching, setFeching] = React.useState(false);
@@ -34,7 +33,7 @@ function ReponsesComponent({ update }) {
       [name]: value
     });
   };
-  const { demande } = useContext(CreateContexte);
+  const { demande } = useContext(CreateContexteGlobal);
   const { codeCu, codeClient, consExpDays, nomClient } = intial;
   let [status, setStatut] = React.useState({ payement: '', statut: '' });
   const { payement, statut } = status;
@@ -167,7 +166,6 @@ function ReponsesComponent({ update }) {
         codeClient: update.codeclient,
         codeCu: update.codeCu
       };
-
       checkStatut(update.consExpDays);
       setInitial({
         ...intial,
@@ -193,6 +191,7 @@ function ReponsesComponent({ update }) {
     if (clients !== '') {
       setFeching(true);
       const response = await axios.get(`${lien}/customer/${clients}`);
+
       if (response.status === 200) {
         setInitial({
           ...intial,
@@ -201,8 +200,10 @@ function ReponsesComponent({ update }) {
           consExpDays: '',
           codeClient: clients
         });
+        let zone = regions.filter((x) => x._id === response.data.region._id);
+
         setValueShopSelect(response.data.shop);
-        setValueRegionSelect(response.data.region);
+        setValueRegionSelect(zone[0]);
         setFeching(false);
       } else {
         setFeching(false);

@@ -93,11 +93,11 @@ function Rapport() {
       let data = {
         debut: dates.debut,
         fin: dates.fin,
+        followUp: false,
         dataTosearch
       };
       setLoading(true);
       const response = await axios.post(lien + '/rapport', data, config);
-
       if (response.data === 'token expired') {
         localStorage.removeItem('auth');
         window.location.replace('/login');
@@ -155,12 +155,12 @@ function Rapport() {
           <DirectionSnackbar message="Veuillez renseigner le shop ainsi que les dates" open={open} setOpen={setOpen} />
           <div>
             <Grid container>
-              <Grid item lg={2} sm={2} xs={12}>
+              <Grid item lg={2} sx={{ padding: '5px' }} sm={3} xs={12} md={3}>
                 <Selected label="Filtrer par" data={select} value={valueSelect} setValue={setValueSelect} />
               </Grid>
 
               {region && valueSelect === 'idZone' && (
-                <Grid item lg={2} sx={{ padding: '0px 10px' }}>
+                <Grid item lg={2} sx={{ padding: '5px' }} sm={3} xs={8} md={3}>
                   <AutoComplement
                     value={idZone}
                     setValue={setValeurRegion}
@@ -171,12 +171,12 @@ function Rapport() {
                 </Grid>
               )}
               {shop && valueSelect === 'idShop' && (
-                <Grid item lg={2} sx={{ padding: '0px 10px' }}>
+                <Grid item lg={2} sm={3} xs={8} md={3} sx={{ padding: '5px' }}>
                   <AutoComplement value={idShop} setValue={setValeurShop} options={shop} title="Shop" propr="shop" />
                 </Grid>
               )}
 
-              <Grid item lg={2} sm={3} xs={12} sx={{ display: 'flex', alignItems: 'center', marginTop: '5px', padding: '0px 5px' }}>
+              <Grid item lg={2} sm={4} xs={6} md={3} sx={{ padding: '5px' }}>
                 <Input
                   type="date"
                   onChange={(e) =>
@@ -188,7 +188,7 @@ function Rapport() {
                   placeholder="Date"
                 />
               </Grid>
-              <Grid item lg={2} sm={3} xs={12} sx={{ marginTop: '5px', display: 'flex', alignItems: 'center', paddingRight: '5px' }}>
+              <Grid item lg={2} sm={4} xs={6} md={3} sx={{ padding: '5px' }}>
                 <Input
                   onChange={(e) =>
                     setDates({
@@ -200,22 +200,16 @@ function Rapport() {
                   placeholder="Date"
                 />
               </Grid>
-              <Grid item lg={1} sm={1} xs={1} sx={{ marginTop: '5px', display: 'flex', alignItems: 'center', paddingRight: '5px' }}>
+              <Grid item lg={1} sm={2} xs={6} md={3} sx={{ padding: '5px' }}>
                 <Button disabled={loading} fullWidth color="primary" variant="contained" onClick={() => searchData()}>
                   {loading ? <CircularProgress size={12} /> : <Search fontSize="small" />}
                 </Button>
               </Grid>
               {!loading && (
-                <Grid item lg={1} sm={1} xs={1} sx={{ marginTop: '5px', display: 'flex', alignItems: 'center' }}>
+                <Grid item lg={1} sm={2} md={3} xs={6} sx={{ padding: '5px' }}>
                   <ExcelButton data={samplejson2} title="" fileName={`${nomFile}.xlsx`} />
                 </Grid>
               )}
-
-              {/*<Grid item lg={2} sm={2} xs={12} sx={{ marginTop: '5px' }}>
-             <p style={{ textAlign: 'center', fontSize: '15px', marginLeft: '10px' }}>
-              {donnerFound.length} Visite(s) <span style={{ marginLeft: '20px', color: 'blue', fontWeight: 'bolder' }}>{temps}m</span>
-            </p> 
-          </Grid>*/}
             </Grid>
           </div>
           {donnerFound.length > 0 && (

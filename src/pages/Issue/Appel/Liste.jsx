@@ -1,9 +1,9 @@
-import { Typography } from '@mui/material';
 import { CreateContexteGlobal } from 'GlobalContext';
 import axios from 'axios';
-import moment from 'moment';
+import MainCard from 'components/MainCard';
 import React from 'react';
 import { config, lien_issue } from 'static/Lien';
+import StatistiqueCallOperator from './Table/Stat_CO';
 
 function Liste() {
   const { socket } = React.useContext(CreateContexteGlobal);
@@ -25,7 +25,6 @@ function Liste() {
   React.useEffect(() => {
     laoding();
   }, []);
-
   React.useEffect(() => {
     if (nowCall) {
       setToday([nowCall, ...today]);
@@ -33,25 +32,12 @@ function Liste() {
   }, [nowCall]);
   return (
     <div className="liste">
-      <p className="pCall">{today.length} calls received</p>
-      {today &&
-        today.length > 0 &&
-        today.map((index) => {
-          return (
-            <div key={index._id} className="appel">
-              <Typography className="client">
-                {index.codeclient} {'; ' + index?.nomClient !== undefined && index?.nomClient}
-              </Typography>
-              <div className="appelLast">
-                <p>{index.openBy}</p>
-                <p className={index.delai === 'OUT SLA' ? 'out' : 'in'}>{index.delai}</p>
-                <p className="heure">{moment(index.fullDateSave).fromNow()}</p>
-              </div>
-            </div>
-          );
-        })}
+      <p className="pCall">{today.length} complaint received</p>
+      <MainCard sx={{ mt: 2 }} content={false}>
+        <StatistiqueCallOperator data={today} />
+      </MainCard>
     </div>
   );
 }
 
-export default Liste;
+export default React.memo(Liste);

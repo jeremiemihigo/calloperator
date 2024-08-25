@@ -1,0 +1,7 @@
+.click {
+  border: 1px dashed black;
+  padding: 10px;
+  text-align: center;
+  font-size: 12px;
+  cursor: pointer;
+}

@@ -1,12 +1,11 @@
 /* eslint-disable react/prop-types */
-import React from 'react';
 import { Grid } from '@mui/material';
+import { Input, Space } from 'antd';
 import axios from 'axios';
-import { Input } from 'antd';
-import { config, lien, lien_image } from 'static/Lien';
-import { Space } from 'antd';
-import Chat from 'pages/Demandes/Chat';
 import ImageComponent from 'Control/ImageComponent';
+import Chat from 'pages/Demandes/Chat';
+import React from 'react';
+import { config, lien, lien_image } from 'static/Lien';
 
 function ChercherDemande() {
   const [id, setValue] = React.useState('');
@@ -17,7 +16,6 @@ function ChercherDemande() {
       try {
         setLoading(true);
         const resspanonse = await axios.get(lien + `/idDemande/${id}`, config);
-        console.log(resspanonse);
         if (resspanonse.data === 'token expired') {
           localStorage.removeItem('auth');
           window.location.replace('/login');
@@ -30,7 +28,6 @@ function ChercherDemande() {
       }
     }
   };
-  console.log(data);
   const key = (e) => {
     e.preventDefault();
     setValue(e.target.value);

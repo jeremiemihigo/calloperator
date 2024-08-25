@@ -1,12 +1,12 @@
 /* eslint-disable react/prop-types */
-import React from 'react';
-import { Fab, Tooltip, Paper } from '@mui/material';
 import MedicalInformationIcon from '@mui/icons-material/MedicalInformation';
+import { Fab, Paper, Tooltip } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
+import { Input } from 'antd';
 import _ from 'lodash';
+import React from 'react';
 import Popup from 'static/Popup';
 import AfficheInfo from './AfficheInfo';
-import { Input } from 'antd';
-import { DataGrid } from '@mui/x-data-grid';
 
 function Agents({ listeDemande }) {
   const [donnee, setDonnees] = React.useState();
@@ -28,7 +28,8 @@ function Agents({ listeDemande }) {
           nom: listeDemande.filter((x) => x.agent.codeAgent === donnerKey[i])[0].agent.nom,
           code: donnerKey[i],
           nonRepondu: listeDemande.filter((x) => x.agent.codeAgent === donnerKey[i] && x.reponse.length === 0).length,
-          repondu: listeDemande.filter((x) => x.agent.codeAgent === donnerKey[i] && x.reponse.length > 0).length,
+          repondu: listeDemande.filter((x) => x.agent.codeAgent === donnerKey[i] && x.reponse.length > 0 && !x.reponse[0].followup).length,
+          followup: listeDemande.filter((x) => x.agent.codeAgent === donnerKey[i] && x.reponse.length > 0 && x.reponse[0].followup).length,
           total: listeDemande.filter((x) => x.agent.codeAgent === donnerKey[i]).length,
           id: i
         });
@@ -71,12 +72,18 @@ function Agents({ listeDemande }) {
     {
       field: 'code',
       headerName: 'Code Agent',
-      width: 100,
+      width: 130,
       editable: false
     },
     {
       field: 'repondu',
       headerName: 'Conformes',
+      width: 80,
+      editable: false
+    },
+    {
+      field: 'followup',
+      headerName: 'Followup',
       width: 80,
       editable: false
     },

@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
-import React from 'react';
-import _ from 'lodash';
-import { DataGrid } from '@mui/x-data-grid';
-import Ajustage from './Ajustage';
-import Popup from 'static/Popup';
 import { Grid, Typography } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
+import _ from 'lodash';
+import React from 'react';
 import { dateFrancais } from 'static/Lien';
+import Popup from 'static/Popup';
+import Ajustage from './Ajustage';
 
 function Plaintes({ data, loadings, dates }) {
   const [result, setResult] = React.useState();
@@ -60,11 +60,11 @@ function Plaintes({ data, loadings, dates }) {
           initialState={{
             pagination: {
               paginationModel: {
-                pageSize: 5
+                pageSize: 6
               }
             }
           }}
-          pageSizeOptions={[5]}
+          pageSizeOptions={[6]}
           checkboxSelection
           disableRowSelectionOnClick
         />

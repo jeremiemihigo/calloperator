@@ -14,8 +14,8 @@ const issue = {
   type: 'group',
   children: [
     {
-      id: 'Call',
-      title: 'Receive the call',
+      id: 'Complaints',
+      title: 'Complaints',
       type: 'item',
       url: '/call',
       icon: icons.PhoneOutlined

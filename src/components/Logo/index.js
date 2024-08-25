@@ -6,9 +6,9 @@ import { ButtonBase } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 
 // project import
-import Logo from './bboxx.png';
 import config from 'config';
 import { activeItem } from 'store/reducers/menu';
+import Logo from './css.jpg';
 
 // ==============================|| MAIN LOGO ||============================== //
 
@@ -23,7 +23,7 @@ const LogoSection = ({ sx, to }) => {
       to={!to ? config.defaultPath : to}
       sx={sx}
     >
-      <img src={Logo} alt="iconImage" width={100} height={100} />
+      <img src={Logo} alt="iconImage" width={200} height={80} />
     </ButtonBase>
   );
 };

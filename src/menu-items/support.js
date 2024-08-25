@@ -14,7 +14,7 @@ const icons = {
 
 const utilities = {
   id: 'utilities',
-  title: 'Support team',
+  title: 'Household visit',
   type: 'group',
   children: [
     {
@@ -25,15 +25,15 @@ const utilities = {
       icon: icons.FontSizeOutlined
     },
     {
-      id: 'Answer',
-      title: 'Answer',
+      id: 'Customer details',
+      title: 'Customer details',
       type: 'item',
       url: '/reponses',
       icon: icons.BgColorsOutlined
     },
     {
-      id: 'Statistics',
-      title: 'Statistics',
+      id: 'Statistics (vm)',
+      title: 'Statistics (vm)',
       type: 'item',
       url: '/statistiques',
       icon: icons.BarChartOutlined

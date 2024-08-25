@@ -55,15 +55,7 @@ const Connected = () => {
   const iconBackColorOpen = 'grey.300';
   const iconBackColor = 'grey.100';
   const user = useSelector((state) => state.user?.user);
-  const [dataChange, setDataChange] = React.useState([]);
-  const { socket } = React.useContext(CreateContexteGlobal);
-  React.useEffect(() => {
-    if (socket) {
-      socket.on('userConnected', (donner) => {
-        setDataChange(donner);
-      });
-    }
-  }, [socket, user]);
+  const { user_connect } = React.useContext(CreateContexteGlobal);
 
   return (
     <Box sx={{ flexShrink: 0, ml: 0.75 }}>
@@ -77,7 +69,7 @@ const Connected = () => {
         aria-haspopup="true"
         onClick={handleToggle}
       >
-        <Badge badgeContent={dataChange.filter((x) => x.nom !== undefined).length - 1} color="primary">
+        <Badge badgeContent={user_connect.filter((x) => x.nom !== undefined).length - 1} color="primary">
           <WifiTetheringIcon />
         </Badge>
       </IconButton>
@@ -136,7 +128,7 @@ const Connected = () => {
                       }
                     }}
                   >
-                    {dataChange.reverse().map((index, key) => {
+                    {user_connect.reverse().map((index, key) => {
                       return (
                         index.nom !== undefined &&
                         index.codeAgent !== user?.codeAgent && (
@@ -156,7 +148,6 @@ const Connected = () => {
                             </div>
                             <div style={{ width: '90%', padding: 0 }}>
                               <p style={{ padding: 0, margin: 0, fontSize: '10px', fontWeight: 'bolder' }}>{index?.nom}</p>
-                              <p style={{ padding: 0, margin: 0, fontSize: '9px' }}>online</p>
                             </div>
                           </div>
                         )

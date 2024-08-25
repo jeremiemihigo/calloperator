@@ -42,7 +42,7 @@ function StatistiqueCallOperator({ data }) {
         <Typography>Statistiques Call operator</Typography>
       </Grid>
       <div className="mixed-chart">
-        <Chart options={options} series={serie} type="bar" width="100%" height={300} />
+        <Chart options={options} series={serie} type="bar" width="100%" height={400} />
       </div>
     </>
   );

@@ -1,17 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
-import React from 'react';
 import { Card } from '@mui/material';
-import moment from 'moment';
-import { CreateContexte } from 'Context';
-import axios from 'axios';
-import { lien, config } from 'static/Lien';
-import { Grid } from '../../../node_modules/@mui/material/index';
+import { CreateContexteGlobal } from 'GlobalContext';
 import { Input } from 'antd';
+import axios from 'axios';
+import moment from 'moment';
+import React from 'react';
+import { config, lien } from 'static/Lien';
+import { Grid } from '../../../node_modules/@mui/material/index';
 import Chat from './Chat';
 
 function ListeDemandeFeedBack({ setError }) {
-  const { setDemande } = React.useContext(CreateContexte);
+  const { setDemande } = React.useContext(CreateContexteGlobal);
   const [dataChat, setDatachat] = React.useState([]);
   const [load, setLoad] = React.useState(false);
 

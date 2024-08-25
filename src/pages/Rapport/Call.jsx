@@ -7,13 +7,11 @@ import moment from 'moment';
 import React from 'react';
 import ExcelButton from 'static/ExcelButton';
 import { config, lien_issue } from 'static/Lien';
-import Selected from 'static/Select';
 import { generateNomFile } from './NameFile';
 
 function Call() {
   const [dates, setDates] = React.useState({ debut: '', fin: '' });
   const [loading, setLoading] = React.useState(false);
-  const [valueSelect, setValueSelect] = React.useState('');
   const { debut, fin } = dates;
   const [data, setData] = React.useState();
   const [nomFile, setNomFile] = React.useState('');
@@ -24,8 +22,7 @@ function Call() {
       lien_issue + '/issuerapport',
       {
         debut,
-        fin,
-        valueSelect
+        fin
       },
       config
     );
@@ -39,16 +36,20 @@ function Call() {
       for (let i = 0; i < response.data.length; i++) {
         table.push({
           id: i,
-          Date_call: moment(response.data[i]?.dateSave).format('DD/MM/YYYY'),
-          Date_close: moment(response.data[i]?.dateClose).format('DD/MM/YYYY'),
-          Time_call: moment(response.data[i]?.fullDateSave).format('hh:mm:ss'),
-          Time_close: moment(response.data[i]?.dateClose).format('hh:mm:ss'),
+          Customer: response.data[i]?.codeclient,
           NOM: response.data[i]?.nomClient,
-          Nature_Issue: response.data[i]?.typePlainte,
-          Issue: response.data[i]?.plainteSelect,
+          Issue: response.data[i]?.typePlainte,
+          'NATURE OF ISSUE': response.data[i]?.plainteSelect,
           Recommandation: response.data[i]?.recommandation,
-          statut: response.data[i]?.statut,
-          'C.O': response.data[i]?.openBy,
+          'CALL DATE': moment(response.data[i]?.dateSave).format('DD/MM/YYYY'),
+          'CLOSE DATE': moment(response.data[i]?.dateClose).format('DD/MM/YYYY'),
+          'CALL TIME': moment(response.data[i]?.fullDateSave).format('hh:mm:ss'),
+          'CLOSE TIME': moment(response.data[i]?.dateClose).format('hh:mm:ss'),
+          STATUT: response.data[i]?.statut,
+          contact: response.data[i]?.contact,
+          origin: response.data[i]?.property,
+          'C.O': response.data[i]?.submitedBy,
+          open: response.data[i]?.open ? 'Ouvert' : 'Fermer',
           Delai: response.data[i]?.delai
         });
       }
@@ -56,10 +57,6 @@ function Call() {
       setNomFile(generateNomFile(dates, 'No tech'));
     }
   };
-  const select = [
-    { id: 1, title: 'Resolved', value: 'resolved' },
-    { id: 2, title: 'open', value: 'open' }
-  ];
 
   const columns = [
     {
@@ -88,7 +85,7 @@ function Call() {
     },
     {
       field: 'NOM',
-      headerName: 'Nombre',
+      headerName: 'Customer_name',
       width: 150,
       editable: false
     },
@@ -117,8 +114,8 @@ function Call() {
       editable: false
     },
     {
-      field: 'C.O',
-      headerName: 'C.O',
+      field: 'submitedBy',
+      headerName: 'SubmitedBy',
       width: 70,
       editable: false
     },
@@ -133,9 +130,6 @@ function Call() {
   return (
     <Paper elevation={4} sx={{ padding: '10px' }}>
       <Grid container sx={{ marginTop: '10px' }}>
-        <Grid item lg={2} sm={2} xs={12}>
-          <Selected label="Filtrer par" data={select} value={valueSelect} setValue={setValueSelect} />
-        </Grid>
         <Grid item lg={2} sm={3} xs={12} sx={{ display: 'flex', alignItems: 'center', marginTop: '5px', padding: '0px 5px' }}>
           <Input
             type="date"
@@ -172,7 +166,6 @@ function Call() {
           </Grid>
         )}
       </Grid>
-
       <Grid>
         {data && (
           <DataGrid
@@ -181,7 +174,7 @@ function Call() {
             initialState={{
               pagination: {
                 paginationModel: {
-                  pageSize: 5
+                  pageSize: 15
                 }
               }
             }}

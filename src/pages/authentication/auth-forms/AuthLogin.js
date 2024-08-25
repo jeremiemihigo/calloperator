@@ -51,6 +51,7 @@ const AuthLogin = () => {
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
           try {
             const result = await axios.post(lien + '/loginUserAdmin', { username: values.email, password: values.password });
+            console.log(result);
             if (result.status === 200 && result.data.token) {
               localStorage.setItem('auth', result.data.token);
               window.location.replace('/');

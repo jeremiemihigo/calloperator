@@ -4,10 +4,12 @@
 import React, { useContext } from 'react';
 import { lien_image } from 'static/Lien';
 // import { PostDemandeFunction, ReadDemande } from "../Redux/Demande";
-import { Grid, Typography } from '@mui/material';
-import { CreateContexte } from 'Context';
+import { Card, Grid, Typography } from '@mui/material';
 import BasicTabs from 'Control/Tabs';
+import { CreateContexteGlobal } from 'GlobalContext';
 import { Image, Space, message } from 'antd';
+import moment from 'moment';
+import { useSelector } from '../../../node_modules/react-redux/es/exports';
 import Chat from './Chat';
 import FeedbackComponent from './FeedBack';
 import ReponsesComponent from './ReponseComponent';
@@ -15,7 +17,7 @@ import './style.css';
 
 function ReponseAdmin(props) {
   const { update } = props;
-  const { demande } = useContext(CreateContexte);
+  const { demande, reponseNow } = useContext(CreateContexteGlobal);
 
   const titres = [
     { id: 0, label: 'Reponse' },
@@ -71,11 +73,15 @@ function ReponseAdmin(props) {
       </>
     );
   }
+  const regions = useSelector((state) => state.zone.zone);
+  const returnZone = (id) => {
+    return _.filter(regions, { idZone: id })[0]?.denomination;
+  };
   return (
     <Grid container>
       <>{contextHolder}</>
       <Grid item lg={6}>
-        {demande || update ? (
+        {(demande || update) && (
           <>
             <Space size={12}>
               <Image
@@ -87,8 +93,33 @@ function ReponseAdmin(props) {
             {demande && !update && <AfficherJsx demandes={demande} />}
             {update && <AfficherJsx demandes={update.demande} />}
           </>
-        ) : (
-          <p style={style.center}>Please select the request</p>
+        )}
+        {!demande && reponseNow && reponseNow.length > 0 && (
+          <div style={{ padding: '10px' }}>
+            <p style={{ padding: '0px', marginBottom: '15px', textAlign: 'center', fontWeight: 'bolder' }}>Recent answers</p>
+            {reponseNow.map((index) => {
+              return (
+                <Card
+                  style={{
+                    cursor: 'pointer',
+                    padding: '5px',
+                    marginBottom: '4px'
+                  }}
+                  key={index._id}
+                >
+                  <div>
+                    <p style={{ padding: '0px', fontSize: '12px', margin: '0px' }}>
+                      {index.agentSave?.nom};{returnZone(index.idZone)}
+                    </p>
+                    <p style={{ padding: '0px', fontSize: '12px', margin: '0px' }}>
+                      {index?.consExpDays + 'jr(s)'};{' ' + index?.clientStatut};{' ' + index?.PayementStatut}
+                      <span style={{ float: 'right', fontSize: '9px' }}>{moment(index.createdAt).fromNow()}</span>
+                    </p>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
         )}
       </Grid>
       <Grid item lg={6}>
@@ -97,16 +128,5 @@ function ReponseAdmin(props) {
     </Grid>
   );
 }
-const style = {
-  span: {
-    color: '#0078',
-    fontWeight: 'bold',
-    marginRight: '5px',
-    marginLeft: '5px'
-  },
-  center: {
-    textAlign: 'center',
-    color: 'red'
-  }
-};
+
 export default React.memo(ReponseAdmin);

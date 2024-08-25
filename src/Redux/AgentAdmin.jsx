@@ -1,14 +1,16 @@
 /* eslint-disable no-unused-vars */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { lien, config } from 'static/Lien';
+import { config, lien } from 'static/Lien';
 
 const initialState = {
   agentAdmin: [],
   addAgent: '',
   addAgentError: '',
   readAgent: '',
-  readAgentError: ''
+  readAgentError: '',
+  otherUpdated: '',
+  otherUpdatedError: ''
 };
 export const ReadAgentAdmin = createAsyncThunk('agentAdmin/ReadAgent', async (id, { rejectWithValue }) => {
   try {
@@ -20,8 +22,16 @@ export const ReadAgentAdmin = createAsyncThunk('agentAdmin/ReadAgent', async (id
 });
 export const AjouterAgentAdmin = createAsyncThunk('agentAdmin/AjouterAgentAdmin', async (data, { rejectWithValue }) => {
   try {
-    console.log(data);
     const response = await axios.post(lien + '/addAdminAgent', data, config);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error.response.data);
+  }
+});
+export const OtherUpdated = createAsyncThunk('agentAdmin/OtherUpdated', async (donner, { rejectWithValue }) => {
+  try {
+    const { link, data } = donner;
+    const response = await axios.post(`${lien}/${link}`, data, config);
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response.data);
@@ -39,7 +49,9 @@ const agent = createSlice({
         addAgent: '',
         addAgentError: '',
         readAgent: 'pending',
-        readAgentError: ''
+        readAgentError: '',
+        otherUpdated: '',
+        otherUpdatedError: ''
       };
     },
     [ReadAgentAdmin.fulfilled]: (state, action) => {
@@ -49,7 +61,9 @@ const agent = createSlice({
         addAgent: '',
         addAgentError: '',
         readAgent: 'success',
-        readAgentError: ''
+        readAgentError: '',
+        otherUpdated: '',
+        otherUpdatedError: ''
       };
     },
     [ReadAgentAdmin.rejected]: (state, action) => {
@@ -58,7 +72,9 @@ const agent = createSlice({
         addAgent: '',
         addAgentError: '',
         readAgent: 'rejected',
-        readAgentError: action.payload
+        readAgentError: action.payload,
+        otherUpdated: '',
+        otherUpdatedError: ''
       };
     },
     [AjouterAgentAdmin.pending]: (state, action) => {
@@ -67,7 +83,9 @@ const agent = createSlice({
         addAgent: 'pending',
         addAgentError: '',
         readAgent: '',
-        readAgentError: ''
+        readAgentError: '',
+        otherUpdated: '',
+        otherUpdatedError: ''
       };
     },
     [AjouterAgentAdmin.fulfilled]: (state, action) => {
@@ -76,7 +94,9 @@ const agent = createSlice({
         addAgent: 'success',
         addAgentError: '',
         readAgent: '',
-        readAgentError: ''
+        readAgentError: '',
+        otherUpdated: '',
+        otherUpdatedError: ''
       };
     },
     [AjouterAgentAdmin.rejected]: (state, action) => {
@@ -85,7 +105,43 @@ const agent = createSlice({
         addAgent: 'rejected',
         addAgentError: action.payload,
         readAgent: '',
-        readAgentError: ''
+        readAgentError: '',
+        otherUpdated: '',
+        otherUpdatedError: ''
+      };
+    },
+    [OtherUpdated.pending]: (state, action) => {
+      return {
+        ...state,
+        addAgent: '',
+        addAgentError: '',
+        readAgent: '',
+        readAgentError: '',
+        otherUpdated: 'pending',
+        otherUpdatedError: ''
+      };
+    },
+    [OtherUpdated.fulfilled]: (state, action) => {
+      let l = state.agentAdmin.map((x) => (x._id === action.payload._id ? action.payload : x));
+      return {
+        agentAdmin: l,
+        addAgent: '',
+        addAgentError: '',
+        readAgent: '',
+        readAgentError: '',
+        otherUpdated: 'success',
+        otherUpdatedError: ''
+      };
+    },
+    [OtherUpdated.rejected]: (state, action) => {
+      return {
+        ...state,
+        addAgent: '',
+        addAgentError: '',
+        readAgent: '',
+        readAgentError: '',
+        otherUpdated: 'rejected',
+        otherUpdatedError: action.payload
       };
     }
   }

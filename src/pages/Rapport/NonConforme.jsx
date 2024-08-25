@@ -1,15 +1,14 @@
 import axios from 'axios';
 import React from 'react';
-import { config, lien, lien_image } from 'static/Lien';
+import { config, lien } from 'static/Lien';
 // import Table from 'react-bootstrap/Table';
 import dayjs from 'dayjs';
 import './style.css';
 // import ImageComponent from 'Control/ImageComponent';
 import { Button, Grid } from '@mui/material';
 import AutoComplement from 'Control/AutoComplet';
-import ImageComponent from 'Control/ImageComponent';
-import ReactHTMLTableToExcel from 'react-html-table-to-excel';
 import { useSelector } from 'react-redux';
+import ExcelButton from 'static/ExcelButton';
 import Selected from 'static/Select';
 
 function Doublon() {
@@ -51,13 +50,42 @@ function Doublon() {
       }
     }
   };
-
+  const [fileData, setFileData] = React.useState();
+  const laodingFile = () => {
+    if (data) {
+      let table = [];
+      for (let i = 0; i < data.length; i++) {
+        table.push({
+          ID_Demande: data[i].idDemande,
+          codeAgent: data[i].codeAgent,
+          nom: data[i].agent.nom,
+          shop: data[i].shop?.shop,
+          commune: data[i].commune,
+          sector: data[i].sector,
+          cell: data[i].cell,
+          sat: data[i].sat,
+          date: dayjs(data[i].createdAt).format('DD/MM/YYYY'),
+          feedback: data[i].conversation[data[i].conversation.length - 1]['message']
+        });
+      }
+      setFileData(table);
+    }
+  };
+  React.useEffect(() => {
+    laodingFile();
+  }, [data]);
+  console.log(data);
   return (
     <div>
       <Grid container>
         <Grid item lg={3}>
           <Selected label="Filtrer par" data={select} value={valueSelect} setValue={setValueSelect} />
         </Grid>
+        {fileData && fileData.length > 0 && (
+          <div style={{ width: '40%', marginLeft: '10px' }}>
+            <ExcelButton data={fileData} title="Non conforme" fileName="Non_conforme.xlsx" />
+          </div>
+        )}
         {region && valueSelect === 'codeZone' && (
           <Grid item lg={3} sx={{ padding: '0px 10px' }}>
             <AutoComplement
@@ -80,18 +108,6 @@ function Doublon() {
             Chercher
           </Button>
         </Grid>
-        {data && data.length > 0 && (
-          <Grid item lg={2} sx={{ padding: '0px 10px', paddingLeft: '10px' }}>
-            <ReactHTMLTableToExcel
-              id="test-table-xls-button"
-              className="btn btn-success"
-              table="theTable"
-              filename="Non conforme"
-              sheet="Feuil 1"
-              buttonText={`Export to Excel, ${data.length}`}
-            />
-          </Grid>
-        )}
       </Grid>
       {load && <p style={{ textAlign: 'center', fontSize: '13px', color: 'blue', fontWeight: 'bolder' }}>Please wait...</p>}
       {data && (
@@ -107,7 +123,6 @@ function Doublon() {
               <th>SAT</th>
               <th>Date</th>
               <th>Feedback</th>
-              <th>File</th>
             </tr>
           </thead>
           <tbody>
@@ -131,9 +146,6 @@ function Doublon() {
                         </p>
                       );
                     })}
-                  </td>
-                  <td>
-                    <ImageComponent src={lien_image + '/' + index.file} taille={70} />
                   </td>
                 </tr>
               );

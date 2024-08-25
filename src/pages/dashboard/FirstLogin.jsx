@@ -1,17 +1,18 @@
 // material-ui
-import * as React from 'react';
 import { Button, Flex } from 'antd';
+import * as React from 'react';
 // third party
 
-import axios from 'axios';
-import { lien } from 'static/Lien';
+import { Typography } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
-import { Typography } from '@mui/material';
-import { useSelector } from 'react-redux';
 import { Input } from 'antd';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { lien } from 'static/Lien';
+import { Edit } from '../../../node_modules/@mui/icons-material/index';
 
 // project import
 
@@ -85,7 +86,8 @@ const NouvelleInscription = () => {
         </div>
         <Flex vertical gap="small" style={{ width: '100%' }}>
           <Button onClick={(e) => sendData(e)} type="primary" block>
-            Midifier
+            <Edit fontSize="small" />
+            <span style={{ marginLeft: '10px' }}>Modifier</span>
           </Button>
         </Flex>
       </DialogContent>

@@ -17,27 +17,11 @@
   border-radius: 10px;
   padding: 4px;
   position: relative;
-}
-.appel > p {
-  padding: 0px;
-  margin: 0px;
-  font-size: 11px;
-}
-.appel > div {
-  padding: 0px;
-  margin: 0px;
-}
-.appel .appelLast {
   display: flex;
-  font-size: 11px;
   align-items: center;
-  margin: 0;
-  padding: 0;
+  justify-content: space-between;
 }
-.appel .appelLast > p {
-  margin: 0;
-  padding: 0;
-}
+
 .out {
   background-color: rgb(216, 154, 154);
   font-weight: bolder;
@@ -50,13 +34,6 @@
   font-weight: bolder;
   padding: 0px 5px !important;
   border-radius: 5px;
-}
-.appelLast .heure {
-  text-align: center;
-  font-size: 10px;
-}
-.appelLast {
-  width: 100%;
 }
 
 .pCall {
@@ -84,4 +61,162 @@
   padding: 10px;
   color: white;
   text-align: center;
+}
+.divAppel {
+  display: flex;
+  margin-bottom: 15px;
+}
+.divAppel > div {
+  margin-right: 10px;
+  border-radius: 5px;
+  border: 1px solid black;
+  min-width: 8rem;
+  cursor: pointer;
+  font-weight: bolder;
+  text-align: center;
+  transition: 0.5s ease-out;
+}
+.divAppel > div > p {
+  padding: 0;
+  margin: 0;
+  font-size: 12px;
+}
+.nombre {
+  background-color: #010002;
+  color: white;
+  font-weight: bolder;
+  padding: 10px;
+}
+.nombre > p {
+  font-size: 15px;
+}
+.divAppel .select {
+  background-color: rgb(0, 169, 224);
+  border: none;
+}
+.title {
+  font-size: 13px;
+  font-weight: 700;
+}
+.values {
+  font-size: 12px;
+  font-weight: 500;
+}
+.grid {
+  margin-top: 5px;
+}
+.month {
+  font-size: 14px;
+}
+.conversation {
+  background-color: #002d72;
+  padding: 5px;
+}
+.conversation > p {
+  padding: 0;
+  margin: 0;
+  font-size: 12px;
+  color: white;
+  text-align: center;
+  font-weight: bolder;
+}
+.userP > div > img {
+  width: 35%;
+  height: 35%;
+  border-radius: 50%;
+}
+.userP > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.userP {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.userP > div > p {
+  font-weight: bolder;
+  font-size: 11px;
+}
+.body_content {
+  align-items: center;
+  padding: 5px;
+}
+.body_content > p {
+  padding: 0;
+  margin: 0;
+  text-align: justify;
+  font-size: 13px;
+}
+.papierConv {
+  padding: 10px;
+  margin: 10px;
+}
+.forme {
+  margin: 10px;
+}
+.titre > p {
+  padding: 0;
+  margin: 10px;
+  cursor: pointer;
+}
+.titre {
+  display: flex;
+  background-color: rgb(0, 169, 224);
+  align-items: center;
+}
+.titre:hover {
+  color: rgb(8, 8, 39);
+}
+.downgrade > p {
+  padding: 0;
+  margin: 0;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+.downgrade > p > span {
+  opacity: 0.5;
+  font-weight: bolder;
+}
+.downgradeP {
+  background-color: rgb(0, 169, 224);
+  color: white;
+  padding: 10px !important;
+  font-size: 13px;
+  font-weight: bolder;
+}
+.downgrade > a {
+  text-decoration: none;
+}
+.resultat > div > p {
+  padding: 0;
+  margin: 0;
+  font-size: 12px;
+}
+.resultat > div > p > span {
+  opacity: 0.5;
+}
+.resultat {
+  border: 1px solid black;
+  padding: 5px;
+  margin-bottom: 3px;
+  border-radius: 3px;
+}
+.titres {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 10px;
+}
+.titres > p,
+.adresseInfo > p {
+  padding: 0;
+  margin: 0;
+}
+.adresseInfo > p > span {
+  font-size: 12px;
+}
+.adresseP {
+  font-weight: 700;
 }

@@ -1,18 +1,17 @@
 /* eslint-disable react/prop-types */
-import React from 'react';
-import { Dialog, DialogContent, DialogActions, Typography } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, Typography } from '@mui/material';
 import { Button } from 'antd';
 
 export default function ConfirmDialog(props) {
   const { confirmDialog, setConfirmDialog } = props;
 
   return (
-    <Dialog open={confirmDialog.isOpen} className={classes.dialog}>
-      <DialogContent className={classes.contentDialog}>
+    <Dialog open={confirmDialog.isOpen} sx={classes.dialog}>
+      <DialogContent sx={classes.contentDialog}>
         <Typography variant="h6">{confirmDialog.title}</Typography>
         <Typography variant="subtitle2">{confirmDialog.subTitle}</Typography>
       </DialogContent>
-      <DialogActions className={classes.contentButton}>
+      <DialogActions sx={classes.contentButton}>
         <Button type="primary" onClick={confirmDialog.onConfirm}>
           Yes
         </Button>

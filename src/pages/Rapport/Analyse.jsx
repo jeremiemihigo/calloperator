@@ -27,8 +27,8 @@ function Analyse({ data }) {
           <thead>
             <tr>
               <td>Région/Shop</td>
-              <td>Agents</td>
-              <td>Techniciens</td>
+              <td>SA</td>
+              <td>Tech</td>
               <td>Total</td>
             </tr>
           </thead>

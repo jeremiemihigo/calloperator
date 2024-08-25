@@ -4,12 +4,15 @@ import { combineReducers } from 'redux';
 // project import
 import agent from 'Redux/Agent';
 import agentAdmin from 'Redux/AgentAdmin';
+import communication from 'Redux/Communication';
 import periodeActive from 'Redux/PeriodeActive';
 import plainte from 'Redux/Plainte';
+import itemPlainte from 'Redux/PlainteItem';
 import raison from 'Redux/Raison';
 import reponse from 'Redux/Reponses';
 import shop from 'Redux/Shop';
 import zone from 'Redux/Zone';
+import delai from 'Redux/delai';
 import user from 'Redux/user';
 import menu from './menu';
 // import contrat from 'Redux/Contrat';
@@ -19,6 +22,8 @@ import menu from './menu';
 const reducers = combineReducers({
   menu,
   zone,
+  communication,
+  delai,
   plainte,
   agentAdmin,
   user,
@@ -26,7 +31,8 @@ const reducers = combineReducers({
   agent,
   reponse,
   periodeActive,
-  shop
+  shop,
+  itemPlainte
 });
 
 export default reducers;

@@ -1,11 +1,11 @@
-import { CreateContexte } from 'Context';
-import React from 'react';
-import moment from 'moment';
 import { Grid } from '@mui/material';
+import { CreateContexteGlobal } from 'GlobalContext';
+import moment from 'moment';
+import React from 'react';
 import './chat.css';
 
 function Chats() {
-  const { chat, setDemande } = React.useContext(CreateContexte);
+  const { chat, setDemande } = React.useContext(CreateContexteGlobal);
 
   return (
     <div className="chatscomponent">

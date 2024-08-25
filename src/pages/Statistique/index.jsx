@@ -1,21 +1,20 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React from 'react';
-import '../style.css';
-import { useSelector } from 'react-redux';
-import AutoComplement from 'Control/AutoComplet';
-import { Button, Grid } from '@mui/material';
 import { Search } from '@mui/icons-material';
-import Graphique from './Graphique';
-import axios from 'axios';
-import { lien, config } from 'static/Lien';
-import BasicTabs from 'Control/Tabs';
-import MainCard from 'components/MainCard';
-import Regions from './Regions';
-import Agents from './Agents';
-import AffichageStat from './AffichageStat';
+import { Button, Grid } from '@mui/material';
 import { Input } from 'antd';
-import DirectionSnackbar from 'Control/SnackBar';
+import axios from 'axios';
+import MainCard from 'components/MainCard';
+import AutoComplement from 'Control/AutoComplet';
+import BasicTabs from 'Control/Tabs';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { config, lien } from 'static/Lien';
+import '../style.css';
+import AffichageStat from './AffichageStat';
+import Agents from './Agents';
+import Graphique from './Graphique';
+import Regions from './Regions';
 
 function Statistiques() {
   const region = useSelector((state) => state.zone);
@@ -75,55 +74,47 @@ function Statistiques() {
     { id: 1, label: 'Régions' },
     { id: 2, label: 'Agents' }
   ];
-  const [open, setOpen] = React.useState(true);
   return (
     <MainCard>
-      <DirectionSnackbar message="Seulement la selection des dates est obligatoire" open={open} setOpen={setOpen} />
       {/* {valeur && <Alert severity="error">{message}</Alert>} */}
       <Grid container>
         {region?.zone.length > 0 && (
-          <Grid item lg={3} md={3} xs={12} sx={{ marginTop: '5px' }}>
+          <Grid item lg={2} sm={6} xs={12} md={6} sx={{ padding: '5px' }}>
             <AutoComplement value={value} setValue={setValue} options={region.zone} title="Régions" propr="denomination" />
           </Grid>
         )}
         {value && (
-          <Grid item lg={3} md={3} xs={12} sx={{ paddingLeft: '5px', marginTop: '5px' }}>
+          <Grid item lg={2} sm={6} md={6} xs={12} sx={{ padding: '5px' }}>
             <AutoComplement value={shopSelect} setValue={setShopSelect} options={value.shop} title="Shop" propr="shop" />
           </Grid>
         )}
 
-        <Grid item lg={3} md={3} xs={12}>
-          <div style={{ marginLeft: '10px' }}>
-            <Grid container>
-              <Grid item lg={12} sm={12} xs={12} sx={{ marginTop: '5px', paddingRight: '5px' }}>
-                <Input
-                  type="date"
-                  onChange={(e) =>
-                    setDates({
-                      ...dates,
-                      debut: e.target.value
-                    })
-                  }
-                  placeholder="Date"
-                />
-              </Grid>
-              <Grid item lg={12} sm={12} xs={12} sx={{ marginTop: '5px', paddingRight: '5px' }}>
-                <Input
-                  onChange={(e) =>
-                    setDates({
-                      ...dates,
-                      fin: e.target.value
-                    })
-                  }
-                  type="date"
-                  placeholder="Date"
-                />
-              </Grid>
-            </Grid>
-          </div>
+        <Grid item lg={3} sm={6} xs={12} md={6} sx={{ padding: '5px', display: 'flex', alignItems: 'center' }}>
+          <Input
+            type="date"
+            onChange={(e) =>
+              setDates({
+                ...dates,
+                debut: e.target.value
+              })
+            }
+            placeholder="Date"
+          />
+        </Grid>
+        <Grid item lg={3} sm={6} xs={12} md={6} sx={{ padding: '5px', display: 'flex', alignItems: 'center' }}>
+          <Input
+            onChange={(e) =>
+              setDates({
+                ...dates,
+                fin: e.target.value
+              })
+            }
+            type="date"
+            placeholder="Date"
+          />
         </Grid>
 
-        <Grid item lg={3} sx={{ marginTop: '5px', paddingLeft: '5px' }}>
+        <Grid item lg={2} sx={{ padding: '5px', display: 'flex', alignItems: 'center' }}>
           <Button color="primary" variant="contained" disabled={fetch} onClick={(e) => sendDataFectch(e)}>
             <Search fontSize="small" /> <span style={{ marginLeft: '5px' }}>{fetch ? 'Loading...' : 'Rechercher'}</span>
           </Button>

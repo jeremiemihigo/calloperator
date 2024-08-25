@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
-import { useRef, useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 // material-ui
-import { useTheme } from '@mui/material/styles';
 import {
   Avatar,
   Box,
@@ -18,18 +17,20 @@ import {
   Tabs,
   Typography
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 
 // project import
-import MainCard from 'components/MainCard';
-import Transitions from 'components/@extended/Transitions';
-import ProfileTab from './ProfileTab';
 import userImage from 'assets/images/users/user.png';
-
+import Transitions from 'components/@extended/Transitions';
+import MainCard from 'components/MainCard';
+import ProfileTab from './ProfileTab';
+import Setting_Call from './Setting_Call';
 // assets
-import { LogoutOutlined, SettingOutlined } from '@ant-design/icons';
+import { LogoutOutlined } from '@ant-design/icons';
 // import {  RedoOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { Person, Settings } from '../../../../../../node_modules/@mui/icons-material/index';
 // import Ticket from './Ticket';
 
 // tab panel wrapper
@@ -195,11 +196,11 @@ const Profile = () => {
                                 alignItems: 'center',
                                 textTransform: 'capitalize'
                               }}
-                              icon={<SettingOutlined style={{ marginBottom: 0, marginRight: '10px' }} />}
-                              label="Settings"
+                              icon={<Person style={{ marginBottom: 0, marginRight: '10px' }} />}
+                              label="Profil"
                               {...a11yProps(0)}
                             />
-                            {/* <Tab
+                            <Tab
                               sx={{
                                 display: 'flex',
                                 flexDirection: 'row',
@@ -207,18 +208,18 @@ const Profile = () => {
                                 alignItems: 'center',
                                 textTransform: 'capitalize'
                               }}
-                              icon={<RedoOutlined style={{ marginBottom: 0, marginRight: '10px' }} />}
-                              label="Ticket"
+                              icon={<Settings style={{ marginBottom: 0, marginRight: '10px' }} />}
+                              label="Setting"
                               {...a11yProps(1)}
-                            /> */}
+                            />
                           </Tabs>
                         </Box>
                         <TabPanel value={value} index={0} dir={theme.direction}>
                           <ProfileTab handleLogout={handleLogout} />
                         </TabPanel>
-                        {/* <TabPanel value={value} index={1} dir={theme.direction}>
-                          <Ticket handleLogout={handleLogout} />
-                        </TabPanel> */}
+                        <TabPanel value={value} index={1} dir={theme.direction}>
+                          <Setting_Call handleLogout={handleLogout} />
+                        </TabPanel>
                       </>
                     )}
                   </MainCard>

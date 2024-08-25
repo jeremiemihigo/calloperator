@@ -32,7 +32,7 @@ function AutoComplement({ value, setValue, options, title, propr }) {
       selectOnFocus
       clearOnBlur
       handleHomeEndKeys
-      id="free-solo-with-text-demo"
+      id="free-solo-with"
       options={options}
       getOptionLabel={(option) => {
         // Value selected with enter, right from the input

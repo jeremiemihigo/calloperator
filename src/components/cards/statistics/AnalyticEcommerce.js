@@ -10,8 +10,8 @@ import MainCard from 'components/MainCard';
 
 // ==============================|| STATISTICS - ECOMMERCE CARD  ||============================== //
 
-const AnalyticEcommerce = ({ title, count }) => (
-  <MainCard contentSX={{ p: 2.25 }}>
+const AnalyticEcommerce = ({ title, count, color }) => (
+  <MainCard contentSX={{ p: 2.25, background: color }}>
     <Stack spacing={0.5}>
       <Typography variant="h6" color="textSecondary">
         {title}
@@ -33,7 +33,8 @@ const AnalyticEcommerce = ({ title, count }) => (
   </MainCard>
 );
 AnalyticEcommerce.propTypes = {
-  title: PropTypes.string
+  title: PropTypes.string,
+  color: PropTypes.string
 };
 
 AnalyticEcommerce.defaultProps = {

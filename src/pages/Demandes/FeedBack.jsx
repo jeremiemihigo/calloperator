@@ -23,13 +23,11 @@ function FeedbackComponent({ demande, update }) {
       };
       // socket.emit('reponse', data);
       const response = await axios.post(lien + '/reclamation', data);
-      console.log(response);
       if (response.status === 200) {
         return;
       }
     }
     if (demande && e.keyCode === 13 && reclamation !== '') {
-      setReclamation('');
       const data = {
         _id: demande._id,
         message: reclamation,
@@ -37,7 +35,9 @@ function FeedbackComponent({ demande, update }) {
         idDemande: demande.idDemande,
         codeAgent: user?.codeAgent
       };
+      setReclamation('');
       const response = await axios.post(lien + '/reclamation', data);
+      console.log(response);
       if (response.status === 200) {
         return;
       }
@@ -55,7 +55,7 @@ function FeedbackComponent({ demande, update }) {
             e.preventDefault();
             setReclamation(e.target.value);
           }}
-          placeholder="Message"
+          placeholder="Messages"
           autoSize={{
             minRows: 3,
             maxRows: 5

@@ -1,9 +1,9 @@
 import { Add } from '@mui/icons-material';
 import { Fab } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import Popup from 'static/Popup';
+import { Typography } from '../../../node_modules/@mui/material/index';
 import ItemPlain from './AddItemPlainte';
 import AddPlainte from './AddPlainte';
 
@@ -18,88 +18,62 @@ function Plainte() {
     setOpenItem(true);
   };
 
-  const columns = [
-    {
-      field: 'id',
-      headerName: 'ID',
-      width: 100,
-      editable: false
-    },
-    {
-      field: 'title',
-      headerName: 'Title',
-      width: 100,
-      editable: false
-    },
-    {
-      field: 'items',
-      headerName: 'Items',
-      width: 750,
-      renderCell: (params) => {
-        return (
-          <>
-            {params.row?.alltype.length > 0 &&
-              params.row.alltype.map((index) => {
-                return (
-                  <p style={{ padding: '0px', margin: '0px', width: '100%' }} key={index._id}>
-                    {index.title}
-                  </p>
-                );
-              })}
-          </>
-        );
-      }
-    },
-    {
-      field: 'option',
-      headerName: 'Option',
-      width: 100,
-      editable: false,
-      renderCell: (params) => {
-        return (
-          <Fab size="small" onClick={() => addItem(params.row.id)}>
-            <Add fontSize="small" />
-          </Fab>
-        );
-      }
-    }
-  ];
-
   return (
     <div>
-      <Fab size="small" onClick={() => setOpen(true)}>
-        <Add fontSize="small" />
-      </Fab>
+      <Typography sx={{ cursor: 'pointer', color: 'blue' }} onClick={() => setOpen(true)} noWrap>
+        Add Complaint
+      </Typography>
 
       <div>
-        {plainte && plainte.length > 0 ? (
-          <DataGrid
-            rows={plainte}
-            columns={columns}
-            initialState={{
-              pagination: {
-                paginationModel: {
-                  pageSize: 7
-                }
-              }
-            }}
-            pageSizeOptions={[7]}
-            checkboxSelection
-            disableRowSelectionOnClick
-          />
-        ) : (
-          <p className="red">Aucun technicien trouvé</p>
-        )}
+        <table>
+          <thead>
+            <tr>
+              <td>#</td>
+              <td>Title</td>
+              <td>Property</td>
+              <td>Items</td>
+              <td>Action</td>
+            </tr>
+          </thead>
+          <tbody>
+            {plainte &&
+              plainte.map((index) => {
+                return (
+                  <tr key={index._id}>
+                    <td>{index.id}</td>
+                    <td>{index.title}</td>
+                    <td>{index.property}</td>
+                    <td>
+                      <ol>
+                        {index.alltype.map((item, cle) => {
+                          return (
+                            <li key={cle}>
+                              {item.title}
+                              {item.ticket && <span style={{ color: 'blue' }}>{' (ticket)'}</span>}
+                            </li>
+                          );
+                        })}
+                      </ol>
+                    </td>
+                    <td>
+                      <Fab size="small" color="primary" onClick={() => addItem(index)}>
+                        <Add fontSize="small" />
+                      </Fab>
+                    </td>
+                  </tr>
+                );
+              })}
+          </tbody>
+        </table>
       </div>
-
       <Popup open={open} setOpen={setOpen} title="Plainte">
         <AddPlainte />
       </Popup>
       <Popup open={openItem} setOpen={setOpenItem} title="Add Items">
-        <ItemPlain item={plainteSelect} />
+        <ItemPlain plait_select={plainteSelect} />
       </Popup>
     </div>
   );
 }
 
-export default Plainte;
+export default React.memo(Plainte);

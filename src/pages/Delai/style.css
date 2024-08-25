@@ -1,0 +1,16 @@
+.plainte {
+  background-color: #dedede;
+  padding: 5px 10px;
+  margin-bottom: 5px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.plainte > p {
+  padding: 0;
+  margin: 0;
+  font-size: 12px;
+}
+.select {
+  background-color: #1a123e;
+  color: white;
+}

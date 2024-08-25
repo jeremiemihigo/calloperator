@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 // assets
-import { DonutLarge, Language, PeopleAlt, Person, Settings } from '@mui/icons-material';
+import { Language, PeopleAlt, Person, Settings } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { activeItem } from 'store/reducers/menu';
 // import {  FreeBreakfast, } from '@mui/icons-material';
@@ -46,10 +46,6 @@ const ProfileTab = () => {
       itemHandler('agent');
       navigation('/congeRH', { replace: true });
     }
-    if (index === 7) {
-      itemHandler('Plainte');
-      navigation('/plainte', { replace: true });
-    }
   };
 
   const userConenct = useSelector((state) => state.user?.user);
@@ -84,14 +80,6 @@ const ProfileTab = () => {
             <Settings fontSize="small" />
           </ListItemIcon>
           <ListItemText primary="Permissions" />
-        </ListItemButton>
-      )}
-      {userConenct && userConenct.fonction === 'superUser' && (
-        <ListItemButton selected={selectedIndex === 7} onClick={(event) => handleListItemClick(event, 7)}>
-          <ListItemIcon>
-            <DonutLarge fontSize="small" />
-          </ListItemIcon>
-          <ListItemText primary="Complaint" />
         </ListItemButton>
       )}
     </List>

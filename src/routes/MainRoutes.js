@@ -17,6 +17,8 @@ const Demande = Loadable(lazy(() => import('pages/Demandes')));
 const Rapport = Loadable(lazy(() => import('pages/Rapport')));
 const Corbeille = Loadable(lazy(() => import('pages/Corbeille')));
 const Access = Loadable(lazy(() => import('pages/Access')));
+const Delai = Loadable(lazy(() => import('pages/Delai')));
+const Communication = Loadable(lazy(() => import('pages/Communication')));
 // const Actions = Loadable(lazy(() => import('pages/Actions')));
 
 // ==============================|| MAIN ROUTING ||============================== //
@@ -65,6 +67,14 @@ const MainRoutes = {
     {
       path: '/rapport',
       element: <Rapport />
+    },
+    {
+      path: '/delai',
+      element: <Delai />
+    },
+    {
+      path: '/communication',
+      element: <Communication />
     }
 
     // {

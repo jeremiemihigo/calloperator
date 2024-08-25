@@ -140,11 +140,11 @@ function AgentListe() {
         <Grid container>
           <Grid item lg={2}>
             <Button fullWidth onClick={() => setOpenAgent(true)} variant="contained" color="primary">
-              Ajoutez un agent
+              Ajoutez_un_agent
             </Button>
           </Grid>
           <Grid item lg={2} style={{ margin: '0px 5px' }}>
-            {allListe && <ExcelButton data={allListe.agent} title="agent" fileName="agents.xlsx" />}
+            {allListe && <ExcelButton data={allListe.agent} title="Export to excel" fileName="agents.xlsx" />}
           </Grid>
           <Grid>
             <Button fullWidth variant="contained" color="primary" onClick={() => setOpenBloque(true)}>

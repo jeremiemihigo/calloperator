@@ -1,21 +1,38 @@
-import ImageComponent from 'Control/ImageComponent';
 import { Input } from 'antd';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import React from 'react';
-import ReactHTMLTableToExcel from 'react-html-table-to-excel';
-import { config, lien, lien_image } from 'static/Lien';
+import ExcelButton from 'static/ExcelButton';
+import { config, lien } from 'static/Lien';
 import './style.css';
 
 function Doublon() {
   const [load, setLoad] = React.useState(false);
   const [data, setData] = React.useState();
+  const [file, setFile] = React.useState();
 
   const laoding = async () => {
     try {
       setLoad(true);
       const response = await axios.get(lien + '/doublon', config);
+      console.log(response.data);
       if (response.status === 200) {
+        let d = [];
+        for (let i = 0; i < response.data.length; i++) {
+          d.push({
+            codeclient: response.data[i].codeclient,
+            agent1: response.data[i].agentPrecedent.codeAgent,
+            nom1: response.data[i].agentPrecedent.nom,
+            sat1: response.data[i].precedent.sat,
+            date1: dayjs(response.data[i].precedent.createdAt).format('DD/MM/YYYY'),
+            agent2: response.data[i].agentPresent.codeAgent,
+            nom2: response.data[i].agentPresent.nom,
+            sat2: response.data[i].presents.sat,
+            shop2: response.data[i].PresentShop[0].shop,
+            date2: dayjs(response.data[i].presents.createdAt).format('DD/MM/YYYY')
+          });
+        }
+        setFile(d);
         setData(response.data);
         setLoad(false);
       }
@@ -55,14 +72,7 @@ function Doublon() {
         </div>
         {data && data.length > 0 && (
           <div style={{ width: '40%', marginLeft: '10px' }}>
-            <ReactHTMLTableToExcel
-              id="test-table-xls-button"
-              className="btn btn-success"
-              table="theTable"
-              filename="Doublons"
-              sheet="Feuil 1"
-              buttonText={`Export to Excel, ${data.length}`}
-            />
+            <ExcelButton data={file} title="Doublon" fileName="Doublon.xlsx" />
           </div>
         )}
       </div>
@@ -82,13 +92,11 @@ function Doublon() {
               <th>agent</th>
               <th>Nom</th>
               <th>SAT</th>
-              <th>File</th>
               <th>Date</th>
               <th>agent</th>
               <th>Nom</th>
               <th>SAT</th>
               <th>Date</th>
-              <th>File</th>
             </tr>
           </thead>
           <tbody>
@@ -99,17 +107,12 @@ function Doublon() {
                   <td>{index.agentPrecedent.codeAgent}</td>
                   <td>{index.agentPrecedent.nom}</td>
                   <td>{index.precedent.sat}</td>
-                  <td>
-                    <ImageComponent src={lien_image + '/' + index.precedent.file} taille={50} />
-                  </td>
+
                   <td>{dayjs(index.precedent.createdAt).format('DD/MM/YYYY')}</td>
                   <td>{index.agentPresent.codeAgent}</td>
                   <td>{index.agentPresent.nom}</td>
                   <td>{index.presents.sat}</td>
                   <td>{dayjs(index.presents.createdAt).format('DD/MM/YYYY')}</td>
-                  <td>
-                    <ImageComponent src={lien_image + '/' + index.presents.file} taille={50} />
-                  </td>
                 </tr>
               );
             })}

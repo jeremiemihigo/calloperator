@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { Edit, Save } from '@mui/icons-material';
-import { Button, Checkbox, CircularProgress, Grid, TextField, Typography } from '@mui/material';
+import { Button, CircularProgress, Grid, TextField } from '@mui/material';
 import AutoComplement from 'Control/AutoComplet';
 import DirectionSnackbar from 'Control/SnackBar';
 import { AjouterAgent, UpdateAgent } from 'Redux/Agent';
@@ -12,15 +12,15 @@ function AddAgent({ data }) {
   const [values, setValue] = React.useState({
     nom: '',
     telephone: '',
-    codeAgent: '',
-    fonction: ''
+    codeAgent: ''
   });
   const dispatch = useDispatch();
   const zone = useSelector((state) => state.zone);
   const [valueRegionSelect, setValueRegionSelect] = React.useState('');
   const [valueShopSelect, setValueShopSelect] = React.useState('');
+  const [fonction, setFonction] = React.useState('');
   // eslint-disable-next-line no-unused-vars
-  const { nom, telephone, codeAgent, fonction } = values;
+  const { nom, telephone, codeAgent } = values;
   const onChange = (e) => {
     const { name, value } = e.target;
     setValue({
@@ -31,6 +31,8 @@ function AddAgent({ data }) {
   React.useEffect(() => {
     if (data) {
       setValue({ ...data });
+      let f = label.filter((x) => x.value === data.fonction)[0];
+      setFonction(f);
       let select = _.filter(zone.zone, { idZone: data.codeZone });
       setValueRegionSelect(select[0]);
       if (data?.shop.length > 0) {
@@ -48,13 +50,19 @@ function AddAgent({ data }) {
     e.preventDefault();
     try {
       //nom, codeAgent, fonction, telephone, idZone, idShop
-      let donner = { nom, telephone, codeAgent, fonction, idZone: valueRegionSelect?.idZone, idShop: valueShopSelect?.idShop };
+      let donner = {
+        nom,
+        telephone,
+        fonction: fonction?.value,
+        codeAgent,
+        idZone: valueRegionSelect?.idZone,
+        idShop: valueShopSelect?.idShop
+      };
       dispatch(AjouterAgent(donner));
       setValue({
         nom: '',
         telephone: '',
-        codeAgent: '',
-        fonction: ''
+        codeAgent: ''
       });
       setValueRegionSelect('');
       setValueShopSelect('');
@@ -64,17 +72,25 @@ function AddAgent({ data }) {
   };
 
   const label = [
-    { id: 1, title: 'Tech', value: 'tech' },
-    { id: 2, title: 'agent', value: 'agent' },
-    { id: 3, title: 'ZBM', value: 'ZBM' },
-    { id: 4, title: 'PO', value: 'PO' },
+    { id: 1, title: 'Technicien (TECH)', value: 'tech' },
+    { id: 2, title: 'Agent (SA)', value: 'agent' },
+    { id: 3, title: 'Zonal_Business_Manager', value: 'ZBM' },
+    { id: 4, title: 'Process_Officer', value: 'PO' },
     { id: 5, title: 'RS', value: 'RS' },
-    { id: 6, title: 'SM', value: 'SM' }
+    { id: 6, title: 'Shop_Manager', value: 'SM' },
+    { id: 7, title: 'Team_leader', value: 'TL' },
+    { id: 8, title: 'Stagiaire', value: 'stagiaire' },
+    { id: 8, title: 'Agent_de_recouvrement_(AR)', value: 'AR' },
+    { id: 9, title: 'Shop_Assistante', value: 'shop_assistante' }
   ];
   const [errorAlert, setErrorAlert] = React.useState();
   const sendUpdate = () => {
     try {
-      if (['ZBM', 'PO'].includes(fonction)) {
+      if (['ZBM', 'PO'].includes(fonction?.value)) {
+        setValue({
+          ...values,
+          fonction: fonction?.value
+        });
         let donner = {
           values,
           zoneSelect: valueRegionSelect?.idZone,
@@ -89,7 +105,7 @@ function AddAgent({ data }) {
           let donner = {
             values,
             zoneSelect: valueRegionSelect?.idZone,
-            shop: ['ZBM', 'PO'].includes(fonction) ? '' : valueShopSelect?.idShop
+            shop: ['ZBM', 'PO'].includes(fonction?.value) ? '' : valueShopSelect?.idShop
           };
           dispatch(UpdateAgent(donner));
         }
@@ -106,24 +122,9 @@ function AddAgent({ data }) {
       {agent.updateAgent === 'rejected' && <DirectionSnackbar message={agent.updateAgentError} open={true} setOpen={setOpen} />}
       {errorAlert && <DirectionSnackbar message={errorAlert} open={open} setOpen={setOpen} />}
       <div className="mb-3">
-        {label.map((index) => {
-          return (
-            <Typography
-              component="span"
-              style={{ cursor: 'pointer' }}
-              key={index.id}
-              onClick={() =>
-                setValue({
-                  ...values,
-                  fonction: index.value
-                })
-              }
-            >
-              <Checkbox key={index.id} checked={fonction == index.value ? true : false} />
-              <label>{index.title}</label>
-            </Typography>
-          );
-        })}
+        <Grid sx={{ marginTop: '10px' }}>
+          <AutoComplement value={fonction} setValue={setFonction} options={label} title="Fonction" propr="title" />
+        </Grid>
       </div>
 
       <div>
@@ -163,7 +164,7 @@ function AddAgent({ data }) {
             />
           )}
         </Grid>
-        {!['PO', 'ZBM'].includes(fonction) && (
+        {!['PO', 'ZBM'].includes(fonction?.value) && (
           <Grid sx={{ marginTop: '10px' }}>
             {valueRegionSelect !== '' && valueRegionSelect !== null && (
               <AutoComplement

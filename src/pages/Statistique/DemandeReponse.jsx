@@ -1,10 +1,10 @@
 /* eslint-disable react/prop-types */
-import { lien_image } from 'static/Lien';
-import React from 'react';
-import './style.css';
-import { Typography, Grid } from '@mui/material';
-import moment from 'moment';
+import { Grid, Typography } from '@mui/material';
 import { Input } from 'antd';
+import moment from 'moment';
+import React from 'react';
+import { lien_image } from 'static/Lien';
+import './style.css';
 
 function DemandeReponse({ data }) {
   const handleChange = (donner) => {
@@ -45,53 +45,53 @@ function DemandeReponse({ data }) {
         {data &&
           filterFn.fn(handleChange(data)).map((index) => {
             return (
-              <Grid item lg={6} key={index._id} className="messagesToutes">
-                <div className="listeImage">
-                  <img src={`${lien_image}/${index.file}`} alt={index._id} />
-                  <Typography component="p" sx={{ fontSize: '13px' }}>
-                    {index.codeclient !== undefined && index.codeclient};{index?.sat} {index?.reference}
-                    {index?.statut}; {index?.raison.toLowerCase()}, {index.numero && index.numero};
-                  </Typography>
-                </div>
-                <div className="itemButtons"></div>
-                <div>
-                  {index.conversation.length > 0 &&
-                    index.conversation.map((item) => {
-                      return (
-                        <div key={item._id} className={item.sender === 'agent' ? 'agent' : 'callcenter'}>
-                          <p className="messageText">{item.message}</p>
-                          <p className="heure">{moment(item.createdAt).fromNow()}</p>
-                        </div>
-                      );
-                    })}
-                </div>
-                <div>
-                  {index.reponse.length > 0 &&
-                    index.reponse.map((item) => {
-                      return (
-                        <div key={item._id} className="reponseListe">
-                          <p>{item.codeclient}</p>
-                          <p style={{ fontWeight: 'bold' }}>{item.nomClient.toUpperCase()}</p>
-                          <p>
-                            Statut du client : <span style={{ fontWeight: 'bolder' }}>{item.clientStatut}</span>{' '}
-                          </p>
-                          <p>
-                            Statut payement : <span style={{ fontWeight: 'bolder' }}>{item.PayementStatut}</span>
-                          </p>
-                          <p>
-                            consExpDays :{' '}
-                            <span style={{ fontWeight: 'bolder' }}>
-                              {item.consExpDays}
-                              {' jour(s) '}
-                            </span>
-                          </p>
-                          <p>
-                            {item.region}/{item.shop}
-                          </p>
-                          <p>{item?.codeCu}</p>
-                        </div>
-                      );
-                    })}
+              <Grid key={index._id} sx={{ padding: '3px' }} item lg={6}>
+                <div className="messagesToutes">
+                  <div className="listeImage">
+                    <img src={`${lien_image}/${index.file}`} alt={index._id} />
+                    <Typography component="p" sx={{ fontSize: '13px' }}>
+                      {index.codeclient !== undefined && index.codeclient};{index?.sat} {index?.reference}
+                      {index?.statut}; {index?.raison.toLowerCase()}, {index.numero && index.numero};
+                    </Typography>
+                  </div>
+                  <div className="itemButtons"></div>
+                  <div>
+                    {index.conversation.length > 0 &&
+                      index.conversation.map((item) => {
+                        return (
+                          <div key={item._id} className={item.sender === 'agent' ? 'agent' : 'callcenter'}>
+                            <p className="messageText">{item.message}</p>
+                            <p className="heure">{moment(item.createdAt).fromNow()}</p>
+                          </div>
+                        );
+                      })}
+                  </div>
+                  <div>
+                    {index.reponse.length > 0 &&
+                      index.reponse.map((item) => {
+                        return (
+                          <div key={item._id} className="reponseListe">
+                            <p>{item.codeclient}</p>
+                            <p style={{ fontWeight: 'bold' }}>{item.nomClient.toUpperCase()}</p>
+                            <p>
+                              Statut du client : <span style={{ fontWeight: 'bolder' }}>{item.clientStatut}</span>{' '}
+                            </p>
+                            <p>
+                              Statut payement : <span style={{ fontWeight: 'bolder' }}>{item.PayementStatut}</span>
+                            </p>
+                            <p>
+                              consExpDays :{' '}
+                              <span style={{ fontWeight: 'bolder' }}>
+                                {item.consExpDays}
+                                {' jour(s) '}
+                              </span>
+                            </p>
+                            <p>{item.followup ? 'Categorie : Follow_up' : 'Categorie : visite'}</p>
+                            <p>{item?.codeCu}</p>
+                          </div>
+                        );
+                      })}
+                  </div>
                 </div>
               </Grid>
             );
@@ -114,4 +114,4 @@ function DemandeReponse({ data }) {
   );
 }
 
-export default DemandeReponse;
+export default React.memo(DemandeReponse);
