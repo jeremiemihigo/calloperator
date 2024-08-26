@@ -2,13 +2,13 @@ import { Search } from '@mui/icons-material';
 import { Button, CircularProgress, Grid, Paper, Typography } from '@mui/material';
 import AutoComplement from 'Control/AutoComplet';
 import DirectionSnackbar from 'Control/SnackBar';
-import { Input } from 'antd';
+import { Image, Input, Space } from 'antd';
 import axios from 'axios';
 import _ from 'lodash';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import ExcelButton from 'static/ExcelButton';
-import { config, dateFrancais, lien } from 'static/Lien';
+import { config, dateFrancais, lien, lien_image } from 'static/Lien';
 import Selected from 'static/Select';
 import Analyse from './Analyse';
 import { generateNomFile } from './NameFile';
@@ -104,6 +104,7 @@ function Rapport() {
       } else {
         setDonnerFound(response.data);
         let donner = [];
+        console.log(response.data);
         for (let i = 0; i < response.data.length; i++) {
           donner.push({
             ID: response.data[i].codeclient,
@@ -135,7 +136,8 @@ function Rapport() {
             REFERENCE: response.data[i].demande?.reference,
             SAT: response.data[i].demande?.sat,
             CONTACT: response.data[i].demande?.numero !== 'undefined' ? response.data[i].demande?.numero : '',
-            Adresse: response.data[i]?.adresschange
+            Adresse: response.data[i]?.adresschange,
+            file: response.data[i].demande?.file
           });
         }
         setLoading(false);
@@ -236,6 +238,36 @@ function Rapport() {
           <p style={{ textAlign: 'center' }}>Patientez le Chargement des shops et regions....</p>
         </>
       )}
+      <table>
+        <thead>
+          <tr>
+            <td>#</td>
+            <td>ID</td>
+            <td>file</td>
+          </tr>
+        </thead>
+        <tbody>
+          {samplejson2 &&
+            samplejson2.map((index) => {
+              console.log(index.file);
+              return (
+                <tr key={index.file}>
+                  <td>{index.file}</td>
+                  <td>{index.ID}</td>
+                  <td>
+                    <Space size={12}>
+                      <Image
+                        width={200}
+                        src={`${lien_image}/${index.file}`}
+                        placeholder={<Image preview={false} src={`${lien_image}/${index.file}`} width={200} />}
+                      />
+                    </Space>
+                  </td>
+                </tr>
+              );
+            })}
+        </tbody>
+      </table>
     </Paper>
   );
 }

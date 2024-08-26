@@ -106,6 +106,7 @@ const ContexteGlobal = (props) => {
       });
     }
   }, [socket]);
+
   React.useEffect(() => {
     if (donner) {
       let all = [...allListe, donner];
