@@ -3,14 +3,15 @@
 // const link = 'http://192.168.1.68:40002';
 const link = 'https://backendtestserver.onrender.com';
 //const linkonline = 'https://visite.bboxxvm.com';
-const linkonline = 'https://backendtestserver.onrender.com';
+//const link = 'https://visite.bboxxvm.com';
+//const linkonline = 'https://backendtestserver.onrender.com';
 // const linkimg = 'https://visite.bboxxvm.com';
 
 export const lien = `${link}/bboxx/support`;
 export const lien_socket = link;
 export const lien_conge = `${link}/admin/conge`;
 export const lien_issue = `${link}/issue`;
-export const lien_image = `${linkonline}/bboxx/image`;
+export const lien_image = `${link}/bboxx/image`;
 export const lien_file = `${link}/bboxx/file`;
 export const config = {
   headers: {
