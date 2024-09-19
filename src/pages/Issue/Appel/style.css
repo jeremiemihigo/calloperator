@@ -210,7 +210,8 @@
   padding: 5px 10px;
 }
 .titres > p,
-.adresseInfo > p {
+.adresseInfo > p,
+.titres > p {
   padding: 0;
   margin: 0;
 }

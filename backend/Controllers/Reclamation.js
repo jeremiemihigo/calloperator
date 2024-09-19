@@ -1,81 +1,35 @@
 const asyncLab = require("async");
 const modelReclamation = require("../Models/Reclamation");
-const modelPeriode = require("../Models/Periode");
 const modelDemande = require("../Models/Demande");
 const { ObjectId } = require("mongodb");
+const moment = require("moment");
 
 module.exports = {
-  Reclamation: (req, res, next) => {
+  Reclamation: (req, res) => {
     try {
-      const { _id, message, sender, codeAgent } = req.body;
+      const { _id, message, idDemande, sender, codeAgent } = req.body;
       if (!_id || !message || !sender || !codeAgent) {
         return res.status(201).json("Error");
       }
-      asyncLab.waterfall(
-        [
-          function (done) {
-            if (sender === "agent") {
-              modelReclamation
-                .find({ code: new ObjectId(_id) })
-                .then((response) => {
-                  if (response.length > 0) {
-                    done(null, true);
-                  } else {
-                    return res
-                      .status(201)
-                      .json(
-                        "Veuillez patienter! votre demande est en cours de traitement"
-                      );
-                  }
-                })
-                .catch(function (errr) {
-                  if (errr) {
-                    return res.status(201).json("Try again");
-                  }
-                });
-            } else {
-              done(null, true);
-            }
-          },
-          function (rep, done) {
-            modelReclamation
-              .create({
-                message,
-                codeAgent,
-                sender,
-                code: new ObjectId(_id),
-              })
-              .then((response) => {
-                if (response) {
-                  done(response);
-                }
-              })
-              .catch(function (errr) {
-                if (errr) {
-                  return res.status(201).json("Try again");
-                }
-              });
-          },
-          function (reclamation, done) {
-            modelReclamation
-              .find({ code: reclamation.code })
-              .then((recl) => {
-                done(recl);
-              })
-              .catch(function (err) {
-                console.log(err);
-              });
-          },
-        ],
-        function (result) {
-          if (result) {
-            req.recherche = result._id;
-            next();
-          } else {
-            return res.status(200).json([]);
+      const io = req.io;
+      modelReclamation
+        .create({
+          message,
+          codeAgent,
+          sender,
+          code: new ObjectId(_id),
+        })
+        .then((response) => {
+          if (response) {
+            io.emit("chat", { idDemande });
+            return res.status(200).json("Done");
           }
-        }
-      );
+        })
+        .catch(function (errr) {
+          if (errr) {
+            return res.status(201).json("Try again");
+          }
+        });
     } catch (error) {
       console.log(error);
     }
@@ -136,28 +90,15 @@ module.exports = {
   },
   demandeIncorrect: (req, res) => {
     try {
+      const periode = moment(new Date()).format("MM-YYYY");
       asyncLab.waterfall(
         [
           function (done) {
-            modelPeriode
-              .findOne({})
-              .then((response) => {
-                if (response) {
-                  done(null, response);
-                } else {
-                  return res.status(201).json("Erreur");
-                }
-              })
-              .catch(function (err) {
-                return res.status(201).json("Erreur " + err);
-              });
-          },
-          function (periode, done) {
             modelDemande
               .aggregate([
                 {
                   $match: {
-                    lot: periode.periode,
+                    lot: periode,
                     valide: false,
                     feedback: "chat",
                   },

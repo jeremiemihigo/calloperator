@@ -101,11 +101,11 @@ function Index() {
             initialState={{
               pagination: {
                 paginationModel: {
-                  pageSize: 5
+                  pageSize: 20
                 }
               }
             }}
-            pageSizeOptions={[5]}
+            pageSizeOptions={[20]}
             checkboxSelection
             disableRowSelectionOnClick
           />

@@ -11,8 +11,6 @@ import { config, lien } from 'static/Lien';
 import Popup from 'static/Popup';
 import AgentAdmin from './AgentAdmin';
 
-import Chip from '@mui/material/Chip';
-import Stack from '@mui/material/Stack';
 import Dot from 'components/@extended/Dot';
 
 function AgentListeAdmin() {
@@ -44,13 +42,13 @@ function AgentListeAdmin() {
     {
       field: 'codeAgent',
       headerName: 'Code',
-      width: 80,
+      width: 120,
       editable: false
     },
     {
       field: 'nom',
       headerName: 'NOMS',
-      width: 150,
+      width: 200,
       editable: false
     },
 
@@ -90,21 +88,6 @@ function AgentListeAdmin() {
               {params.row.active ? 'Bloquer' : 'Débloquer'}
             </Typography>
           </>
-        );
-      }
-    },
-    {
-      field: 'Taches',
-      headerName: 'Tâches',
-      width: 500,
-      editable: false,
-      renderCell: (params) => {
-        return (
-          <Stack direction="row" spacing={1} sx={{ marginRight: '5px' }}>
-            {params.row?.tache?.map((index) => {
-              return <Chip key={index._id} label={index.title} />;
-            })}
-          </Stack>
         );
       }
     }

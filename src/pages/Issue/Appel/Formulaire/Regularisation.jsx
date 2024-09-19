@@ -1,54 +1,16 @@
 import { Button, TextField } from '@mui/material';
 import { message } from 'antd';
-import axios from 'axios';
+import { CreateContexteGlobal } from 'GlobalContext';
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { config, lien_issue } from 'static/Lien';
+import axios from '../../../../../node_modules/axios/index';
 import { CreateContexteTable } from '../Contexte';
-// codeclient,
-// shop,
-// contact,
-// time_delai,
-// nomClient,
-// plainteSelect,
-// typePlainte,
-// fullDate,
-// property,
-// jours,
-// cu,
-// date_coupure,
+
 function Regularisation() {
   const { item, plainteSelect, annuler, initiale, shopSelect, codeclient } = React.useContext(CreateContexteTable);
   const [autres, setAutres] = React.useState();
-  const [today, setToday] = React.useState(new Date());
-  const deedline = useSelector((state) => state.delai.delai);
-  const returnDelai = async (statut, today) => {
-    if (deedline && today) {
-      const a = _.filter(deedline, { plainte: statut });
-      if (a.length > 0) {
-        //si la plainte existe je cherche le jour
-        let critere = a[0].critere.filter((x) => x.jour === today.day_of_week);
-        if (critere.length > 0) {
-          //si le critere existe
-          let debutHeure = critere[0].debut.split(':')[0];
-          let debutMinutes = critere[0].debut.split(':')[1];
-          if (
-            new Date(today.datetime).getHours() > parseInt(debutHeure) ||
-            (new Date(today.datetime).getHours() === parseInt(debutHeure) &&
-              new Date(today.datetime).getMinutes() >= parseInt(debutMinutes))
-          ) {
-            return critere[0]?.delai;
-          } else {
-            return a[0]?.defaut;
-          }
-        } else {
-          return a[0]?.defaut;
-        }
-      } else {
-        return 30;
-      }
-    }
-  };
+  const { client, setClient } = React.useContext(CreateContexteGlobal);
+
   const [messageApi, contextHolder] = message.useMessage();
   const success = (texte, type) => {
     messageApi.open({
@@ -62,7 +24,6 @@ function Regularisation() {
     e.preventDefault();
     try {
       setSending(true);
-      const delai = await returnDelai('escalade', today);
       const data = {
         codeclient,
         shop: shopSelect?.shop,
@@ -71,37 +32,31 @@ function Regularisation() {
         nomClient: initiale?.nomClient,
         plainteSelect: plainteSelect?.title,
         typePlainte: item?.title,
-        time_delai: delai,
-        fullDate: today,
         jours: autres?.jours,
+        statut: 'escalade',
         cu: autres?.cu,
         date_coupure: autres?.date_coupure,
         raison: autres?.raison
       };
       const response = await axios.post(lien_issue + '/regularisation', data, config);
       if (response.status === 200) {
-        annuler();
         success('Done', 'success');
+        setClient([response.data, ...client]);
         setSending(false);
-      } else {
+        annuler();
+      }
+      if (response.status === 2001) {
         success('' + response.data, 'error');
         setSending(false);
       }
     } catch (error) {
       if (error.code === 'ERR_NETWORK') {
         success(error.message, 'error');
+        setSending(false);
       }
     }
   };
-  const loading = async () => {
-    const reponse = await axios.get('https://worldtimeapi.org/api/timezone/Africa/Lubumbashi');
-    if (reponse.status === 200) {
-      setToday(reponse.data.datetime);
-    }
-  };
-  React.useEffect(() => {
-    loading();
-  }, [plainteSelect]);
+
   return (
     <div style={{ width: '20rem' }}>
       {contextHolder}

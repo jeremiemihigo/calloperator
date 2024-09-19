@@ -1,8 +1,10 @@
 import { Message } from '@mui/icons-material';
 import { Fab, Paper } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
+import NoCustomer from 'components/Attente';
 import LoaderGif from 'components/LoaderGif';
 import { CreateContexteGlobal } from 'GlobalContext';
+import _ from 'lodash';
 import moment from 'moment';
 import React from 'react';
 import { TimeCounter } from 'static/Lien';
@@ -12,11 +14,11 @@ import Couleur from './Color';
 function AllCall() {
   const [data, setData] = React.useState();
 
-  const { setPlainteSelect, setSelect } = React.useContext(CreateContexteTable);
   const { client } = React.useContext(CreateContexteGlobal);
+  const { setPlainteSelect, setSelect } = React.useContext(CreateContexteTable);
   const loading = async () => {
     if (client) {
-      setData(client.filter((x) => x.operation === 'backoffice'));
+      setData(_.filter(client, { operation: 'backoffice' }));
     }
   };
   React.useEffect(() => {
@@ -129,7 +131,6 @@ function AllCall() {
   return (
     <>
       {!data && <LoaderGif width={400} height={400} />}
-      {data && data.length === 0 && <p style={{ textAlign: 'center', color: 'blue', fontWeight: 'bolder' }}>Aucune plainte en attente</p>}
       {data && data.length > 0 && (
         <Paper elevation={4}>
           <DataGrid
@@ -138,19 +139,20 @@ function AllCall() {
             initialState={{
               pagination: {
                 paginationModel: {
-                  pageSize: 20
+                  pageSize: 100
                 }
               }
             }}
-            pageSizeOptions={[20]}
+            pageSizeOptions={[100]}
             disableRowSelectionOnClick
             getRowId={getId}
           />
         </Paper>
       )}
+      {data && data.length === 0 && <NoCustomer texte="No backoffice complaints" />}
       {/* <Rebour /> */}
     </>
   );
 }
 
-export default AllCall;
+export default React.memo(AllCall);

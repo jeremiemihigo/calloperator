@@ -1,8 +1,10 @@
 /* eslint-disable react/prop-types */
 import Snackbar from '@mui/material/Snackbar';
+import React from 'react';
 
 function DirectionSnackbar(props) {
-  const { message, open, setOpen } = props;
+  const { message } = props;
+  const [open, setOpen] = React.useState(true);
 
   const handleClose = () => {
     setOpen(false);

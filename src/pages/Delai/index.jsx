@@ -14,7 +14,8 @@ function Index() {
     { id: 2, title: 'Open_technician_visit', value: 'Open_technician_visit' },
     { id: 3, title: 'Awaiting confirmation', value: 'awaiting_confirmation' },
     { id: 4, title: 'Not_resolved', value: 'Not_resolved' },
-    { id: 5, title: 'Ongoing', value: 'Ongoing' }
+    { id: 5, title: 'Ongoing', value: 'Ongoing' },
+    { id: 6, title: 'Resolved', value: 'resolved' }
   ];
   const [plainteSelect, setPlainteSelect] = React.useState('');
   const delai = useSelector((state) => state.delai?.delai);

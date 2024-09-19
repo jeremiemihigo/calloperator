@@ -1,10 +1,11 @@
 const asyncLab = require("async");
 const ModelDemande = require("../Models/Demande");
 const _ = require("lodash");
-const ModelPeriode = require("../Models/Periode");
 const dayjs = require("dayjs");
 const Reclamation = require("../Models/Reclamation");
 const modelRapport = require("../Models/Rapport");
+const modelAppel = require("../Models/Issue/Appel_Issue");
+const moment = require("moment");
 
 module.exports = {
   reponse: (req, res, next) => {
@@ -20,6 +21,7 @@ module.exports = {
         nomClient,
         idZone,
         codeAgent,
+        createdAt,
         idShop,
         fonctionAgent,
         codeAgentDemandeur,
@@ -37,34 +39,21 @@ module.exports = {
         !PayementStatut ||
         !consExpDays ||
         !nomClient ||
-        !idZone
+        !idZone ||
+        !createdAt
       ) {
         return res.status(400).json("Veuillez renseigner les champs");
       }
       const dates = new Date().toISOString();
       const io = req.io;
+      const periode = moment(new Date()).format("MM-YYYY");
 
       asyncLab.waterfall(
         [
           function (done) {
-            //agent = co
-            ModelPeriode.findOne({})
-              .limit(1)
-              .then((response) => {
-                if (response) {
-                  done(null, response);
-                } else {
-                  done("Aucune période en cours");
-                }
-              })
-              .catch(function (err) {
-                console.log(err);
-              });
-          },
-          function (periode, done) {
             modelRapport
               .find({
-                "demande.lot": periode.periode,
+                "demande.lot": periode,
                 codeclient: codeClient.trim(),
               })
               .lean()
@@ -74,14 +63,18 @@ module.exports = {
                     (x) => x.demandeur.fonction === fonctionAgent
                   );
                   if (doublon.length > 0) {
-                    if (doublon[0].demandeur.codeAgent === codeAgentDemandeur) {
-                      let double = {
-                        idDemande: idDemande,
-                        doublon: doublon[0].idDemande,
-                        agentCo: codeAgent,
-                      };
-                      req.recherche = double;
-                      next();
+                    let doubleAgent = doublon.filter(
+                      (x) => x.demandeur.codeAgent === codeAgentDemandeur
+                    );
+                    if (doubleAgent.length > 0) {
+                      if (
+                        new Date(doubleAgent[0].demande.createdAt).getDate() ===
+                        new Date(createdAt).getDate()
+                      ) {
+                        done(null, "oneDay", doubleAgent);
+                      } else {
+                        done(null, "followup", doublon);
+                      }
                     } else {
                       let double = {
                         codeclient: doublon[0].codeclient,
@@ -95,18 +88,60 @@ module.exports = {
                         } code : ${doublon[0].demandeur.codeAgent}`,
                         _idDemande,
                       };
+                      io.emit("chat", { idDemande });
                       req.recherche = double;
                       next();
                     }
                   } else {
-                    done(null, periode);
+                    done(null, "demande", result);
                   }
                 } else {
-                  done(null, periode);
+                  done(null, "demande", result);
                 }
               });
           },
-          function (periode, done) {
+          function (type, doublon, done) {
+            if (type === "oneDay") {
+              let double = {
+                idDemande,
+                agentCo: codeAgent,
+                doublon: doublon[0].codeclient,
+              };
+
+              io.emit("chat", { idDemande });
+              req.recherche = double;
+              next();
+            }
+            if (type === "followup") {
+              const mydoucle = doublon.filter(
+                (x) => x.demandeur.codeAgent === codeAgentDemandeur
+              )[0];
+              ModelDemande.findOneAndUpdate(
+                { idDemande },
+                {
+                  $set: {
+                    typeVisit: {
+                      followup: "followup",
+                      dateFollowup: mydoucle?.createdAt,
+                      codeclient: mydoucle?.codeclient,
+                    },
+                    feedback: "chat",
+                  },
+                }
+              )
+                .then((result) => {
+                  io.emit("chat", { idDemande });
+                  return res.status(200).json(idDemande);
+                })
+                .catch(function (err) {
+                  console.log(err);
+                });
+            }
+            if (type === "demande") {
+              done(null, true);
+            }
+          },
+          function (followup, done) {
             ModelDemande.aggregate([
               { $match: { idDemande } },
               {
@@ -138,7 +173,7 @@ module.exports = {
                 clientStatut,
                 PayementStatut,
                 consExpDays,
-                nomClient, // La periode
+                nomClient,
                 codeAgent: codeAgent,
                 dateSave: dates.split("T")[0],
                 adresschange,
@@ -163,6 +198,7 @@ module.exports = {
                   createdAt: demande.createdAt,
                   statut: demande.statut,
                   sector: demande.sector,
+                  jours: demande?.jours,
                   lot: demande.lot,
                   cell: demande.cell,
                   file: demande.file,
@@ -173,29 +209,28 @@ module.exports = {
               })
               .then((response) => {
                 if (response) {
-                  done(null, demande);
+                  done(null, demande, response);
                 } else {
                   done("Erreur d'enregistrement");
                 }
               })
               .catch(function (err) {
-                console.log(err);
-                done("Erreur 2");
+                done("Erreur " + err);
               });
           },
-          function (demande, done) {
+          function (demande, response, done) {
             try {
               Reclamation.deleteMany({ code: demande._id })
                 .then((deleted) => {
-                  done(demande);
+                  done(demande, response);
                 })
                 .catch(function (err) {});
             } catch (error) {}
           },
         ],
-        function (result) {
+        function (result, response) {
           if (result.idDemande) {
-            io.emit("reponse", result);
+            io.emit("reponse", response);
             return res.status(200).json(result.idDemande);
           } else {
             return res.status(400).json(result);
@@ -209,19 +244,48 @@ module.exports = {
   OneReponse: (req, res) => {
     try {
       const { id } = req.params;
-      modelRapport
-        .find({ codeclient: id })
-        .lean()
-        .then((response) => {
-          if (response.length > 0) {
-            return res.status(200).json(response);
-          } else {
-            return res.status(200).json([]);
-          }
-        })
-        .catch(function (err) {
-          console.log(err);
-        });
+      asyncLab.waterfall(
+        [
+          function (done) {
+            modelRapport
+              .find({ codeclient: id })
+              .lean()
+              .then((response) => {
+                if (response.length > 0) {
+                  done(null, response.reverse());
+                } else {
+                  done(null, []);
+                }
+              })
+              .catch(function (err) {
+                console.log(err);
+              });
+          },
+          function (reponse, done) {
+            modelAppel
+              .aggregate([
+                { $match: { codeclient: id } },
+                {
+                  $lookup: {
+                    from: "messages",
+                    localField: "idPlainte",
+                    foreignField: "idPlainte",
+                    as: "message",
+                  },
+                },
+              ])
+              .then((result) => {
+                done(reponse, result);
+              })
+              .catch(function (err) {
+                console.log(err);
+              });
+          },
+        ],
+        function (visites, appels) {
+          return res.status(200).json({ visites, appels });
+        }
+      );
     } catch (error) {
       console.log(error);
     }
@@ -242,24 +306,12 @@ module.exports = {
   //A demolir
   ReponseDemandeLot: (req, res) => {
     try {
+      const periode = moment(new Date()).format("MM-YYYY");
       asyncLab.waterfall(
         [
           function (done) {
-            ModelPeriode.findOne({})
-              .then((response) => {
-                if (response) {
-                  done(null, response);
-                } else {
-                  done([]);
-                }
-              })
-              .catch(function (err) {
-                console.log(err);
-              });
-          },
-          function (periode, done) {
             ModelDemande.aggregate([
-              { $match: { lot: periode.periode } },
+              { $match: { lot: periode } },
               {
                 $lookup: {
                   from: "reponses",

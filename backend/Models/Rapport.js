@@ -19,7 +19,6 @@ const schema = new mongoose.Schema(
     dateSave: { type: Date, required: true },
     codeAgent: { type: String, required: true },
     nomClient: { type: String, required: true, uppercase: true, trim: true },
-    action: { type: String, required: false },
     idZone: { type: String, required: true },
     idShop: { type: String, required: true },
     //Ajout
@@ -47,15 +46,17 @@ const schema = new mongoose.Schema(
       reference: String,
       sat: String,
       raison: String,
+      jours: Number,
       file: String,
     },
+    paid: { type: Boolean, required: false },
     coordonnee: { longitude: String, latitude: String, altitude: String },
   },
   { timestamps: true }
 );
 schema.index({ codeclient: 1 });
-schema.index({ idDemande: 1 });
-schema.index({ dateSave: 1 });
+schema.index({ idDemande: -1 });
+schema.index({ dateSave: -1 });
 schema.post("save", function (doc, next) {
   next();
   modelDemande

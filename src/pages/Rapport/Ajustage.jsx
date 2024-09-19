@@ -1,12 +1,10 @@
 /* eslint-disable react/prop-types */
-import React from 'react';
-import { Grid } from '@mui/material';
-import { Input } from 'antd';
-import { Checkbox, Typography, FormControl, FormControlLabel, FormGroup } from '@mui/material';
+import { Checkbox, FormControl, FormControlLabel, FormGroup, Grid, Typography } from '@mui/material';
+import { Alert, Input, Space } from 'antd';
 import axios from 'axios';
-import { lien } from 'static/Lien';
-import { Alert, Space } from 'antd';
 import BoutonComponent from 'Control/Bouton';
+import React from 'react';
+import { lien } from 'static/Lien';
 
 function Ajustage({ feedback, loading }) {
   const [value, setValue] = React.useState([]);

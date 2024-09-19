@@ -37,6 +37,8 @@ const {
   deleteParams,
   rechercheClient,
   updateClient,
+  setFollow_up,
+  Add_Valve,
 } = require("../Controllers/Parametre");
 
 const multer = require("multer");
@@ -46,7 +48,12 @@ const {
   updateReponse,
   ReponseDemandeLot,
 } = require("../Controllers/Reponse");
-const { Rapport } = require("../Controllers/Rapport");
+const {
+  Rapport,
+  ContactClient,
+  Call_ToDay,
+  Refresh_Payment,
+} = require("../Controllers/Rapport");
 const {
   Reclamation,
   ReadMessage,
@@ -105,7 +112,7 @@ router.post("/paramatre", Parametre);
 router.post("/postzone", Zone);
 router.post("/postAgent", AddAgent, ReadAgent);
 router.post("/reponsedemande", protectReponse, reponse, Doublon);
-router.post("/reclamation", Reclamation, ReadMessage);
+router.post("/reclamation", Reclamation);
 //Update
 router.put("/zone", AffecterZone);
 router.put("/reponse", updateReponse);
@@ -120,7 +127,7 @@ router.put("/userAdmin", UpdatePasswordAdmin);
 //Mobiles
 router.get("/demandeReponse/:id", ToutesDemandeAgent);
 router.get("/readDemande", DemandeAttente);
-router.post("/demande", upload.single("file"), protectTech, demande);
+router.post("/demande", upload.single("file"), demande);
 
 router.post("/demandeAgentAll", protect, lectureDemandeBd);
 
@@ -153,14 +160,22 @@ const {
 } = require("../Controllers/AgentAdmin");
 const { AddShop, ReadShop, UpdateOneField } = require("../Controllers/Shop");
 const { AddAction } = require("../Controllers/Action");
-const {
-  Permission,
-  AddDepartement,
-  ReadPermission,
-  ReadDepartement,
-} = require("../Controllers/Permission");
+
 const { AddSat } = require("../Controllers/Sat");
 const { Visited } = require("../Controllers/Tracking");
+const {
+  set_Plainte_Shop,
+  set_backOffice,
+} = require("../Controllers/Permission");
+const {
+  Delete_communication,
+  Communication,
+  ReadCommuniquer,
+  ReadCommuniquerAgent,
+  DeleteCommuniquer,
+  UpdateCommuniquer,
+} = require("../Controllers/Communication");
+const { Update_Agent_Admin } = require("../Controllers/Admin/Conge/Setting");
 router.post("/ajuster", Ajuster);
 router.post("/raison", AddRaison);
 router.get("/raison", ReadRaison);
@@ -190,16 +205,28 @@ router.get("/demandeIncorrect", protect, demandeIncorrect);
 router.get("/doublon", ReadDoublon);
 router.post("/conformite", NonConformes);
 //================================================================Departement et permission================================================================================================
-router.post("/permission", Permission);
-router.post("/departement", AddDepartement);
-router.get("/permission", ReadPermission);
-router.get("/departement", ReadDepartement);
+
 router.put("/addTache", AddTache);
 
+router.post("/contact", protect, ContactClient);
 //Tracking default
 router.post("/visited", Visited);
-
 //Sat
 router.post("/addsat", AddSat);
+
+router.post("/setplainteshop", protect, set_Plainte_Shop);
+router.post("/backoffice", protect, set_backOffice);
+
+router.post("/periode", protect, setFollow_up);
+router.post("/valve", Add_Valve);
+router.get("/call_today", Call_ToDay);
+router.post("/refresh_payment", protect, Refresh_Payment);
+router.post("/communication", protect, Communication);
+router.get("/communication", protect, ReadCommuniquer);
+router.get("/communicationAgent", protectTech, ReadCommuniquerAgent);
+router.delete("/communication/:id", protect, DeleteCommuniquer);
+router.put("/communication", protect, UpdateCommuniquer);
+
+//-------------------------------------Conge-------------------------------------
 
 module.exports = router;

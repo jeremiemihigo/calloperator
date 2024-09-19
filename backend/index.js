@@ -1,5 +1,3 @@
-"use strict";
-
 const express = require("express");
 const app = express();
 const path = require("path");
@@ -90,19 +88,28 @@ io.on("connection", (socket) => {
 
 app.use((req, res, next) => {
   req.io = io;
+  req.users = onlineuser;
   return next();
 });
+
 app.use("/bboxx/support", require("./Routes/Route"));
 app.use("/admin/conge", require("./Routes/Conge"));
 app.use("/issue", require("./Routes/Issue"));
 app.use("/bboxx/image", express.static(path.resolve(__dirname, "Images")));
+app.use("/bboxx/file", express.static(path.resolve(__dirname, "Fichiers")));
+
 const fs = require("fs");
-app.post("/deleteImages", (req, res) => {
-  const table = [];
-  for (let i = 0; i < table.length; i++) {
-    fs.unlink(`./Images/${table[i].file}`, (err) => {
-      console.log(err);
-    });
+app.post("/deleteImage", (req, res) => {
+  try {
+    const { demandes } = req.body;
+    for (let i = 0; i < demandes.length; i++) {
+      const pathdelete = `./Images/${demandes[i].file}`;
+      fs.unlink(pathdelete, (err) => {
+        console.log(err);
+      });
+    }
+  } catch (error) {
+    console.log(error);
   }
 });
 //Start server

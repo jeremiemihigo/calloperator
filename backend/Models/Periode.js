@@ -4,6 +4,7 @@ const schema = new mongoose.Schema(
   {
     delai: { type: Number, required: false },
     periode: { type: String, required: true, unique: true },
+    followup: { type: Number, required: true, default: 15 },
   },
   { timestamps: true }
 );

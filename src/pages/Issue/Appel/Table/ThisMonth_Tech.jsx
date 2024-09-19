@@ -1,15 +1,15 @@
 import { Paper } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { message } from 'antd';
-import axios from 'axios';
+import NoCustomer from 'components/Attente';
 import LoaderGif from 'components/LoaderGif';
 import SimpleBackdrop from 'Control/Backdrop';
 import { CreateContexteGlobal } from 'GlobalContext';
 import moment from 'moment';
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { config, lien_issue, returnDelai, returnTime, TimeCounter } from 'static/Lien';
+import React, { useState } from 'react';
+import { config, lien_issue, returnTime } from 'static/Lien';
 import Popup from 'static/Popup';
+import axios from '../../../../../node_modules/axios/index';
 import AffectTech from '../AffectTech';
 import { CreateContexteTable } from '../Contexte';
 import RaisonFermeture from '../Formulaire/RaisonFermeture';
@@ -19,12 +19,8 @@ import Options from './Options';
 
 function ThisMonth_Tech() {
   const [data, setData] = React.useState();
-  const { client, setClient, loadingClient } = React.useContext(CreateContexteGlobal);
+  const { loadingClient, client, setClient } = React.useContext(CreateContexteGlobal);
   const { setPlainteSelect, setSelect } = React.useContext(CreateContexteTable);
-  const [today, setToday] = React.useState({
-    datetime: new Date(),
-    day_of_week: new Date().getDay()
-  });
 
   const [openFermeture, setOpenFermeture] = React.useState(false);
   const [idPlainte, setIdPlainte] = React.useState();
@@ -32,7 +28,7 @@ function ThisMonth_Tech() {
     setIdPlainte(plainte);
     setOpenFermeture(true);
   };
-  const loading = async () => {
+  const loading = () => {
     if (client) {
       setData(client.filter((x) => x.type === 'ticket'));
     }
@@ -50,18 +46,6 @@ function ThisMonth_Tech() {
     });
   };
 
-  const settingDate = async () => {
-    try {
-      const now = await axios.get('https://worldtimeapi.org/api/timezone/Africa/Lubumbashi');
-      setToday(now.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  React.useLayoutEffect(() => {
-    settingDate();
-  }, []);
-
   const [open, setOpen] = React.useState(false);
   const [clientselect, setCustomer] = React.useState();
   const openForm = (e, row) => {
@@ -69,32 +53,24 @@ function ThisMonth_Tech() {
     setCustomer(row);
     setOpen(true);
   };
-  const deedline = useSelector((state) => state.delai.delai);
 
   const [sending, setSending] = React.useState(false);
+
   const apresAssistance = async (row) => {
     try {
       if (!row.technicien) {
         success('The ticket is not assigned to a technician', 'error');
       } else {
-        if (today) {
-          setSending(true);
-          const d = 'resolved_awaiting_confirmation';
-          const delai = await returnDelai(d, deedline, today);
-          const datas = {
-            num_ticket: row.idPlainte,
-            time_delai: delai,
-            fullDate: today.datetime,
-            delai: row.time_delai - returnTime(row.fullDateSave, today.datetime) > 0 ? 'IN SLA' : 'OUT SLA'
-          };
-          const response = await axios.post(lien_issue + '/assistance_ticket', datas, config);
-          if (response.status === 200) {
-            setClient(client.map((x) => (x._id === response.data._id ? response.data : x)));
-            success('Done', 'success');
-            setSending(false);
-          } else {
-            setSending(false);
-          }
+        setSending(true);
+
+        const response = await axios.post(`${lien_issue}/assistance_ticket`, { num_ticket: row.idPlainte }, config);
+        if (response.status === 200) {
+          success('Done', 'success');
+          setClient(client.map((x) => (x._id === response.data._id ? response.data : x)));
+          setSending(false);
+        } else {
+          success('' + response.data, 'error');
+          setSending(false);
         }
       }
     } catch (error) {
@@ -113,6 +89,62 @@ function ThisMonth_Tech() {
     setPlainteSelect(plainte);
     setSelect(3);
   };
+
+  function TimeCounter(durationInMinutes) {
+    let [remainingTimeInSeconds, setRemainingTimeInSeconds] = useState(durationInMinutes);
+    React.useEffect(() => {
+      const interval = setInterval(() => {
+        setRemainingTimeInSeconds((prev) => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
+      // Nettoyage du timer à la fin
+      return () => clearInterval(interval);
+    }, [durationInMinutes]);
+
+    if (remainingTimeInSeconds <= 0) {
+      return (
+        <p
+          style={{
+            background: 'red',
+            padding: '0px',
+            margin: '0px',
+            height: '50%',
+            fontSize: '12px',
+            color: 'white',
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          OUT SLA
+        </p>
+      );
+    } else {
+      const days = Math.floor(remainingTimeInSeconds / (24 * 3600));
+      const hours = Math.floor((remainingTimeInSeconds % (24 * 3600)) / 3600);
+      const minutes = Math.floor((remainingTimeInSeconds % 3600) / 60);
+      const seconds = remainingTimeInSeconds % 60;
+      return (
+        <p
+          style={{
+            background: 'green',
+            padding: '0px',
+            margin: '0px',
+            height: '50%',
+            fontSize: '12px',
+            color: 'white',
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >{`
+        ${days + 'jr'} ${hours + 'h'} ${minutes + 'm'} ${seconds + 's'}
+        `}</p>
+      );
+    }
+  }
+
   const columns = [
     {
       field: 'codeclient',
@@ -166,14 +198,13 @@ function ThisMonth_Tech() {
         return p.row.technicien?.codeTech;
       }
     },
-
     {
-      field: 'fullDateSave',
-      headerName: 'Assign at',
+      field: 'dateSave',
+      headerName: 'Date open',
       width: 75,
       editable: false,
       renderCell: (p) => {
-        return moment(p.row.fullDateSave).format('DD/MM hh:mm');
+        return moment(p.row.dateSave).format('DD-MM-YYYY');
       }
     },
     {
@@ -186,15 +217,19 @@ function ThisMonth_Tech() {
       }
     },
     {
-      field: 'dateClose',
+      field: 'SLA',
       headerName: 'SLA',
       width: 130,
       editable: false,
-      renderCell: (p) => {
-        return p.row.open ? (
-          TimeCounter((p.row.time_delai - returnTime(p.row.fullDateSave, new Date())).toFixed(0))
-        ) : (
-          <Couleur text={p.row.delai} />
+      renderCell: (params) => {
+        return (
+          <>
+            {params.row.open ? (
+              TimeCounter((params.row.time_delai - returnTime(params.row.fullDateSave, new Date()).toFixed(0)) * 60)
+            ) : (
+              <Couleur text={params.row?.delai} />
+            )}
+          </>
         );
       }
     },
@@ -205,16 +240,14 @@ function ThisMonth_Tech() {
       editable: false,
       renderCell: (p) => {
         return (
-          <div>
-            <Options
-              client={p.row}
-              openChat={openChat}
-              validation={Validation}
-              apresAssistance={apresAssistance}
-              openForm={openForm}
-              fermeture={fermeture}
-            />
-          </div>
+          <Options
+            client={p.row}
+            openChat={openChat}
+            validation={Validation}
+            apresAssistance={apresAssistance}
+            openForm={openForm}
+            fermeture={fermeture}
+          />
         );
       }
     }
@@ -222,12 +255,13 @@ function ThisMonth_Tech() {
   const getId = (p) => {
     return p._id;
   };
+
   return (
     <div>
       {contextHolder}
       {sending && <SimpleBackdrop open={true} title="Please wait" taille="10rem" />}
       {loadingClient && <LoaderGif width={400} height={400} />}
-      {data && (
+      {!loadingClient && data && data.length > 0 && (
         <Paper elevation={4}>
           <DataGrid
             rows={data}
@@ -235,16 +269,17 @@ function ThisMonth_Tech() {
             initialState={{
               pagination: {
                 paginationModel: {
-                  pageSize: 20
+                  pageSize: 100
                 }
               }
             }}
-            pageSizeOptions={[20]}
+            pageSizeOptions={[100]}
             disableRowSelectionOnClick
             getRowId={getId}
           />
         </Paper>
       )}
+      {!loadingClient && data && data.length === 0 && <NoCustomer texte="No pending technical complaints" />}
       {clientselect && (
         <Popup open={open} setOpen={setOpen} title="Affectation tech">
           <AffectTech clients={clientselect} />
@@ -252,9 +287,10 @@ function ThisMonth_Tech() {
       )}
       {clientV && (
         <Popup open={openV} setOpen={setOpenV} title="Check">
-          <ValiderAction clients={clientV} />
+          <ValiderAction clients={clientV} close={setOpenV} />
         </Popup>
       )}
+
       <Popup open={openFermeture} setOpen={setOpenFermeture} title="Fermeture">
         <RaisonFermeture idPlainte={idPlainte} />
       </Popup>

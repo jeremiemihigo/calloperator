@@ -2,6 +2,7 @@ import { Edit } from '@mui/icons-material';
 import { Fab, Paper } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import SoundAudio from 'assets/audio/sound.wav';
+import NoCustomer from 'components/Attente';
 import LoaderGif from 'components/LoaderGif';
 import ConfirmDialog from 'Control/ControlDialog';
 import { CreateContexteGlobal } from 'GlobalContext';
@@ -12,7 +13,7 @@ import Couleur from './Color';
 
 function CreateComplaint() {
   const [data, setData] = React.useState();
-  const { client } = React.useContext(CreateContexteGlobal);
+  const { socket, client } = React.useContext(CreateContexteGlobal);
   const { setPlainteSelect, setSelect } = React.useContext(CreateContexteTable);
   const loading = async () => {
     setData(client.filter((x) => x.statut === 'awaiting_confirmation'));
@@ -22,7 +23,6 @@ function CreateComplaint() {
   }, []);
   const [confirmDialog, setConfirmDialog] = React.useState({ isOpen: false, title: '', subTitle: '' });
 
-  const { socket } = React.useContext(CreateContexteGlobal);
   const [nowCall, setNowCall] = React.useState();
   React.useEffect(() => {
     if (socket) {
@@ -138,7 +138,7 @@ function CreateComplaint() {
   return (
     <>
       {!data && <LoaderGif width={400} height={400} />}
-      {data && data.length === 0 && <p style={{ textAlign: 'center', color: 'blue', fontWeight: 'bolder' }}>Aucune plainte en attente</p>}
+      {data && data.length === 0 && <NoCustomer texte="No relocation pending" />}
       {data && data.length > 0 && (
         <Paper elevation={4}>
           <DataGrid

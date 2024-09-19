@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import Connected from './Connected';
 import MobileSection from './MobileSection';
 import Profile from './Profile';
+import MyNotification from './Profile/MyNotification';
 import Search from './Search';
 
 // ==============================|| HEADER - CONTENT ||============================== //
@@ -16,6 +17,7 @@ const HeaderContent = () => {
   return (
     <>
       {!matchesXs && <Search />}
+      <MyNotification />
       {matchesXs && <Box sx={{ width: '100%', ml: 1 }} />}
       {user && user?.fonction === 'superUser' && <Connected />}
       {!matchesXs && <Profile />}

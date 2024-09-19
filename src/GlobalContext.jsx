@@ -1,13 +1,15 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react-hooks/exhaustive-deps */
 import SoundAudio from 'assets/audio/sound.wav';
-import axios from 'axios';
+import IconImage from 'assets/images/users/iconImage.jpg';
 import _ from 'lodash';
 import React, { createContext, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { config, lien_issue, lien_socket } from 'static/Lien';
+import Popup from 'static/Popup';
+import axios from '../node_modules/axios/index';
 import './index.css';
 export const CreateContexteGlobal = createContext();
 
@@ -15,7 +17,6 @@ const ContexteGlobal = (props) => {
   const [socket, setSocket] = React.useState(null);
   const user = useSelector((state) => state?.user.user);
   const [client, setClient] = React.useState([]);
-  const [loadingClient, setLoadingClient] = React.useState(false);
 
   React.useEffect(() => {
     setSocket(io(lien_socket));
@@ -31,23 +32,7 @@ const ContexteGlobal = (props) => {
     localStorage.removeItem('auth');
     navigation('/login');
   };
-  const loading = async () => {
-    try {
-      setLoadingClient(true);
-      const response = await axios.get(lien_issue + '/client', config);
-      if (response.data === 'token expired') {
-        handleLogout();
-      } else {
-        setClient(response.data);
-        setLoadingClient(false);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  React.useEffect(() => {
-    loading();
-  }, []);
+
   const [nowCall, setNowCall] = React.useState();
   React.useEffect(() => {
     if (socket) {
@@ -62,10 +47,16 @@ const ContexteGlobal = (props) => {
     audioRef.current.play();
   };
   const fetchAndAdd = () => {
-    if (_.filter(client, { _id: nowCall?._id }).length > 0) {
-      setClient(client.map((x) => (x.idPlainte === nowCall.idPlainte ? nowCall : x)));
-    } else {
-      setClient([nowCall, ...client]);
+    if (client && client.length > 0) {
+      let i = _.filter(client, { idPlainte: nowCall.idPlainte });
+      if (i.length > 0) {
+        let index = client.indexOf({ idPlainte: nowCall.idPlainte });
+        let lastValue = [...client];
+        lastValue[index] = nowCall;
+        setClient(lastValue);
+      } else {
+        setClient([...client, nowCall]);
+      }
     }
   };
   React.useEffect(() => {
@@ -152,6 +143,35 @@ const ContexteGlobal = (props) => {
     }
   }, [new_reponse]);
 
+  const [messageAlert, setMessageAlert] = React.useState();
+  const [openPopup, setOpenPopup] = React.useState(false);
+  React.useEffect(() => {
+    if (socket) {
+      socket.on('message', (donner) => {
+        setMessageAlert(donner);
+        playAudio();
+        setOpenPopup(true);
+      });
+    }
+  }, [socket]);
+
+  const loadingCustomer = async () => {
+    try {
+      const response = await axios.get(`${lien_issue}/client`, config);
+      if (response.status === 200) {
+        setClient(response.data);
+      } else {
+        handleLogout();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  React.useEffect(() => {
+    loadingCustomer();
+  }, []);
+
   return (
     <CreateContexteGlobal.Provider
       value={{
@@ -162,7 +182,6 @@ const ContexteGlobal = (props) => {
         //Issue team
         client,
         setClient,
-        loadingClient,
         chat,
 
         //Support_team
@@ -181,6 +200,22 @@ const ContexteGlobal = (props) => {
       <audio ref={audioRef} src={SoundAudio}>
         <track kind="captions" src="captions.vtt" srcLang="en" label="English" default />
       </audio>
+
+      <Popup open={openPopup} setOpen={setOpenPopup} title={`ID complaint ${messageAlert?.idPlainte}`}>
+        <div style={{ width: '20rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div>
+              <img width={40} height={40} src={IconImage} alt="userIcon" />
+            </div>
+            <div style={{ display: 'flex', alignContent: 'center' }}>
+              <p style={{ marginLeft: '10px', padding: '0px', margin: '0px' }}>{messageAlert?.agent}</p>
+            </div>
+          </div>
+          <div style={{ marginTop: '10px' }}>
+            <p>{messageAlert?.content}</p>
+          </div>
+        </div>
+      </Popup>
       {props.children}
     </CreateContexteGlobal.Provider>
   );

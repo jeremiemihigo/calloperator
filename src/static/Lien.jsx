@@ -2,7 +2,7 @@
 //const link = 'http://localhost:40002';
 // const link = 'http://192.168.1.68:40002';
 //const link = 'https://backendtestserver.onrender.com';
-//const linkonline = 'https://visite.bboxxvm.com';
+//const linkonline = 'https://visite.bboxxvm.com'
 const link = 'https://visite.bboxxvm.com';
 //const linkonline = 'https://backendtestserver.onrender.com';
 // const linkimg = 'https://visite.bboxxvm.com';
@@ -1806,13 +1806,10 @@ export const returnDelai = async (statut, deedline, today) => {
     }
   }
 };
-
-// Exemple d'utilisation
-
 import React from 'react';
 export function TimeCounter(durationInMinutes) {
   const [remainingTimeInSeconds, setRemainingTimeInSeconds] = React.useState(durationInMinutes * 60);
-
+  console.log(durationInMinutes);
   React.useEffect(() => {
     const interval = setInterval(() => {
       setRemainingTimeInSeconds((prev) => (prev > 0 ? prev - 1 : 0));
@@ -1820,37 +1817,56 @@ export function TimeCounter(durationInMinutes) {
     // Nettoyage du timer à la fin
     return () => clearInterval(interval);
   }, []);
-  const days = Math.floor(remainingTimeInSeconds / (24 * 3600));
-  const hours = Math.floor((remainingTimeInSeconds % (24 * 3600)) / 3600);
-  const minutes = Math.floor((remainingTimeInSeconds % 3600) / 60);
-  const seconds = remainingTimeInSeconds % 60;
+
   if (remainingTimeInSeconds <= 0) {
     return (
       <p
         style={{
           background: 'red',
-          textAlign: 'center',
-          fontSize: '11px',
+          padding: '0px',
+          margin: '0px',
+          height: '50%',
+          fontSize: '12px',
+          color: 'white',
+          width: '100%',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
-          color: 'white',
-          width: '100%'
+          justifyContent: 'center'
         }}
       >
         OUT SLA
       </p>
     );
   } else {
+    const days = Math.floor(remainingTimeInSeconds / (24 * 3600));
+    const hours = Math.floor((remainingTimeInSeconds % (24 * 3600)) / 3600);
+    const minutes = Math.floor((remainingTimeInSeconds % 3600) / 60);
+    const seconds = remainingTimeInSeconds % 60;
     return (
-      <p style={{ background: 'green', textAlign: 'center', fontSize: '12px', color: 'white', width: '100%' }}>{`
+      <p
+        style={{
+          background: 'green',
+          padding: '0px',
+          margin: '0px',
+          height: '50%',
+          fontSize: '12px',
+          color: 'white',
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >{`
       ${days + 'jr'} ${hours + 'h'} ${minutes + 'm'} ${seconds + 's'}
       `}</p>
     );
   }
 }
+// Exemple d'utilisation
 
 export const returnTime = (date1, date2) => {
+  //Date 2 : Date à jour
+  //Date 1 : Date à tester
   let resultat = (new Date(date2).getTime() - new Date(date1).getTime()) / 60000;
   if (resultat < 1) {
     return 1;
@@ -1865,3 +1881,61 @@ export const returnName = (nom) => {
   const split = nom.split(' ');
   return nom.split(' ')[split.length - 1];
 };
+
+export function TimeCounterTechnique(row) {
+  console.log(row);
+  let minutes = row.time_delai - returnTime(row.fullDateSave, new Date()).toFixed(0);
+
+  const [remainingTimeInSeconds, setRemainingTimeInSeconds] = React.useState(minutes * 60);
+  React.useEffect(() => {
+    const intervals = setInterval(() => {
+      setRemainingTimeInSeconds((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    // Nettoyage du timer à la fin
+    return () => clearInterval(intervals);
+  }, []);
+
+  if (minutes <= 0) {
+    return (
+      <p
+        style={{
+          background: 'red',
+          padding: '0px',
+          margin: '0px',
+          height: '50%',
+          fontSize: '12px',
+          color: 'white',
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        OUT SLA
+      </p>
+    );
+  } else {
+    const days = Math.floor(remainingTimeInSeconds / (24 * 3600));
+    const hours = Math.floor((remainingTimeInSeconds % (24 * 3600)) / 3600);
+    const minutes = Math.floor((remainingTimeInSeconds % 3600) / 60);
+    const seconds = remainingTimeInSeconds % 60;
+    return (
+      <p
+        style={{
+          background: 'green',
+          padding: '0px',
+          margin: '0px',
+          height: '50%',
+          fontSize: '12px',
+          color: 'white',
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >{`
+      ${days + 'jr'} ${hours + 'h'} ${minutes + 'm'} ${seconds + 's'}
+      `}</p>
+    );
+  }
+}

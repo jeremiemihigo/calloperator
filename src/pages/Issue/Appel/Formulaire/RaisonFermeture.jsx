@@ -1,13 +1,13 @@
 import { Button, TextField } from '@mui/material';
 import { message } from 'antd';
-import axios from 'axios';
 import { CreateContexteGlobal } from 'GlobalContext';
 import React from 'react';
 import { config, lien_issue } from 'static/Lien';
+import axios from '../../../../../node_modules/axios/index';
 
 function RaisonFermeture({ idPlainte }) {
-  const { client, setClient } = React.useContext(CreateContexteGlobal);
   const [value, setValue] = React.useState('');
+  const { client, setClient } = React.useContext(CreateContexteGlobal);
   React.useEffect(() => {
     setValue('');
   }, [idPlainte]);
@@ -25,19 +25,19 @@ function RaisonFermeture({ idPlainte }) {
       e.preventDefault();
       setSend(true);
       const response = await axios.post(lien_issue + '/fermeture_plainte', { idPlainte, raison: value }, config);
-
       if (response.status === 200) {
-        setClient(client.map((x) => (x._id === response.data._id ? response.data : x)));
         success('Done', 'success');
+        setClient(client.map((x) => (x.idPlainte === response.data.idPlainte ? response.data : x)));
         setSend(false);
         setValue('');
-      } else {
+      }
+      if (response.status === 201) {
         success('' + response.data, 'error');
         setSend(false);
       }
-      setSend(false);
     } catch (error) {
-      console.log(error);
+      success('' + error, 'error');
+      setSend(false);
     }
   };
 

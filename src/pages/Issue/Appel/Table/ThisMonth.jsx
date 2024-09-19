@@ -1,32 +1,33 @@
-import { EscalatorSharp } from '@mui/icons-material';
-import { Fab, Paper, Tooltip } from '@mui/material';
+import { Edit, EscalatorSharp } from '@mui/icons-material';
+import { Fab, Tooltip } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { message } from 'antd';
-import axios from 'axios';
+import NoCustomer from 'components/Attente';
 import LoaderGif from 'components/LoaderGif';
 import { CreateContexteGlobal } from 'GlobalContext';
 import moment from 'moment';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { config, lien_issue, returnDelai } from 'static/Lien';
+import { config, lien_issue, returnName } from 'static/Lien';
+import Popup from 'static/Popup';
 import { CreateContexteTable } from '../Contexte';
+import WhyEdit from '../Formulaire/WhyEdit';
 import Couleur from './Color';
 
 function AllCall() {
   const [data, setData] = React.useState();
   const { client, setClient } = React.useContext(CreateContexteGlobal);
+
   const { setPlainteSelect, setSelect } = React.useContext(CreateContexteTable);
   const user = useSelector((state) => state.user?.user);
   const loading = async () => {
     if (client) {
-      setData(client.filter((x) => x.type === 'appel'));
+      setData(client.filter((x) => x.type === 'appel' && x.statut !== 'escalade'));
     }
   };
   React.useEffect(() => {
     loading();
   }, [client]);
-  const [confirmDialog, setConfirmDialog] = React.useState({ isOpen: false, title: '', subTitle: '' });
-
   const [messageApi, contextHolder] = message.useMessage();
   const success = (texte, type) => {
     messageApi.open({
@@ -35,44 +36,38 @@ function AllCall() {
       duration: 5
     });
   };
-  const deedline = useSelector((state) => state.delai.delai);
+
   const changeStatus = async (row, statut) => {
-    setConfirmDialog({
-      ...confirmDialog,
-      isOpen: false
-    });
-    if (user.nom !== row.submitedBy) {
-      success(`seulement ${row.submitedBy} peut effectuer cette operation`, 'error');
-    } else {
-      const d = 'escalade';
-      const now = await axios.get('https://worldtimeapi.org/api/timezone/Africa/Lubumbashi');
-      let today = now.data;
-      const delai = await returnDelai(d, deedline, today);
-      const { _id } = row;
-      if (statut === 'escalade') {
-        const response = await axios.put(
-          lien_issue + '/updateappel',
-          { id: _id, data: { operation: 'backoffice', time_delai: delai } },
-          config
-        );
+    try {
+      if (user.nom !== row.submitedBy) {
+        success(`seulement ${row.submitedBy} peut effectuer cette operation`, 'error');
+      } else {
+        const { _id } = row;
+        const data =
+          statut === 'escalade' ? { id: _id, data: { operation: 'backoffice', statut } } : { id: _id, data: { statut, open: false } };
+        const response = await axios.post(`${lien_issue}/updateappel`, data, config);
         if (response.status === 200) {
-          const d = data.map((x) => (x._id === response.data._id ? response.data : x));
-          setClient(d);
+          success('Done', 'success');
+          setClient(client.map((x) => (x._id === response.data._id ? response.data : x)));
+        } else {
+          success('' + response.data, 'error');
         }
       }
-      if (statut === 'closed') {
-        const response = await axios.put(lien_issue + '/updateappel', { id: _id, data: { statut } }, config);
-        if (response.status === 200) {
-          const d = data.map((x) => (x._id === response.data._id ? response.data : x));
-          setData(d);
-        }
-      }
+    } catch (error) {
+      success('' + error, 'error');
     }
   };
 
   const openChat = (plainte) => {
     setPlainteSelect(plainte);
     setSelect(3);
+  };
+  const [openEdit, setOpenEdit] = React.useState(false);
+  const [plainte, setPlainte] = React.useState();
+  const func_openEdit = (e, a) => {
+    e.preventDefault();
+    setPlainte(a);
+    setOpenEdit(true);
   };
   const columns = [
     {
@@ -82,11 +77,18 @@ function AllCall() {
       editable: false
     },
     {
-      field: 'contact',
-      headerName: 'Contact',
+      field: 'shop',
+      headerName: 'Shop',
+      width: 100,
+      editable: false
+    },
+    {
+      field: 'property',
+      headerName: 'Provenance',
       width: 80,
       editable: false
     },
+
     {
       field: 'statut',
       headerName: 'Statut',
@@ -117,12 +119,21 @@ function AllCall() {
       field: 'submitedBy',
       headerName: 'Saved By',
       width: 100,
-      editable: false
+      editable: false,
+      renderCell: (params) => {
+        return returnName(params.row.submitedBy);
+      }
     },
     {
       field: 'recommandation',
       headerName: 'recommandation',
       width: 120,
+      editable: false
+    },
+    {
+      field: 'raisonOngoing',
+      headerName: 'Why ongoing',
+      width: 100,
       editable: false
     },
     {
@@ -136,18 +147,18 @@ function AllCall() {
     },
 
     {
-      field: 'fullDateSave',
+      field: 'dateSave',
       headerName: 'Date open',
       width: 75,
       editable: false,
       renderCell: (p) => {
-        return moment(p.row.fullDateSave).format('DD/MM hh:mm');
+        return moment(p.row.dateSave).format('DD-MM-YYYY');
       }
     },
     {
       field: 'Action',
       headerName: 'Action',
-      width: 130,
+      width: 150,
       editable: false,
       renderCell: (params) => {
         return (
@@ -164,6 +175,11 @@ function AllCall() {
                 </Fab>
               </Tooltip>
             )}
+            <Tooltip title="Edit">
+              <Fab onClick={(e) => func_openEdit(e, params.row)} sx={{ margin: '5px' }} size="small" color="secondary">
+                <Edit fontSize="small" />
+              </Fab>
+            </Tooltip>
           </>
         );
       }
@@ -176,26 +192,30 @@ function AllCall() {
     <div>
       {contextHolder}
       {!data && <LoaderGif width={400} height={400} />}
-      {data && (
-        <Paper elevation={4}>
+      {data && data.length === 0 && <NoCustomer texte="No pending non-technical complaints" />}
+      {data && data.length > 0 && (
+        <div style={{ width: '100%' }}>
           <DataGrid
             rows={data}
             columns={columns}
             initialState={{
               pagination: {
                 paginationModel: {
-                  pageSize: 20
+                  pageSize: 100
                 }
               }
             }}
-            pageSizeOptions={[20]}
+            pageSizeOptions={[100]}
             disableRowSelectionOnClick
             getRowId={getId}
           />
-        </Paper>
+        </div>
       )}
+      <Popup open={openEdit} setOpen={setOpenEdit} title="Why do you want to edit ?">
+        <WhyEdit row={plainte} />
+      </Popup>
     </div>
   );
 }
 
-export default AllCall;
+export default React.memo(AllCall);

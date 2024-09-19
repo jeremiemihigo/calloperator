@@ -1,0 +1,74 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+.dashboard-content > div > p {
+  padding: 0px;
+  margin: 0px;
+}
+.margin-zero {
+  margin: 0;
+  padding: 0;
+}
+.dashboard-title > p {
+  font-size: 15px;
+  font-weight: 700;
+}
+.dashboard-subtitle {
+  font-size: 12px;
+  opacity: 0.7;
+}
+.display-flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.item-title {
+  min-height: 7rem;
+}
+.titlezero {
+  font-size: 15px;
+  font-weight: 700;
+  opacity: 0.7;
+}
+.deedline-title {
+  display: flex;
+  align-items: center;
+}
+.insla {
+  width: 50%;
+  border-radius: 3px;
+}
+.outsla {
+  width: 50%;
+  text-align: center;
+  border-radius: 3px;
+}
+.outsla .number {
+  color: red;
+  font-weight: bolder;
+  font-size: 20px;
+}
+.insla .number {
+  color: green;
+  font-weight: bolder;
+  font-size: 20px;
+}
+
+.number {
+  display: flex;
+
+  text-align: center;
+}
+.titre {
+  font-size: 10px;
+  text-align: center;
+  opacity: 0.6;
+  font-weight: 600;
+}
+.insla > p,
+.outsla > p,
+.number > p {
+  padding: 0;
+  margin: 0;
+}

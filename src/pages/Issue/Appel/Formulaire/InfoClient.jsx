@@ -5,7 +5,7 @@ import axios from 'axios';
 import AutoComplement from 'Control/AutoComplet';
 import { CreateContexteGlobal } from 'GlobalContext';
 import React from 'react';
-import { config, lien_issue, returnDelai, sat } from 'static/Lien';
+import { config, lien_issue, sat } from 'static/Lien';
 import { CreateContexteTable } from '../Contexte';
 
 function InfoClient() {
@@ -13,22 +13,9 @@ function InfoClient() {
   const [satSelect, setSatSelect] = React.useState('');
   const [init, setInitiale] = React.useState();
   const { item, plainteSelect, annuler, initiale, shopSelect, codeclient } = React.useContext(CreateContexteTable);
+  const [sending, setSending] = React.useState(false);
+
   const { client, setClient } = React.useContext(CreateContexteGlobal);
-  const [today, setToday] = React.useState({
-    datetime: new Date(),
-    day_of_week: new Date().getDay()
-  });
-  const loading = async () => {
-    try {
-      const date = await axios.get('https://worldtimeapi.org/api/timezone/Africa/Lubumbashi');
-      setToday(date.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  React.useEffect(() => {
-    loading();
-  }, [initiale]);
 
   const handlechange = (event) => {
     const { name, value } = event.target;
@@ -41,7 +28,6 @@ function InfoClient() {
     setInitiale('');
     setSelect(value);
   };
-
   const [messageApi, contextHolder] = message.useMessage();
   const success = (texte, type) => {
     messageApi.open({
@@ -50,11 +36,10 @@ function InfoClient() {
       duration: 10
     });
   };
-
   const sendData = async (e) => {
     e.preventDefault();
+    setSending(true);
     try {
-      const delai = await returnDelai('escalade', today.datetime);
       const data = {
         codeclient,
         shop: shopSelect?.shop,
@@ -63,19 +48,20 @@ function InfoClient() {
         nomClient: initiale?.nomClient,
         plainteSelect: plainteSelect?.title,
         typePlainte: item?.title,
-        time_delai: delai,
-        adresse: init,
-        fullDate: today.datetime
+        adresse: init
       };
       const response = await axios.post(lien_issue + '/info_client', data, config);
       if (response.status === 200) {
         setClient([response.data, ...client]);
         annuler();
-      } else {
+      }
+      if (response.status === 201) {
         success('' + response.data, 'error');
+        setSending(false);
       }
     } catch (error) {
-      console.log(error);
+      success('' + error, 'error');
+      setSending(false);
     }
   };
   return (
@@ -149,7 +135,7 @@ function InfoClient() {
             <AutoComplement value={satSelect} setValue={setSatSelect} options={sat} title="Sat" propr="nom_SAT" />
           </div>
           <div style={{ marginTop: '10px' }}>
-            <Button onClick={(e) => sendData(e)} fullWidth color="primary" variant="contained">
+            <Button disabled={sending} onClick={(e) => sendData(e)} fullWidth color="primary" variant="contained">
               <Save fontSize="small" /> <span style={{ marginLeft: '10px' }}>Escalader</span>
             </Button>
           </div>

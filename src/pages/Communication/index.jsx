@@ -1,93 +1,110 @@
-import { Message } from '@mui/icons-material';
-import { Button, Grid, Paper, TextField, Typography } from '@mui/material';
+import { Grid, Paper, Typography } from '@mui/material';
+import ConfirmDialog from 'Control/ControlDialog';
+import DirectionSnackbar from 'Control/SnackBar';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Ajoutercommunication } from 'Redux/Communication';
-import { returnName } from 'static/Lien';
+import { useSelector } from 'react-redux';
+import { DeleteCommunication } from 'Redux/Communication';
+import { Delete, Edit } from '../../../node_modules/@mui/icons-material/index';
+import { useDispatch } from '../../../node_modules/react-redux/es/exports';
 import './communication.style.css';
+import FormMessage from './FormMessage';
+import TextWithLineBreaks from './StructureText';
 
 function Index() {
-  const [title, setTitle] = React.useState('');
+  const communiquer = useSelector((state) => state.communication);
   const user = useSelector((state) => state.user.user);
-  const communiquer = useSelector((state) => state.communication.communication);
-  const [content, setContent] = React.useState('');
-  const [file, setFile] = React.useState();
-  const dispatch = useDispatch();
-  console.log(communiquer);
-  const sendData = async (e) => {
-    try {
-      e.preventDefault();
-      const data = new FormData();
-      data.append('title', title);
-      data.append('content', content);
-      data.append('file', file);
-      dispatch(Ajoutercommunication(data));
-    } catch (error) {
-      console.log(error);
+  function returnText(date) {
+    let nombre = (new Date(date).getTime() - new Date().getTime()) / 86400000;
+    if (nombre === 0) {
+      return "Ce message expire aujourd'hui";
     }
+    if (nombre > 1) {
+      return `Ce message expire dans ${nombre.toFixed(0)} jours`;
+    }
+    if (nombre === 1) {
+      return `Ce message expire demain`;
+    }
+  }
+
+  const [confirmDialog, setConfirmDialog] = React.useState({
+    isOpen: false,
+    title: '',
+    subTitle: ''
+  });
+  const dispatch = useDispatch();
+  const DeleteMessage = async (id) => {
+    setConfirmDialog({
+      ...confirmDialog,
+      isOpen: false
+    });
+    dispatch(DeleteCommunication(id));
   };
+  const [dataToUpdate, setDataToUpdate] = React.useState();
+  const Update = (d) => {
+    setDataToUpdate(d);
+  };
+
   return (
     <>
+      {communiquer.addcommunication === 'success' && <DirectionSnackbar message="Done" />}
+      {communiquer.addcommunication === 'rejected' && <DirectionSnackbar message={communiquer.addcommunicationError} />}
+      {communiquer.updateCommuniquer === 'success' && <DirectionSnackbar message="Done" />}
+      {communiquer.updateCommuniquer === 'rejected' && <DirectionSnackbar message={communiquer.updateCommuniquerError} />}
+      {communiquer.deleteCommuniquer === 'success' && <DirectionSnackbar message="Done" />}
+      {communiquer.deleteCommuniquer === 'rejected' && <DirectionSnackbar message={communiquer.deleteCommuniquerError} />}
       <Grid container>
-        <Grid item lg={4}>
-          <div style={{ marginBottom: '5px' }}>
-            <TextField
-              onChange={(e) => setTitle(e.target.value)}
-              style={{ marginTop: '10px' }}
-              name="title"
-              autoComplete="off"
-              fullWidth
-              label="Title"
-            />
-          </div>
-          <div style={{ marginBottom: '5px' }}>
-            <TextField
-              onChange={(e) => setContent(e.target.value)}
-              style={{ marginTop: '10px' }}
-              name="content"
-              autoComplete="off"
-              fullWidth
-              label="Content"
-            />
-          </div>
-          <Grid sx={{ paddingLeft: '10px' }}>
-            <input
-              onChange={(event) => {
-                const file = event.target.files[0];
-                setFile(file);
-              }}
-              type="file"
-              id="actual-btn"
-              accept=".png, .jpg, .jpeg"
-              hidden
-            />
-            <label className="label" htmlFor="actual-btn">
-              Clic here to attach a file
-            </label>
+        {user?.fonction === 'superUser' && (
+          <Grid item lg={4}>
+            <FormMessage dataToUpdate={dataToUpdate} setDataToUpdate={setDataToUpdate} />{' '}
           </Grid>
-          <Grid sx={{ marginTop: '10px' }}>
-            <Button onClick={(e) => sendData(e)} fullWidth color="primary" variant="contained">
-              <Message fontSize="small" sx={{ marginRight: '15px' }} />
-              Create_message
-            </Button>
-          </Grid>
-        </Grid>
-        <Grid item lg={8} sx={{ padding: '5px' }}>
-          {communiquer &&
-            communiquer.map((index) => {
+        )}
+
+        <Grid item lg={user?.fonction === 'superUser' ? 8 : 12} sx={{ padding: '5px' }}>
+          {communiquer?.communication &&
+            communiquer.communication.map((index) => {
               return (
-                <Paper key={index._id} sx={{ padding: '10px' }}>
-                  <Paper sx={{ padding: '5px' }}>
-                    <Typography variant="body" sx={{ textAlign: 'center', fontWeight: 'bolder' }}>
-                      {index.title}
-                    </Typography>
-                    <p>{index.content.replace('@name', returnName(user?.nom))}</p>
-                  </Paper>
+                <Paper key={index._id} sx={{ padding: '10px', marginTop: '5px' }}>
+                  <Typography variant="body" sx={{ textAlign: 'center', fontWeight: 'bolder' }}>
+                    {index.title}
+                  </Typography>
+
+                  <TextWithLineBreaks text={index.content} />
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ width: '70%' }}>
+                      <p style={{ fontSize: '10px', margin: '0px', padding: '0px', color: 'blue', fontWeight: 'bolder' }}>
+                        {returnText(index.date)}
+                      </p>
+                    </div>
+                    {user?.fonction === 'superUser' && (
+                      <div style={{ width: '10%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ cursor: 'pointer' }}>
+                          <Delete
+                            color="warining"
+                            onClick={() => {
+                              setConfirmDialog({
+                                isOpen: true,
+                                title: 'Do you want to delete this message ?',
+                                subTitle: '',
+                                onConfirm: () => {
+                                  DeleteMessage(index._id);
+                                }
+                              });
+                            }}
+                            fontSize="small"
+                          />
+                        </div>
+                        <div style={{ cursor: 'pointer' }}>
+                          <Edit color="primary" onClick={() => Update(index)} fontSize="small" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </Paper>
               );
             })}
         </Grid>
       </Grid>
+      <ConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />
     </>
   );
 }

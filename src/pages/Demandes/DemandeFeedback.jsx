@@ -1,13 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
-import { Card } from '@mui/material';
+import { Card, Grid } from '@mui/material';
 import { CreateContexteGlobal } from 'GlobalContext';
 import { Input } from 'antd';
 import axios from 'axios';
 import moment from 'moment';
 import React from 'react';
 import { config, lien } from 'static/Lien';
-import { Grid } from '../../../node_modules/@mui/material/index';
 import Chat from './Chat';
 
 function ListeDemandeFeedBack({ setError }) {
@@ -93,16 +92,18 @@ function ListeDemandeFeedBack({ setError }) {
                   </p>
                 </div>
 
-                {index.double && (
-                  <div style={{ margin: '0px', background: '#4684D3' }}>
+                {index?.typeVisit?.followup === 'followup' && (
+                  <div style={{ margin: '0px', background: '#4684D3', padding: '4px', borderRadius: '10px' }}>
                     <p
                       style={{
                         fontSize: '12px',
                         color: '#FFFFFF',
-                        textAlign: 'center'
+                        padding: '0px',
+                        margin: '0px'
                       }}
                     >
-                      Doublon, elle est attachée à la visite numero {index.double?.valeur}
+                      Ce client a déjà été en date du {moment(index?.typeVisit?.dateFollowup).format('DD-MM-YYYY à hh:mm')} par le meme
+                      agent
                     </p>
                   </div>
                 )}

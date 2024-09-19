@@ -1,5 +1,4 @@
 const modelDemande = require("../Models/Demande");
-const ModelPeriode = require("../Models/Periode");
 const modelAgentAdmin = require("../Models/Agent");
 const asyncLab = require("async");
 const { generateNumber } = require("../Static/Static_Function");
@@ -7,6 +6,8 @@ const { ObjectId } = require("mongodb");
 const modelRapport = require("../Models/Rapport");
 const fs = require("fs");
 const sharp = require("sharp");
+const _ = require("lodash");
+const moment = require("moment");
 
 module.exports = {
   demande: (req, res) => {
@@ -15,6 +16,7 @@ module.exports = {
         codeclient,
         typeImage,
         codeAgent,
+        jours,
         codeZone,
         commune,
         numero,
@@ -52,7 +54,7 @@ module.exports = {
           .status(201)
           .json("Veuillez renseigner la raison de non payement");
       }
-
+      const periode = moment(new Date()).format("MM-YYYY");
       const io = req.io;
       asyncLab.waterfall(
         [
@@ -87,23 +89,8 @@ module.exports = {
                 return res.status(201).json("Erreur");
               });
           },
+
           function (agent, done) {
-            ModelPeriode.findOne({})
-              .lean()
-
-              .then((response) => {
-                if (response) {
-                  done(null, agent, response);
-                } else {
-                  return res.status(201).json("Aucune période en cours");
-                }
-              })
-              .catch(function (err) {
-                return res.status(201).json("Erreur");
-              });
-          },
-
-          function (agent, periode, done) {
             modelDemande
               .create({
                 codeAgent: agent.codeAgent,
@@ -113,8 +100,9 @@ module.exports = {
                 statut,
                 raison: raison === "undefined" ? "" : raison,
                 codeclient,
-                lot: periode.periode,
+                lot: periode,
                 idDemande,
+                jours,
                 sector,
                 cell,
                 reference,
@@ -155,7 +143,56 @@ module.exports = {
                 fs.unlink(pathdelete, (err) => {
                   console.log(err);
                 });
-                done(demande);
+                done(null, demande);
+              })
+              .catch(function (err) {
+                console.log(err);
+              });
+          },
+          function (demande, done) {
+            modelDemande
+              .aggregate([
+                { $match: { _id: new ObjectId(demande._id) } },
+                {
+                  $lookup: {
+                    from: "agents",
+                    localField: "codeAgent",
+                    foreignField: "codeAgent",
+                    as: "agent",
+                  },
+                },
+
+                {
+                  $lookup: {
+                    from: "zones",
+                    localField: "codeZone",
+                    foreignField: "idZone",
+                    as: "zone",
+                  },
+                },
+                {
+                  $lookup: {
+                    from: "reponses",
+                    localField: "idDemande",
+                    foreignField: "idDemande",
+                    as: "reponse",
+                  },
+                },
+                { $unwind: "$agent" },
+                { $unwind: "$zone" },
+                {
+                  $lookup: {
+                    from: "shops",
+                    localField: "agent.idShop",
+                    foreignField: "idShop",
+                    as: "shopAgent",
+                  },
+                },
+              ])
+              .then((result) => {
+                if (result) {
+                  done(result[0]);
+                }
               })
               .catch(function (err) {
                 console.log(err);
@@ -165,8 +202,8 @@ module.exports = {
           //delete Image
         ],
         function (demande) {
-          req.recherche = demande.idDemande;
-          next();
+          io.emit("demande", demande);
+          return res.status(200).json(demande);
         }
       );
     } catch (error) {
@@ -212,26 +249,22 @@ module.exports = {
     }
   },
   ToutesDemande: (req, res) => {
+    const periode = moment(new Date()).format("MM-YYYY");
     try {
       asyncLab.waterfall([
         function (done) {
-          ModelPeriode.findOne({})
-            .lean()
-            .then((periode) => {
-              if (periode) {
-                done(null, periode);
-              } else {
-                return res.status(200).json([]);
-              }
-            })
-            .catch(function (err) {
-              console.log(err);
-            });
-        },
-        function (periode, done) {
           modelRapport
-            .find({ "demande.lot": periode.periode })
-            .lean()
+            .aggregate([
+              { $match: { "demande.lot": periode } },
+              {
+                $group: {
+                  _id: "$agentSave.nom",
+                  nombre: { $sum: 1 },
+                },
+              },
+              { $sort: { nombre: -1 } },
+            ])
+            .limit(5)
             .then((response) => {
               return res.status(200).json(response);
             })
@@ -394,29 +427,16 @@ module.exports = {
   },
   ToutesDemandeAttente: (req, res) => {
     try {
+      const periode = moment(new Date()).format("MM-YYYY");
       asyncLab.waterfall(
         [
           function (done) {
-            ModelPeriode.findOne({})
-              .lean()
-              .then((periode) => {
-                if (periode) {
-                  done(null, periode);
-                } else {
-                  return res.status(200).json([]);
-                }
-              })
-              .catch(function (err) {
-                console.log(err);
-              });
-          },
-          function (periode, done) {
             modelDemande
               .aggregate([
                 {
                   $match: {
                     valide: false,
-                    lot: periode.periode,
+                    lot: periode,
                     feedback: "new",
                   },
                 },
@@ -484,8 +504,7 @@ module.exports = {
       console.log(error);
     }
   },
-
-  updateDemandeAgent: (req, res, next) => {
+  updateDemandeAgent: (req, res) => {
     try {
       const {
         codeclient,
@@ -502,23 +521,20 @@ module.exports = {
         sat,
         id, //placeholder = SAT
       } = req.body;
-
       asyncLab.waterfall(
         [
           function (done) {
             modelDemande
-              .findOne({ _id: new ObjectId(id), valide: false })
+              .findById(id)
               .then((demande) => {
-                console.log(demande);
                 if (demande) {
                   done(null, demande);
                 } else {
-                  return res.status(201).json("Erreur");
+                  return res.status(201).json("Visite introuvable");
                 }
               })
               .catch(function (err) {
-                console.log(err);
-                return res.status(201).json("Erreur");
+                return res.status(201).json("Erreur : " + err);
               });
           },
           function (demande, done) {
@@ -545,14 +561,13 @@ module.exports = {
               })
               .catch(function (err) {
                 console.log(err);
-                return res.status(201).json("Erreur");
+                return res.status(201).json("Erreur 3");
               });
           },
         ],
         function (result) {
           if (result) {
-            req.recherche = result.idDemande;
-            next();
+            return res.status(200).json(result);
           } else {
             return res.status(201).json("Erreur");
           }
@@ -591,11 +606,12 @@ module.exports = {
                 if (demande) {
                   done(null, demande);
                 } else {
-                  return res.status(201).json("Erreur");
+                  return res.status(201).json("Erreur 1");
                 }
               })
               .catch(function (err) {
-                return res.status(201).json("Erreur");
+                console.log(err);
+                return res.status(201).json("Erreur 2");
               });
           },
           function (demande, done) {
@@ -624,7 +640,7 @@ module.exports = {
                 })
                 .catch(function (err) {
                   console.log(err);
-                  return res.status(201).json("Erreur");
+                  return res.status(201).json("Erreur 3");
                 });
             } catch (error) {
               console.log(error);
@@ -649,8 +665,7 @@ module.exports = {
           },
         ],
         function (result) {
-          req.recherche = result.idDemande;
-          next();
+          return res.status(200).json(result);
         }
       );
 

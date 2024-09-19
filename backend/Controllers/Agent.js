@@ -1,19 +1,12 @@
 const { ObjectId } = require("mongodb");
 const modelAgent = require("../Models/Agent");
-const { isEmpty } = require("../Static/Static_Function");
 const asyncLab = require("async");
 
 module.exports = {
   AddAgent: (req, res, next) => {
     try {
       const { nom, codeAgent, fonction, telephone, idZone, idShop } = req.body;
-
-      if (
-        isEmpty(nom) ||
-        isEmpty(codeAgent) ||
-        isEmpty(fonction) ||
-        isEmpty(idZone)
-      ) {
+      if (!nom || !codeAgent || !fonction || !idZone) {
         return res.status(400).json("Veuillez renseigner les champs");
       }
       asyncLab.waterfall(
@@ -72,6 +65,7 @@ module.exports = {
         }
       );
     } catch (error) {
+      console.log(error);
       return res.status(400).json("Erreur d'enregistrement");
     }
   },
@@ -104,7 +98,13 @@ module.exports = {
             $unwind: "$region",
           },
           {
-            $sort: { nom: 1 },
+            $sort: { nom: -1 },
+          },
+          {
+            $project: {
+              password: 0,
+              __v: 0,
+            },
           },
         ])
         .then((response) => {

@@ -1,9 +1,8 @@
 import { Add } from '@mui/icons-material';
-import { Fab } from '@mui/material';
+import { Fab, Typography } from '@mui/material';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import Popup from 'static/Popup';
-import { Typography } from '../../../node_modules/@mui/material/index';
 import ItemPlain from './AddItemPlainte';
 import AddPlainte from './AddPlainte';
 

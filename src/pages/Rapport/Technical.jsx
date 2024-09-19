@@ -1,24 +1,82 @@
 import { Search } from '@mui/icons-material';
-import { Button, CircularProgress, Grid, Paper } from '@mui/material';
+import { Button, CircularProgress, Grid, Paper, Typography } from '@mui/material';
 import { Input } from 'antd';
 import axios from 'axios';
+import ConfirmDialog from 'Control/ControlDialog';
+import _ from 'lodash';
+import moment from 'moment';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import ExcelButton from 'static/ExcelButton';
 import { config, lien_issue } from 'static/Lien';
-import moment from '../../../node_modules/moment/moment';
+import SelectedArray from 'static/Select';
+import * as XLSX from 'xlsx';
 import { generateNomFile } from './NameFile';
 import './style.css';
+import ExcelButton from './TwoFiles';
 
 function Technical() {
   const [dates, setDates] = React.useState({ debut: '', fin: '' });
+  const [provenance, setProvenance] = React.useState('');
   const agent = useSelector((state) => state.agent?.agent);
-  const [shop, setShop] = React.useState();
-  const [allstatus, setStatus] = React.useState();
+  const shop = useSelector((state) => state.shop?.shop);
+
   const [loading, setLoading] = React.useState(false);
   const { debut, fin } = dates;
-  const [data, setData] = React.useState();
   const [nomFile, setNomFile] = React.useState('');
+  const [new_value, setNew_Value] = React.useState();
+  const [old_value, setOld_Value] = React.useState();
+
+  const generateFile = (datas, statut) => {
+    let table = [];
+    let donner = _.filter(datas, { isValide: statut });
+    for (let i = 0; i < donner.length; i++) {
+      table.push({
+        ID: donner[i].codeclient,
+        num_ticket: donner[i].idPlainte,
+        customer_name: donner[i].nomClient,
+        contact: donner[i].contact,
+        dateSave: moment(donner[i].dateSave).format('DD/MM/YYYY'),
+        submitedBy: donner[i].submitedBy,
+        statut: donner[i].statut,
+        Plainte: donner[i].typePlainte,
+        Issue: donner[i].plainteSelect,
+        shop: donner[i].shop,
+        open: donner[i].open,
+        decodeur: donner[i].decodeur,
+        raisonOngoing: donner[i].raisonOngoing,
+        EditRaison: donner[i].editRaison,
+        EditBy: donner[i].editBy,
+        delai: donner[i].delai,
+        type: donner[i].type,
+        desangagement_Raison: donner[i]?.desangagement?.raison,
+        repo_volontaire_numsynchro: donner[i]?.repo_volontaire?.num_synchro,
+        repo_volontaire_materiel: donner[i]?.repo_volontaire?.materiel,
+        regularisation_jours: donner[i]?.regularisation?.jours,
+        regularisation_cu: donner[i]?.regularisation?.cu,
+        regularisation_date_coupure: donner[i]?.regularisation?.date_coupure,
+        regularisation_raison: donner[i]?.regularisation?.raison,
+        upgrade: donner[i]?.upgrade,
+        downgrade_kit: donner[i]?.downgrade?.kit,
+        downgrade_num_synchro: donner[i]?.downgrade?.num_synchro,
+        provenance: donner[i]?.property,
+        commentaire: donner[i].recommandation,
+        verification: donner[i].verification?.nomAgent,
+        verif_commentaire: donner[i].verification?.commentaire,
+        assignBy: donner[i].technicien?.assignBy,
+        codeTech: donner[i].technicien?.codeTech,
+        numSynchro: donner[i].technicien?.numSynchro,
+        Nom_Tech: returnNom(donner[i].technicien?.codeTech),
+        'Date Assign': moment(donner[i].technicien?.date).format('DD/MM/YYYY'),
+        'Heure Assign': moment(donner[i].technicien?.date).format('hh:mm'),
+        commune: donner[i].adresse?.commune,
+        quartier: donner[i].adresse?.quartier,
+        avenue: donner[i].adresse?.avenue,
+        SAT: donner[i].adresse?.sat?.nom_SAT,
+        operation: donner[i].operation ? donner[i].operation : 'undefined'
+      });
+    }
+    return table;
+  };
 
   const searchData = async () => {
     setLoading(true);
@@ -26,7 +84,8 @@ function Technical() {
       lien_issue + '/rapport_technical',
       {
         debut,
-        fin
+        fin,
+        provenance
       },
       config
     );
@@ -36,65 +95,73 @@ function Technical() {
       window.location.replace('/login');
     }
     if (response.status === 200 && response.data.length > 0) {
-      setStatus(Object.keys(_.groupBy(response.data, 'statut')));
-      setShop(Object.keys(_.groupBy(response.data, 'shop')));
-      setData(response.data);
+      setNomFile(generateNomFile(dates, 'Complaints'));
+      setNew_Value(generateFile(response.data, 'new_value'));
+      setOld_Value(generateFile(response.data, 'old_value'));
     }
   };
-  const returnNomber = (shops, statut) => {
-    return _.filter(data, { statut: statut, shop: shops }).length;
-  };
 
-  const returnTotShop = (shops) => {
-    return _.filter(data, { shop: shops }).length;
-  };
   const returnNom = (id) => {
     return _.filter(agent, { codeAgent: id })[0]?.nom;
   };
-  const [donner, setDonner] = React.useState();
-  const generateFile = () => {
-    let table = [];
-    for (let i = 0; i < data.length; i++) {
-      table.push({
-        ID: data[i].codeclient,
-        num_ticket: data[i].idPlainte,
-        customer_name: data[i].nomClient,
-        contact: data[i].contact,
-        dateSave: moment(data[i].dateSave).format('DD/MM/YYYY'),
-        submitedBy: data[i].submitedBy,
-        statut: data[i].statut,
-        Plainte: data[i].typePlainte,
-        Issue: data[i].plainteSelect,
-        shop: data[i].shop,
-        provenance: data[i]?.property,
-        commentaire: data[i].recommandation,
-        verification: data[i].verification?.nomAgent,
-        verif_commentaire: data[i].verification?.commentaire,
-        assignBy: data[i].technicien?.assignBy,
-        codeTech: data[i].technicien?.codeTech,
-        numSynchro: data[i].technicien?.numSynchro,
-        Nom_Tech: returnNom(data[i].technicien?.codeTech),
-        'Date Assign': moment(data[i].technicien?.date).format('DD/MM/YYYY'),
-        'Heure Assign': moment(data[i].technicien?.date).format('hh:mm'),
-        commune: data[i].adresse?.commune,
-        quartier: data[i].adresse?.quartier,
-        avenue: data[i].adresse?.avenue,
-        SAT: data[i].adresse?.sat?.nom_SAT
-      });
-    }
-    setNomFile(generateNomFile(dates, 'Technical Issue'));
-    setDonner(table);
+
+  const Callcenter_support = (magasin) => {
+    return _.filter(new_value, { operation: 'backoffice', shop: magasin });
   };
-  React.useEffect(() => {
-    if (data && data.length > 0) {
-      generateFile();
+  const _Technical = (magasin) => {
+    return _.filter(new_value, { type: 'ticket', operation: 'undefined', shop: magasin });
+  };
+  const _No_Technical = (magasin) => {
+    return new_value.filter((x) => x.type === 'appel' && x.operation === 'undefined' && x.shop === magasin);
+  };
+  const _Total_New = (magasin) => {
+    return _.filter(new_value, { shop: magasin });
+  };
+  const _Last_To_Date = (magasin) => {
+    return _.filter(old_value, { shop: magasin });
+  };
+  const _VS_Last = (magasin) => {
+    const this_month = _.filter(new_value, { shop: magasin }).length;
+    const last_month = _.filter(old_value, { shop: magasin }).length;
+    if (last_month === 0) {
+      return '';
+    } else {
+      return ((this_month - last_month) / last_month).toFixed();
     }
-  }, [data]);
+  };
+  const [confirmDialog, setConfirmDialog] = React.useState({
+    isOpen: false,
+    title: '',
+    subTitle: ''
+  });
+  const exportComplaint = (complaint) => {
+    try {
+      setConfirmDialog({
+        ...confirmDialog,
+        isOpen: false
+      });
+      const worksheet1 = XLSX.utils.json_to_sheet(complaint);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet1, 'complaint');
+      XLSX.writeFile(workbook, 'complaint.xlsx');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const provenanceData = [
+    { id: 0, value: 'shop', title: 'Shop' },
+    { id: 1, value: 'callcenter', title: 'Call center' },
+    { id: 2, value: 'shop,callcenter', title: 'Overall' }
+  ];
+
   return (
     <>
       <Paper elevation={4} sx={{ padding: '10px' }}>
-        <p style={{ fontWeight: 'bolder' }}>Technical Issue</p>
+        <p style={{ fontWeight: 'bolder' }}>Complaints</p>
         <Grid container sx={{ marginTop: '10px' }}>
+          <Grid item lg={2} sm={3} xs={12}>
+            <SelectedArray label="Provenance" data={provenanceData} value={provenance} setValue={setProvenance} />
+          </Grid>
           <Grid item lg={2} sm={3} xs={12} sx={{ display: 'flex', alignItems: 'center', marginTop: '5px', padding: '0px 5px' }}>
             <Input
               type="date"
@@ -125,42 +192,119 @@ function Technical() {
             </Button>
           </Grid>
 
-          {!loading && donner && (
+          {!loading && new_value && (
             <Grid item lg={1} sm={1} xs={1} sx={{ marginTop: '5px', display: 'flex', alignItems: 'center' }}>
-              <ExcelButton data={donner} title="" fileName={`${nomFile}.xlsx`} />
+              <ExcelButton data_now={new_value} data_two={old_value} fileName={`${nomFile}.xlsx`} />
             </Grid>
           )}
         </Grid>
       </Paper>
       <Paper elevation={3} sx={{ marginTop: '10px', padding: '10px' }}>
         <Grid container>
-          <Grid item lg={6}>
+          <Grid item lg={12}>
             <table>
               <thead>
                 <tr>
-                  <td>Shop/Statut</td>
-                  <td>Ticket</td>
+                  <td>Shop</td>
+                  <td>Call center support</td>
+                  <td>No technical Issue</td>
+                  <td>Technical Issue</td>
+                  <td>Total this month</td>
+                  <td>Last month to day</td>
+                  <td>VS Lastmonth</td>
                 </tr>
               </thead>
               <tbody>
                 {shop &&
-                  allstatus &&
+                  new_value &&
+                  new_value.length > 0 &&
+                  shop.length > 0 &&
                   shop.map((index) => {
                     return (
-                      <React.Fragment key={index._id}>
-                        <tr>
-                          <td style={{ backgroundColor: '#dedede' }}>{index}</td>
-                          <td style={{ backgroundColor: '#dedede' }}>{returnTotShop(index)}</td>
-                        </tr>
-                        {allstatus.map((item) => {
-                          return (
-                            <tr key={item}>
-                              <td>{item}</td>
-                              <td>{returnNomber(index, item)}</td>
-                            </tr>
-                          );
-                        })}
-                      </React.Fragment>
+                      <tr key={index._id}>
+                        <td>{index?.shop}</td>
+                        <Typography
+                          component="td"
+                          onClick={() => {
+                            setConfirmDialog({
+                              isOpen: true,
+                              title: 'Do you want to export this file ?',
+                              subTitle: '',
+                              onConfirm: () => {
+                                exportComplaint(Callcenter_support(index?.shop));
+                              }
+                            });
+                          }}
+                          className={`${Callcenter_support(index?.shop).length === 0 ? 'valueZero' : 'valueSuperieur'}`}
+                        >
+                          {Callcenter_support(index?.shop).length}
+                        </Typography>
+                        <Typography
+                          component="td"
+                          onClick={() => {
+                            setConfirmDialog({
+                              isOpen: true,
+                              title: 'Do you want to export this file ?',
+                              subTitle: '',
+                              onConfirm: () => {
+                                exportComplaint(_No_Technical(index?.shop));
+                              }
+                            });
+                          }}
+                          className={`${_No_Technical(index?.shop).length === 0 ? 'valueZero' : 'valueSuperieur'}`}
+                        >
+                          {_No_Technical(index?.shop).length}
+                        </Typography>
+                        <Typography
+                          component="td"
+                          onClick={() => {
+                            setConfirmDialog({
+                              isOpen: true,
+                              title: 'Do you want to export this file ?',
+                              subTitle: '',
+                              onConfirm: () => {
+                                exportComplaint(_Technical(index?.shop));
+                              }
+                            });
+                          }}
+                          className={`${_Technical(index?.shop).length === 0 ? 'valueZero' : 'valueSuperieur'}`}
+                        >
+                          {_Technical(index?.shop).length}
+                        </Typography>
+                        <Typography
+                          component="td"
+                          onClick={() => {
+                            setConfirmDialog({
+                              isOpen: true,
+                              title: 'Do you want to export this file ?',
+                              subTitle: '',
+                              onConfirm: () => {
+                                exportComplaint(_Total_New(index?.shop));
+                              }
+                            });
+                          }}
+                          className={`${_Total_New(index?.shop).length === 0 ? 'valueZero' : 'valueSuperieur'}`}
+                        >
+                          {_Total_New(index?.shop).length}
+                        </Typography>
+                        <Typography
+                          component="td"
+                          onClick={() => {
+                            setConfirmDialog({
+                              isOpen: true,
+                              title: 'Do you want to export this file ?',
+                              subTitle: '',
+                              onConfirm: () => {
+                                exportComplaint(_Last_To_Date(index?.shop));
+                              }
+                            });
+                          }}
+                          className={`${_Last_To_Date(index?.shop).length === 0 ? 'valueZero' : 'valueSuperieur'}`}
+                        >
+                          {_Last_To_Date(index?.shop).length}
+                        </Typography>
+                        <td className={`${_VS_Last(index?.shop) < 0 && 'colorRed'}`}>{_VS_Last(index?.shop)}%</td>
+                      </tr>
                     );
                   })}
               </tbody>
@@ -168,6 +312,7 @@ function Technical() {
           </Grid>
         </Grid>
       </Paper>
+      <ConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />
     </>
   );
 }

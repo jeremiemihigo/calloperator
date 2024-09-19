@@ -74,7 +74,6 @@ function Doublon() {
   React.useEffect(() => {
     laodingFile();
   }, [data]);
-  console.log(data);
   return (
     <div>
       <Grid container>

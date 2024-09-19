@@ -6,8 +6,8 @@ const { generateString } = require("../../Static/Static_Function");
 module.exports = {
   AddPlainte: (req, res, next) => {
     try {
-      const { title } = req.body;
-      if (!title) {
+      const { title, property } = req.body;
+      if (!title || !property) {
         return res.status(400).json("Veuillez renseigner la plainte");
       }
       const id = generateString(4);
@@ -15,7 +15,7 @@ module.exports = {
         [
           function (done) {
             modelPlainte
-              .create({ title, id })
+              .create({ title, id, property })
               .then((result) => {
                 if (result) {
                   done(result);
@@ -39,7 +39,16 @@ module.exports = {
   },
   AddTitlePlainte: (req, res, next) => {
     try {
-      const { idPlainte, title } = req.body;
+      const {
+        idPlainte,
+        other,
+        tableother,
+        property,
+        oneormany,
+        ticket,
+        adresse,
+        title,
+      } = req.body;
       if (!idPlainte || !title) {
         return res.status(400).json("Veuillez renseigner les champs");
       }
@@ -49,6 +58,12 @@ module.exports = {
             modelTypePlainte
               .create({
                 idPlainte,
+                property,
+                adresse,
+                other,
+                tableother,
+                ticket,
+                oneormany,
                 title,
                 id: generateString(5),
               })
@@ -92,6 +107,23 @@ module.exports = {
             return res.status(200).json(data);
           } else {
             return res.status(200).json([]);
+          }
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  ReadItem_Plainte: (req, res) => {
+    try {
+      modelTypePlainte
+        .find({})
+        .lean()
+        .then((result) => {
+          if (result) {
+            return res.status(200).json(result);
           }
         })
         .catch(function (err) {

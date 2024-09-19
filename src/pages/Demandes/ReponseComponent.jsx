@@ -9,12 +9,15 @@ import { CreateContexteGlobal } from 'GlobalContext';
 // import { CreateContexteGlobal } from 'GlobalContext';
 import axios from 'axios';
 import React, { useContext } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { postReponse } from 'Redux/Reponses';
 import { config, lien } from 'static/Lien';
 import Selected from 'static/Select';
+import { Alert, Backdrop } from '../../../node_modules/@mui/material/index';
 
 function ReponsesComponent({ update }) {
   const regions = useSelector((state) => state.zone.zone);
+  const dispatch = useDispatch();
   const [valueRegionSelect, setValueRegionSelect] = React.useState('');
   const [valueShopSelect, setValueShopSelect] = React.useState('');
   const [fetching, setFeching] = React.useState(false);
@@ -84,7 +87,7 @@ function ReponsesComponent({ update }) {
   const userConnect = useSelector((state) => state.user?.user);
 
   const reponseData = async () => {
-    if (codeClient.length !== 12 || !codeClient.toUpperCase().trim().startsWith('BDRC')) {
+    if (codeClient.trim().length !== 12 || !codeClient.toUpperCase().trim().startsWith('BDRC')) {
       setMessage("Le code client n'est pas conforme");
       setOpenSnack(true);
     } else {
@@ -113,12 +116,13 @@ function ReponsesComponent({ update }) {
             fonctionAgent: demande.agent.fonction,
             codeAgentDemandeur: demande.agent.codeAgent,
             _idDemande: demande._id,
-            nomAgentSave: userConnect?.nom
+            nomAgentSave: userConnect?.nom,
+            createdAt: demande?.createdAt
           };
-          console.log(datass);
-          const response = await axios.post(lien + '/reponsedemande', datass, config);
-          console.log(response);
-          //dispatch(postReponse(datass));
+          // console.log(datass);
+          // const response = await axios.post(lien + '/reponsedemande', datass, config);
+          // console.log(response);
+          dispatch(postReponse(datass));
 
           // socket.emit('reponse', datass);
         }
@@ -235,17 +239,22 @@ function ReponsesComponent({ update }) {
     { id: 1, title: 'Identifique à pulse', value: 'Identique' },
     { id: 2, title: "N'est pas identifique à pulse", value: "N'est pas identique" }
   ];
-  // const reponseState = useSelector((state) => state.reponse);
+  const reponseState = useSelector((state) => state.reponse);
 
   return (
     <Grid>
-      {/* {reponseState.postDemande === 'pending' && (
+      {reponseState.postDemande === 'rejected' && (
+        <Alert variant="filled" severity="error">
+          {reponseState.postDemandeError}
+        </Alert>
+      )}
+      {reponseState.postDemande === 'pending' && (
         <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={true}>
           <div>
             <p style={{ textAlign: 'center', margin: '0px', padding: '0px' }}>Please wait...</p>
           </div>
         </Backdrop>
-      )} */}
+      )}
 
       {openSnack && <DirectionSnackbar message={message} open={openSnack} setOpen={setOpenSnack} />}
       <Grid container>

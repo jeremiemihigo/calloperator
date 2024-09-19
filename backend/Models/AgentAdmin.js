@@ -8,10 +8,20 @@ const schema = new mongoose.Schema(
     codeAgent: { type: String, required: true, unique: true, trim: true },
     password: { type: String, required: true, default: 1234 },
     active: { type: Boolean, required: true, default: true },
+    backOffice_plainte: { type: Boolean, required: false },
+    plainte_callcenter: { type: Boolean, required: false },
     id: { type: Date, required: true, unique: true },
     first: { type: Boolean, required: true, default: true },
     taches: { type: Array, required: false },
     fonction: { type: String, required: true },
+    plainteShop: { type: String, required: false },
+    synchro_shop: { type: Array, required: false },
+
+    //Conge
+    id_session: { type: String, required: false },
+    my_supervisor: { type: String, required: false },
+    all_days: { type: Number, required: false },
+    id_fonction: { type: String, required: false },
   },
   { timestamps: true }
 );

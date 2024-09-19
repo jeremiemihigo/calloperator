@@ -5,9 +5,9 @@ export const CreateContexteTable = createContext();
 
 const ContexteTable = (props) => {
   const [select, setSelect] = React.useState(7);
-  const [plainteSelect, setPlainteSelect] = React.useState();
+  const [plainteSelect, setPlainteSelect] = React.useState('');
   const [adresse, setAdresse] = React.useState();
-  const [historique, setHistorique] = React.useState({ appel: [], info: [], ticket: [] });
+  const [historique, setHistorique] = React.useState({ appel: [], info: [] });
   const [codeclient, setCodeclient] = React.useState('');
   const [shopSelect, setShopSelect] = React.useState('');
   const [otherItem, setOtherItem] = React.useState('');
@@ -25,10 +25,10 @@ const ContexteTable = (props) => {
     setOtherItem('');
     setCodeclient('');
     setAdresse();
-    setPlainteSelect();
+    setPlainteSelect('');
     setItem('');
     setSelect(7);
-    setHistorique({ appel: [], info: [], ticket: [] });
+    setHistorique({ appel: [], info: [] });
   };
 
   return (

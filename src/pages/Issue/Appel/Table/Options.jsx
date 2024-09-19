@@ -49,7 +49,7 @@ const StyledMenu = styled((props) => (
   }
 }));
 
-export default function Options({ client, validation, openChat, apresAssistance, openForm, fermeture }) {
+function Options({ client, validation, openChat, apresAssistance, openForm, fermeture }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const user = useSelector((state) => state.user?.user);
@@ -83,7 +83,7 @@ export default function Options({ client, validation, openChat, apresAssistance,
         onClose={handleClose}
       >
         <div>
-          {['Open_technician_visit', 'not_resolved'].includes(client.statut) && (
+          {['Open_technician_visit', 'Not_resolved'].includes(client.statut) && (
             <>
               <MenuItem
                 onClick={(e) => {
@@ -156,3 +156,4 @@ Options.propTypes = {
   fermeture: PropTypes.func,
   openChat: PropTypes.func
 };
+export default React.memo(Options);

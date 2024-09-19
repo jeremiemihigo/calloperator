@@ -95,3 +95,18 @@ table tbody tr:last-child td {
   justify-content: center;
   border: 1px dashed black;
 }
+
+.valueZero {
+  background-color: rgb(0, 169, 224);
+  color: rgb(0, 169, 224);
+}
+.colorRed {
+  color: red;
+  font-weight: bolder;
+}
+.valueSuperieur {
+  cursor: pointer;
+  text-decoration: underline;
+  color: rgba(8, 8, 27, 0.803);
+  font-size: 13px;
+}

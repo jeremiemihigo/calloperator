@@ -3,13 +3,14 @@ import { lazy } from 'react';
 import Loadable from 'components/Loadable';
 import MainLayout from 'layout/MainLayout';
 import Technical from 'pages/Rapport/Technical';
-const Appel = Loadable(lazy(() => import('pages/Issue/Appel')));
+const AppelDsh = Loadable(lazy(() => import('pages/Issue/Appel')));
+//const Appel = Loadable(lazy(() => import('pages/Issue/Appel/Dashboard/SuperUser')));
 const Plainte = Loadable(lazy(() => import('pages/Issue/Plainte')));
 const RapportVisite = Loadable(lazy(() => import('pages/Rapport/VisiteMenage')));
-const Call = Loadable(lazy(() => import('pages/Rapport/Call')));
 const Contact = Loadable(lazy(() => import('pages/Rapport/Contact')));
+const My_Leave = Loadable(lazy(() => import('pages/My_Leave')));
 const Promesse_Payement = Loadable(lazy(() => import('pages/Rapport/Promesse_Payement')));
-
+const IndexEdit = Loadable(lazy(() => import('pages/Issue/Appel/Component/IndexEdit')));
 // const Actions = Loadable(lazy(() => import('pages/Actions')));
 
 // ==============================|| MAIN ROUTING ||============================== //
@@ -20,7 +21,7 @@ const MainRoutes = {
   children: [
     {
       path: '/call',
-      element: <Appel />
+      element: <AppelDsh />
     },
 
     {
@@ -31,10 +32,7 @@ const MainRoutes = {
       path: '/r_visit',
       element: <RapportVisite />
     },
-    {
-      path: '/r_call',
-      element: <Call />
-    },
+
     {
       path: '/r_callclient',
       element: <Contact />
@@ -46,6 +44,14 @@ const MainRoutes = {
     {
       path: '/r_callback',
       element: <Promesse_Payement />
+    },
+    {
+      path: '/edit',
+      element: <IndexEdit />
+    },
+    {
+      path: '/conge',
+      element: <My_Leave />
     }
   ]
 };

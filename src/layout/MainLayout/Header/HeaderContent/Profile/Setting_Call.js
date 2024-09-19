@@ -3,12 +3,12 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // material-ui
-import { DonutLarge } from '@mui/icons-material';
+import { AccessTime, BugReport, Message } from '@mui/icons-material';
 import { List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { activeItem } from 'store/reducers/menu';
-import { Message } from '../../../../../../node_modules/@mui/icons-material/index';
+
 // assets
 // import {  FreeBreakfast, } from '@mui/icons-material';
 
@@ -26,15 +26,15 @@ const Setting_Call = () => {
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
 
-    if (index === 0) {
+    if (index === 10) {
       itemHandler('Plainte');
       navigation('/plainte', { replace: true });
     }
-    if (index === 1) {
+    if (index === 11) {
       itemHandler('Delai');
       navigation('/delai', { replace: true });
     }
-    if (index === 2) {
+    if (index === 12) {
       itemHandler('Communication');
       navigation('/communication', { replace: true });
     }
@@ -44,23 +44,23 @@ const Setting_Call = () => {
   return (
     <List component="nav" sx={{ p: 0, '& .MuiListItemIcon-root': { minWidth: 32, color: theme.palette.grey[500] } }}>
       {userConenct && userConenct.fonction === 'superUser' && (
-        <ListItemButton selected={selectedIndex === 0} onClick={(event) => handleListItemClick(event, 0)}>
+        <ListItemButton selected={selectedIndex === 10} onClick={(event) => handleListItemClick(event, 10)}>
           <ListItemIcon>
-            <DonutLarge fontSize="small" />
+            <BugReport fontSize="small" />
           </ListItemIcon>
           <ListItemText primary="Complaints" />
         </ListItemButton>
       )}
       {userConenct && userConenct.fonction === 'superUser' && (
-        <ListItemButton selected={selectedIndex === 1} onClick={(event) => handleListItemClick(event, 1)}>
+        <ListItemButton selected={selectedIndex === 11} onClick={(event) => handleListItemClick(event, 11)}>
           <ListItemIcon>
-            <DonutLarge fontSize="small" />
+            <AccessTime fontSize="small" />
           </ListItemIcon>
           <ListItemText primary="Deedline" />
         </ListItemButton>
       )}
       {userConenct && userConenct.fonction === 'superUser' && (
-        <ListItemButton selected={selectedIndex === 2} onClick={(event) => handleListItemClick(event, 2)}>
+        <ListItemButton selected={selectedIndex === 12} onClick={(event) => handleListItemClick(event, 12)}>
           <ListItemIcon>
             <Message fontSize="small" />
           </ListItemIcon>

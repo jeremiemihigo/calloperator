@@ -42,4 +42,4 @@ function FormItem({ data, liste, setListe }) {
 FormItem.propTypes = {
   data: PropTypes.object
 };
-export default FormItem;
+export default React.memo(FormItem);

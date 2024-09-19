@@ -1,8 +1,7 @@
-import PropTypes from 'prop-types';
-
-// material-ui
 import { Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 const Couleur = ({ text, taille, ...others }) => {
   const theme = useTheme();
@@ -18,7 +17,7 @@ const Couleur = ({ text, taille, ...others }) => {
       main = theme.palette.warning.main;
       break;
     case 'IN SLA':
-      main = theme.palette.info.main;
+      main = theme.palette.success.main;
       break;
     case 'Fermer':
       main = theme.palette.success.main;
@@ -62,4 +61,4 @@ Couleur.propTypes = {
   taille: PropTypes.number
 };
 
-export default Couleur;
+export default React.memo(Couleur);

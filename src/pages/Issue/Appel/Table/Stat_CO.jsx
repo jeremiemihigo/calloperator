@@ -45,4 +45,4 @@ function StatistiqueCallOperator({ data }) {
 StatistiqueCallOperator.propTypes = {
   data: PropTypes.array
 };
-export default StatistiqueCallOperator;
+export default React.memo(StatistiqueCallOperator);

@@ -1,12 +1,11 @@
 import { Message } from '@mui/icons-material';
 import { Fab, Paper } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
+import axios from 'axios';
 import LoaderGif from 'components/LoaderGif';
-import { CreateContexteGlobal } from 'GlobalContext';
 import moment from 'moment';
 import React from 'react';
 import { config, lien_issue, TimeCounter } from 'static/Lien';
-import axios from '../../../../../node_modules/axios/index';
 import { CreateContexteTable } from '../Contexte';
 import Couleur from './Color';
 
@@ -14,7 +13,7 @@ function MyBackOffice() {
   const [data, setData] = React.useState();
 
   const { setPlainteSelect, setSelect } = React.useContext(CreateContexteTable);
-  const { client } = React.useContext(CreateContexteGlobal);
+
   const loading = async () => {
     try {
       const response = await axios.get(lien_issue + '/mybackoffice', config);
@@ -25,7 +24,7 @@ function MyBackOffice() {
   };
   React.useEffect(() => {
     loading();
-  }, [client]);
+  }, []);
 
   const openChat = (plainte) => {
     setPlainteSelect(plainte);
@@ -157,4 +156,4 @@ function MyBackOffice() {
   );
 }
 
-export default MyBackOffice;
+export default React.memo(MyBackOffice);

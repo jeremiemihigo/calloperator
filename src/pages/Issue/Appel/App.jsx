@@ -14,13 +14,12 @@ import CreateComplaint from './Table/CreateComplaint';
 import MyBackOffice from './Table/MyBackOffice';
 import Recherche from './Table/Recherche';
 import ThisMonth from './Table/ThisMonth';
-
 import ThisMonth_Tech from './Table/ThisMonth_Tech';
 
 function Index() {
   const { select, setSelect, annuler } = React.useContext(CreateContexteTable);
+  const { client } = React.useContext(CreateContexteGlobal);
   const user = useSelector((state) => state.user?.user);
-  const { client, loadingClient } = React.useContext(CreateContexteGlobal);
 
   const [property, setProperty] = React.useState();
   React.useEffect(() => {
@@ -31,6 +30,7 @@ function Index() {
       setProperty('shop');
     }
   }, [user]);
+
   return (
     <Grid>
       <Grid className="divAppel" component="div">
@@ -62,10 +62,12 @@ function Index() {
           className={`${select === 0 && 'select'} titres`}
           sx={{ width: '10rem' }}
         >
-          <Typography component="p">No technical Issues</Typography>
+          <Typography component="p" noWrap>
+            No technical Issues
+          </Typography>
           <Typography component="p" className="nbre">
-            {client && client.length > 0 && client.filter((x) => x.type === 'appel').length}
-            {loadingClient && <CircularProgress size={10} />}
+            {client && client.length > 0 && client.filter((x) => x.type === 'appel' && x.statut !== 'escalade').length}
+            {client && client.length === 0 && <CircularProgress size={10} />}
           </Typography>
         </Grid>
         <Grid
@@ -74,11 +76,14 @@ function Index() {
             setSelect(5);
           }}
           className={`${select === 5 && 'select'} titres`}
+          sx={{ width: '10rem' }}
         >
-          <Typography component="p">Technical Issues</Typography>
+          <Typography component="p" noWrap>
+            Technical Issues
+          </Typography>
           <Typography component="p" className="nbre">
             {client && client.length > 0 && client.filter((x) => x.type === 'ticket').length}
-            {loadingClient && <CircularProgress size={10} />}
+            {client && client.length == 0 && <CircularProgress size={10} />}
           </Typography>
         </Grid>
 
@@ -93,7 +98,7 @@ function Index() {
             <Typography component="p">Back office</Typography>
             <Typography component="p" className="nbre">
               {client && client.length > 0 && client.filter((x) => x?.operation === 'backoffice').length}
-              {loadingClient && <CircularProgress size={10} />}
+              {client && client.length == 0 && <CircularProgress size={10} />}
             </Typography>
           </Grid>
         )}
@@ -119,7 +124,7 @@ function Index() {
             <Typography component="p">Relocation</Typography>
             <Typography component="p" className="nbre">
               {client && client.length > 0 && client.filter((x) => x?.statut === 'awaiting_confirmation').length}
-              {loadingClient && <CircularProgress size={10} color="inherit" />}
+              {client && client.length === 0 && <CircularProgress size={10} color="inherit" />}
             </Typography>
           </Grid>
         )}

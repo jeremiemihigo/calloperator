@@ -15,7 +15,6 @@ const UserSchema = new mongoose.Schema(
     fonction: {
       type: String,
       required: true,
-      enum: ["tech", "agent", "PO", "ZBM", "SM", "RS"],
     },
     password: { type: String, required: true, default: 1234 },
     idShop: { type: String, required: false },

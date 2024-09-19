@@ -8,7 +8,6 @@ module.exports = {
   AddAdminAgent: (req, res) => {
     try {
       const { nom, codeAgent, fonction } = req.body;
-      console.log(req.body);
       //Agent admin qui fait l'operation
       if (!nom || !codeAgent || !fonction) {
         return res.status(404).json("Veuillez renseigner les champs");
@@ -42,6 +41,7 @@ module.exports = {
                 }
               })
               .catch(function (err) {
+                console.log(err);
                 if (err) {
                   return res.status(404).json("Error " + err);
                 }
@@ -64,25 +64,8 @@ module.exports = {
 
   ReadAgentAdmin: (req, res) => {
     try {
-      ModelAgentAdmin.aggregate([
-        {
-          $lookup: {
-            from: "permissions",
-            localField: "taches",
-            foreignField: "id",
-            as: "tache",
-          },
-        },
-        {
-          $lookup: {
-            from: "departements",
-            localField: "departement",
-            foreignField: "idDepartement",
-            as: "departements",
-          },
-        },
-      ])
-
+      ModelAgentAdmin.find({})
+        .lean()
         .then((agents) => {
           if (agents.length > 0) {
             return res.status(200).json(agents.reverse());
@@ -164,6 +147,35 @@ module.exports = {
         })
         .catch(function (err) {
           console.log(err);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  AddSynchro: (req, res) => {
+    try {
+      const { allShop, agent } = req.body;
+      if (!agent || !allShop) {
+        return res.status(201).json("Veuillez renseigner les champs");
+      }
+      ModelAgentAdmin.findOneAndUpdate(
+        { codeAgent: agent },
+        {
+          $set: {
+            synchro_shop: allShop,
+          },
+        },
+        { new: true }
+      )
+        .then((result) => {
+          if (result) {
+            return res.status(200).json("Done");
+          } else {
+            return res.status(201).json("Error");
+          }
+        })
+        .catch(function (err) {
+          return res.status(200).json("Error " + err);
         });
     } catch (error) {
       console.log(error);

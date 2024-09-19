@@ -1,45 +1,44 @@
 import { AirplaneTicket, Done, DoneAll, Escalator, Pause, Search } from '@mui/icons-material';
-import { Backdrop, Button, CircularProgress, Grid, TextField, Tooltip, Typography } from '@mui/material';
+import { Button, CircularProgress, Grid, TextField, Tooltip, Typography } from '@mui/material';
 import AutoComplement from 'Control/AutoComplet';
+import SimpleBackdrop from 'Control/Backdrop';
 import { CreateContexteGlobal } from 'GlobalContext';
 import { message } from 'antd';
 import axios from 'axios';
 import Input from 'components/Input';
-import _ from 'lodash';
-import moment from 'moment';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { config, lien_issue } from 'static/Lien';
 import Popup from 'static/Popup';
 import Adresse from './Adresse';
-import ConfirmBackOffice from './ConfirmBack';
 import { CreateContexteTable } from './Contexte';
 import FormItem from './FormItem';
 import OpenForm from './Formulaire/OpenForm';
 import RaisonOngoing from './Formulaire/RaisonOngoing';
 
-function Form() {
+function Form({ update }) {
   const {
     adresse,
+    codeclient,
+    setCodeclient,
     shopSelect,
     setShopSelect,
-    setCodeclient,
     historique,
     setHistorique,
     initiale,
     raisonOngoing,
+    plainteSelect,
+    setPlainteSelect,
     setInitiale,
     otherItem,
     item,
     setItem,
-    plainteSelect,
-    setPlainteSelect,
-    codeclient,
     annuler
   } = React.useContext(CreateContexteTable);
-  const { client, setClient } = React.useContext(CreateContexteGlobal);
+
   const [typeForm, setTypeForm] = React.useState('');
 
+  const { client, setClient } = React.useContext(CreateContexteGlobal);
   const user = useSelector((state) => state?.user?.user);
   const [property, setProperty] = React.useState();
   React.useEffect(() => {
@@ -74,19 +73,7 @@ function Form() {
       [name]: value
     });
   };
-  const deedline = useSelector((state) => state.delai.delai);
-  const [confirmDialog, setConfirmDialog] = React.useState({ isOpen: false, title: '' });
-  const [today, setToday] = React.useState(new Date());
-  const loading = async () => {
-    try {
-      const response = await axios.get('https://worldtimeapi.org/api/timezone/Africa/Lubumbashi');
-      if (response.status === 200) {
-        setToday(response.data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+
   React.useEffect(() => {
     setHistorique();
     setShopSelect('');
@@ -95,101 +82,80 @@ function Form() {
       nomClient: '',
       contact: ''
     });
-    loading();
   }, []);
+
+  React.useEffect(() => {
+    if (update) {
+      let s = shop.filter((x) => x.shop === update.shop);
+      setInitiale({
+        recommandation: update?.recommandation,
+        nomClient: update?.nomClient,
+        contact: update?.contact
+      });
+      setCodeclient(update?.codeclient);
+      setShopSelect(s[0]);
+    }
+  }, [update]);
 
   const [openOngoing, setOpenOngoing] = React.useState(false);
 
-  const returnDelai = async (statut) => {
-    const date = today?.datetime ? today.datetime : today;
-    if (deedline && today) {
-      const a = _.filter(deedline, { plainte: statut });
-      if (a.length > 0) {
-        //si la plainte existe je cherche le jour
-        let critere = a[0].critere.filter((x) => x.jour === today.day_of_week);
-        if (critere.length > 0) {
-          //si le critere existe
-          let debutHeure = critere[0].debut.split(':')[0];
-          let debutMinutes = critere[0].debut.split(':')[1];
-          if (
-            new Date(date).getHours() > parseInt(debutHeure) ||
-            (new Date(date).getHours() === parseInt(debutHeure) && new Date(date).getMinutes() >= parseInt(debutMinutes))
-          ) {
-            return critere[0]?.delai;
-          } else {
-            return a[0]?.defaut;
-          }
-        } else {
-          return a[0]?.defaut;
-        }
-      } else {
-        return 0;
-      }
-    }
-  };
   const [liste, setListe] = React.useState([]);
   const [sending, setSending] = React.useState(false);
-  const sendAppel = async (statut, pro) => {
-    if (user?.plainteShop && user.plainteShop !== shopSelect?.shop) {
-      success(`Ce client n'est pas de votre shop << ${user?.plainteShop} >>`, 'error');
-    } else {
-      setSending(true);
-      const delai = await returnDelai(statut);
-      setConfirmDialog({
-        ...confirmDialog,
-        isOpen: false
-      });
-      if (item?.adresse && !adresse) {
-        success('Les nouvelles adresses du client sont obligatoire', 'error');
-        setSending(false);
-      } else {
-        const dataNonTech = {
-          codeclient: codeclient,
-          statut,
-          time_delai: delai,
-          delai: 'IN SLA',
-          fullDateSave: today?.datetime ? today.datetime : today,
-          priorite: pro,
-          shop: shopSelect?.shop,
-          typePlainte: plainteSelect?.title,
-          plainteSelect: item.other ? (!item.oneormany ? otherItem?.title : liste.join(';')) : item?.title,
-          recommandation: initiale.recommandation,
-          nomClient: initiale.nomClient,
-          contact: initiale.contact,
-          property,
-          raisonOngoing: raisonOngoing,
-          adresse,
-          open: statut === 'closed' ? false : true,
-          operation: statut === 'escalade' ? 'backoffice' : undefined
-        };
+  const sendAppel = async (statut, e) => {
+    try {
+      e.preventDefault();
 
-        const dataTicket = {
-          typePlainte: plainteSelect?.title,
-          plainte: item?.title,
-          contact: initiale.contact,
-          codeclient,
-          time_delai: delai,
-          adresse,
-          nomClient: initiale.nomClient,
-          shop: shopSelect?.shop,
-          commentaire: initiale.recommandation,
-          fullDateSave: today?.datetime ? today.datetime : today,
-          provenance: property
-        };
-        const data = item?.ticket ? dataTicket : dataNonTech;
-        const link = item?.ticket ? (property === 'shop' ? 'soumission_ticket' : 'ticker_callcenter') : 'appel';
-        const response = await axios.post(`${lien_issue}/${link}`, data, config);
-        if (response.status === 200) {
-          setClient([...client, response.data]);
-          success('Done', 'success');
-          setSending(false);
-          annuler();
-        }
-        if (response.status === 201) {
-          setSending(false);
-          success('' + response.data, 'error');
+      if (user?.plainteShop && user.plainteShop !== shopSelect?.shop) {
+        success(`Ce client n'est pas de votre shop << ${user?.plainteShop} >>`, 'error');
+      } else {
+        if (item?.adresse && !adresse) {
+          success('Les nouvelles adresses du client sont obligatoire', 'error');
+        } else {
+          setSending(true);
+          const dataNonTech = {
+            codeclient: codeclient,
+            statut,
+            delai: 'IN SLA',
+            shop: shopSelect?.shop,
+            typePlainte: plainteSelect?.title,
+            plainteSelect: item.other ? (!item.oneormany ? otherItem?.title : liste.join(';')) : item?.title,
+            recommandation: initiale.recommandation,
+            nomClient,
+            contact: initiale.contact,
+            raisonOngoing: raisonOngoing,
+            adresse,
+            open: statut === 'closed' ? false : true,
+            operation: statut === 'escalade' ? 'backoffice' : undefined
+          };
+          const dataTicket = {
+            typePlainte: plainteSelect?.title,
+            plainte: item?.title,
+            contact: initiale.contact,
+            codeclient,
+            adresse,
+            nomClient,
+            shop: shopSelect?.shop,
+            commentaire: initiale.recommandation
+          };
+          const data = item?.ticket ? dataTicket : dataNonTech;
+          const link = item?.ticket ? (property === 'shop' ? 'soumission_ticket' : 'ticker_callcenter') : 'appel';
+
+          const response = await axios.post(`${lien_issue}/${link}`, data, config);
+          if (response.status === 201) {
+            success(response.data, 'warning');
+            setSending(false);
+          }
+          if (response.status === 200) {
+            success('Done', 'success');
+            setClient([response.data, ...client]);
+            setSending(false);
+            annuler();
+          }
         }
       }
+    } catch (error) {
+      setSending(false);
+      success('Error ' + error, 'error');
     }
   };
   const InfoClient = async (e) => {
@@ -240,27 +206,33 @@ function Form() {
   }, [item]);
 
   const create_ticket = async (statut) => {
-    const delai = await returnDelai(statut);
-    const data = {
-      typePlainte: plainteSelect?.title,
-      contact: initiale.contact,
-      plainte: item?.title,
-      time_delai: delai,
-      codeclient,
-      statut,
-      customer_name: initiale?.nomClient,
-      shop: shopSelect?.shop,
-      commentaire: initiale.recommandation,
-      fullDate: today?.datetime ? today.datetime : today,
-      property
-    };
-    const response = await axios.post(lien_issue + '/ticker_callcenter', data, config);
-    if (response.status === 200) {
-      setClient([...client, response.data]);
-      success('Done', 'success');
-      annuler();
-    } else {
-      success('' + response.data, 'error');
+    try {
+      setSending(true);
+      const data = {
+        typePlainte: plainteSelect?.title,
+        contact: initiale.contact,
+        plainte: item?.title,
+        codeclient,
+        type: statut === 'Educate_the_customer' ? 'Education' : 'ticket',
+        statut,
+        nomClient,
+        shop: shopSelect?.shop,
+        commentaire: initiale.recommandation
+      };
+      const response = await axios.post(lien_issue + '/ticker_callcenter', data, config);
+      if (response.status === 201) {
+        success(response.data, 'warning');
+        setSending(false);
+      }
+      if (response.status === 200) {
+        success('Done', 'success');
+        setClient([...client, response.data]);
+        setSending(false);
+        annuler();
+      }
+    } catch (error) {
+      success('Erro ' + error, 'warning');
+      setSending(false);
     }
   };
   const [items, setItems] = React.useState('');
@@ -279,19 +251,15 @@ function Form() {
     }
   };
   React.useEffect(() => {
-    searchItems();
+    if (plainteSelect) {
+      searchItems();
+    }
   }, [plainteSelect]);
   return (
     <>
       {contextHolder}
-      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={sending}>
-        <div>
-          <p style={{ textAlign: 'center', margin: '0px', padding: '0px' }}>Please wait...</p>
-        </div>
-      </Backdrop>
-      <p>
-        Debut : {moment(today?.datetime).format('hh:mm')} {user.plainteShop && '-------- Shop : ' + user.plainteShop}
-      </p>
+      {sending && <SimpleBackdrop open={true} title="Please wait..." taille="10rem" />}
+
       <Grid container>
         <Grid item lg={10} sx={{ paddingRight: '10px' }}>
           <Input label="Code client" setValue={setCodeclient} value={codeclient} showIcon />
@@ -356,7 +324,7 @@ function Form() {
             <div>
               {item?.ticket && item.id === 'A8MDN' && (
                 <Button
-                  onClick={() => sendAppel(item?.ticket ? 'awaiting_confirmation' : 'closed', '')}
+                  onClick={(e) => sendAppel(item?.ticket ? 'awaiting_confirmation' : 'closed', e)}
                   color="primary"
                   variant="contained"
                 >
@@ -366,15 +334,25 @@ function Form() {
               )}
 
               {item && item?.ticket && item.id !== 'A8MDN' && (
-                <Button onClick={() => create_ticket('Open_technician_visit')} color="primary" variant="contained">
-                  <AirplaneTicket fontSize="small" />
-                  <span style={{ marginLeft: '10px' }}>Creation_ticket</span>
-                </Button>
+                <>
+                  <Button onClick={() => create_ticket('Open_technician_visit')} color="primary" variant="contained">
+                    <AirplaneTicket fontSize="small" />
+                    <span style={{ marginLeft: '10px' }}>Ticket_creation</span>
+                  </Button>
+                  <Button
+                    sx={{ marginLeft: '4px' }}
+                    onClick={() => create_ticket('Educate_the_customer')}
+                    color="primary"
+                    variant="contained"
+                  >
+                    Educate_the_customer
+                  </Button>
+                </>
               )}
 
               {!item?.ticket && item?.id !== 'LI2GP' && (
                 <>
-                  <Button sx={{ margin: '0px 5px' }} onClick={() => sendAppel('closed', '')} color="primary" variant="contained">
+                  <Button sx={{ margin: '0px 5px' }} onClick={(e) => sendAppel('closed', e)} color="primary" variant="contained">
                     <DoneAll fontSize="small" />
                     <span style={{ marginLeft: '10px' }}>Closes</span>
                   </Button>
@@ -385,23 +363,16 @@ function Form() {
                 </>
               )}
               {!item?.ticket && (
-                <Button
-                  onClick={() => {
-                    setConfirmDialog({
-                      isOpen: true,
-                      title: 'Priority',
-                      onConfirm: (e) => {
-                        sendAppel('escalade', e);
-                      }
-                    });
-                  }}
-                  color="primary"
-                  variant="contained"
-                >
+                <Button onClick={(e) => sendAppel('escalade', e)} color="primary" variant="contained">
                   <Escalator fontSize="small" /> <span style={{ marginLeft: '5px' }}>Escalade</span>
                 </Button>
               )}
-              <Typography onClick={() => annuler()} sx={{ marginLeft: '3px' }} color="warning" variant="contained">
+              <Typography
+                onClick={() => annuler()}
+                sx={{ marginLeft: '3px', cursor: 'pointer', color: 'red' }}
+                color="warning"
+                variant="contained"
+              >
                 Annuler
               </Typography>
               {item?.adresse && (
@@ -432,9 +403,8 @@ function Form() {
       <Popup open={openOngoing} setOpen={setOpenOngoing} title="Raison">
         <RaisonOngoing sending={sending} func={sendAppel} />
       </Popup>
-      <ConfirmBackOffice confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />
     </>
   );
 }
 
-export default Form;
+export default React.memo(Form);

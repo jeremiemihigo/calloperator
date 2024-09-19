@@ -1,19 +1,22 @@
 import { Button, TextField } from '@mui/material';
 import { message } from 'antd';
 import axios from 'axios';
+import { CreateContexteGlobal } from 'GlobalContext';
 import PropType from 'prop-types';
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { config, lien_issue, returnDelai, returnTime } from 'static/Lien';
+import { config, lien_issue } from 'static/Lien';
 import Selected from 'static/Select';
 
 function ValiderAction({ clients }) {
   const stat = [
     { id: 1, title: 'Resolved', value: 'resolved' },
-    { id: 2, title: 'Not Resolved', value: 'not_resolved' }
+    { id: 2, title: 'Not Resolved', value: 'Open_technician_visit' }
   ];
-  const [value, setValue] = React.useState();
-  const [commentaire, setCommentaire] = React.useState();
+  const [value, setValue] = React.useState('');
+  const [commentaire, setCommentaire] = React.useState('');
+  const { client, setClient } = React.useContext(CreateContexteGlobal);
+
+  const [sending, setSending] = React.useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const success = (texte, type) => {
     messageApi.open({
@@ -22,62 +25,33 @@ function ValiderAction({ clients }) {
       duration: 5
     });
   };
-
-  const [sending, setSending] = React.useState(false);
-  const deedline = useSelector((state) => state.delai.delai);
-  const [today, setToday] = React.useState({
-    datetime: new Date(),
-    day_of_week: new Date().getDay()
-  });
-
-  const loading = async () => {
-    try {
-      const now = await axios.get('https://worldtimeapi.org/api/timezone/Africa/Lubumbashi');
-      setToday(now.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  React.useEffect(() => {
-    loading();
-  }, []);
-
   const Valider = async (e) => {
     e.preventDefault();
     try {
       setSending(true);
-
-      const d = 'resolved_awaiting_confirmation';
-      const delai = await returnDelai(d, deedline, today);
-      const sla = clients.time_delai - returnTime(clients.fullDateSave, today?.datetime) > 0 ? 'IN SLA' : 'OUT SLA';
-      const dataNotResolved = {
+      const data = {
         num_ticket: clients?.idPlainte,
         statut: value,
-        time_delai: delai,
-        fullDate: today.datetime,
-        delai: sla,
-        commentaire
-      };
-      const dataResolved = {
-        num_ticket: clients?.idPlainte,
-        statut: value,
-        time_delai: delai,
-        fullDate: today.datetime,
-        delai: sla,
         commentaire,
         open: value === 'resolved' ? false : true
       };
-      const datas = value === 'resolved' ? dataResolved : dataNotResolved;
 
-      const response = await axios.post(lien_issue + '/verification_ticket', datas, config);
+      const response = await axios.post(`${lien_issue}/verification_ticket`, data, config);
       if (response.status === 200) {
-        success('Done', 'success');
+        if (response.data.statut === 'resolved') {
+          success('You can only refresh the page', 'success');
+        } else {
+          let newclient = client.map((x) => (x._id === response.data._id ? response.data : x));
+          setClient(newclient);
+        }
+        setCommentaire('');
+        setValue('');
         setSending(false);
       } else {
-        setSending(false);
+        success('' + response.data, 'error');
       }
     } catch (error) {
-      console.log(error);
+      success('' + error, 'error');
     }
   };
 
@@ -107,6 +81,7 @@ function ValiderAction({ clients }) {
   );
 }
 ValiderAction.propTypes = {
-  clients: PropType.object
+  clients: PropType.object,
+  close: PropType.func
 };
 export default React.memo(ValiderAction);

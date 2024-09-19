@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 // material-ui
 
 // third-party
-import ReactApexChart from 'react-apexcharts';
-import { lien, config } from 'static/Lien';
 import axios from 'axios';
+import ReactApexChart from 'react-apexcharts';
+import { config, lien } from 'static/Lien';
 
 // chart options
 
@@ -51,7 +51,6 @@ const ReportAreaChart = () => {
     setLoad(true);
     try {
       const response = await axios.get(lien + '/demandePourChaquePeriode', config);
-      console.log(response);
       setDonner(response.data);
       setLoad(false);
     } catch (error) {

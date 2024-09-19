@@ -6,7 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 // assets
-import { Language, PeopleAlt, Person, Settings } from '@mui/icons-material';
+import { DeveloperMode, Language, PeopleAlt, Person } from '@mui/icons-material';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { activeItem } from 'store/reducers/menu';
 // import {  FreeBreakfast, } from '@mui/icons-material';
@@ -38,14 +39,14 @@ const ProfileTab = () => {
       navigation('/clients', { replace: true });
     }
 
-    if (index === 5) {
+    if (index === 3) {
       itemHandler('Access');
       navigation('/access', { replace: true });
     }
-    if (index === 6) {
-      itemHandler('agent');
-      navigation('/congeRH', { replace: true });
-    }
+    // if (index === 4) {
+    //   itemHandler('My_leave');
+    //   navigation('/conge', { replace: true });
+    // }
   };
 
   const userConenct = useSelector((state) => state.user?.user);
@@ -75,13 +76,19 @@ const ProfileTab = () => {
         <ListItemText primary="Customers" />
       </ListItemButton>
       {userConenct && userConenct.fonction === 'superUser' && (
-        <ListItemButton selected={selectedIndex === 5} onClick={(event) => handleListItemClick(event, 5)}>
+        <ListItemButton selected={selectedIndex === 3} onClick={(event) => handleListItemClick(event, 3)}>
           <ListItemIcon>
-            <Settings fontSize="small" />
+            <DeveloperMode fontSize="small" />
           </ListItemIcon>
           <ListItemText primary="Permissions" />
         </ListItemButton>
       )}
+      {/* <ListItemButton selected={selectedIndex === 4} onClick={(event) => handleListItemClick(event, 4)}>
+        <ListItemIcon>
+          <FreeBreakfast fontSize="small" />
+        </ListItemIcon>
+        <ListItemText primary="My_leave" />
+      </ListItemButton> */}
     </List>
   );
 };

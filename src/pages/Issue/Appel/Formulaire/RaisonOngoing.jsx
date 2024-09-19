@@ -19,7 +19,7 @@ function RaisonOngoing({ func, sending }) {
   const send = (e) => {
     e.preventDefault();
     if (raisonOngoing) {
-      func('ongoing', '');
+      func('ongoing', e);
     } else {
       alert('Pourquoi ongoing ?', 'error');
     }
