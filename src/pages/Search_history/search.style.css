@@ -1,0 +1,21 @@
+.divData > p {
+  padding: 0;
+  margin: 0;
+}
+.divData {
+  padding: 5px;
+}
+.name_person {
+  font-weight: 700;
+  font-size: 14px;
+}
+.texte {
+  font-size: 13px;
+}
+.fullDate {
+  font-size: 11px;
+}
+.name_person > span {
+  font-weight: normal !important;
+  font-size: 11px;
+}

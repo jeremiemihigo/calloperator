@@ -2,6 +2,7 @@ const modelRapport = require("../Models/Rapport");
 const modelAppel = require("../Models/Issue/Appel_Issue");
 const asyncLab = require("async");
 const { differenceDays } = require("../Static/Static_Function");
+const modelCorbeille = require("../Models/Corbeille");
 
 module.exports = {
   Rapport: (req, res) => {
@@ -81,15 +82,34 @@ module.exports = {
         adresschange: 1,
         time_followup: 1,
       };
-      modelRapport
-        .find(match, project)
-        .lean()
-        .then((response) => {
-          return res.status(200).json(response);
-        })
-        .catch(function (err) {
-          console.log(err);
-        });
+      const { nom } = req.user;
+      asyncLab.waterfall([
+        function (done) {
+          modelCorbeille
+            .create({
+              name: nom,
+              date: new Date().toISOString().split("T")[0],
+              texte: `Extraction du rapport allant du ${debut} au ${fin}`,
+            })
+            .then((corbeille) => {
+              done(null, corbeille);
+            })
+            .catch(function (err) {
+              console.log(err);
+            });
+        },
+        function (corbei, done) {
+          modelRapport
+            .find(match, project)
+            .lean()
+            .then((response) => {
+              return res.status(200).json(response);
+            })
+            .catch(function (err) {
+              console.log(err);
+            });
+        },
+      ]);
     } catch (error) {
       console.log(error);
     }

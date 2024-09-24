@@ -41,7 +41,7 @@ const Couleur = ({ text, taille, ...others }) => {
         height: '50%',
         textAlign: 'center',
         color: 'white',
-        borderRadius: '2px',
+        borderRadius: '5px',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',

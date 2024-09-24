@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactApexChart from 'react-apexcharts';
 
-function ApexChart({ title }) {
+function ApexChart() {
   const [state] = React.useState({
-    series: [44, 55, 41, 17, 15],
+    series: [44, 55],
     options: {
       chart: {
         width: 380,
@@ -21,14 +21,7 @@ function ApexChart({ title }) {
       fill: {
         type: 'gradient'
       },
-      legend: {
-        formatter: function (val, opts) {
-          return val + ' - ' + opts.w.globals.series[opts.seriesIndex];
-        }
-      },
-      title: {
-        text: title
-      },
+
       responsive: [
         {
           breakpoint: 480,

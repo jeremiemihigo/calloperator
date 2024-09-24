@@ -20,7 +20,7 @@ function CreateComplaint() {
   };
   React.useEffect(() => {
     loading();
-  }, []);
+  }, [client]);
   const [confirmDialog, setConfirmDialog] = React.useState({ isOpen: false, title: '', subTitle: '' });
 
   const [nowCall, setNowCall] = React.useState();

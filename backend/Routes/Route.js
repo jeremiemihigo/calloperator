@@ -176,6 +176,7 @@ const {
   UpdateCommuniquer,
 } = require("../Controllers/Communication");
 const { Update_Agent_Admin } = require("../Controllers/Admin/Conge/Setting");
+const { ReadCorbeille } = require("../Controllers/Corbeille");
 router.post("/ajuster", Ajuster);
 router.post("/raison", AddRaison);
 router.get("/raison", ReadRaison);
@@ -226,6 +227,7 @@ router.get("/communication", protect, ReadCommuniquer);
 router.get("/communicationAgent", protectTech, ReadCommuniquerAgent);
 router.delete("/communication/:id", protect, DeleteCommuniquer);
 router.put("/communication", protect, UpdateCommuniquer);
+router.get("/get_corbeille", protect, ReadCorbeille);
 
 //-------------------------------------Conge-------------------------------------
 

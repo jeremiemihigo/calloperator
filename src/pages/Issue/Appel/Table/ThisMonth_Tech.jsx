@@ -1,33 +1,18 @@
-import { Paper } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
-import { message } from 'antd';
-import NoCustomer from 'components/Attente';
+import { Grid, Paper, Typography } from '@mui/material';
+import Dot from 'components/@extended/Dot';
 import LoaderGif from 'components/LoaderGif';
-import SimpleBackdrop from 'Control/Backdrop';
 import { CreateContexteGlobal } from 'GlobalContext';
-import moment from 'moment';
-import React, { useState } from 'react';
-import { config, lien_issue, returnTime } from 'static/Lien';
-import Popup from 'static/Popup';
-import axios from '../../../../../node_modules/axios/index';
-import AffectTech from '../AffectTech';
-import { CreateContexteTable } from '../Contexte';
-import RaisonFermeture from '../Formulaire/RaisonFermeture';
-import ValiderAction from '../ValiderAction';
-import Couleur from './Color';
-import Options from './Options';
+import _ from 'lodash';
+import React from 'react';
+import { returnTime } from 'static/Lien';
+import { useSelector } from '../../../../../node_modules/react-redux/es/exports';
+import { useNavigate } from '../../../../../node_modules/react-router-dom/dist/index';
+import RadialBarChart from '../Dashboard/Chart';
 
 function ThisMonth_Tech() {
   const [data, setData] = React.useState();
-  const { loadingClient, client, setClient } = React.useContext(CreateContexteGlobal);
-  const { setPlainteSelect, setSelect } = React.useContext(CreateContexteTable);
+  const { client } = React.useContext(CreateContexteGlobal);
 
-  const [openFermeture, setOpenFermeture] = React.useState(false);
-  const [idPlainte, setIdPlainte] = React.useState();
-  const fermeture = (plainte) => {
-    setIdPlainte(plainte);
-    setOpenFermeture(true);
-  };
   const loading = () => {
     if (client) {
       setData(client.filter((x) => x.type === 'ticket'));
@@ -37,265 +22,276 @@ function ThisMonth_Tech() {
     loading();
   }, [client]);
 
-  const [messageApi, contextHolder] = message.useMessage();
-  const success = (texte, type) => {
-    messageApi.open({
-      type,
-      content: '' + texte,
-      duration: 5
-    });
-  };
-
-  const [open, setOpen] = React.useState(false);
-  const [clientselect, setCustomer] = React.useState();
-  const openForm = (e, row) => {
-    e.preventDefault();
-    setCustomer(row);
-    setOpen(true);
-  };
-
-  const [sending, setSending] = React.useState(false);
-
-  const apresAssistance = async (row) => {
-    try {
-      if (!row.technicien) {
-        success('The ticket is not assigned to a technician', 'error');
-      } else {
-        setSending(true);
-
-        const response = await axios.post(`${lien_issue}/assistance_ticket`, { num_ticket: row.idPlainte }, config);
-        if (response.status === 200) {
-          success('Done', 'success');
-          setClient(client.map((x) => (x._id === response.data._id ? response.data : x)));
-          setSending(false);
-        } else {
-          success('' + response.data, 'error');
-          setSending(false);
-        }
-      }
-    } catch (error) {
-      console.log(error);
+  const [graphique, setGraphique] = React.useState({
+    attente: [],
+    encours: [],
+    callcenter: []
+  });
+  const { attente, encours, callcenter } = graphique;
+  React.useEffect(() => {
+    if (data) {
+      setGraphique({
+        attente: data.filter((x) => x.technicien === undefined),
+        encours: data.filter((x) => x.statut === 'Open_technician_visit' && x.technicien !== undefined),
+        callcenter: data.filter((x) => x.statut === 'resolved_awaiting_confirmation')
+      });
     }
-  };
-  const [openV, setOpenV] = React.useState(false);
-  const [clientV, setClientV] = React.useState();
-  const Validation = (d) => {
-    setClientV(d);
-    setOpenV(true);
-  };
+  }, [data]);
+  const [dataChart, setDataChart] = React.useState();
+  React.useEffect(() => {
+    if (data) {
+      const result = data.filter((x) => x.statut === 'Open_technician_visit' && x.technicien !== undefined);
+      const codeTech = Object.keys(_.groupBy(result, 'technicien.codeTech'));
+      let tableValue = [];
+      codeTech.forEach((code) => {
+        tableValue.push({
+          code,
+          result: result.filter((x) => x.technicien.codeTech === code),
+          taille: result.filter((x) => x.technicien.codeTech === code).length
+        });
+      });
+      tableValue.sort((a, b) => b.taille - a.taille);
+      setDataChart(tableValue);
+    }
+  }, [data]);
 
-  const openChat = (plainte, e) => {
-    e.preventDefault();
-    setPlainteSelect(plainte);
-    setSelect(3);
-  };
-
-  function TimeCounter(durationInMinutes) {
-    let [remainingTimeInSeconds, setRemainingTimeInSeconds] = useState(durationInMinutes);
-    React.useEffect(() => {
-      const interval = setInterval(() => {
-        setRemainingTimeInSeconds((prev) => (prev > 0 ? prev - 1 : 0));
-      }, 1000);
-      // Nettoyage du timer à la fin
-      return () => clearInterval(interval);
-    }, [durationInMinutes]);
-
-    if (remainingTimeInSeconds <= 0) {
-      return (
-        <p
-          style={{
-            background: 'red',
-            padding: '0px',
-            margin: '0px',
-            height: '50%',
-            fontSize: '12px',
-            color: 'white',
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
-          OUT SLA
-        </p>
-      );
+  function TimeCounterDelai(row) {
+    const time = (row.time_delai - returnTime(row.fullDateSave, new Date()).toFixed(0)) * 60;
+    if (time <= 0) {
+      return 'OUT SLA';
     } else {
-      const days = Math.floor(remainingTimeInSeconds / (24 * 3600));
-      const hours = Math.floor((remainingTimeInSeconds % (24 * 3600)) / 3600);
-      const minutes = Math.floor((remainingTimeInSeconds % 3600) / 60);
-      const seconds = remainingTimeInSeconds % 60;
-      return (
-        <p
-          style={{
-            background: 'green',
-            padding: '0px',
-            margin: '0px',
-            height: '50%',
-            fontSize: '12px',
-            color: 'white',
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >{`
-        ${days + 'jr'} ${hours + 'h'} ${minutes + 'm'} ${seconds + 's'}
-        `}</p>
-      );
+      return 'IN SLA';
     }
   }
 
-  const columns = [
-    {
-      field: 'codeclient',
-      headerName: 'Code client',
-      width: 110,
-      editable: false
-    },
-    {
-      field: 'idPlainte',
-      headerName: 'Num_ticket',
-      width: 90,
-      editable: false
-    },
-    {
-      field: 'actionSynchro',
-      headerName: 'Synchro',
-      width: 90,
-      editable: false,
-      renderCell: (p) => {
-        return p.row?.technicien?.numSynchro;
+  const ReturnDelai = (delai, type, donner) => {
+    if (type === 'attente') {
+      let d = donner ? donner : data;
+      const result = d.filter((x) => x.technicien === undefined);
+      let nombre = 0;
+      let pourcentage = 0;
+      for (let i = 0; i < result.length; i++) {
+        if (TimeCounterDelai(result[i]) === delai) {
+          nombre = nombre + 1;
+        }
       }
-    },
-    {
-      field: 'statut',
-      headerName: 'Statut',
-      width: 200,
-      editable: false,
-      renderCell: (params) => {
-        return <Couleur text={params.row.statut} />;
-      }
-    },
-
-    {
-      field: 'plainteSelect',
-      headerName: 'Issue',
-      width: 150,
-      editable: false
-    },
-    {
-      field: 'shop',
-      headerName: 'Shop',
-      width: 120,
-      editable: false
-    },
-    {
-      field: 'Tech',
-      headerName: 'Tech',
-      width: 80,
-      editable: false,
-      renderCell: (p) => {
-        return p.row.technicien?.codeTech;
-      }
-    },
-    {
-      field: 'dateSave',
-      headerName: 'Date open',
-      width: 75,
-      editable: false,
-      renderCell: (p) => {
-        return moment(p.row.dateSave).format('DD-MM-YYYY');
-      }
-    },
-    {
-      field: 'submitedBy',
-      headerName: 'Saved by',
-      width: 90,
-      editable: false,
-      renderCell: (p) => {
-        return p.row.submitedBy;
-      }
-    },
-    {
-      field: 'SLA',
-      headerName: 'SLA',
-      width: 130,
-      editable: false,
-      renderCell: (params) => {
-        return (
-          <>
-            {params.row.open ? (
-              TimeCounter((params.row.time_delai - returnTime(params.row.fullDateSave, new Date()).toFixed(0)) * 60)
-            ) : (
-              <Couleur text={params.row?.delai} />
-            )}
-          </>
-        );
-      }
-    },
-    {
-      field: 'action',
-      headerName: 'Action',
-      width: 150,
-      editable: false,
-      renderCell: (p) => {
-        return (
-          <Options
-            client={p.row}
-            openChat={openChat}
-            validation={Validation}
-            apresAssistance={apresAssistance}
-            openForm={openForm}
-            fermeture={fermeture}
-          />
-        );
-      }
+      pourcentage = (nombre * 100) / result.length;
+      return pourcentage.toFixed(0) + '%';
     }
-  ];
-  const getId = (p) => {
-    return p._id;
+    if (type === 'encours') {
+      let d = donner ? donner : data;
+      const result = d.filter((x) => x.statut === 'Open_technician_visit' && x.technicien !== undefined);
+      let nombre = 0;
+      let pourcentage = 0;
+      for (let i = 0; i < result.length; i++) {
+        if (TimeCounterDelai(result[i]) === delai) {
+          nombre = nombre + 1;
+        }
+      }
+      pourcentage = (nombre * 100) / result.length;
+      return isNaN(pourcentage) ? '0%' : pourcentage.toFixed(0) + '%';
+    }
+    if (type === 'callcenter') {
+      let d = donner ? donner : data;
+      const result = d.filter((x) => x.statut === 'resolved_awaiting_confirmation');
+      let nombre = 0;
+      let pourcentage = 0;
+      for (let i = 0; i < result.length; i++) {
+        if (TimeCounterDelai(result[i]) === delai) {
+          nombre = nombre + 1;
+        }
+      }
+      pourcentage = (nombre * 100) / result.length;
+      return pourcentage.toFixed(0) + '%';
+    }
   };
-
+  const navigation = useNavigate();
+  const openDataTech = (e, data) => {
+    e.preventDefault();
+    navigation('/tech_value', { state: data });
+  };
+  const agent = useSelector((state) => state.agent?.agent);
+  const returnName = (id) => {
+    if (agent) {
+      return _.filter(agent, { codeAgent: id })[0]?.nom;
+    } else {
+      return id;
+    }
+  };
   return (
-    <div>
-      {contextHolder}
-      {sending && <SimpleBackdrop open={true} title="Please wait" taille="10rem" />}
-      {loadingClient && <LoaderGif width={400} height={400} />}
-      {!loadingClient && data && data.length > 0 && (
-        <Paper elevation={4}>
-          <DataGrid
-            rows={data}
-            columns={columns}
-            initialState={{
-              pagination: {
-                paginationModel: {
-                  pageSize: 100
-                }
-              }
-            }}
-            pageSizeOptions={[100]}
-            disableRowSelectionOnClick
-            getRowId={getId}
-          />
-        </Paper>
-      )}
-      {!loadingClient && data && data.length === 0 && <NoCustomer texte="No pending technical complaints" />}
-      {clientselect && (
-        <Popup open={open} setOpen={setOpen} title="Affectation tech">
-          <AffectTech clients={clientselect} />
-        </Popup>
-      )}
-      {clientV && (
-        <Popup open={openV} setOpen={setOpenV} title="Check">
-          <ValiderAction clients={clientV} close={setOpenV} />
-        </Popup>
-      )}
+    <>
+      <Grid container>
+        {!data && <LoaderGif width={300} height={300} />}
+        {data && (
+          <>
+            <Grid item lg={3} xs={12} sm={6} md={4} sx={{ padding: '2px' }}>
+              <Paper onClick={(e) => openDataTech(e, 'technicien')} elevation={3} sx={style.paper}>
+                <Typography component="p" sx={style.padding0}>
+                  Waiting for a technician
+                  <Typography
+                    component="span"
+                    sx={{ fontSize: '11px', cursor: 'pointer', color: 'blue', fontWeight: 'bolder' }}
+                  >{` Détails`}</Typography>
+                </Typography>
+                <RadialBarChart nombre={attente.length} texte="Unaffected" />
+                {data && data.length > 0 && (
+                  <div style={{ display: 'flex' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Dot color="error" />
+                      <p style={{ padding: '0px', margin: '0px', marginLeft: '5px', fontWeight: 'bolder' }}>
+                        {ReturnDelai('OUT SLA', 'attente')}
+                      </p>
+                    </div>
+                    <div style={{ display: 'flex', marginLeft: '20px', alignItems: 'center', justifyContent: 'center' }}>
+                      <Dot color="success" />
+                      <p style={{ padding: '0px', margin: '0px', marginLeft: '5px', fontWeight: 'bolder' }}>
+                        {ReturnDelai('IN SLA', 'attente')}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </Paper>
+            </Grid>
+            <Grid item lg={3} xs={12} sm={6} md={4} sx={{ padding: '2px' }}>
+              <Paper onClick={(e) => openDataTech(e, 'encours')} elevation={3} sx={style.paper}>
+                <Typography component="p" sx={style.padding0}>
+                  Running{' '}
+                  <Typography
+                    component="span"
+                    sx={{ fontSize: '11px', cursor: 'pointer', color: 'blue', fontWeight: 'bolder' }}
+                  >{` Détails`}</Typography>
+                </Typography>
+                <RadialBarChart nombre={((encours.length * 100) / data.length).toFixed(0)} texte="Running" />
+                {data && data.length > 0 && (
+                  <div style={{ display: 'flex' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Dot color="error" />
+                      <p style={{ padding: '0px', margin: '0px', marginLeft: '5px', fontWeight: 'bolder' }}>
+                        {ReturnDelai('OUT SLA', 'encours')}
+                      </p>
+                    </div>
+                    <div style={{ display: 'flex', marginLeft: '20px', alignItems: 'center', justifyContent: 'center' }}>
+                      <Dot color="success" />
+                      <p style={{ padding: '0px', margin: '0px', marginLeft: '5px', fontWeight: 'bolder' }}>
+                        {ReturnDelai('IN SLA', 'encours')}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </Paper>
+            </Grid>
+            <Grid item lg={3} xs={12} sm={6} md={4} sx={{ padding: '2px' }}>
+              <Paper onClick={(e) => openDataTech(e, 'callcenter')} elevation={3} sx={style.paper}>
+                <Typography component="p" sx={style.padding0}>
+                  Awaiting verification{' '}
+                  <Typography component="span" sx={{ fontSize: '11px', cursor: 'pointer', color: 'blue', fontWeight: 'bolder' }}>
+                    Détails
+                  </Typography>
+                </Typography>
+                <RadialBarChart nombre={((callcenter.length * 100) / data.length).toFixed(0)} texte="Waiting at CC" />
+                {data && data.length > 0 && (
+                  <div style={{ display: 'flex' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Dot color="error" />
+                      <p style={{ padding: '0px', margin: '0px', marginLeft: '5px', fontWeight: 'bolder' }}>
+                        {ReturnDelai('OUT SLA', 'callcenter')}
+                      </p>
+                    </div>
+                    <div style={{ display: 'flex', marginLeft: '20px', alignItems: 'center', justifyContent: 'center' }}>
+                      <Dot color="success" />
+                      <p style={{ padding: '0px', margin: '0px', marginLeft: '5px', fontWeight: 'bolder' }}>
+                        {ReturnDelai('IN SLA', 'callcenter')}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </Paper>
+            </Grid>
+          </>
+        )}
 
-      <Popup open={openFermeture} setOpen={setOpenFermeture} title="Fermeture">
-        <RaisonFermeture idPlainte={idPlainte} />
-      </Popup>
-    </div>
+        <Grid item lg={3} xs={12} sm={6} md={4} sx={{ padding: '2px' }}>
+          <Paper elevation={3} sx={style.paper}>
+            <p style={style.padding0}>This Month</p>
+            <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
+              <p style={{ padding: '0px', margin: '0px' }}>Work in progress...</p>
+            </div>
+          </Paper>
+        </Grid>
+      </Grid>
+      <Paper elevation={2} sx={{ padding: '10px', margin: '10px' }}>
+        <p style={{ padding: '0px', margin: '0px' }}>Technician with more intervention waiting</p>
+      </Paper>
+      <Grid container>
+        {dataChart &&
+          dataChart.map((index) => {
+            return (
+              <Grid key={index.code} item lg={3} xs={6} sm={4} md={4} sx={{ padding: '2px' }}>
+                <Paper className="paperNumber" onClick={(e) => openDataTech(e, index.code)} sx={{ cursor: 'pointer', padding: '5px' }}>
+                  <Typography sx={style.name} noWrap>
+                    {returnName(index.code)}
+                  </Typography>
+                  <Typography sx={style.code} noWrap>
+                    {index.code}
+                  </Typography>
+                  <Typography sx={style.number} className="numberTech" noWrap>
+                    {index.result.length}
+                  </Typography>
+                  <div style={{ display: 'flex' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Dot color="error" size={5} />
+                      <p style={{ padding: '0px', fontSize: '10px', margin: '0px', marginLeft: '5px', fontWeight: 'bolder' }}>
+                        {ReturnDelai('OUT SLA', 'encours', index.result)}
+                      </p>
+                    </div>
+                    <div style={{ display: 'flex', marginLeft: '20px', alignItems: 'center', justifyContent: 'center' }}>
+                      <Dot color="success" size={5} />
+                      <p style={{ padding: '0px', fontSize: '10px', margin: '0px', marginLeft: '5px', fontWeight: 'bolder' }}>
+                        {ReturnDelai('IN SLA', 'encours', index.result)}
+                      </p>
+                    </div>
+                  </div>
+                </Paper>
+              </Grid>
+            );
+          })}
+      </Grid>
+    </>
   );
 }
+
+const style = {
+  padding0: {
+    padding: '0px',
+    margin: '0px',
+    textAlign: 'center'
+  },
+  name: { textAlign: 'center', fontWeight: 'bolder', fontSize: '10px' },
+  code: { textAlign: 'center', fontSize: '10px' },
+  number: {
+    textAlign: 'center',
+    fontWeight: 'bolder',
+    fontSize: '20px'
+  },
+  paper: {
+    padding: '10px',
+    height: '100%'
+  },
+  subTitle: {
+    padding: '0px',
+    margin: '0px',
+    textAlign: 'center',
+    fontSize: '10px'
+  },
+  view: {
+    textAlign: 'right',
+    padding: '0px',
+    margin: '0px',
+    fontSize: '10px',
+    cursor: 'pointer',
+    color: 'blue',
+    fontWeight: 'bolder'
+  }
+};
 
 export default React.memo(ThisMonth_Tech);

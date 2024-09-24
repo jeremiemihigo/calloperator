@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // material-ui
-import { AccessTime, BugReport, Message } from '@mui/icons-material';
+import { AccessTime, BugReport, Message, WorkHistory } from '@mui/icons-material';
 import { List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useDispatch, useSelector } from 'react-redux';
@@ -38,6 +38,10 @@ const Setting_Call = () => {
       itemHandler('Communication');
       navigation('/communication', { replace: true });
     }
+    if (index === 13) {
+      itemHandler('Search history');
+      navigation('/search_history', { replace: true });
+    }
   };
   const userConenct = useSelector((state) => state.user?.user);
 
@@ -65,6 +69,14 @@ const Setting_Call = () => {
             <Message fontSize="small" />
           </ListItemIcon>
           <ListItemText primary="Communication" />
+        </ListItemButton>
+      )}
+      {userConenct && userConenct.fonction === 'superUser' && (
+        <ListItemButton selected={selectedIndex === 13} onClick={(event) => handleListItemClick(event, 13)}>
+          <ListItemIcon>
+            <WorkHistory fontSize="small" />
+          </ListItemIcon>
+          <ListItemText primary="Search history" />
         </ListItemButton>
       )}
       {/* {userConenct && userConenct.fonction === 'superUser' && (

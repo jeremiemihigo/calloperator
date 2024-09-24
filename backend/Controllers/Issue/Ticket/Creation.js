@@ -253,6 +253,7 @@ module.exports = {
                 { new: true }
               )
               .then((ticket) => {
+                console.log(ticket);
                 done(ticket);
               })
               .catch(function (err) {

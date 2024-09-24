@@ -8,6 +8,7 @@ const fs = require("fs");
 const sharp = require("sharp");
 const _ = require("lodash");
 const moment = require("moment");
+const ModelCorbeille = require("../Models/Corbeille");
 
 module.exports = {
   demande: (req, res) => {
@@ -317,64 +318,88 @@ module.exports = {
         $match: data,
       };
       const finDate = new Date(fin);
-
       finDate.setDate(finDate.getDate() + 1);
+      const { nom } = req.user;
 
-      modelDemande
-        .aggregate([
-          match,
-          {
-            $match: {
-              createdAt: {
-                $gte: new Date(debut),
-                $lte: finDate,
-              },
-            },
+      asyncLab.waterfall(
+        [
+          function (done) {
+            ModelCorbeille.create({
+              name: nom,
+              date: new Date().toISOString().split("T")[0],
+              texte: `Statistique allant du ${debut} au ${fin}`,
+            })
+              .then((corbeille) => {
+                done(null, corbeille);
+              })
+              .catch(function (err) {
+                console.log(err);
+              });
           },
-          {
-            $lookup: {
-              from: "rapports",
-              localField: "idDemande",
-              foreignField: "idDemande",
-              as: "reponse",
-            },
+          function (corbeille, done) {
+            modelDemande
+              .aggregate([
+                match,
+                {
+                  $match: {
+                    createdAt: {
+                      $gte: new Date(debut),
+                      $lte: finDate,
+                    },
+                  },
+                },
+                {
+                  $lookup: {
+                    from: "rapports",
+                    localField: "idDemande",
+                    foreignField: "idDemande",
+                    as: "reponse",
+                  },
+                },
+                {
+                  $lookup: {
+                    from: "conversations",
+                    localField: "_id",
+                    foreignField: "code",
+                    as: "conversation",
+                  },
+                },
+                {
+                  $lookup: {
+                    from: "agents",
+                    localField: "codeAgent",
+                    foreignField: "codeAgent",
+                    as: "agent",
+                  },
+                },
+                {
+                  $lookup: {
+                    from: "zones",
+                    localField: "codeZone",
+                    foreignField: "idZone",
+                    as: "zone",
+                  },
+                },
+                {
+                  $unwind: "$agent",
+                },
+                {
+                  $unwind: "$zone",
+                },
+              ])
+              .then((response) => {
+                done(response);
+              });
           },
-          {
-            $lookup: {
-              from: "conversations",
-              localField: "_id",
-              foreignField: "code",
-              as: "conversation",
-            },
-          },
-          {
-            $lookup: {
-              from: "agents",
-              localField: "codeAgent",
-              foreignField: "codeAgent",
-              as: "agent",
-            },
-          },
-          {
-            $lookup: {
-              from: "zones",
-              localField: "codeZone",
-              foreignField: "idZone",
-              as: "zone",
-            },
-          },
-          {
-            $unwind: "$agent",
-          },
-          {
-            $unwind: "$zone",
-          },
-        ])
-        .then((response) => {
+        ],
+        function (response) {
           if (response) {
             return res.status(200).json(response.reverse());
+          } else {
+            return;
           }
-        });
+        }
+      );
     } catch (error) {
       console.log(error);
     }

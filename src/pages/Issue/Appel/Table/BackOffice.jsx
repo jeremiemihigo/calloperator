@@ -16,7 +16,7 @@ function AllCall() {
 
   const { client } = React.useContext(CreateContexteGlobal);
   const { setPlainteSelect, setSelect } = React.useContext(CreateContexteTable);
-  const loading = async () => {
+  const loading = () => {
     if (client) {
       setData(_.filter(client, { operation: 'backoffice' }));
     }
@@ -47,8 +47,8 @@ function AllCall() {
       editable: false
     },
     {
-      field: 'contact',
-      headerName: 'Contact',
+      field: 'property',
+      headerName: 'Provenance',
       width: 80,
       editable: false
     },
@@ -91,7 +91,7 @@ function AllCall() {
     {
       field: 'dateClose',
       headerName: 'SLA',
-      width: 130,
+      width: 100,
       editable: false,
       renderCell: (p) => {
         return p.row.open ? (
@@ -132,21 +132,23 @@ function AllCall() {
     <>
       {!data && <LoaderGif width={400} height={400} />}
       {data && data.length > 0 && (
-        <Paper elevation={4}>
-          <DataGrid
-            rows={data}
-            columns={columns}
-            initialState={{
-              pagination: {
-                paginationModel: {
-                  pageSize: 100
+        <Paper sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }} elevation={4}>
+          <div>
+            <DataGrid
+              rows={data}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 100
+                  }
                 }
-              }
-            }}
-            pageSizeOptions={[100]}
-            disableRowSelectionOnClick
-            getRowId={getId}
-          />
+              }}
+              pageSizeOptions={[100]}
+              disableRowSelectionOnClick
+              getRowId={getId}
+            />
+          </div>
         </Paper>
       )}
       {data && data.length === 0 && <NoCustomer texte="No backoffice complaints" />}

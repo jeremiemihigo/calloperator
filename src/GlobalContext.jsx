@@ -47,26 +47,42 @@ const ContexteGlobal = (props) => {
     audioRef.current.play();
   };
   const fetchAndAdd = () => {
-    if (client && client.length > 0) {
-      let i = _.filter(client, { idPlainte: nowCall.idPlainte });
-      if (i.length > 0) {
-        let index = client.indexOf({ idPlainte: nowCall.idPlainte });
-        let lastValue = [...client];
-        lastValue[index] = nowCall;
-        setClient(lastValue);
-      } else {
-        setClient([...client, nowCall]);
+    try {
+      if (client && client.length > 0) {
+        let i = _.filter(client, { idPlainte: nowCall.idPlainte });
+        if (i.length > 0) {
+          let index = client.indexOf({ idPlainte: nowCall.idPlainte });
+          let lastValue = [...client];
+          lastValue[index] = nowCall;
+          setClient(lastValue);
+        } else {
+          setClient([...client, nowCall]);
+        }
       }
+    } catch (error) {
+      console.log(error);
     }
   };
+
   React.useEffect(() => {
-    if (nowCall) {
-      if (user?.backOffice_plainte && nowCall?.operation === 'backoffice') {
-        fetchAndAdd();
-        playAudio();
-      } else {
-        fetchAndAdd();
+    try {
+      if (nowCall) {
+        if (user?.backOffice_plainte && nowCall?.operation === 'backoffice') {
+          fetchAndAdd();
+          playAudio();
+        } else {
+          if (
+            user?.fonction === 'superUser' ||
+            (user?.fonction === 'admin' && user?.plainteShop === nowCall?.shop) ||
+            (user?.synchro_shop.length > 0 && user?.synchro_shop.includes(nowCall?.shop)) ||
+            (user?.plainte_callcenter && nowCall?.submitedBy === user?.nom)
+          ) {
+            fetchAndAdd();
+          }
+        }
       }
+    } catch (error) {
+      console.log(error);
     }
   }, [nowCall]);
 
@@ -128,18 +144,22 @@ const ContexteGlobal = (props) => {
   }, [socket]);
 
   React.useEffect(() => {
-    if (new_reponse) {
-      let filter = allListe.filter((x) => x.idDemande !== new_reponse.idDemande);
-      setAllListe(filter);
-      setData(_.groupBy(filter, 'zone.denomination'));
-      if (new_reponse._id) {
-        setReponseNow([new_reponse, ...reponseNow]);
-        set_new_Reponse();
+    try {
+      if (new_reponse) {
+        let filter = allListe.filter((x) => x.idDemande !== new_reponse.idDemande);
+        setAllListe(filter);
+        setData(_.groupBy(filter, 'zone.denomination'));
+        if (new_reponse._id) {
+          setReponseNow([new_reponse, ...reponseNow]);
+          set_new_Reponse();
+        }
+        if (demande?.idDemande === new_reponse?.idDemande) {
+          setDemande();
+          set_new_Reponse();
+        }
       }
-      if (demande?.idDemande === new_reponse?.idDemande) {
-        setDemande();
-        set_new_Reponse();
-      }
+    } catch (error) {
+      console.log(error);
     }
   }, [new_reponse]);
 
@@ -183,7 +203,6 @@ const ContexteGlobal = (props) => {
         client,
         setClient,
         chat,
-
         //Support_team
         setChat,
         update,

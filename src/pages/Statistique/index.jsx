@@ -53,7 +53,6 @@ function Statistiques() {
             localStorage.removeItem('auth');
             window.location.replace('/login');
           } else {
-            console.log(response.data);
             setListeDemande(response.data);
             setFetch(false);
           }

@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkfront=self.webpackChunkfront||[]).push([[833],{815833:(n,e,r)=>{r.r(e),r.d(e,{default:()=>s});var t=r(346417);const s=function(){return(0,t.jsx)("div",{children:"Index"})}}}]);
