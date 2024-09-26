@@ -1,5 +1,6 @@
 // eslint-disable-next-line no-undef
-const link = 'http://localhost:40002';
+//const link = 'http://localhost:40002';
+const link = 'https://bboxxbackendtest.onrender.com';
 // const link = 'http://192.168.1.68:40002';
 //const link = 'https://backendtestserver.onrender.com';
 //const linkonline = 'https://visite.bboxxvm.com'
