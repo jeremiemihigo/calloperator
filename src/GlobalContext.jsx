@@ -3,7 +3,7 @@
 import SoundAudio from 'assets/audio/sound.wav';
 import IconImage from 'assets/images/users/iconImage.jpg';
 import _ from 'lodash';
-import React, { createContext, useRef } from 'react';
+import React, { createContext } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
@@ -41,10 +41,26 @@ const ContexteGlobal = (props) => {
       });
     }
   }, [socket]);
-  const audioRef = useRef(null);
+  // const audioRef = useRef(null);
 
   const playAudio = () => {
-    audioRef.current.play();
+    try {
+      const video = document.getElementById('video');
+      video.muted = true; // Mute the video
+      video
+        .play()
+        .then(() => {
+          // Unmute once the video starts playing
+          video.muted = false;
+        })
+        .catch((error) => {
+          console.log('Autoplay error:', error);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+
+    // audioRef.current.play();
   };
   const fetchAndAdd = () => {
     try {
@@ -191,6 +207,7 @@ const ContexteGlobal = (props) => {
   React.useEffect(() => {
     loadingCustomer();
   }, []);
+  console.log(messageAlert);
 
   return (
     <CreateContexteGlobal.Provider
@@ -216,18 +233,18 @@ const ContexteGlobal = (props) => {
         reponseNow
       }}
     >
-      <audio ref={audioRef} src={SoundAudio}>
+      <audio id="video" src={SoundAudio}>
         <track kind="captions" src="captions.vtt" srcLang="en" label="English" default />
       </audio>
 
-      <Popup open={openPopup} setOpen={setOpenPopup} title={`ID complaint ${messageAlert?.idPlainte}`}>
+      <Popup open={openPopup} setOpen={setOpenPopup} title={`ID : ${messageAlert?.plainte?.codeclient}`}>
         <div style={{ width: '20rem' }}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <div>
-              <img width={40} height={40} src={IconImage} alt="userIcon" />
+              <img width={20} height={20} src={IconImage} alt="userIcon" />
             </div>
             <div style={{ display: 'flex', alignContent: 'center' }}>
-              <p style={{ marginLeft: '10px', padding: '0px', margin: '0px' }}>{messageAlert?.agent}</p>
+              <p style={{ marginLeft: '20px', padding: '0px', margin: '0px' }}>{messageAlert?.agent}</p>
             </div>
           </div>
           <div style={{ marginTop: '10px' }}>

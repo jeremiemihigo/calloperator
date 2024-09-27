@@ -37,7 +37,6 @@ function FeedbackComponent({ demande, update }) {
       };
       setReclamation('');
       const response = await axios.post(lien + '/reclamation', data);
-      console.log(response);
       if (response.status === 200) {
         return;
       }
