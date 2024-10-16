@@ -1,12 +1,11 @@
 /* eslint-disable react/prop-types */
 import { Block } from '@mui/icons-material';
+import { Typography } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import axios from 'axios';
-import { lien } from 'static/Lien';
-import { useState } from 'react';
 import DirectionSnackbar from 'Control/SnackBar';
-import { Typography } from '@mui/material';
-import { config } from 'static/Lien';
+import { useState } from 'react';
+import { config, lien } from 'static/Lien';
 
 function AgentListe(props) {
   const { liste } = props;

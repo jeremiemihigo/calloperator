@@ -1,12 +1,16 @@
 /* eslint-disable react/prop-types */
-import React from 'react';
+import { Paper } from '@mui/material';
 
 function AffichageStat({ listeDemande }) {
   return (
     <>
-      <div className="statDemande">
+      <Paper
+        className="statDemande"
+        elevation={3}
+        sx={{ marginTop: '20px', padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      >
         {listeDemande && (
-          <p style={{ textAlign: 'center' }}>
+          <p style={{ textAlign: 'center', padding: '0px', margin: '0px' }}>
             <span style={{ color: 'red', marginRight: '10px', fontSize: '1rem' }}>
               {listeDemande.filter((x) => x.reponse.length > 0).length}
             </span>
@@ -19,7 +23,7 @@ function AffichageStat({ listeDemande }) {
             </span>
           </p>
         )}
-      </div>
+      </Paper>
     </>
   );
 }

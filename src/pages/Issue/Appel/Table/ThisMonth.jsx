@@ -8,6 +8,7 @@ import { CreateContexteGlobal } from 'GlobalContext';
 import moment from 'moment';
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { config, lien_issue, returnName } from 'static/Lien';
 import Popup from 'static/Popup';
 import { CreateContexteTable } from '../Contexte';
@@ -17,12 +18,17 @@ import Couleur from './Color';
 function AllCall() {
   const [data, setData] = React.useState();
   const { client, setClient } = React.useContext(CreateContexteGlobal);
+  const location = useLocation();
 
   const { setPlainteSelect, setSelect } = React.useContext(CreateContexteTable);
   const user = useSelector((state) => state.user?.user);
   const loading = async () => {
-    if (client) {
+    const statut = location?.state?.statut;
+    if (client && !statut) {
       setData(client.filter((x) => x.type === 'appel' && x.statut !== 'escalade'));
+    }
+    if (client && statut) {
+      setData(client.filter((x) => x.statut === statut));
     }
   };
   React.useEffect(() => {

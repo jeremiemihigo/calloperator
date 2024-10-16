@@ -1,11 +1,12 @@
 import { Message } from '@mui/icons-material';
-import { Fab, Paper } from '@mui/material';
+import { Fab, Grid, Paper } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import axios from 'axios';
 import LoaderGif from 'components/LoaderGif';
 import moment from 'moment';
+import Chat from 'pages/Issue/Appel/Chat';
 import React from 'react';
-import { config, lien_issue, TimeCounter } from 'static/Lien';
+import { config, lien_issue } from 'static/Lien';
 import { CreateContexteTable } from '../Contexte';
 import Couleur from './Color';
 
@@ -31,15 +32,6 @@ function MyBackOffice() {
     setSelect(3);
   };
 
-  const returnTime = (date1, date2) => {
-    let resultat = (new Date(date2).getTime() - new Date(date1).getTime()) / 60000;
-    if (resultat < 1) {
-      return 1;
-    } else {
-      return resultat;
-    }
-  };
-
   const columns = [
     {
       field: 'codeclient',
@@ -48,15 +40,9 @@ function MyBackOffice() {
       editable: false
     },
     {
-      field: 'contact',
-      headerName: 'Contact',
-      width: 80,
-      editable: false
-    },
-    {
       field: 'statut',
       headerName: 'Statut',
-      width: 160,
+      width: 100,
       editable: false,
       renderCell: (params) => {
         return <Couleur text={params.row.statut} />;
@@ -65,7 +51,7 @@ function MyBackOffice() {
     {
       field: 'typePlainte',
       headerName: 'Type Plainte',
-      width: 150,
+      width: 100,
       editable: false
     },
     {
@@ -75,33 +61,15 @@ function MyBackOffice() {
       editable: false
     },
     {
-      field: 'submitedBy',
-      headerName: 'Saved By',
-      width: 100,
-      editable: false
-    },
-    {
       field: 'dateSave',
       headerName: 'Date open',
       width: 75,
       editable: false,
       renderCell: (p) => {
-        return moment(p.row.dateSave).format('DD/MM hh:mm');
+        return moment(p.row.dateSave).format('DD/MM');
       }
     },
-    {
-      field: 'dateClose',
-      headerName: 'SLA',
-      width: 75,
-      editable: false,
-      renderCell: (p) => {
-        return p.row.open ? (
-          TimeCounter((p.row.time_delai - returnTime(p.row.fullDateSave, new Date())).toFixed(0))
-        ) : (
-          <Couleur text={p.row.delai} />
-        );
-      }
-    },
+
     {
       field: 'sla',
       headerName: 'Type',
@@ -119,7 +87,7 @@ function MyBackOffice() {
       renderCell: (params) => {
         return (
           <Fab size="small" color="primary" onClick={() => openChat(params.row)}>
-            <Message fontSize="small" />
+            {params.row.message ? params.row.message.length : <Message fontSize="small" />}
           </Fab>
         );
       }
@@ -133,24 +101,37 @@ function MyBackOffice() {
     <>
       {!data && <LoaderGif width={400} height={400} />}
       {data && data.length === 0 && <p style={{ textAlign: 'center', color: 'blue', fontWeight: 'bolder' }}>No request</p>}
-      {data && data.length > 0 && (
-        <Paper elevation={4}>
-          <DataGrid
-            rows={data}
-            columns={columns}
-            initialState={{
-              pagination: {
-                paginationModel: {
-                  pageSize: 20
-                }
-              }
-            }}
-            pageSizeOptions={[20]}
-            disableRowSelectionOnClick
-            getRowId={getId}
-          />
-        </Paper>
-      )}
+      <Grid container>
+        <Grid item lg={8}>
+          {data && data.length > 0 && (
+            <Paper sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }} elevation={4}>
+              <div>
+                {' '}
+                <DataGrid
+                  rows={data}
+                  columns={columns}
+                  initialState={{
+                    pagination: {
+                      paginationModel: {
+                        pageSize: 20
+                      }
+                    }
+                  }}
+                  pageSizeOptions={[20]}
+                  disableRowSelectionOnClick
+                  getRowId={getId}
+                />
+              </div>
+            </Paper>
+          )}
+        </Grid>
+        <Grid item lg={4} sx={{ paddingLeft: '10px' }}>
+          <Paper elevation={4} sx={{ padding: '10px' }}>
+            <Chat />
+          </Paper>
+        </Grid>
+      </Grid>
+
       {/* <Rebour /> */}
     </>
   );

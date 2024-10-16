@@ -1,9 +1,9 @@
 import { Button, TextField } from '@mui/material';
 import { message } from 'antd';
+import axios from 'axios';
 import { CreateContexteGlobal } from 'GlobalContext';
 import React from 'react';
 import { config, lien_issue } from 'static/Lien';
-import axios from '../../../../../node_modules/axios/index';
 import { CreateContexteTable } from '../Contexte';
 
 function Upgrade() {

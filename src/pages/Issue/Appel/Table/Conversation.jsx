@@ -25,7 +25,8 @@ function Conversation() {
         lien_issue + '/message',
         {
           idPlainte: plainteSelect?.idPlainte,
-          content
+          content,
+          type: 'message'
         },
         config
       );

@@ -1,12 +1,13 @@
-import { Grid, Paper, Typography } from '@mui/material';
+import { CircularProgress, Grid, Paper, Typography } from '@mui/material';
+import axios from 'axios';
 import Dot from 'components/@extended/Dot';
 import LoaderGif from 'components/LoaderGif';
 import { CreateContexteGlobal } from 'GlobalContext';
 import _ from 'lodash';
 import React from 'react';
-import { returnTime } from 'static/Lien';
-import { useSelector } from '../../../../../node_modules/react-redux/es/exports';
-import { useNavigate } from '../../../../../node_modules/react-router-dom/dist/index';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { config, lien_issue, returnTime } from 'static/Lien';
 import RadialBarChart from '../Dashboard/Chart';
 
 function ThisMonth_Tech() {
@@ -76,7 +77,7 @@ function ThisMonth_Tech() {
         }
       }
       pourcentage = (nombre * 100) / result.length;
-      return pourcentage.toFixed(0) + '%';
+      return !isNaN(pourcentage) ? pourcentage.toFixed(0) + '%' : '0%';
     }
     if (type === 'encours') {
       let d = donner ? donner : data;
@@ -108,7 +109,7 @@ function ThisMonth_Tech() {
   const navigation = useNavigate();
   const openDataTech = (e, data) => {
     e.preventDefault();
-    navigation('/tech_value', { state: data });
+    navigation('/tech_value', { state: { statut: '', state: data } });
   };
   const agent = useSelector((state) => state.agent?.agent);
   const returnName = (id) => {
@@ -118,6 +119,20 @@ function ThisMonth_Tech() {
       return id;
     }
   };
+  const [pourcentage, setPourcentage] = React.useState();
+  const returnTechnical = async () => {
+    try {
+      const response = await axios.get(lien_issue + '/mydeedline/issue', config);
+      if (response.status === 200) {
+        setPourcentage(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  React.useEffect(() => {
+    returnTechnical();
+  }, []);
   return (
     <>
       <Grid container>
@@ -133,7 +148,17 @@ function ThisMonth_Tech() {
                     sx={{ fontSize: '11px', cursor: 'pointer', color: 'blue', fontWeight: 'bolder' }}
                   >{` Détails`}</Typography>
                 </Typography>
-                <RadialBarChart nombre={attente.length} texte="Unaffected" />
+                <div className="Unaffected">
+                  <div>
+                    <Typography component="p" className="Unaffected_title">
+                      Unaffected
+                    </Typography>
+                    <Typography component="p" className="Unaffected_number">
+                      {attente.length}
+                    </Typography>
+                  </div>
+                </div>
+
                 {data && data.length > 0 && (
                   <div style={{ display: 'flex' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -161,7 +186,17 @@ function ThisMonth_Tech() {
                     sx={{ fontSize: '11px', cursor: 'pointer', color: 'blue', fontWeight: 'bolder' }}
                   >{` Détails`}</Typography>
                 </Typography>
-                <RadialBarChart nombre={((encours.length * 100) / data.length).toFixed(0)} texte="Running" />
+                <div className="Unaffected">
+                  <div>
+                    <Typography component="p" className="Unaffected_title">
+                      Running
+                    </Typography>
+                    <Typography component="p" className="Unaffected_number">
+                      {encours.length}
+                    </Typography>
+                  </div>
+                </div>
+
                 {data && data.length > 0 && (
                   <div style={{ display: 'flex' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -188,7 +223,17 @@ function ThisMonth_Tech() {
                     Détails
                   </Typography>
                 </Typography>
-                <RadialBarChart nombre={((callcenter.length * 100) / data.length).toFixed(0)} texte="Waiting at CC" />
+                <div className="Unaffected">
+                  <div>
+                    <Typography component="p" className="Unaffected_title">
+                      Waiting at CC
+                    </Typography>
+                    <Typography component="p" className="Unaffected_number">
+                      {callcenter.length}
+                    </Typography>
+                  </div>
+                </div>
+
                 {data && data.length > 0 && (
                   <div style={{ display: 'flex' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -209,13 +254,27 @@ function ThisMonth_Tech() {
             </Grid>
           </>
         )}
-
-        <Grid item lg={3} xs={12} sm={6} md={4} sx={{ padding: '2px' }}>
+        <Grid item lg={3} xs={12} sm={6} md={4} sx={{ padding: '2px', minHeight: 200 }}>
           <Paper elevation={3} sx={style.paper}>
-            <p style={style.padding0}>This Month</p>
-            <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
-              <p style={{ padding: '0px', margin: '0px' }}>Work in progress...</p>
-            </div>
+            <Typography component="p" sx={style.padding0}>
+              My Percentage on time for this month
+            </Typography>
+            <Typography sx={{ textAlign: 'center' }} component="p" className="Unaffected_title">
+              Technical issues
+            </Typography>
+
+            {pourcentage ? (
+              <RadialBarChart nombre={pourcentage} texte="IN SLA" />
+            ) : (
+              <div style={{ display: 'flex', minHeight: 150, alignItems: 'center', justifyContent: 'center' }}>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <CircularProgress sx={{ textAlign: 'center' }} size={25} />
+                  </div>
+                  <p style={{ textAlign: 'center', marginTop: '10px' }}>Loading...</p>
+                </div>
+              </div>
+            )}
           </Paper>
         </Grid>
       </Grid>

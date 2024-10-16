@@ -1,10 +1,10 @@
-import { TextField, Typography } from '@mui/material';
+import { Paper, TextField, Typography } from '@mui/material';
 import axios from 'axios';
+import { CreateContexteGlobal } from 'GlobalContext';
 import moment from 'moment';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { config, lien_issue } from 'static/Lien';
-import { Paper } from '../../../../../node_modules/@mui/material/index';
+import { config, lien_issue, returnName } from 'static/Lien';
 import './chat.style.css';
 
 function Index() {
@@ -32,7 +32,8 @@ function Index() {
         lastMessage: lastMessage?.content,
         idPlainte: lastMessage?.idPlainte,
         lastAgent: lastMessage?.agent,
-        content: reclamation
+        content: reclamation,
+        type: 'feedback'
       };
       const response = await axios.post(lien_issue + '/message', data, config);
       if (response.status === 200) {
@@ -48,7 +49,7 @@ function Index() {
       <div className="message his_message">
         <div className="identification">
           <Typography noWrap className="name">
-            {agent}; {plainte?.codeclient}
+            {returnName(agent)}; {plainte?.codeclient}
           </Typography>
           <div className="footer">
             <p className="time_to_send">{moment(createdAt).fromNow()}</p>
@@ -61,6 +62,20 @@ function Index() {
       </div>
     );
   };
+
+  const { socket } = React.useContext(CreateContexteGlobal);
+  const [change, setChange] = React.useState();
+  React.useEffect(() => {
+    socket?.on('message', (a) => {
+      setChange(a);
+    });
+  }, [socket]);
+  React.useEffect(() => {
+    if (change) {
+      setDonner([...donner, change]);
+    }
+  }, [change]);
+
   const ReturnMyMessage = (props) => {
     const { content, createdAt, plainte, lastMessage } = props.content;
     return (

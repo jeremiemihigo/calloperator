@@ -13,6 +13,7 @@ import { ReadReponse } from 'Redux/Reponses';
 import { ReadShop } from 'Redux/Shop';
 import { ReadAllZone } from 'Redux/Zone';
 import { Readdelai } from 'Redux/delai';
+import { ReadProjet } from 'Redux/projet';
 import { ReadUser } from 'Redux/user';
 import reducers from './reducers';
 // import { ReadContrat } from 'Redux/Contrat';
@@ -36,5 +37,6 @@ dispatch(ReadPlainte());
 dispatch(Readdelai());
 dispatch(ReadplainteItem());
 dispatch(Readcommunication());
+dispatch(ReadProjet());
 
 export { dispatch, store };

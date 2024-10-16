@@ -3,7 +3,7 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import React from 'react';
 import ExcelButton from 'static/ExcelButton';
-import { config, lien } from 'static/Lien';
+import { big_data, config } from 'static/Lien';
 import './style.css';
 
 function Doublon() {
@@ -14,8 +14,7 @@ function Doublon() {
   const laoding = async () => {
     try {
       setLoad(true);
-      const response = await axios.get(lien + '/doublon', config);
-      console.log(response.data);
+      const response = await axios.get(big_data + '/doublon', config);
       if (response.status === 200) {
         let d = [];
         for (let i = 0; i < response.data.length; i++) {

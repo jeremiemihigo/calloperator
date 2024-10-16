@@ -3,12 +3,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // material-ui
-import { AccessTime, BugReport, Message, WorkHistory } from '@mui/icons-material';
+import { AccessTime, BugReport, Message, Storage, WorkHistory } from '@mui/icons-material';
 import { List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { activeItem } from 'store/reducers/menu';
-
 // assets
 // import {  FreeBreakfast, } from '@mui/icons-material';
 
@@ -32,15 +31,19 @@ const Setting_Call = () => {
     }
     if (index === 11) {
       itemHandler('Delai');
-      navigation('/delai', { replace: true });
+      navigation('/delai');
     }
     if (index === 12) {
       itemHandler('Communication');
-      navigation('/communication', { replace: true });
+      navigation('/communication');
     }
     if (index === 13) {
       itemHandler('Search history');
-      navigation('/search_history', { replace: true });
+      navigation('/search_history');
+    }
+    if (index === 14) {
+      itemHandler('Serveil');
+      navigation('/serveil');
     }
   };
   const userConenct = useSelector((state) => state.user?.user);
@@ -79,6 +82,12 @@ const Setting_Call = () => {
           <ListItemText primary="Search history" />
         </ListItemButton>
       )}
+      <ListItemButton selected={selectedIndex === 14} onClick={(event) => handleListItemClick(event, 14)}>
+        <ListItemIcon>
+          <Storage fontSize="small" />
+        </ListItemIcon>
+        <ListItemText primary="Servey" />
+      </ListItemButton>
       {/* {userConenct && userConenct.fonction === 'superUser' && (
         <ListItemButton selected={selectedIndex === 2} onClick={(event) => handleListItemClick(event, 2)}>
           <ListItemIcon>

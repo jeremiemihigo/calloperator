@@ -1,15 +1,20 @@
-import { Grid } from '@mui/material';
+import { Divider, Grid } from '@mui/material';
 import moment from 'moment';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { returnName } from 'static/Lien';
-import { Divider } from '../../../../node_modules/@mui/material/index';
 import { CreateContexteTable } from './Contexte';
 import './historique.css';
 
 function HistoriqueClient() {
-  const { historique } = React.useContext(CreateContexteTable);
+  const { historique, setPlainteSelect, setSelect } = React.useContext(CreateContexteTable);
   const user = useSelector((state) => state.user?.user);
+
+  const openChat = (plainte, e) => {
+    e.preventDefault();
+    setPlainteSelect(plainte);
+    setSelect(3);
+  };
 
   return (
     <div>
@@ -17,7 +22,13 @@ function HistoriqueClient() {
         historique?.appel.length > 0 &&
         historique.appel.map((index) => {
           return (
-            <Grid container className="plainte" key={index._id} sx={{ marginTop: '10px', padding: '5px' }}>
+            <Grid
+              onClick={(e) => openChat(index, e)}
+              container
+              className="plainte"
+              key={index._id}
+              sx={{ marginTop: '10px', padding: '5px' }}
+            >
               <Grid item lg={6} className="infoOne">
                 <p>
                   <span>Issue</span> : {index?.typePlainte}

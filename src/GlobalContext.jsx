@@ -3,7 +3,7 @@
 import SoundAudio from 'assets/audio/sound.wav';
 import IconImage from 'assets/images/users/iconImage.jpg';
 import _ from 'lodash';
-import React, { createContext } from 'react';
+import React, { createContext, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
@@ -17,13 +17,14 @@ const ContexteGlobal = (props) => {
   const [socket, setSocket] = React.useState(null);
   const user = useSelector((state) => state?.user.user);
   const [client, setClient] = React.useState([]);
+  const [resetData, setResetData] = React.useState('');
 
   React.useEffect(() => {
     setSocket(io(lien_socket));
   }, []);
   React.useEffect(() => {
     if (socket !== null && user) {
-      const data = { codeAgent: user.codeAgent, nom: user.nom, fonction: 'admin' };
+      const data = { codeAgent: user.codeAgent, backOffice: user?.backOffice_plainte, nom: user.nom, fonction: 'admin' };
       socket.emit('newUser', data);
     }
   }, [socket, user]);
@@ -41,26 +42,10 @@ const ContexteGlobal = (props) => {
       });
     }
   }, [socket]);
-  // const audioRef = useRef(null);
+  const audioRef = useRef(null);
 
   const playAudio = () => {
-    try {
-      const video = document.getElementById('video');
-      video.muted = true; // Mute the video
-      video
-        .play()
-        .then(() => {
-          // Unmute once the video starts playing
-          video.muted = false;
-        })
-        .catch((error) => {
-          console.log('Autoplay error:', error);
-        });
-    } catch (error) {
-      console.log(error);
-    }
-
-    // audioRef.current.play();
+    audioRef.current.play();
   };
   const fetchAndAdd = () => {
     try {
@@ -133,13 +118,17 @@ const ContexteGlobal = (props) => {
   React.useEffect(() => {
     if (donner) {
       let all = [...allListe, donner];
-      setData(_.groupBy(all, 'zone.denomination'));
+      setData(_.groupBy(all, 'codeZone'));
     }
   }, [donner]);
 
   //Recuperation de la reponse
   const [new_reponse, set_new_Reponse] = React.useState();
   const [reponseNow, setReponseNow] = React.useState([]);
+  const changeReponse = (items) => {
+    let out = reponseNow.map((x) => (x._id === items._id ? items : x));
+    setReponseNow(out);
+  };
   React.useEffect(() => {
     if (socket) {
       socket.on('reponse', (donner) => {
@@ -164,7 +153,7 @@ const ContexteGlobal = (props) => {
       if (new_reponse) {
         let filter = allListe.filter((x) => x.idDemande !== new_reponse.idDemande);
         setAllListe(filter);
-        setData(_.groupBy(filter, 'zone.denomination'));
+        setData(_.groupBy(filter, 'codeZone'));
         if (new_reponse._id) {
           setReponseNow([new_reponse, ...reponseNow]);
           set_new_Reponse();
@@ -172,6 +161,7 @@ const ContexteGlobal = (props) => {
         if (demande?.idDemande === new_reponse?.idDemande) {
           setDemande();
           set_new_Reponse();
+          setResetData(demande?.idDemande);
         }
       }
     } catch (error) {
@@ -185,7 +175,6 @@ const ContexteGlobal = (props) => {
     if (socket) {
       socket.on('message', (donner) => {
         setMessageAlert(donner);
-        playAudio();
         setOpenPopup(true);
       });
     }
@@ -207,7 +196,6 @@ const ContexteGlobal = (props) => {
   React.useEffect(() => {
     loadingCustomer();
   }, []);
-  console.log(messageAlert);
 
   return (
     <CreateContexteGlobal.Provider
@@ -223,9 +211,12 @@ const ContexteGlobal = (props) => {
         //Support_team
         setChat,
         update,
+        changeReponse,
         setUpdate,
         demande,
+        resetData,
         data,
+        setResetData,
         setData,
         allListe,
         setAllListe,
@@ -233,7 +224,7 @@ const ContexteGlobal = (props) => {
         reponseNow
       }}
     >
-      <audio id="video" src={SoundAudio}>
+      <audio id="video" ref={audioRef} src={SoundAudio}>
         <track kind="captions" src="captions.vtt" srcLang="en" label="English" default />
       </audio>
 

@@ -37,6 +37,7 @@ function Form({ update }) {
   } = React.useContext(CreateContexteTable);
 
   const [typeForm, setTypeForm] = React.useState('');
+  console.log(historique);
 
   const { client, setClient } = React.useContext(CreateContexteGlobal);
   const user = useSelector((state) => state?.user?.user);
@@ -134,11 +135,12 @@ function Form({ update }) {
             codeclient,
             adresse,
             nomClient,
+            statut,
             shop: shopSelect?.shop,
             commentaire: initiale.recommandation
           };
           const data = item?.ticket ? dataTicket : dataNonTech;
-          const link = item?.ticket ? (property === 'shop' ? 'soumission_ticket' : 'ticker_callcenter') : 'appel';
+          const link = item?.ticket ? 'soumission_ticket' : 'appel';
 
           const response = await axios.post(`${lien_issue}/${link}`, data, config);
           if (response.status === 201) {

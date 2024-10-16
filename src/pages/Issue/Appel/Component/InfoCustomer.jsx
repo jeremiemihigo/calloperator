@@ -57,8 +57,8 @@ function InfoCustomer({ plainteSelect }) {
             <Typography className="values">{plainteSelect?.contact}</Typography>
           </Grid>
           <Grid item lg={6} xs={12} sm={12} md={12} className="grid">
-            <Typography className="title">Month</Typography>
-            <Typography className="values">{plainteSelect?.periode}</Typography>
+            <Typography className="title">Date</Typography>
+            <Typography className="values">{moment(plainteSelect?.createdAt).format('DD-MM-YYYY')} </Typography>
           </Grid>
           <Grid item lg={6} xs={12} sm={12} md={12} className="grid">
             <Typography className="title">Origin</Typography>

@@ -6,7 +6,9 @@ import MainCard from 'components/MainCard';
 import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { big_data, config } from 'static/Lien.jsx';
 import { ListItemButton, ListItemText } from '../../../node_modules/@mui/material/index.js';
+import axios from '../../../node_modules/axios/index.js';
 import FirstLogin from './FirstLogin.jsx';
 import ReportAreaChart from './ReportAreaChart';
 
@@ -17,7 +19,26 @@ const DashboardDefault = () => {
   const agent = useSelector((state) => state.agent);
   const periode = useSelector((state) => state.periodeActive);
   const reponse = useSelector((state) => state.reponse.reponse);
-  const { client, allListe } = React.useContext(CreateContexteGlobal);
+  const { client } = React.useContext(CreateContexteGlobal);
+  const [allListe, setAllListe] = React.useState(0);
+
+  const loadings = async () => {
+    try {
+      const response = await axios.get(`${big_data}/toutesDemandeAttente/1500`, config);
+      if (response.status === 201 && response.data === 'token expired') {
+        localStorage.removeItem('auth');
+        window.location.replace('/login');
+      } else {
+        setAllListe(response.data.length);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  React.useEffect(() => {
+    loadings();
+  }, []);
 
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
@@ -27,13 +48,13 @@ const DashboardDefault = () => {
         <Typography variant="h5">Dashboard</Typography>
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce color="#efe9aa" title="Visites en attente" count={allListe?.length} />
+        <AnalyticEcommerce color="#efe9aa" title="Visites en attente" count={allListe} />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
         <AnalyticEcommerce color="#d4d5ed" title="Agents & Techniciens" count={agent?.agent?.length} />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce color="#cdc8f4" title="Mois actif" count={periode?.periodeActive?.periode} />
+        <AnalyticEcommerce color="#cdc8f4" title="Mois actif" count={periode?.periodeActive} />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
         <AnalyticEcommerce color="#efe9aa" title="Complaints of today" count={client?.length} />

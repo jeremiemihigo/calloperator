@@ -1,17 +1,19 @@
 // eslint-disable-next-line no-undef
+
 //const link = 'http://localhost:40002';
-//const link = 'https://bboxxbackendtest.onrender.com';
-// const link = 'http://192.168.1.68:40002';
-//const link = 'https://backendtestserver.onrender.com';
-//const linkonline = 'https://visite.bboxxvm.com'
 const link = 'https://visite.bboxxvm.com';
-//const linkonline = 'https://backendtestserver.onrender.com';
-// const linkimg = 'https://visite.bboxxvm.com';
+
+//export const big_data = 'http://localhost:40002/bboxx/support';
+export const big_data = 'https://issuelink.bboxxvm.com/bboxx/support';
+
+export const big_data_issue = 'https://issuelink.bboxxvm.com/issue';
+//export const big_data_issue = 'http://localhost:40002/issue';
 
 export const lien = `${link}/bboxx/support`;
 export const lien_socket = link;
 export const lien_conge = `${link}/admin/conge`;
 export const lien_issue = `${link}/issue`;
+export const lien_servey = `${link}/servey`;
 export const lien_image = `${link}/bboxx/image`;
 export const lien_file = `${link}/bboxx/file`;
 export const config = {
@@ -1810,7 +1812,7 @@ export const returnDelai = async (statut, deedline, today) => {
 import React from 'react';
 export function TimeCounter(durationInMinutes) {
   const [remainingTimeInSeconds, setRemainingTimeInSeconds] = React.useState(durationInMinutes * 60);
-  console.log(durationInMinutes);
+
   React.useEffect(() => {
     const interval = setInterval(() => {
       setRemainingTimeInSeconds((prev) => (prev > 0 ? prev - 1 : 0));
@@ -1849,6 +1851,7 @@ export function TimeCounter(durationInMinutes) {
         style={{
           background: 'green',
           padding: '0px',
+          borderRadius: '10px',
           margin: '0px',
           height: '50%',
           fontSize: '12px',
@@ -1880,12 +1883,15 @@ export function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 export const returnName = (nom) => {
-  const split = nom.split(' ');
-  return nom.split(' ')[split.length - 1];
+  if (nom) {
+    const split = nom.split(' ');
+    return nom.split(' ')[split.length - 1];
+  } else {
+    return '';
+  }
 };
 
 export function TimeCounterTechnique(row) {
-  console.log(row);
   let minutes = row.time_delai - returnTime(row.fullDateSave, new Date()).toFixed(0);
 
   const [remainingTimeInSeconds, setRemainingTimeInSeconds] = React.useState(minutes * 60);
@@ -1940,4 +1946,10 @@ export function TimeCounterTechnique(row) {
       `}</p>
     );
   }
+}
+
+export function dayDiff(d1, d2) {
+  d1 = new Date(d1).getTime() / 86400000;
+  d2 = new Date(d2).getTime() / 86400000;
+  return new Number(d2 - d1).toFixed(0);
 }

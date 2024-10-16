@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkfront=self.webpackChunkfront||[]).push([[559],{157559:(n,e,r)=>{r.r(e),r.d(e,{default:()=>c});var s=r(814328),t=r(504438),u=r(346417);const c=function(){return(0,u.jsx)(s.Z,{children:(0,u.jsx)(t.Z,{})})}}}]);
