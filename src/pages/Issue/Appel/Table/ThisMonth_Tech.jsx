@@ -142,7 +142,7 @@ function ThisMonth_Tech() {
             <Grid item lg={3} xs={12} sm={6} md={4} sx={{ padding: '2px' }}>
               <Paper onClick={(e) => openDataTech(e, 'technicien')} elevation={3} sx={style.paper}>
                 <Typography component="p" sx={style.padding0}>
-                  Waiting for a technician
+                  Open_technician_visit
                   <Typography
                     component="span"
                     sx={{ fontSize: '11px', cursor: 'pointer', color: 'blue', fontWeight: 'bolder' }}
@@ -218,7 +218,7 @@ function ThisMonth_Tech() {
             <Grid item lg={3} xs={12} sm={6} md={4} sx={{ padding: '2px' }}>
               <Paper onClick={(e) => openDataTech(e, 'callcenter')} elevation={3} sx={style.paper}>
                 <Typography component="p" sx={style.padding0}>
-                  Awaiting verification{' '}
+                  Resolved_awaiting_confirmation
                   <Typography component="span" sx={{ fontSize: '11px', cursor: 'pointer', color: 'blue', fontWeight: 'bolder' }}>
                     Détails
                   </Typography>

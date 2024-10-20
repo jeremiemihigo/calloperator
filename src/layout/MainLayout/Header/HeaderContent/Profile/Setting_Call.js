@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // material-ui
-import { AccessTime, BugReport, Message, Storage, WorkHistory } from '@mui/icons-material';
+import { AccessTime, BugReport, Message, WorkHistory } from '@mui/icons-material';
 import { List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useDispatch, useSelector } from 'react-redux';
@@ -82,12 +82,12 @@ const Setting_Call = () => {
           <ListItemText primary="Search history" />
         </ListItemButton>
       )}
-      <ListItemButton selected={selectedIndex === 14} onClick={(event) => handleListItemClick(event, 14)}>
+      {/* <ListItemButton selected={selectedIndex === 14} onClick={(event) => handleListItemClick(event, 14)}>
         <ListItemIcon>
           <Storage fontSize="small" />
         </ListItemIcon>
         <ListItemText primary="Servey" />
-      </ListItemButton>
+      </ListItemButton> */}
       {/* {userConenct && userConenct.fonction === 'superUser' && (
         <ListItemButton selected={selectedIndex === 2} onClick={(event) => handleListItemClick(event, 2)}>
           <ListItemIcon>
