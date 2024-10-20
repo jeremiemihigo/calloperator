@@ -55,7 +55,17 @@ module.exports = {
       const recherche = req.recherche;
       let match = recherche ? { _id: new ObjectId(recherche) } : {};
       modelDepartement
-        .find(match)
+        .aggregate([
+          { $match: match },
+          {
+            $lookup: {
+              from: "fonctions",
+              localField: "codeDepartement",
+              foreignField: "codeDepartement",
+              as: "fonction",
+            },
+          },
+        ])
         .then((result) => {
           if (result.length > 0) {
             let data = recherche ? result[0] : result;

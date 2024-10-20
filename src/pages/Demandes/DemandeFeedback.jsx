@@ -2,11 +2,11 @@
 /* eslint-disable react/prop-types */
 import { Card, Grid } from '@mui/material';
 import { CreateContexteGlobal } from 'GlobalContext';
-import { Input } from 'antd';
 import axios from 'axios';
 import moment from 'moment';
 import React from 'react';
 import { config, lien } from 'static/Lien';
+import { TextField } from '../../../node_modules/@mui/material/index';
 import Chat from './Chat';
 
 function ListeDemandeFeedBack({ setError }) {
@@ -47,17 +47,18 @@ function ListeDemandeFeedBack({ setError }) {
         if (target === '') {
           return items;
         } else {
-          return items.filter((x) => x.idDemande.includes(target));
+          return items.filter(
+            (x) => x.idDemande.includes(e.target.value.toLowerCase()) || x.codeAgent.includes(e.target.value.toUpperCase())
+          );
         }
       }
     });
   };
-
   return (
     <div className="listeDemandeFeedback">
       <Grid container>
-        <Grid item lg={12} sx={{ paddingRight: '10px' }}>
-          <Input onChange={(e) => handleChanges(e)} placeholder="Cherchez un message" />
+        <Grid item lg={12} sm={12} xs={12} sx={{ margin: '10px' }}>
+          <TextField onChange={(e) => handleChanges(e)} fullWidth label="Message ou ID agent" />
         </Grid>
       </Grid>
       {load && <p style={{ textAlign: 'center', fontWeight: 'bolder' }}>Please wait...</p>}

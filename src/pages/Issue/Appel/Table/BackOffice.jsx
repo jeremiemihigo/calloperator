@@ -9,6 +9,7 @@ import moment from 'moment';
 import React from 'react';
 import { TimeCounter } from 'static/Lien';
 import { CreateContexteTable } from '../Contexte';
+import Backoffice_Analyse from './Backoffice_Analyse';
 import Couleur from './Color';
 
 function AllCall() {
@@ -91,7 +92,7 @@ function AllCall() {
     {
       field: 'dateClose',
       headerName: 'SLA',
-      width: 100,
+      width: 130,
       editable: false,
       renderCell: (p) => {
         return p.row.open ? (
@@ -130,6 +131,9 @@ function AllCall() {
 
   return (
     <>
+      <Paper elevation={4} sx={{ marginBottom: '15px', padding: '10px' }}>
+        <Backoffice_Analyse />
+      </Paper>
       {!data && <LoaderGif width={400} height={400} />}
       {data && data.length > 0 && (
         <Paper sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }} elevation={4}>

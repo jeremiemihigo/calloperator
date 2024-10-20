@@ -35,7 +35,6 @@ function ValiderAction({ clients }) {
         commentaire,
         open: value === 'resolved' ? false : true
       };
-
       const response = await axios.post(`${lien_issue}/verification_ticket`, data, config);
       if (response.status === 200) {
         if (response.data.statut === 'resolved') {

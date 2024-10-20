@@ -8,7 +8,7 @@ import _ from 'lodash';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import ExcelButton from 'static/ExcelButton';
-import { config, dateFrancais, lien } from 'static/Lien';
+import { big_data, config, dateFrancais, dayDiff } from 'static/Lien';
 import Selected from 'static/Select';
 import Analyse from './Analyse';
 import { generateNomFile } from './NameFile';
@@ -21,7 +21,6 @@ function Rapport() {
   const [donnerFound, setDonnerFound] = React.useState([]);
   const [samplejson2, setSample] = React.useState();
   const [nomFile, setNomFile] = React.useState('');
-  const [open, setOpen] = React.useState(false);
 
   const select = [
     { id: 1, title: 'Shop', value: 'idShop' },
@@ -80,67 +79,76 @@ function Rapport() {
       return a;
     }
   };
+  const [message, setMessage] = React.useState();
   const searchData = async () => {
     try {
-      let recherche = {};
-      recherche.key = valueSelect;
-      recherche.value = valueSelect === 'idShop' ? idShop?.idShop : valueSelect === 'idZone' && idZone?.idZone;
-      let dataTosearch = {};
-      if (recherche.key !== 'overall') {
-        dataTosearch.key = recherche.key;
-        dataTosearch.value = recherche.value;
-      }
-      let data = {
-        debut: dates.debut,
-        fin: dates.fin,
-        followUp: false,
-        dataTosearch
-      };
-      setLoading(true);
-      const response = await axios.post(lien + '/rapport', data, config);
-      if (response.data === 'token expired') {
-        localStorage.removeItem('auth');
-        window.location.replace('/login');
+      if (dayDiff(dates.debut, dates.fin) > 31) {
+        setMessage('Les jours ne doivent pas aller au delà de 31');
       } else {
-        setDonnerFound(response.data);
-        let donner = [];
-        for (let i = 0; i < response.data.length; i++) {
-          donner.push({
-            ID: response.data[i].codeclient,
-            NOMS: response.data[i].nomClient,
-            'SERIAL NUMBER': chekValue(response.data[i].codeCu),
-            'CLIENT STATUS': response.data[i].clientStatut,
-            'PAYMENT STATUS': response.data[i].PayementStatut,
-            'CONS. EXP. DAYS': response.data[i].PayementStatut === 'normal' ? 0 : Math.abs(response.data[i].consExpDays),
-            REGION: returnShopRegion(response.data[i].idZone, 'zone'),
-            SHOP: returnShopRegion(response.data[i]?.idShop, 'shop'),
-            'CODE AGENT': response.data[i].demandeur.codeAgent,
-            'NOMS DU DEMANDEUR': response.data[i].demandeur.nom,
-            Fonction: returnFonction(response.data[i].demandeur.fonction),
-            'DATE DE REPONSE': retourDate(response.data[i].dateSave),
-            'C.O': response.data[i].agentSave?.nom,
-            'STATUT DE LA DEMANDE': response.data[i].demande.typeImage,
-            "DATE D'ENVOIE": retourDate(response.data[i].demande.updatedAt),
-            "HEURE D'ENVOI": retournDateHeure(response.data[i].demande.updatedAt),
-            'HEURE DE REPONSE': retournDateHeure(response.data[i].createdAt),
-            'TEMPS MOYEN': `${returnTime(response.data[i].demande, response.data[i]).toFixed(0)}`,
-            LONGITUDE: chekValue(response.data[i].coordonnee?.longitude),
-            LATITUDE: chekValue(response.data[i].coordonnee?.latitude),
-            ALTITUDE: chekValue(response.data[i].coordonnee?.altitude),
-            'ETAT PHYSIQUE': response.data[i].demande?.statut === 'allumer' ? 'allumé' : 'eteint',
-            RAISON: response.data[i].demande?.raison,
-            COMMUNE: response.data[i].demande?.commune,
-            QUARTIER: response.data[i].demande?.sector,
-            AVENUE: response.data[i].demande?.cell,
-            REFERENCE: response.data[i].demande?.reference,
-            SAT: response.data[i].demande?.sat,
-            CONTACT: response.data[i].demande?.numero !== 'undefined' ? response.data[i].demande?.numero : '',
-            Adresse: response.data[i]?.adresschange
-          });
+        if (valueSelect === '' || dates.debut === '' || dates.fin === '') {
+          setMessage('Veuillez renseigner les champs');
+        } else {
+          let recherche = {};
+          recherche.key = valueSelect;
+          recherche.value = valueSelect === 'idShop' ? idShop?.idShop : valueSelect === 'idZone' && idZone?.idZone;
+          let dataTosearch = {};
+          if (recherche.key !== 'overall') {
+            dataTosearch.key = recherche.key;
+            dataTosearch.value = recherche.value;
+          }
+          let data = {
+            debut: dates.debut,
+            fin: dates.fin,
+            followUp: false,
+            dataTosearch
+          };
+          setLoading(true);
+          const response = await axios.post(big_data + '/rapport', data, config);
+          if (response.data === 'token expired') {
+            localStorage.removeItem('auth');
+            window.location.replace('/login');
+          } else {
+            setDonnerFound(response.data);
+            let donner = [];
+            for (let i = 0; i < response.data.length; i++) {
+              donner.push({
+                ID: response.data[i].codeclient,
+                NOMS: response.data[i].nomClient,
+                'SERIAL NUMBER': chekValue(response.data[i].codeCu),
+                'CLIENT STATUS': response.data[i].clientStatut,
+                'PAYMENT STATUS': response.data[i].PayementStatut,
+                'CONS. EXP. DAYS': response.data[i].PayementStatut === 'normal' ? 0 : Math.abs(response.data[i].consExpDays),
+                REGION: returnShopRegion(response.data[i].idZone, 'zone'),
+                SHOP: returnShopRegion(response.data[i]?.idShop, 'shop'),
+                'CODE AGENT': response.data[i].demandeur.codeAgent,
+                'NOMS DU DEMANDEUR': response.data[i].demandeur.nom,
+                Fonction: returnFonction(response.data[i].demandeur.fonction),
+                'DATE DE REPONSE': retourDate(response.data[i].dateSave),
+                'C.O': response.data[i].agentSave?.nom,
+                'STATUT DE LA DEMANDE': response.data[i].demande.typeImage,
+                "DATE D'ENVOIE": retourDate(response.data[i].demande.updatedAt),
+                "HEURE D'ENVOI": retournDateHeure(response.data[i].demande.updatedAt),
+                'HEURE DE REPONSE': retournDateHeure(response.data[i].createdAt),
+                'TEMPS MOYEN': `${returnTime(response.data[i].demande, response.data[i]).toFixed(0)}`,
+                LONGITUDE: chekValue(response.data[i].coordonnee?.longitude),
+                LATITUDE: chekValue(response.data[i].coordonnee?.latitude),
+                ALTITUDE: chekValue(response.data[i].coordonnee?.altitude),
+                'ETAT PHYSIQUE': response.data[i].demande?.statut === 'allumer' ? 'allumé' : 'eteint',
+                RAISON: response.data[i].demande?.raison,
+                COMMUNE: response.data[i].demande?.commune,
+                QUARTIER: response.data[i].demande?.sector,
+                AVENUE: response.data[i].demande?.cell,
+                REFERENCE: response.data[i].demande?.reference,
+                SAT: response.data[i].demande?.sat,
+                CONTACT: response.data[i].demande?.numero !== 'undefined' ? response.data[i].demande?.numero : '',
+                Adresse: response.data[i]?.adresschange
+              });
+            }
+            setLoading(false);
+            setSample(donner);
+            setNomFile(generateNomFile(dates, 'Visite menage'));
+          }
         }
-        setLoading(false);
-        setSample(donner);
-        setNomFile(generateNomFile(dates, 'Visite menage'));
       }
     } catch (error) {
       console.log(error);
@@ -150,9 +158,9 @@ function Rapport() {
   };
   return (
     <Paper sx={{ padding: '5px' }} elevation={3}>
+      {message && <DirectionSnackbar message={message} />}
       {shop && shop.length > 0 && zone && zone.length > 0 ? (
         <>
-          <DirectionSnackbar message="Veuillez renseigner le shop ainsi que les dates" open={open} setOpen={setOpen} />
           <div>
             <Grid container>
               <Grid item lg={2} sx={{ padding: '5px' }} sm={3} xs={12} md={3}>

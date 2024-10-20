@@ -30,6 +30,7 @@ import { LogoutOutlined } from '@ant-design/icons';
 // import {  RedoOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { returnName } from 'static/Lien';
 import { Person, Settings } from '../../../../../../node_modules/@mui/icons-material/index';
 // import Ticket from './Ticket';
 
@@ -127,7 +128,7 @@ const Profile = () => {
       >
         <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
           <Avatar alt="profile user" src={userImage} sx={{ width: 32, height: 32 }} />
-          <Typography variant="subtitle1">{userConnect?.user.nom}</Typography>
+          <Typography variant="subtitle1">{returnName(userConnect?.user.nom)}</Typography>
         </Stack>
       </ButtonBase>
       <Popper

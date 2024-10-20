@@ -1,8 +1,7 @@
-import { Grid, Typography } from '@mui/material';
+import { CircularProgress, Grid, Typography } from '@mui/material';
 import { CreateContexteGlobal } from 'GlobalContext';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { CircularProgress } from '../../../../node_modules/@mui/material/index';
 import { CreateContexteTable } from './Contexte';
 import Dashboard from './Dashboard';
 import DetailPlainte from './DetailPlainte';

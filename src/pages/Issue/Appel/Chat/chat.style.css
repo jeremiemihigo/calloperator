@@ -1,0 +1,66 @@
+.message > p {
+  padding: 0;
+  margin: 0;
+}
+.message .content {
+  font-size: 12px;
+}
+
+.message {
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 5px;
+}
+
+.inputMessage {
+  margin-top: 10px;
+  -webkit-box-shadow: 1px 1px 24px 0px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 1px 1px 24px 0px rgba(0, 0, 0, 0.75);
+  box-shadow: 1px 1px 24px 0px rgba(0, 0, 0, 0.75);
+}
+
+.identification .name {
+  padding: 0;
+  margin: 0;
+  font-weight: bolder;
+  font-size: 12px;
+}
+.identification {
+  display: flex;
+  justify-content: space-between;
+}
+.my_message {
+  background-color: #e3edda;
+}
+.his_message {
+  border: 1px solid black;
+}
+.contentPaper > p {
+  padding: 5px;
+  margin: 0;
+  font-size: 12px;
+  background-color: #dedede;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.footer > p {
+  padding: 0;
+  margin: 0;
+  font-size: 10px;
+}
+.footer .reponsebtn {
+  margin-left: 15px;
+  cursor: pointer;
+  color: blue;
+  font-weight: bolder;
+}
+.lasMessage {
+  background-color: #dedede;
+  padding: 5px !important;
+  font-size: 10px;
+}

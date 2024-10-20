@@ -33,20 +33,26 @@ function ThisMonth_Tech() {
   const loading = () => {
     try {
       setSeach(true);
-      if (client && location.state === 'technicien') {
+      const { state, statut } = location.state;
+
+      if (client && state === 'technicien') {
         setData(client.filter((x) => x.type === 'ticket' && x.technicien === undefined));
         setSeach(false);
       }
-      if (client && location.state === 'encours') {
+      if (client && state === 'encours') {
         setData(client.filter((x) => x.statut === 'Open_technician_visit' && x.technicien !== undefined));
         setSeach(false);
       }
-      if (client && location.state === 'callcenter') {
+      if (client && state === 'callcenter') {
         setData(client.filter((x) => x.statut === 'resolved_awaiting_confirmation'));
         setSeach(false);
       }
-      if (!['technicien', 'encours', 'callcenter'].includes(location?.state)) {
-        setData(client.filter((x) => x?.technicien?.codeTech === location?.state));
+      if (!state && statut) {
+        setData(client.filter((x) => x.statut === statut));
+        setSeach(false);
+      }
+      if (!['technicien', 'encours', 'callcenter'].includes(state) && statut === '') {
+        setData(client.filter((x) => x?.technicien?.codeTech === state));
         setSeach(false);
       }
     } catch (error) {
@@ -275,7 +281,6 @@ function ThisMonth_Tech() {
   const getId = (p) => {
     return p._id;
   };
-
   return (
     <>
       {contextHolder}
@@ -317,5 +322,4 @@ function ThisMonth_Tech() {
     </>
   );
 }
-
 export default React.memo(ThisMonth_Tech);

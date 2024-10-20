@@ -13,6 +13,7 @@ import reponse from 'Redux/Reponses';
 import shop from 'Redux/Shop';
 import zone from 'Redux/Zone';
 import delai from 'Redux/delai';
+import projet from 'Redux/projet';
 import user from 'Redux/user';
 import menu from './menu';
 // import contrat from 'Redux/Contrat';
@@ -32,7 +33,8 @@ const reducers = combineReducers({
   reponse,
   periodeActive,
   shop,
-  itemPlainte
+  itemPlainte,
+  projet
 });
 
 export default reducers;

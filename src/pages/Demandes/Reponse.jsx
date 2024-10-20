@@ -1,23 +1,25 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable react/prop-types */
-import React, { useContext } from 'react';
-import { lien_image } from 'static/Lien';
-// import { PostDemandeFunction, ReadDemande } from "../Redux/Demande";
 import { Card, Grid, Typography } from '@mui/material';
+import { Image, Space, message } from 'antd';
 import BasicTabs from 'Control/Tabs';
 import { CreateContexteGlobal } from 'GlobalContext';
-import { Image, Space, message } from 'antd';
 import moment from 'moment';
+import React, { useContext } from 'react';
+import { lien_image } from 'static/Lien';
 import { useSelector } from '../../../node_modules/react-redux/es/exports';
 import Chat from './Chat';
+import { CreateContexteDemande } from './ContextDemande';
 import FeedbackComponent from './FeedBack';
 import ReponsesComponent from './ReponseComponent';
 import './style.css';
+import UpdateForm from './Updateform';
 
 function ReponseAdmin(props) {
   const { update } = props;
   const { demande, reponseNow } = useContext(CreateContexteGlobal);
+  const { changeRecent, lastImages, recentAnswerSelect } = useContext(CreateContexteDemande);
 
   const titres = [
     { id: 0, label: 'Reponse' },
@@ -92,19 +94,41 @@ function ReponseAdmin(props) {
             </Space>
             {demande && !update && <AfficherJsx demandes={demande} />}
             {update && <AfficherJsx demandes={update.demande} />}
+            <p style={{ textAlign: 'center', fontWeight: 'bolder' }}>{lastImages && lastImages.length + ' Recente(s) image(s)'} </p>
+            <Grid container sx={{ marginTop: '10px' }}>
+              {lastImages &&
+                lastImages.length > 0 &&
+                lastImages.map((index) => {
+                  return (
+                    <Grid sx={{ paddingRight: '5px' }} item lg={3} key={index._id}>
+                      <Space>
+                        <Image
+                          height={50}
+                          width={50}
+                          src={`${lien_image}/${index?.demande?.file}`}
+                          placeholder={<Image preview={false} src={`${lien_image}/${index?.demande?.file}`} width={200} />}
+                        />
+                      </Space>{' '}
+                    </Grid>
+                  );
+                })}
+            </Grid>
           </>
         )}
         {!demande && reponseNow && reponseNow.length > 0 && (
           <div style={{ padding: '10px' }}>
             <p style={{ padding: '0px', marginBottom: '15px', textAlign: 'center', fontWeight: 'bolder' }}>Recent answers</p>
+
             {reponseNow.map((index) => {
               return (
                 <Card
+                  onClick={() => changeRecent(index)}
                   style={{
                     cursor: 'pointer',
                     padding: '5px',
                     marginBottom: '4px'
                   }}
+                  className={recentAnswerSelect && index._id === recentAnswerSelect?._id ? 'colorGreen' : ''}
                   key={index._id}
                 >
                   <div>
@@ -123,7 +147,7 @@ function ReponseAdmin(props) {
         )}
       </Grid>
       <Grid item lg={6}>
-        <BasicTabs titres={titres} components={components} />
+        {recentAnswerSelect ? <UpdateForm update={recentAnswerSelect} /> : <BasicTabs titres={titres} components={components} />}
       </Grid>
     </Grid>
   );

@@ -11,23 +11,49 @@ import moment from 'moment';
 import React, { useContext } from 'react';
 import { useSelector } from 'react-redux';
 import { config, lien } from 'static/Lien';
+import { CreateContexteDemande } from './ContextDemande';
 import ListeDemandeFeedBack from './DemandeFeedback';
 import './style.css';
 
 function DemandeListe() {
-  const { setDemande, demande, data, allListe, setAllListe, setData } = useContext(CreateContexteGlobal);
+  const { setDemande, demande, data, setResetData, allListe, setAllListe, setData } = useContext(CreateContexteGlobal);
+
+  const agent = useSelector((state) => state.agent.agent);
+  const zone = useSelector((state) => state.zone.zone);
+
+  const returnAgent = (id, key) => {
+    if (agent && agent.length > 0) {
+      if (key === 'shop') {
+        return _.filter(agent, { codeAgent: id })[0]?.shop[0]?.shop;
+      } else {
+        return _.filter(agent, { codeAgent: id })[0]?.nom;
+      }
+    } else {
+      return '';
+    }
+  };
+  const returnZone = (id) => {
+    if (zone && zone.length > 0) {
+      return _.filter(zone, { idZone: id })[0]?.denomination;
+    } else {
+      return '';
+    }
+  };
 
   const [error, setError] = React.useState('');
+  const [chargement, setChargement] = React.useState(false);
 
   const loadings = async () => {
     try {
-      const response = await axios.get(`${lien}/toutesDemandeAttente`, config);
+      setChargement(true);
+      const response = await axios.get(`${lien}/toutesDemandeAttente/200`, config);
       if (response.status === 201 && response.data === 'token expired') {
         localStorage.removeItem('auth');
         window.location.replace('/login');
       } else {
-        setData(_.groupBy(response.data, 'zone.denomination'));
+        setData(_.groupBy(response.data, 'codeZone'));
         setAllListe(response.data);
+        setChargement(false);
         setError('');
       }
     } catch (error) {
@@ -42,9 +68,12 @@ function DemandeListe() {
   }, []);
 
   React.useEffect(() => {
+    // Set an interval to call 'loadings()' every 5 minutes (300000 ms)
     const intervalId = setInterval(() => {
       loadings();
-    }, 30000);
+    }, 200000); // 300000 ms = 5 minutes
+
+    // Cleanup function to clear the interval when the component is unmounted
     return () => clearInterval(intervalId);
   }, []);
 
@@ -52,29 +81,39 @@ function DemandeListe() {
   React.useEffect(() => {
     if (data && allListe) {
       let donners = allListe.filter((x) => x.idDemande !== postId);
-      setData(_.groupBy(donners, 'zone.denomination'));
+      setData(_.groupBy(donners, 'codeZone'));
     }
   }, [postId]);
   const [regionSelect, setRegionSelect] = React.useState('');
+  const { changeRecent, changeImages } = useContext(CreateContexteDemande);
+
+  const onselect = (items) => {
+    changeRecent();
+    setDemande(items);
+    changeImages();
+    setResetData(items._id);
+  };
 
   const ListeDemande = () => {
     return (
       <>
-        {allListe && allListe.length === 0 && <NoCustomer texte="No pending requests" />}
+        {chargement && allListe.length === 0 && <p style={{ textAlign: 'center', fontSize: '12px' }}>Chargement...</p>}
+
+        {!chargement && allListe.length === 0 && <NoCustomer texte="No pending requests" />}
         {data &&
           Object.keys(data).map((index) => {
             return (
               <div key={index}>
                 <Grid className="regionDemande" onClick={() => setRegionSelect(index)}>
                   <p>
-                    {index} <span className="nombre">{data['' + index].length}</span>{' '}
+                    {returnZone(index)} <span className="nombre">{data['' + index].length}</span>{' '}
                   </p>
                 </Grid>
                 {regionSelect === index &&
                   data['' + index].map((items, cle) => {
                     return (
                       <Card
-                        onClick={() => setDemande(items)}
+                        onClick={() => onselect(items)}
                         style={{
                           cursor: 'pointer',
                           padding: '5px',
@@ -86,11 +125,11 @@ function DemandeListe() {
                         <div className="allP">
                           <p>
                             {' '}
-                            {items.shopAgent[0]?.shop}; {items.codeclient && items.codeclient !== 'undefined' && items.codeclient}{' '}
-                            {items.statut} {items.agent.codeAgent}
+                            {returnAgent(items.codeAgent, 'shop')};{' '}
+                            {items.codeclient && items.codeclient !== 'undefined' && items.codeclient} {items.statut} {items.codeAgent}
                           </p>
                           <p style={{ fontSize: '9px' }}>
-                            {items.agent.nom}
+                            {returnAgent(items.codeAgent, 'nom')}
                             <span style={{ float: 'right' }}>{moment(items.createdAt).fromNow()}</span>
                           </p>
                         </div>

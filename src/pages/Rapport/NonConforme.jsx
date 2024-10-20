@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React from 'react';
-import { config, lien } from 'static/Lien';
+import { big_data, config } from 'static/Lien';
 // import Table from 'react-bootstrap/Table';
 import dayjs from 'dayjs';
 import './style.css';
@@ -39,7 +39,7 @@ function Doublon() {
         dataTosearch.key = recherche.key;
         dataTosearch.value = recherche.value;
       }
-      const response = await axios.post(lien + '/conformite', { dataTosearch }, config);
+      const response = await axios.post(big_data + '/conformite', { dataTosearch }, config);
       if (response.status === 200) {
         setData(response.data);
         setLoad(false);
@@ -52,23 +52,34 @@ function Doublon() {
   };
   const [fileData, setFileData] = React.useState();
   const laodingFile = () => {
-    if (data) {
-      let table = [];
-      for (let i = 0; i < data.length; i++) {
-        table.push({
-          ID_Demande: data[i].idDemande,
-          codeAgent: data[i].codeAgent,
-          nom: data[i].agent.nom,
-          shop: data[i].shop?.shop,
-          commune: data[i].commune,
-          sector: data[i].sector,
-          cell: data[i].cell,
-          sat: data[i].sat,
-          date: dayjs(data[i].createdAt).format('DD/MM/YYYY'),
-          feedback: data[i].conversation[data[i].conversation.length - 1]['message']
-        });
+    try {
+      const returnFeedback = (conversation) => {
+        if (conversation.length > 0) {
+          return conversation[conversation.length - 1]['message'];
+        } else {
+          return '';
+        }
+      };
+      if (data) {
+        let table = [];
+        for (let i = 0; i < data.length; i++) {
+          table.push({
+            ID_Demande: data[i].idDemande,
+            codeAgent: data[i].codeAgent,
+            nom: data[i].agent.nom,
+            shop: data[i].shop?.shop,
+            commune: data[i].commune,
+            sector: data[i].sector,
+            cell: data[i].cell,
+            sat: data[i].sat,
+            date: dayjs(data[i].createdAt).format('DD/MM/YYYY'),
+            feedback: returnFeedback(data[i].conversation)
+          });
+        }
+        setFileData(table);
       }
-      setFileData(table);
+    } catch (error) {
+      console.log(error);
     }
   };
   React.useEffect(() => {
@@ -80,11 +91,7 @@ function Doublon() {
         <Grid item lg={3}>
           <Selected label="Filtrer par" data={select} value={valueSelect} setValue={setValueSelect} />
         </Grid>
-        {fileData && fileData.length > 0 && (
-          <div style={{ width: '40%', marginLeft: '10px' }}>
-            <ExcelButton data={fileData} title="Non conforme" fileName="Non_conforme.xlsx" />
-          </div>
-        )}
+
         {region && valueSelect === 'codeZone' && (
           <Grid item lg={3} sx={{ padding: '0px 10px' }}>
             <AutoComplement
@@ -106,6 +113,13 @@ function Doublon() {
           <Button variant="contained" color="primary" onClick={(e) => laoding(e)}>
             Chercher
           </Button>
+        </Grid>
+        <Grid item lg={4} sx={{ padding: '0px 10px' }}>
+          {fileData && fileData.length > 0 && (
+            <div style={{ width: '40%', marginLeft: '10px' }}>
+              <ExcelButton data={fileData} title="" fileName="Non_conforme.xlsx" />
+            </div>
+          )}
         </Grid>
       </Grid>
       {load && <p style={{ textAlign: 'center', fontSize: '13px', color: 'blue', fontWeight: 'bolder' }}>Please wait...</p>}

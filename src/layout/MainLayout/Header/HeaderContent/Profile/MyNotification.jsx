@@ -2,13 +2,11 @@ import PropTypes from 'prop-types';
 import React, { useRef, useState } from 'react';
 // material-ui
 import {
-  Avatar,
   Badge,
   Box,
   ClickAwayListener,
   IconButton,
   List,
-  ListItemAvatar,
   ListItemButton,
   ListItemText,
   Paper,
@@ -23,10 +21,10 @@ import MainCard from 'components/MainCard';
 // assets
 import { CloseOutlined, NotificationOutlined } from '@ant-design/icons';
 import { CreateContexteGlobal } from 'GlobalContext';
-import ImageUser from 'assets/images/users/iconImage.jpg';
 import axios from 'axios';
 import moment from 'moment';
-import { config, lien_issue, returnName } from 'static/Lien';
+import { config, lien_issue } from 'static/Lien';
+import { Divider } from '../../../../../../node_modules/@mui/material/index';
 
 function TabPanel({ children, value, index, ...other }) {
   return (
@@ -174,7 +172,7 @@ const MyNotification = () => {
                     <List
                       component="nav"
                       sx={{
-                        p: 0,
+                        p: 2,
                         '& .MuiListItemButton-root': {
                           py: 0.5,
                           '& .MuiAvatar-root': avatarSX,
@@ -186,34 +184,21 @@ const MyNotification = () => {
                         donner?.length > 0 &&
                         donner.map((index) => {
                           return (
-                            <ListItemButton key={index._id}>
-                              <ListItemAvatar>
-                                <Avatar
-                                  sx={{
-                                    color: 'success.main',
-                                    bgcolor: 'success.lighter'
-                                  }}
-                                >
-                                  <img src={ImageUser} width={30} height={30} alt="imagesUser" />
-                                </Avatar>
-                              </ListItemAvatar>
+                            <React.Fragment key={index._id}>
                               <ListItemText
                                 primary={
                                   <Typography variant="h6">
-                                    {returnName(index.messages.agent)}
-                                    <Typography component="span" variant="subtitle1">
-                                      {' : ' + index.messages.content}
-                                    </Typography>{' '}
                                     <Typography component="p" variant="subtitle2">
-                                      ID complaint : {index.messages.idPlainte}
+                                      {index.plainte.codeclient + '; '} {moment(index.createdAt).fromNow()}
                                     </Typography>{' '}
-                                    <Typography component="p" variant="subtitle2">
-                                      {moment(index.messages.createdAt).fromNow()}
+                                    <Typography component="span" variant="subtitle2">
+                                      {index.content}
                                     </Typography>{' '}
                                   </Typography>
                                 }
                               />
-                            </ListItemButton>
+                              <Divider />
+                            </React.Fragment>
                           );
                         })}
 

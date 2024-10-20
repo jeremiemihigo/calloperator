@@ -7,7 +7,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { config, lien_issue } from 'static/Lien';
+import { big_data_issue, config } from 'static/Lien';
 import SelectedArray from 'static/Select';
 import * as XLSX from 'xlsx';
 import { generateNomFile } from './NameFile';
@@ -81,7 +81,7 @@ function Technical() {
   const searchData = async () => {
     setLoading(true);
     const response = await axios.post(
-      lien_issue + '/rapport_technical',
+      big_data_issue + '/rapport_technical',
       {
         debut,
         fin,

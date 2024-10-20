@@ -3,7 +3,7 @@ import axios from 'axios';
 import Input from 'components/Input';
 import moment from 'moment';
 import React from 'react';
-import { config, lien } from 'static/Lien';
+import { big_data, config } from 'static/Lien';
 import './style.css';
 
 function Contact() {
@@ -14,7 +14,7 @@ function Contact() {
     setChargement(true);
     setData();
     e.preventDefault();
-    const response = await axios.post(lien + '/contact', { codeclient: value }, config);
+    const response = await axios.post(big_data + '/contact', { codeclient: value }, config);
     setChargement(false);
     if (response.status === 200) {
       setData(response.data);

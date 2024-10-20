@@ -1,4 +1,4 @@
-import { Grid, Paper, Typography } from '../../../../../node_modules/@mui/material/index';
+import { Grid, Paper, Typography } from '@mui/material';
 import Contexte from '../Contexte';
 import EditComplaint from './EditComplaint';
 

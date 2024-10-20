@@ -1,27 +1,26 @@
 import { Search } from '@mui/icons-material';
-import { Button, Card, Divider, FormControl, Grid, InputAdornment, OutlinedInput, Tooltip } from '@mui/material';
+import { Button, Card, Divider, FormControl, Grid, InputAdornment, OutlinedInput } from '@mui/material';
 import { Image, Space, message } from 'antd';
 import axios from 'axios';
-import dayjs from 'dayjs';
 import _ from 'lodash';
 import moment from 'moment';
-import ReponseAdmin from 'pages/Demandes/Reponse';
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { config, lien, lien_image } from 'static/Lien';
-import Popup from 'static/Popup';
 import DetailPlaintesRapport from './DetailPlainte';
 import './style.css';
 
 // assets
 import { SearchOutlined } from '@ant-design/icons';
+import { Typography } from '@mui/material';
 import Couleur from 'pages/Issue/Appel/Table/Color';
+import { useSelector } from 'react-redux';
+import Popup from 'static/Popup';
+import WhyToDelete from './WhyToDelete';
 
 function ReponseComponent() {
   const [value, setValue] = React.useState('');
   const [data, setData] = React.useState();
   const [load, setLoading] = React.useState(false);
-  const [open, setOpen] = React.useState(false);
   const [appel, setAppel] = React.useState([]);
   const user = useSelector((state) => state.user.user);
 
@@ -42,17 +41,6 @@ function ReponseComponent() {
     setChoose(1);
   };
 
-  const openData = (donner) => {
-    let table = ['lionel', 'p.jonathan'];
-    if (user?.fonction === 'superUser' || table.includes(user?.codeAgent)) {
-      setUpdate(donner);
-      setOpen(true);
-    } else {
-      success('Cette visite ne peut pas être modifier, veuillez contacter l’équipe support en cas de besoin', 'warning');
-    }
-  };
-
-  const [update, setUpdate] = React.useState();
   const key = (e) => {
     e.preventDefault();
     setValue(e.target.value);
@@ -68,7 +56,6 @@ function ReponseComponent() {
         window.location.replace('/login');
       } else {
         setChoose(0);
-
         setData(_.groupBy(reponse.data.visites, 'demande.lot'));
         setAppel(_.groupBy(reponse.data.appels, 'periode'));
         setLoading(false);
@@ -84,6 +71,21 @@ function ReponseComponent() {
     if (e.keyCode === 13 && value !== '') {
       sendDonner(e);
     }
+  };
+  const returnHeure = (date) => {
+    if (date) {
+      let today = new Date(date);
+      let data1 = new Date(today.setHours(today.getHours() + 1)).toISOString();
+      return `${moment(data1.split('T')[0]).format('DD/MM/YYYY')} à ${data1.split('T')[1]}`;
+    } else {
+      return '';
+    }
+  };
+  const [openDelete, setOpenDelete] = React.useState(false);
+  const [dataDelete, setDataDelete] = React.useState();
+  const funcopen = (id) => {
+    setDataDelete(id);
+    setOpenDelete(true);
   };
   return (
     <>
@@ -132,30 +134,40 @@ function ReponseComponent() {
                           return (
                             <React.Fragment key={cle + 1}>
                               <Grid item lg={4}>
-                                <Tooltip title="Cliquez pour modifier la reponse">
-                                  <Card
-                                    className="reponseClasse"
-                                    onClick={() => openData(index)}
-                                    variant="outlined"
-                                    sx={{ padding: '5px', cursor: 'pointer' }}
-                                  >
-                                    <p className="code">{index.codeclient};</p>
-                                    <p>{index.nomClient} </p>
-                                    <p>Statut du compte:</p>
-                                    <p>
-                                      statut client : <span style={{ fontWeight: 'bolder' }}>{index.clientStatut}</span>
-                                    </p>
-                                    <p>
-                                      statut payement : <span style={{ fontWeight: 'bolder' }}>{index.PayementStatut}</span>
-                                    </p>
-                                    <p>consExpDays : {index.consExpDays} jour(s)</p>
-                                    <p>Saved by : {index.agentSave.nom}</p>
-                                    <p className="retard">
-                                      Date {dayjs(index.createdAt).format('DD/MM/YYYY')} à {index.createdAt.split('T')[1].split(':')[0]}:
-                                      {index.createdAt.split('T')[1].split(':')[1]}
-                                    </p>
-                                  </Card>
-                                </Tooltip>
+                                <Card className="reponseClasse" variant="outlined" sx={{ padding: '5px', cursor: 'pointer' }}>
+                                  <Typography className="code" component="p">
+                                    {index.codeclient}{' '}
+                                    {user && user.fonction === 'superUser' && (
+                                      <Typography
+                                        component="span"
+                                        onClick={() => funcopen(index)}
+                                        style={{
+                                          backgroundColor: 'red',
+                                          color: '#fff',
+                                          borderRadius: '5px',
+                                          padding: '4px 10px',
+                                          cursor: 'pointer'
+                                        }}
+                                      >
+                                        Delete
+                                      </Typography>
+                                    )}
+                                  </Typography>
+                                  <p>{index.nomClient} </p>
+                                  <p>Statut du compte:</p>
+                                  <p>
+                                    statut client : <span style={{ fontWeight: 'bolder' }}>{index.clientStatut}</span>
+                                  </p>
+                                  <p>
+                                    statut payement : <span style={{ fontWeight: 'bolder' }}>{index.PayementStatut}</span>
+                                  </p>
+                                  <p>consExpDays : {index.consExpDays} jour(s)</p>
+                                  <p>Saved by : {index.agentSave.nom}</p>
+
+                                  <p className="retard">
+                                    <span style={{ fontWeight: 'bolder' }}>Kinshasa le, </span> {returnHeure(index.createdAt)}
+                                  </p>
+                                </Card>
                               </Grid>
                               <Grid item lg={8}>
                                 <Grid container>
@@ -202,10 +214,8 @@ function ReponseComponent() {
                                       </p>
                                       <Divider />
                                       <p className="retard">
-                                        <span style={{ fontWeight: 'bolder' }}>Date</span>{' '}
-                                        {dayjs(index.demande.createdAt).format('DD/MM/YYYY')} à{' '}
-                                        {index.demande.createdAt.split('T')[1].split(':')[0]}:
-                                        {index.demande.createdAt.split('T')[1].split(':')[1]}
+                                        <span style={{ fontWeight: 'bolder' }}>Kinshasa le, </span>{' '}
+                                        {returnHeure(index.demande.createdAt || index.demande?.updatedAt)}
                                       </p>
                                     </Grid>
                                   </Grid>
@@ -220,12 +230,6 @@ function ReponseComponent() {
                     </React.Fragment>
                   );
                 })}
-
-              {update && (
-                <Popup open={open} setOpen={setOpen} title="Modification">
-                  <ReponseAdmin update={update} />
-                </Popup>
-              )}
             </Grid>
           </Grid>
           <Grid item lg={3}>
@@ -258,6 +262,11 @@ function ReponseComponent() {
               })}
           </Grid>
         </Grid>
+      )}
+      {dataDelete && (
+        <Popup open={openDelete} setOpen={setOpenDelete} title="Raison de suppression">
+          <WhyToDelete id={dataDelete} />
+        </Popup>
       )}
 
       {choose === 1 && donner && <DetailPlaintesRapport plainteSelect={donner} />}

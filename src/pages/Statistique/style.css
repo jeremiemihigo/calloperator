@@ -51,3 +51,24 @@
   margin-bottom: 10px;
   border-radius: 10px;
 }
+.paperNumber:hover {
+  background-color: rgb(0, 169, 224);
+  transition: 0.4s ease-in;
+}
+.Unaffected {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80%;
+  cursor: pointer;
+}
+.Unaffected > div > p {
+  text-align: center;
+}
+.Unaffected_number {
+  font-size: 40px;
+  font-weight: bolder;
+}
+.Unaffected_title {
+  opacity: 0.6;
+}

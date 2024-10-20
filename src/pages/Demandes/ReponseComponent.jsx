@@ -1,22 +1,22 @@
 /* eslint-disable react/prop-types */
 import { Edit, Save } from '@mui/icons-material';
 import SearchIcon from '@mui/icons-material/Search';
-import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, Grid, TextField } from '@mui/material';
+import { Alert, Backdrop, Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, Grid, TextField } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
+import axios from 'axios';
 import AutoComplement from 'Control/AutoComplet';
 import DirectionSnackbar from 'Control/SnackBar';
 import { CreateContexteGlobal } from 'GlobalContext';
-// import { CreateContexteGlobal } from 'GlobalContext';
-import axios from 'axios';
 import React, { useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { postReponse } from 'Redux/Reponses';
-import { config, lien } from 'static/Lien';
+import { big_data, config, lien } from 'static/Lien';
 import Selected from 'static/Select';
-import { Alert, Backdrop } from '../../../node_modules/@mui/material/index';
+import { CreateContexteDemande } from './ContextDemande';
 
 function ReponsesComponent({ update }) {
   const regions = useSelector((state) => state.zone.zone);
+  const { changeImages } = React.useContext(CreateContexteDemande);
   const dispatch = useDispatch();
   const [valueRegionSelect, setValueRegionSelect] = React.useState('');
   const [valueShopSelect, setValueShopSelect] = React.useState('');
@@ -34,7 +34,7 @@ function ReponsesComponent({ update }) {
       [name]: value
     });
   };
-  const { demande } = useContext(CreateContexteGlobal);
+  const { demande, resetData } = useContext(CreateContexteGlobal);
   const { codeCu, codeClient, consExpDays, nomClient } = intial;
   let [status, setStatut] = React.useState({ payement: '', statut: '' });
   const { payement, statut } = status;
@@ -43,12 +43,20 @@ function ReponsesComponent({ update }) {
   const [valueAdresse, setValueAdresse] = React.useState('');
 
   function reset() {
-    setInitial({ codeCu: '', codeClient: '', consExpDays: '', nomClient: '' });
-    setStatut({ payement: '', statut: '' });
-    setValueRegionSelect('');
-    setValueShopSelect('');
-    setValueAdresse('');
+    try {
+      setInitial({ codeCu: '', codeClient: '', consExpDays: '', nomClient: '' });
+      setStatut({ payement: '', statut: '' });
+      setValueRegionSelect('');
+      setValueShopSelect('');
+      setValueAdresse('');
+    } catch (error) {
+      console.log(error);
+    }
   }
+  React.useEffect(() => {
+    reset();
+  }, [resetData]);
+
   const reponse = useSelector((state) => state.reponse);
   const [boxes, setBoxes] = React.useState('');
 
@@ -85,6 +93,17 @@ function ReponsesComponent({ update }) {
   };
 
   const userConnect = useSelector((state) => state.user?.user);
+  const agent = useSelector((state) => state.agent?.agent);
+
+  const returnAgent = (id, key) => {
+    if (agent && agent.length > 0 && key !== 'shop') {
+      return _.filter(agent, { codeAgent: id })[0]['' + key];
+    }
+    if (agent && agent.length > 0 && key === 'shop') {
+      return _.filter(agent, { codeAgent: id })[0]?.shop[0]?.shop;
+    }
+    return '';
+  };
 
   const reponseData = async () => {
     if (codeClient.trim().length !== 12 || !codeClient.toUpperCase().trim().startsWith('BDRC')) {
@@ -95,9 +114,16 @@ function ReponsesComponent({ update }) {
         setMessage('Veuillez vérifier si le shop est enregistré dans la region selectionée');
         setOpenSnack(true);
       } else {
-        if (demande && !['PO', 'ZBM'].includes(demande.agent.fonction) && demande.shopAgent[0]?.idShop !== valueShopSelect.idShop) {
+        if (
+          demande &&
+          !['PO', 'ZBM'].includes(returnAgent(demande?.codeAgent, 'fonction')) &&
+          returnAgent(demande?.codeAgent, 'idShop') !== valueShopSelect.idShop
+        ) {
           setMessage(
-            `y a pas une conformité entre le shop du client << ${valueShopSelect?.shop} >> et celui de l'agent << ${demande?.shopAgent[0]?.shop} >>`
+            `y a pas une conformité entre le shop du client << ${valueShopSelect?.shop} >> et celui de l'agent << ${returnAgent(
+              demande?.codeAgent,
+              'shop'
+            )} >>`
           );
           setOpenSnack(true);
         } else {
@@ -113,12 +139,34 @@ function ReponsesComponent({ update }) {
             nomClient,
             idZone: valueRegionSelect.idZone,
             idShop: valueShopSelect.idShop,
-            fonctionAgent: demande.agent.fonction,
-            codeAgentDemandeur: demande.agent.codeAgent,
+            fonctionAgent: returnAgent(demande?.codeAgent, 'fonction'),
+            codeAgentDemandeur: demande.codeAgent,
             _idDemande: demande._id,
             nomAgentSave: userConnect?.nom,
-            createdAt: demande?.createdAt
+            createdAt: demande?.createdAt,
+            nomDemandeur: returnAgent(demande?.codeAgent, 'nom'),
+            demande: {
+              typeImage: demande.typeImage,
+              numero: demande.numero,
+              commune: demande.commune,
+              updatedAt: demande.updatedAt,
+              statut: demande.statut,
+              sector: demande.sector,
+              jours: demande?.jours,
+              lot: demande.lot,
+              cell: demande.cell,
+              file: demande.file,
+              reference: demande.reference,
+              sat: demande.sat,
+              raison: demande.raison
+            },
+            coordonnee: {
+              longitude: demande.coordonnes.longitude,
+              latitude: demande.coordonnes.latitude,
+              altitude: demande.coordonnes.altitude
+            }
           };
+          navigator.clipboard.writeText('');
           // console.log(datass);
           // const response = await axios.post(lien + '/reponsedemande', datass, config);
           // console.log(response);
@@ -136,33 +184,28 @@ function ReponsesComponent({ update }) {
   }, [reponse]);
   const modifier = async () => {
     setOpenSnack(false);
-
-    axios
-      .put(
-        lien + '/reponse',
-        {
-          idReponse: update._id,
-          data: {
-            codeclient: codeClient,
-            nomClient,
-            codeCu,
-            clientStatut: statut,
-            PayementStatut: payement,
-            consExpDays,
-            idZone: valueRegionSelect.idZone,
-            idShop: valueShopSelect.idShop
-          }
-        },
-        config
-      )
-      .then((response) => {
-        setMessage(response.data);
-        reset();
-        setOpenSnack(true);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    const response = await axios.put(
+      lien + '/reponse',
+      {
+        idReponse: update._id,
+        data: {
+          codeclient: codeClient,
+          nomClient,
+          codeCu,
+          clientStatut: statut,
+          PayementStatut: payement,
+          consExpDays,
+          idZone: valueRegionSelect.idZone,
+          idShop: valueShopSelect.idShop
+        }
+      },
+      config
+    );
+    if (response.status === 200) {
+      setMessage('Done');
+      setOpenSnack(true);
+      reset();
+    }
   };
   React.useEffect(() => {
     if (update) {
@@ -189,38 +232,50 @@ function ReponsesComponent({ update }) {
       setStatut({ payement: 'pending fulfliment', statut: 'pending activation' });
     }
   };
-
+  const [patience, setPatience] = React.useState(false);
   const fetchCustomer = async () => {
-    let clients =
-      codeClient.trim().length === 12 ? codeClient.toUpperCase().trim() : codeClient.length === 8 ? 'BDRC' + codeClient.trim() : '';
-    if (clients !== '') {
-      setFeching(true);
-      const response = await axios.get(`${lien}/customer/${clients}`);
-
-      if (response.status === 200) {
-        setInitial({
-          ...intial,
-          codeCu: response.data.customer_cu,
-          nomClient: response.data.nomClient,
-          consExpDays: '',
-          codeClient: clients
-        });
-        let zone = regions.filter((x) => x._id === response.data.region._id);
-
-        setValueShopSelect(response.data.shop);
-        setValueRegionSelect(zone[0]);
-        setFeching(false);
+    try {
+      if (!fetching) {
+        let clients =
+          codeClient.trim().length === 12 ? codeClient.toUpperCase().trim() : codeClient.length === 8 ? 'BDRC' + codeClient.trim() : '';
+        if (clients !== '') {
+          setFeching(true);
+          const response = await axios.get(`${big_data}/customer/${clients}`);
+          if (response.status === 200) {
+            const { visites, info } = response.data;
+            changeImages(visites);
+            setInitial({
+              ...intial,
+              codeCu: info.customer_cu,
+              nomClient: info.nomClient,
+              consExpDays: '',
+              codeClient: clients
+            });
+            let zone = regions.filter((x) => x._id === info.region._id);
+            setValueShopSelect(info.shop);
+            setValueRegionSelect(zone[0]);
+            setFeching(false);
+            setPatience(false);
+          } else {
+            setMessage('Tu peux chercher ses informations dans pulse ' + clients);
+            setOpenSnack(true);
+            setFeching(false);
+            setPatience(false);
+            setInitial({
+              ...intial,
+              codeCu: '',
+              nomClient: '',
+              consExpDays: ''
+            });
+            setValueRegionSelect('');
+            setValueShopSelect('');
+          }
+        }
       } else {
-        setFeching(false);
-        setInitial({
-          ...intial,
-          codeCu: '',
-          nomClient: '',
-          consExpDays: ''
-        });
-        setValueRegionSelect('');
-        setValueShopSelect('');
+        setPatience(true);
       }
+    } catch (error) {
+      console.log(error);
     }
   };
   const fecthEnter = (e) => {
@@ -240,7 +295,6 @@ function ReponsesComponent({ update }) {
     { id: 2, title: "N'est pas identifique à pulse", value: "N'est pas identique" }
   ];
   const reponseState = useSelector((state) => state.reponse);
-
   return (
     <Grid>
       {reponseState.postDemande === 'rejected' && (
@@ -252,6 +306,15 @@ function ReponsesComponent({ update }) {
         <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={true}>
           <div>
             <p style={{ textAlign: 'center', margin: '0px', padding: '0px' }}>Please wait...</p>
+          </div>
+        </Backdrop>
+      )}
+      {patience && (
+        <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={true}>
+          <div>
+            <p style={{ textAlign: 'center', margin: '0px', padding: '0px' }}>
+              Veuillez patientez la recherche des informations du client {codeClient}
+            </p>
           </div>
         </Backdrop>
       )}
@@ -294,7 +357,7 @@ function ReponsesComponent({ update }) {
         label="Code CU"
       />
       <Grid container>
-        <Grid item lg={6} sm={6} xs={12} sx={{ marginTop: '10px' }}>
+        <Grid item lg={6} sm={6} xs={12} sx={{ marginTop: '10px', paddingRight: '3px' }}>
           <AutoComplement
             value={valueRegionSelect}
             setValue={setValueRegionSelect}
@@ -303,7 +366,7 @@ function ReponsesComponent({ update }) {
             propr="denomination"
           />
         </Grid>
-        <Grid item lg={6} sm={6} xs={12} sx={{ marginTop: '10px' }}>
+        <Grid item lg={6} sm={6} xs={12} sx={{ marginTop: '10px', paddingRight: '3px' }}>
           {valueRegionSelect && valueRegionSelect !== '' && valueRegionSelect !== null && (
             <AutoComplement
               value={valueShopSelect}
@@ -315,7 +378,7 @@ function ReponsesComponent({ update }) {
           )}
         </Grid>
       </Grid>
-      <div style={{ margin: '10px 0px' }}>
+      <div style={{ margin: '10px 0px', paddingLeft: '3px' }}>
         <Selected label="Adresse" data={optionChange} value={valueAdresse} setValue={setValueAdresse} />
       </div>
       <div className="expiredDate">
@@ -351,36 +414,46 @@ function ReponsesComponent({ update }) {
           </FormGroup>
         </FormControl>
       </Box>
-      <TextField
-        style={{ marginTop: '10px' }}
-        onChange={(e) => {
-          e.preventDefault();
-          setStatut({
-            ...status,
-            statut: e.target.value
-          });
-        }}
-        name="statut"
-        autoComplete="off"
-        fullWidth
-        value={statut}
-        label="Statut du client"
-      />
-      <TextField
-        style={{ marginTop: '10px' }}
-        onChange={(e) => {
-          e.preventDefault();
-          setStatut({
-            ...status,
-            payement: e.target.value
-          });
-        }}
-        name="payement"
-        autoComplete="off"
-        fullWidth
-        value={payement}
-        label="Statut Payement"
-      />
+      <Grid container>
+        <Grid item lg={6} sx={{ paddingRight: '3px' }}>
+          <TextField
+            style={{ marginTop: '10px' }}
+            onChange={(e) => {
+              e.preventDefault();
+              setStatut({
+                ...status,
+                statut: e.target.value
+              });
+            }}
+            name="statut"
+            autoComplete="off"
+            disabled
+            fullWidth
+            value={statut}
+            label="Statut du client"
+          />
+        </Grid>
+        <Grid item lg={6} sx={{ paddingRight: '3px' }}>
+          {' '}
+          <TextField
+            style={{ marginTop: '10px' }}
+            onChange={(e) => {
+              e.preventDefault();
+              setStatut({
+                ...status,
+                payement: e.target.value
+              });
+            }}
+            name="payement"
+            disabled
+            autoComplete="off"
+            fullWidth
+            value={payement}
+            label="Statut Payement"
+          />
+        </Grid>
+      </Grid>
+
       <div style={{ marginTop: '10px' }}>
         <Button
           disabled={!demande && !update ? true : false}

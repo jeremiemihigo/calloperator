@@ -17,13 +17,14 @@ const ContexteGlobal = (props) => {
   const [socket, setSocket] = React.useState(null);
   const user = useSelector((state) => state?.user.user);
   const [client, setClient] = React.useState([]);
+  const [resetData, setResetData] = React.useState('');
 
   React.useEffect(() => {
     setSocket(io(lien_socket));
   }, []);
   React.useEffect(() => {
     if (socket !== null && user) {
-      const data = { codeAgent: user.codeAgent, nom: user.nom, fonction: 'admin' };
+      const data = { codeAgent: user.codeAgent, backOffice: user?.backOffice_plainte, nom: user.nom, fonction: 'admin' };
       socket.emit('newUser', data);
     }
   }, [socket, user]);
@@ -117,13 +118,17 @@ const ContexteGlobal = (props) => {
   React.useEffect(() => {
     if (donner) {
       let all = [...allListe, donner];
-      setData(_.groupBy(all, 'zone.denomination'));
+      setData(_.groupBy(all, 'codeZone'));
     }
   }, [donner]);
 
   //Recuperation de la reponse
   const [new_reponse, set_new_Reponse] = React.useState();
   const [reponseNow, setReponseNow] = React.useState([]);
+  const changeReponse = (items) => {
+    let out = reponseNow.map((x) => (x._id === items._id ? items : x));
+    setReponseNow(out);
+  };
   React.useEffect(() => {
     if (socket) {
       socket.on('reponse', (donner) => {
@@ -148,7 +153,7 @@ const ContexteGlobal = (props) => {
       if (new_reponse) {
         let filter = allListe.filter((x) => x.idDemande !== new_reponse.idDemande);
         setAllListe(filter);
-        setData(_.groupBy(filter, 'zone.denomination'));
+        setData(_.groupBy(filter, 'codeZone'));
         if (new_reponse._id) {
           setReponseNow([new_reponse, ...reponseNow]);
           set_new_Reponse();
@@ -156,6 +161,7 @@ const ContexteGlobal = (props) => {
         if (demande?.idDemande === new_reponse?.idDemande) {
           setDemande();
           set_new_Reponse();
+          setResetData(demande?.idDemande);
         }
       }
     } catch (error) {
@@ -169,7 +175,6 @@ const ContexteGlobal = (props) => {
     if (socket) {
       socket.on('message', (donner) => {
         setMessageAlert(donner);
-        playAudio();
         setOpenPopup(true);
       });
     }
@@ -206,9 +211,12 @@ const ContexteGlobal = (props) => {
         //Support_team
         setChat,
         update,
+        changeReponse,
         setUpdate,
         demande,
+        resetData,
         data,
+        setResetData,
         setData,
         allListe,
         setAllListe,
@@ -216,18 +224,18 @@ const ContexteGlobal = (props) => {
         reponseNow
       }}
     >
-      <audio ref={audioRef} src={SoundAudio}>
+      <audio id="video" ref={audioRef} src={SoundAudio}>
         <track kind="captions" src="captions.vtt" srcLang="en" label="English" default />
       </audio>
 
-      <Popup open={openPopup} setOpen={setOpenPopup} title={`ID complaint ${messageAlert?.idPlainte}`}>
+      <Popup open={openPopup} setOpen={setOpenPopup} title={`ID : ${messageAlert?.plainte?.codeclient}`}>
         <div style={{ width: '20rem' }}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <div>
-              <img width={40} height={40} src={IconImage} alt="userIcon" />
+              <img width={20} height={20} src={IconImage} alt="userIcon" />
             </div>
             <div style={{ display: 'flex', alignContent: 'center' }}>
-              <p style={{ marginLeft: '10px', padding: '0px', margin: '0px' }}>{messageAlert?.agent}</p>
+              <p style={{ marginLeft: '20px', padding: '0px', margin: '0px' }}>{messageAlert?.agent}</p>
             </div>
           </div>
           <div style={{ marginTop: '10px' }}>

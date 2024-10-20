@@ -87,9 +87,7 @@ function DetailPlainte() {
               <p style={{ padding: '0px', margin: '0px 0px' }}>Commune : {plainteSelect?.adresse?.commune}</p>
               <p style={{ padding: '0px', margin: '10px 0px' }}>Quartier : {plainteSelect?.adresse?.quartier}</p>
               <p style={{ padding: '0px', margin: '0px' }}>Avenue : {plainteSelect?.adresse?.avenue}</p>
-              <p style={{ padding: '0px', margin: '10px 0px' }}>
-                SAT : {plainteSelect?.adresse?.sat?.nom_SAT}/ {plainteSelect?.adresse?.sat?.region}/ {plainteSelect?.adresse?.sat?.shop}
-              </p>
+              <p style={{ padding: '0px', margin: '10px 0px' }}>SAT : {plainteSelect?.adresse?.sat?.nom_SAT}</p>
               <p style={{ padding: '0px', margin: '0px' }}>Reference : {plainteSelect?.adresse?.reference}</p>
             </>
           ) : (

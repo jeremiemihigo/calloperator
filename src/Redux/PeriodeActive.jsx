@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { lien, config } from 'static/Lien';
+import { config, lien } from 'static/Lien';
 
 const initialState = {
   periodeActive: [],
