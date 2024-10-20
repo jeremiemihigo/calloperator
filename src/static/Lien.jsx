@@ -1,12 +1,15 @@
 // eslint-disable-next-line no-undef
 
 //const link = 'http://localhost:40002';
-const link = 'https://visite.bboxxvm.com';
+//const link = 'https://visite.bboxxvm.com';
+const link = 'https://backendcallcenter.onrender.com';
 
 //export const big_data = 'http://localhost:40002/bboxx/support';
-export const big_data = 'https://issuelink.bboxxvm.com/bboxx/support';
+//export const big_data = 'https://issuelink.bboxxvm.com/bboxx/support';
+export const big_data = 'https://backendcallcenter.onrender.com/bboxx/support';
 
-export const big_data_issue = 'https://issuelink.bboxxvm.com/issue';
+export const big_data_issue = 'https://backendcallcenter.onrender.com/issue';
+//export const big_data_issue = 'https://issuelink.bboxxvm.com/issue';
 //export const big_data_issue = 'http://localhost:40002/issue';
 
 export const lien = `${link}/bboxx/support`;
