@@ -9,7 +9,9 @@ import { useSelector } from 'react-redux';
 import { config, lien_issue } from 'static/Lien';
 
 function AffectTech({ clients }) {
-  const agent = useSelector((state) => state.agent?.agent.filter((x) => x.shop[0]?.shop === clients?.shop && x.fonction === 'tech'));
+  const agent = useSelector((state) =>
+    state.agent?.agent.filter((x) => x.shop[0]?.shop === clients?.shop && x.fonction === 'tech' && x.active === true)
+  );
   const [agentSelect, setAgentSelect] = React.useState('');
   const [numSynchro, setNum] = React.useState('');
   const { client, setClient } = React.useContext(CreateContexteGlobal);
