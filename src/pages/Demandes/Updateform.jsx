@@ -6,12 +6,13 @@ import CircularProgress from '@mui/material/CircularProgress';
 import AutoComplement from 'Control/AutoComplet';
 import { CreateContexteGlobal } from 'GlobalContext';
 // import { CreateContexteGlobal } from 'GlobalContext';
+import { Image, Space } from 'antd';
 import axios from 'axios';
 import DirectionSnackbar from 'Control/SnackBar';
 import _ from 'lodash';
 import React, { useContext } from 'react';
 import { useSelector } from 'react-redux';
-import { config, lien } from 'static/Lien';
+import { config, lien, lien_image } from 'static/Lien';
 import Selected from 'static/Select';
 import { Backdrop } from '../../../node_modules/@mui/material/index';
 import { CreateContexteDemande } from './ContextDemande';
@@ -248,6 +249,13 @@ function UpdateForm({ update }) {
       </div>
       <Grid container>
         <Grid item lg={10} xs={10}>
+          <Space size={12}>
+            <Image
+              width={200}
+              src={`${lien_image}/${update.demande.file}`}
+              placeholder={<Image preview={false} src={`${lien_image}/${update.demande.file}`} width={200} />}
+            />
+          </Space>
           <TextField
             style={{ marginTop: '10px' }}
             onChange={(e) => onChange(e)}

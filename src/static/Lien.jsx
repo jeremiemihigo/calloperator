@@ -1,12 +1,16 @@
 // eslint-disable-next-line no-undef
 
 //const link = 'http://localhost:40002';
-const link = 'https://visite.bboxxvm.com';
+//const link = 'https://visite.bboxxvm.com';
+//const link = 'https://backendcallcenter.onrender.com';
+const link = 'https://backendcallcenter.onrender.com';
 
-//export const big_data = 'http://localhost:40002/bboxx/support';
-export const big_data = 'https://issuelink.bboxxvm.com/bboxx/support';
+//export const big_data = 'http://localhost:4000/bboxx/support';
+//export const big_data = 'https://issuelink.bboxxvm.com/bboxx/support';
+export const big_data = 'https://backendcallcenter.onrender.com/bboxx/support';
 
-export const big_data_issue = 'https://issuelink.bboxxvm.com/issue';
+//export const big_data_issue = 'https://issuelink.bboxxvm.com/issue';
+export const big_data_issue = 'https://backendcallcenter.onrender.com/issue';
 //export const big_data_issue = 'http://localhost:40002/issue';
 
 export const lien = `${link}/bboxx/support`;
@@ -14,7 +18,7 @@ export const lien_socket = link;
 export const lien_conge = `${link}/admin/conge`;
 export const lien_issue = `${link}/issue`;
 export const lien_servey = `${link}/servey`;
-export const lien_image = `${link}/bboxx/image`;
+export const lien_image = `https://bboxxvm.com/ImagesVisite`;
 export const lien_file = `${link}/bboxx/file`;
 export const config = {
   headers: {
