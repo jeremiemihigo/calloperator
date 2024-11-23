@@ -1,5 +1,5 @@
 import { Search } from '@mui/icons-material';
-import { Button, Card, Divider, FormControl, Grid, InputAdornment, OutlinedInput } from '@mui/material';
+import { Card, Divider, FormControl, Grid, InputAdornment, OutlinedInput } from '@mui/material';
 import { Image, Space, message } from 'antd';
 import axios from 'axios';
 import _ from 'lodash';
@@ -7,14 +7,15 @@ import moment from 'moment';
 import React from 'react';
 import { config, lien, lien_image } from 'static/Lien';
 import DetailPlaintesRapport from './DetailPlainte';
+import './historique.style.css';
 import './style.css';
-
 // assets
-import { SearchOutlined } from '@ant-design/icons';
-import { Typography } from '@mui/material';
+import { Paper, Typography } from '@mui/material';
+import SimpleBackdrop from 'Control/Backdrop';
 import Couleur from 'pages/Issue/Appel/Table/Color';
 import { useSelector } from 'react-redux';
 import Popup from 'static/Popup';
+import { Clear } from '../../../node_modules/@mui/icons-material/index';
 import WhyToDelete from './WhyToDelete';
 
 function ReponseComponent() {
@@ -41,16 +42,11 @@ function ReponseComponent() {
     setChoose(1);
   };
 
-  const key = (e) => {
-    e.preventDefault();
-    setValue(e.target.value);
-  };
-  const sendDonner = async (e) => {
-    e.preventDefault();
+  const sendDonner = async (client) => {
     try {
       setLoading(true);
       setData();
-      const reponse = await axios.get(`${lien}/oneReponse/${value}`, config);
+      const reponse = await axios.get(`${lien}/oneReponse/${client}`, config);
       if (reponse.data === 'token expired') {
         localStorage.removeItem('auth');
         window.location.replace('/login');
@@ -67,11 +63,7 @@ function ReponseComponent() {
       setLoading(false);
     }
   };
-  const postData = async (e) => {
-    if (e.keyCode === 13 && value !== '') {
-      sendDonner(e);
-    }
-  };
+
   const returnHeure = (date) => {
     if (date) {
       let today = new Date(date);
@@ -90,36 +82,48 @@ function ReponseComponent() {
   return (
     <>
       {contextHolder}
-      <Grid container>
-        <Grid item lg={8}>
-          <FormControl sx={{ width: '100%' }}>
-            <OutlinedInput
-              size="small"
-              id="header-search"
-              startAdornment={
-                <InputAdornment position="start" sx={{ mr: -0.5 }}>
-                  <SearchOutlined />
-                </InputAdornment>
-              }
-              aria-describedby="header-search-text"
-              inputProps={{
-                'aria-label': 'weight'
-              }}
-              value={value}
-              onChange={(e) => key(e)}
-              onKeyUp={(e) => postData(e)}
-              placeholder="Recherche"
-            />
-          </FormControl>
+      <SimpleBackdrop open={load} taille="20rem" title="Chargement..." />
+      <Paper
+        onClick={() => {
+          setValue('');
+          setData();
+          setAppel();
+        }}
+        elevation={1}
+        sx={{ padding: '5px', float: 'left', cursor: 'pointer' }}
+      >
+        <Clear />
+      </Paper>
+      {!data && (
+        <div className="historique">
+          <div>
+            <p>Customer code</p>
+            <Paper elevation={2}>
+              <FormControl sx={{ width: '100%' }}>
+                <OutlinedInput
+                  size="small"
+                  onKeyUp={(e) => e.keyCode === 13 && sendDonner(e.target.value)}
+                  id="header-search"
+                  className="inputclasse"
+                  startAdornment={
+                    <InputAdornment position="start" sx={{ mr: -0.5 }}>
+                      <Search />
+                    </InputAdornment>
+                  }
+                  aria-describedby="header-search-text"
+                  inputProps={{
+                    'aria-label': 'weight'
+                  }}
+                  value={value}
+                  onChange={(e) => setValue(e.target.value)}
+                  placeholder=""
+                />
+              </FormControl>
+            </Paper>
+          </div>
+        </div>
+      )}
 
-          {/* <Input label="Recherche" setValue, value={value} showIcon type="text" value={value} onChange={(e) => key(e)} onKeyUp={(e) => postData(e)} placeholder="Account ID" /> */}
-        </Grid>
-        <Grid item lg={2} sx={{ paddingLeft: '10px' }}>
-          <Button disabled={load} onClick={(e) => sendDonner(e)} variant="contained" color="primary">
-            <Search fontSize="small" /> {load ? 'Loading...' : 'Recherche'}
-          </Button>
-        </Grid>
-      </Grid>
       {choose === 0 && (
         <Grid container>
           <Grid item lg={9}>

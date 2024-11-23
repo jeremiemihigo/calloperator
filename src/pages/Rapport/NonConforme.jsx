@@ -13,7 +13,6 @@ import Selected from 'static/Select';
 
 function Doublon() {
   const [load, setLoad] = React.useState(false);
-  const [data, setData] = React.useState();
 
   const [valueSelect, setValueSelect] = React.useState('');
   const shop = useSelector((state) => state.shop?.shop);
@@ -26,32 +25,9 @@ function Doublon() {
     { id: 2, title: 'Region', value: 'codeZone' },
     { id: 3, title: 'Overall', value: 'overall' }
   ];
-
-  const laoding = async (e) => {
-    e.preventDefault();
-    try {
-      setLoad(true);
-      let recherche = {};
-      recherche.key = valueSelect;
-      recherche.value = valueSelect === 'idShop' ? idShop?.idShop : valueSelect === 'codeZone' && idZone?.idZone;
-      let dataTosearch = {};
-      if (recherche.key !== 'overall') {
-        dataTosearch.key = recherche.key;
-        dataTosearch.value = recherche.value;
-      }
-      const response = await axios.post(big_data + '/conformite', { dataTosearch }, config);
-      if (response.status === 200) {
-        setData(response.data);
-        setLoad(false);
-      }
-    } catch (error) {
-      if (error) {
-        setLoad(false);
-      }
-    }
-  };
   const [fileData, setFileData] = React.useState();
-  const laodingFile = () => {
+  const laodingFile = (data) => {
+    console.log(data);
     try {
       const returnFeedback = (conversation) => {
         if (conversation.length > 0) {
@@ -82,9 +58,31 @@ function Doublon() {
       console.log(error);
     }
   };
-  React.useEffect(() => {
-    laodingFile();
-  }, [data]);
+
+  const laoding = async (e) => {
+    e.preventDefault();
+    try {
+      setLoad(true);
+      let recherche = {};
+      recherche.key = valueSelect;
+      recherche.value = valueSelect === 'idShop' ? idShop?.idShop : valueSelect === 'codeZone' && idZone?.idZone;
+      let dataTosearch = {};
+      if (recherche.key !== 'overall') {
+        dataTosearch.key = recherche.key;
+        dataTosearch.value = recherche.value;
+      }
+      const response = await axios.post(big_data + '/conformite', { dataTosearch }, config);
+      if (response.status === 200) {
+        laodingFile(response.data);
+        setLoad(false);
+      }
+    } catch (error) {
+      if (error) {
+        setLoad(false);
+      }
+    }
+  };
+
   return (
     <div>
       <Grid container>
@@ -123,7 +121,7 @@ function Doublon() {
         </Grid>
       </Grid>
       {load && <p style={{ textAlign: 'center', fontSize: '13px', color: 'blue', fontWeight: 'bolder' }}>Please wait...</p>}
-      {data && (
+      {fileData && (
         <table id="theTable">
           <thead>
             <tr>
@@ -139,27 +137,18 @@ function Doublon() {
             </tr>
           </thead>
           <tbody>
-            {data.map((index, key) => {
+            {fileData.map((index, key) => {
               return (
                 <tr key={key}>
-                  <td>{index.idDemande}</td>
+                  <td>{index.ID_Demande}</td>
                   <td>{index.codeAgent}</td>
-                  <td>{index.agent.nom}</td>
+                  <td>{index.nom}</td>
                   <td>{index.commune}</td>
                   <td>{index.sector}</td>
                   <td>{index.cell}</td>
                   <td>{index.sat}</td>
                   <td>{dayjs(index.createdAt).format('DD/MM/YYYY')}</td>
-
-                  <td>
-                    {index.conversation.map((item) => {
-                      return (
-                        <p className="messageItem" key={item._id}>
-                          {item.message}
-                        </p>
-                      );
-                    })}
-                  </td>
+                  <td>{index.feedback}</td>
                 </tr>
               );
             })}

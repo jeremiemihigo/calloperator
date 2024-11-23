@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { Search } from '@mui/icons-material';
-import { Button, Grid } from '@mui/material';
+import { Button, Grid, Paper } from '@mui/material';
 import { Input } from 'antd';
 import axios from 'axios';
 import MainCard from 'components/MainCard';
@@ -11,7 +11,6 @@ import RadialBarChart from 'pages/Issue/Appel/Dashboard/Chart';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { big_data, config } from 'static/Lien';
-import { Paper } from '../../../node_modules/@mui/material/index';
 import '../style.css';
 import AffichageStat from './AffichageStat';
 import Agents from './Agents';
@@ -86,10 +85,10 @@ function Statistiques() {
 
   const restructure = () => {
     if (listeDemande) {
-      const followups = listeDemande.filter((x) => x.typeVisit.followup === 'followup');
-      const visites = listeDemande.filter((x) => x.typeVisit.followup === 'visit' && x.valide);
-      const attentes = listeDemande.filter((x) => x.typeVisit.followup === 'visit' && !x.valide && x.feedback === 'new');
-      const confor = listeDemande.filter((x) => x.typeVisit.followup === 'visit' && !x.valide && x.feedback === 'chat');
+      const followups = listeDemande.filter((x) => x.feedback === 'followup');
+      const visites = listeDemande.filter((x) => x.valide === true);
+      const attentes = listeDemande.filter((x) => x.feedback === 'new' && !x.valide);
+      const confor = listeDemande.filter((x) => !x.valide && x.feedback === 'chat');
       setDonneeStructure({ nconforme: confor.length, followup: followups.length, visite: visites.length, attente: attentes.length });
     }
   };
@@ -167,7 +166,7 @@ function Statistiques() {
           <Grid item lg={3} xs={12} sm={6} md={4}>
             {listeDemande.length > 0 ? (
               <Datastucture
-                subtitle={`Toutes les visites validée soit ${((visite * 100) / listeDemande.length).toFixed(0)}%`}
+                subtitle={`Toutes les visites validées soit ${((visite * 100) / listeDemande.length).toFixed(0)}%`}
                 title="Visites"
                 nombre={visite}
               />

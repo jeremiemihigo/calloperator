@@ -22,6 +22,7 @@ export const ReadAgentAdmin = createAsyncThunk('agentAdmin/ReadAgent', async (id
 });
 export const AjouterAgentAdmin = createAsyncThunk('agentAdmin/AjouterAgentAdmin', async (data, { rejectWithValue }) => {
   try {
+    console.log(data);
     const response = await axios.post(lien + '/addAdminAgent', data, config);
     return response.data;
   } catch (error) {

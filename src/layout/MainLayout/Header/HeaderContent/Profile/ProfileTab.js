@@ -58,7 +58,7 @@ const ProfileTab = () => {
           <ListItemIcon>
             <Person fontSize="small" />
           </ListItemIcon>
-          <ListItemText primary="Agents" />
+          <ListItemText primary="Agents terrain" />
         </ListItemButton>
       )}
       {userConenct && (userConenct.fonction === 'admin' || userConenct.fonction === 'superUser') && (
@@ -80,7 +80,7 @@ const ProfileTab = () => {
           <ListItemIcon>
             <DeveloperMode fontSize="small" />
           </ListItemIcon>
-          <ListItemText primary="Permissions" />
+          <ListItemText primary="Agent admin" />
         </ListItemButton>
       )}
       {/* <ListItemButton selected={selectedIndex === 4} onClick={(event) => handleListItemClick(event, 4)}>

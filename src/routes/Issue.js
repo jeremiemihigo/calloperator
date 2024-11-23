@@ -8,7 +8,6 @@ const AppelDsh = Loadable(lazy(() => import('pages/Issue/Appel')));
 const Plainte = Loadable(lazy(() => import('pages/Issue/Plainte')));
 const RapportVisite = Loadable(lazy(() => import('pages/Rapport/VisiteMenage')));
 const Contact = Loadable(lazy(() => import('pages/Rapport/Contact')));
-const My_Leave = Loadable(lazy(() => import('pages/My_Leave')));
 const Tech_value = Loadable(lazy(() => import('pages/Issue/Appel/Table/Technical')));
 const Promesse_Payement = Loadable(lazy(() => import('pages/Rapport/Promesse_Payement')));
 const IndexEdit = Loadable(lazy(() => import('pages/Issue/Appel/Component/IndexEdit')));
@@ -51,10 +50,7 @@ const MainRoutes = {
       path: '/edit',
       element: <IndexEdit />
     },
-    {
-      path: '/conge',
-      element: <My_Leave />
-    },
+
     {
       path: '/tech_value',
       element: <Tech_value />

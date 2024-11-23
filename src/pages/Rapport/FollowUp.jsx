@@ -1,5 +1,6 @@
 import { Search } from '@mui/icons-material';
 import { Button, CircularProgress, Grid, Paper } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
 import AutoComplement from 'Control/AutoComplet';
 import axios from 'axios';
 import _ from 'lodash';
@@ -25,13 +26,6 @@ function Rapport() {
   const [idShop, setValeurShop] = React.useState('');
   const [idZone, setValeurRegion] = React.useState('');
 
-  const chekValue = (value) => {
-    if (value === 'null' || value === 'undefined' || !value) {
-      return '';
-    } else {
-      return value;
-    }
-  };
   const retourDate = (date) => {
     return `${date.split('T')[0]}`;
   };
@@ -43,15 +37,11 @@ function Rapport() {
   const zone = useSelector((state) => state.zone?.zone);
 
   const returnShopRegion = (code, status) => {
-    console.log(code, status);
     if (status === 'zone') {
       return _.filter(zone, { idZone: code })[0]?.denomination;
     } else {
       return _.filter(shop, { idShop: code })[0]?.shop;
     }
-  };
-  const retournDateHeure = (valeur) => {
-    return `${valeur.split('T')[1].split(':')[0]}:${valeur.split('T')[1].split(':')[1]}`;
   };
 
   const searchData = async () => {
@@ -76,16 +66,13 @@ function Rapport() {
         let donner = [];
         for (let i = 0; i < response.data.length; i++) {
           donner.push({
-            ID: response.data[i].typeVisit.codeclient,
+            id: response.data[i].idDemande,
+            CUSTOMER_VISIT: response.data[i].codeclient,
             REGION: returnShopRegion(response.data[i].codeZone, 'zone'),
             SHOP: returnShopRegion(response.data[i]?.idShop, 'shop'),
-            'CODE AGENT': response.data[i].codeAgent,
-            "DATE D'ENVOIE": retourDate(response.data[i].createdAt),
-            "HEURE D'ENVOI": retournDateHeure(response.data[i].createdAt),
-            LONGITUDE: chekValue(response.data[i].coordonnee?.longitude),
-            LATITUDE: chekValue(response.data[i].coordonnee?.latitude),
-            ALTITUDE: chekValue(response.data[i].coordonnee?.altitude),
-            'ETAT PHYSIQUE': response.data[i]?.statut === 'allumer' ? 'allumé' : 'eteint',
+            CODE_AGENT: response.data[i].codeAgent,
+            DATE: retourDate(response.data[i].createdAt),
+            ETAT_PHYSIQUE: response.data[i]?.statut === 'allumer' ? 'allumé' : 'eteint',
             RAISON: response.data[i]?.raison,
             COMMUNE: response.data[i]?.commune,
             QUARTIER: response.data[i]?.sector,
@@ -93,7 +80,10 @@ function Rapport() {
             REFERENCE: response.data[i]?.reference,
             SAT: response.data[i]?.sat,
             CONTACT: response.data[i]?.numero !== 'undefined' ? response.data[i]?.numero : '',
-            Adresse: response.data[i]?.adresschange
+            CUSTOMER_Followup: response.data[i].follow[0].codeclient,
+            F_Status: response.data[i].follow[0].clientStatut,
+            F_PaymentStatut: response.data[i].follow[0].PayementStatut,
+            F_consExpDays: response.data[i].follow[0].consExpDays
           });
         }
         setLoading(false);
@@ -106,6 +96,56 @@ function Rapport() {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   };
+  const columns = [
+    {
+      field: 'id',
+      headerName: 'ID',
+      width: 120,
+      editable: false
+    },
+    {
+      field: 'CUSTOMER_VISIT',
+      headerName: 'CUSTOMER_VISIT',
+      width: 100,
+      editable: false
+    },
+    {
+      field: 'REGION',
+      headerName: 'REGION',
+      width: 100,
+      editable: false
+    },
+    {
+      field: 'SHOP',
+      headerName: 'SHOP',
+      width: 100,
+      editable: false
+    },
+    {
+      field: 'F_consExpDays',
+      headerName: 'F_consExpDays',
+      width: 100,
+      editable: false
+    },
+    {
+      field: 'F_PaymentStatut',
+      headerName: 'F_PaymentStatut',
+      width: 100,
+      editable: false
+    },
+    {
+      field: 'F_Status',
+      headerName: 'F_Status',
+      width: 100,
+      editable: false
+    },
+    {
+      field: 'CUSTOMER_Followup',
+      headerName: 'CUSTOMER_Followup',
+      width: 140,
+      editable: false
+    }
+  ];
   return (
     <Paper sx={{ padding: '5px' }} elevation={3}>
       {shop && shop.length > 0 && zone && zone.length > 0 ? (
@@ -151,6 +191,24 @@ function Rapport() {
           <p style={{ textAlign: 'center' }}>Patientez le Chargement des shops et regions....</p>
         </>
       )}
+      <div>
+        {samplejson2 && samplejson2.length > 0 && (
+          <DataGrid
+            rows={samplejson2}
+            columns={columns}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 10
+                }
+              }
+            }}
+            pageSizeOptions={[10]}
+            checkboxSelection
+            disableRowSelectionOnClick
+          />
+        )}
+      </div>
     </Paper>
   );
 }

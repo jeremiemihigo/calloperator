@@ -243,10 +243,7 @@ function UpdateForm({ update }) {
         </Backdrop>
       )}
       {openSnack && <DirectionSnackbar message={message} open={openSnack} setOpen={setOpenSnack} />}
-      <div className="div_update">
-        <p className="nomClient">Update {update?.nomClient}</p>
-        <p className="codeclient">{update?.codeclient}</p>
-      </div>
+
       <Grid container>
         <Grid item lg={10} xs={10}>
           <Space size={12}>

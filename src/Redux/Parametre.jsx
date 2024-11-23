@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { lien, config } from 'static/Lien';
+import { config, lien } from 'static/Lien';
 
 const initialState = {
   parametre: [],
@@ -10,7 +10,7 @@ const initialState = {
 };
 export const ReadParametre = createAsyncThunk('Parametre/ReadParametre', async (id, { rejectWithValue }) => {
   try {
-    const response = await axios.get(lien + '/parametreRead', config);
+    const response = await axios.get(lien + '/readParametre', config);
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response.data);

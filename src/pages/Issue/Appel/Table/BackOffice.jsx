@@ -8,7 +8,9 @@ import _ from 'lodash';
 import moment from 'moment';
 import React from 'react';
 import { TimeCounter } from 'static/Lien';
+import { Grid } from '../../../../../node_modules/@mui/material/index';
 import { CreateContexteTable } from '../Contexte';
+import './backoffice.css';
 import Backoffice_Analyse from './Backoffice_Analyse';
 import Couleur from './Color';
 
@@ -25,6 +27,7 @@ function AllCall() {
   React.useEffect(() => {
     loading();
   }, [client]);
+  const plainte = ['Activation & rafraichissement Canal +', 'Rafraichissement des chaines canal+'];
 
   const openChat = (plainte) => {
     setPlainteSelect(plainte);
@@ -129,17 +132,34 @@ function AllCall() {
     return p._id;
   };
 
+  const [filterFn, setFilterFn] = React.useState({
+    fn: (items) => {
+      return items;
+    }
+  });
+  const handleChanges = () => {
+    setFilterFn({
+      fn: () => {
+        return client.filter((x) => plainte.includes(x.plainteSelect) || plainte.includes(x.typePlainte));
+      }
+    });
+  };
   return (
     <>
-      <Paper elevation={4} sx={{ marginBottom: '15px', padding: '10px' }}>
+      <Paper elevation={4} className="paper__">
         <Backoffice_Analyse />
+        <Grid className="otheroption" onClick={() => handleChanges()}>
+          <div>
+            <p>Canal+</p>
+          </div>
+        </Grid>
       </Paper>
       {!data && <LoaderGif width={400} height={400} />}
       {data && data.length > 0 && (
         <Paper sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }} elevation={4}>
           <div>
             <DataGrid
-              rows={data}
+              rows={filterFn.fn(data)}
               columns={columns}
               initialState={{
                 pagination: {

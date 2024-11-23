@@ -8,7 +8,6 @@ import './style.css';
 
 function Doublon() {
   const [load, setLoad] = React.useState(false);
-  const [data, setData] = React.useState();
   const [file, setFile] = React.useState();
 
   const laoding = async () => {
@@ -19,20 +18,19 @@ function Doublon() {
         let d = [];
         for (let i = 0; i < response.data.length; i++) {
           d.push({
-            codeclient: response.data[i].codeclient,
-            agent1: response.data[i].agentPrecedent.codeAgent,
-            nom1: response.data[i].agentPrecedent.nom,
-            sat1: response.data[i].precedent.sat,
-            date1: dayjs(response.data[i].precedent.createdAt).format('DD/MM/YYYY'),
-            agent2: response.data[i].agentPresent.codeAgent,
-            nom2: response.data[i].agentPresent.nom,
-            sat2: response.data[i].presents.sat,
-            shop2: response.data[i].PresentShop[0].shop,
-            date2: dayjs(response.data[i].presents.createdAt).format('DD/MM/YYYY')
+            codeclient: response.data[i].precedent.codeclient,
+            premier_codeAgent: response.data[i].precedent.demandeur.codeAgent,
+            premier_nomAgent: response.data[i].precedent.demandeur.nom,
+            premier_shop: response.data[i].PresentShop[0]?.shop,
+            premier_sat: response.data[i].precedent.demande.sat,
+            premiere_date: dayjs(response.data[i].precedent.demande.updatedAt).format('DD/MM/YYYY'),
+            deuxieme_codeAgent: response.data[i].agentPresent.codeAgent,
+            deuxieme_nomAgent: response.data[i].agentPresent.nom,
+            deuxieme_sat: response.data[i].presents.sat,
+            deuxieme_date: dayjs(response.data[i].presents.createdAt).format('DD/MM/YYYY')
           });
         }
         setFile(d);
-        setData(response.data);
         setLoad(false);
       }
     } catch (error) {
@@ -57,7 +55,7 @@ function Doublon() {
         if (target === '') {
           return items;
         } else {
-          return items.filter((x) => x.codeclient.includes(target) || x.agentPresent.codeAgent.includes(target));
+          return items.filter((x) => x.codeclient.includes(target));
         }
       }
     });
@@ -67,51 +65,45 @@ function Doublon() {
       {load && <p style={{ textAlign: 'center', fontSize: '13px', color: 'blue', fontWeight: 'bolder' }}>Please wait...</p>}
       <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ width: '40%' }}>
-          <Input onChange={(e) => handleChanges(e)} placeholder="Cherchez le Code client ou le deuxieme agent" />
+          <Input onChange={(e) => handleChanges(e)} placeholder="Cherchez le Code client" />
         </div>
-        {data && data.length > 0 && (
+        {file && file.length > 0 && (
           <div style={{ width: '40%', marginLeft: '10px' }}>
             <ExcelButton data={file} title="Doublon" fileName="Doublon.xlsx" />
           </div>
         )}
       </div>
-      {data && (
+      {file && (
         <table id="theTable">
           <thead>
             <tr>
-              <th rowSpan="2">ID</th>
-              <th colSpan="4" style={{ textAlign: 'center' }}>
-                Premiere soumission
-              </th>
-              <th colSpan="4" style={{ textAlign: 'center' }}>
-                Deuxieme soumission
-              </th>
-            </tr>
-            <tr>
-              <th>agent</th>
-              <th>Nom</th>
-              <th>SAT</th>
-              <th>Date</th>
-              <th>agent</th>
-              <th>Nom</th>
-              <th>SAT</th>
-              <th>Date</th>
+              <th>code client</th>
+              <th>codeAgent</th>
+              <th>nomAgent</th>
+              <th>shop</th>
+              <th>sat</th>
+              <th>date</th>
+              <th>codeAgent</th>
+              <th>nomAgent</th>
+              <th>sat</th>
+              <th>date</th>
             </tr>
           </thead>
           <tbody>
-            {filterFn.fn(data).map((index, key) => {
+            {filterFn.fn(file).map((index, key) => {
               return (
                 <tr key={key}>
                   <td>{index.codeclient}</td>
-                  <td>{index.agentPrecedent.codeAgent}</td>
-                  <td>{index.agentPrecedent.nom}</td>
-                  <td>{index.precedent.sat}</td>
+                  <td>{index.premier_codeAgent}</td>
+                  <td>{index.premier_nomAgent}</td>
+                  <td>{index.premier_shop}</td>
+                  <td>{index.premier_sat}</td>
 
-                  <td>{dayjs(index.precedent.createdAt).format('DD/MM/YYYY')}</td>
-                  <td>{index.agentPresent.codeAgent}</td>
-                  <td>{index.agentPresent.nom}</td>
-                  <td>{index.presents.sat}</td>
-                  <td>{dayjs(index.presents.createdAt).format('DD/MM/YYYY')}</td>
+                  <td>{index.premiere_date}</td>
+                  <td>{index.deuxieme_codeAgent}</td>
+                  <td>{index.deuxieme_nomAgent}</td>
+                  <td>{index.deuxieme_sat}</td>
+                  <td>{index.deuxieme_date}</td>
                 </tr>
               );
             })}

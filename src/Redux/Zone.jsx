@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { lien, config } from 'static/Lien';
+import { config, lien } from 'static/Lien';
 
 const initialState = {
   zone: [],
@@ -10,7 +10,7 @@ const initialState = {
   getZone: '',
   getZoneError: ''
 };
-export const ReadAllZone = createAsyncThunk('annee/readAllYear', async (id, { rejectWithValue }) => {
+export const ReadAllZone = createAsyncThunk('zone/ReadAllZone', async (id, { rejectWithValue }) => {
   try {
     const response = await axios.get(lien + '/zone', config);
     return response.data;
@@ -18,7 +18,7 @@ export const ReadAllZone = createAsyncThunk('annee/readAllYear', async (id, { re
     return rejectWithValue(error.response.data);
   }
 });
-export const AjouterZone = createAsyncThunk('annee/AjouterAnnee', async (data, { rejectWithValue }) => {
+export const AjouterZone = createAsyncThunk('zone/AjouterZone', async (data, { rejectWithValue }) => {
   try {
     const response = await axios.post(lien + '/postzone', { denomination: data }, config);
     return response.data;

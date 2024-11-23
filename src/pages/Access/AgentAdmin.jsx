@@ -1,14 +1,24 @@
 /* eslint-disable react/prop-types */
+import { Add, Save } from '@mui/icons-material';
 import { Button, FormHelperText, Grid, OutlinedInput, Stack } from '@mui/material';
+import AutoComplement from 'Control/AutoComplet';
 import { AjouterAgentAdmin } from 'Redux/AgentAdmin';
 import { Formik } from 'formik';
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Selected from 'static/Select';
 import * as Yup from 'yup';
 
 function AgentAdmin() {
   const dispatch = useDispatch();
+  const roles = useSelector((state) => state.role.role);
+  const [roleSelect, setRole] = React.useState('');
+  const region = useSelector((state) => state.zone.zone);
+  const shop = useSelector((state) => state.shop.shop);
+  const [regionSelect, setRegionSelect] = React.useState('');
+  const [shopSelect, setShopSelect] = React.useState('');
+  const [allFilterRegion, setAllFilterRegion] = React.useState([]);
+  const [allFilterShop, setAllFilterShop] = React.useState([]);
 
   const fonction = [
     { id: 1, title: 'Super utilisateur', value: 'superUser' },
@@ -16,6 +26,22 @@ function AgentAdmin() {
     { id: 3, title: 'Call operator', value: 'co' }
   ];
   const [fonctionSelect, setFonctionSelect] = React.useState('');
+
+  const adddataFilterRegion = () => {
+    setAllFilterShop([]);
+    let d = regionSelect?.denomination;
+    if (!allFilterRegion.includes(d)) {
+      setAllFilterRegion([...allFilterRegion, d]);
+    }
+  };
+  const adddataFilterShop = () => {
+    let d = shopSelect?.shop;
+    setAllFilterRegion([]);
+    if (!allFilterShop.includes(d)) {
+      setAllFilterShop([...allFilterShop, d]);
+    }
+  };
+
   return (
     <div style={{ width: '25rem' }}>
       <Formik
@@ -32,8 +58,10 @@ function AgentAdmin() {
             const data = {
               nom: values.nom,
               fonction: fonctionSelect,
-              codeAgent: values.code
+              codeAgent: values.code,
+              role: roleSelect?.idRole
             };
+
             dispatch(AjouterAgentAdmin(data));
           } catch (error) {
             setStatus({ success: false });
@@ -68,6 +96,61 @@ function AgentAdmin() {
               <Grid item xs={12}>
                 <Selected label="Fonction" data={fonction} value={fonctionSelect} setValue={setFonctionSelect} />
               </Grid>
+              <Grid item xs={12}>
+                {roles ? (
+                  <AutoComplement value={roleSelect} setValue={setRole} options={roles} title="Selectionnez le role" propr="title" />
+                ) : (
+                  <p style={{ textAlign: 'center' }}>Loading...</p>
+                )}
+              </Grid>
+              {roleSelect && roleSelect.filterBy === 'region' && (
+                <Grid item xs={12}>
+                  <Grid container>
+                    <Grid item lg={10} sx={{ paddingRight: '10px' }}>
+                      <AutoComplement
+                        value={regionSelect}
+                        setValue={setRegionSelect}
+                        options={region}
+                        title="Selectionnez la region"
+                        propr="denomination"
+                      />
+                    </Grid>
+                    <Grid item lg={2} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Button onClick={(e) => adddataFilterRegion(e)} variant="contained" color="primary" fullWidth>
+                        <Add fontSize="small" />
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              )}
+              {roleSelect && roleSelect.filterBy === 'shop' && (
+                <Grid item xs={12}>
+                  <Grid container>
+                    <Grid item lg={10} sx={{ paddingRight: '10px' }}>
+                      <AutoComplement
+                        value={shopSelect}
+                        setValue={setShopSelect}
+                        options={shop}
+                        title="Selectionnez le Shop"
+                        propr="shop"
+                      />
+                    </Grid>
+                    <Grid item lg={2} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Button onClick={(e) => adddataFilterShop(e)} variant="contained" color="primary" fullWidth>
+                        <Add fontSize="small" />
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              )}
+              <Grid container>
+                {allFilterRegion.map((index) => {
+                  return <span key={index}>{index + '; '}</span>;
+                })}
+                {allFilterShop.map((index) => {
+                  return <span key={index}>{index + '; '}</span>;
+                })}
+              </Grid>
 
               <Grid item xs={12}>
                 <Stack>
@@ -92,7 +175,8 @@ function AgentAdmin() {
 
               <Grid item xs={12}>
                 <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
-                  Enregistrer
+                  <Save fontSize="small" />
+                  <span style={{ marginLeft: '10px' }}>Enregistrer</span>
                 </Button>
               </Grid>
             </Grid>

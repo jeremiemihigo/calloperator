@@ -82,7 +82,7 @@ function ReponseAdmin(props) {
   return (
     <Grid container>
       <>{contextHolder}</>
-      <Grid item lg={6}>
+      <Grid item lg={5}>
         {(demande || update) && (
           <>
             <Space size={12}>
@@ -146,7 +146,7 @@ function ReponseAdmin(props) {
           </div>
         )}
       </Grid>
-      <Grid item lg={6}>
+      <Grid item lg={7}>
         {recentAnswerSelect ? <UpdateForm update={recentAnswerSelect} /> : <BasicTabs titres={titres} components={components} />}
       </Grid>
     </Grid>

@@ -4,6 +4,7 @@ import { Grid, List, Typography } from '@mui/material';
 import { CreateContexteGlobal } from 'GlobalContext.jsx';
 import MainCard from 'components/MainCard';
 import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
+import AudioRecorder from 'pages/Audio/index.jsx';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { big_data, config } from 'static/Lien.jsx';
@@ -44,6 +45,9 @@ const DashboardDefault = () => {
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
       {userConnect && userConnect.first && <FirstLogin />}
       {/* row 1 */}
+      <Grid item xs={12} sx={{ mb: -2.25 }}>
+        <AudioRecorder />
+      </Grid>
       <Grid item xs={12} sx={{ mb: -2.25 }}>
         <Typography variant="h5">Dashboard</Typography>
       </Grid>

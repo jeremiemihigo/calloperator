@@ -1,0 +1,18 @@
+.inputclasse {
+  height: 3.5rem;
+  font-size: 20px;
+}
+.historique > div > p {
+  text-align: center;
+  font-size: 25px;
+}
+.historique {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+  width: 100%;
+}
+.historique > div {
+  width: 70%;
+}

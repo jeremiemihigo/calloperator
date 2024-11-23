@@ -1,11 +1,11 @@
+import { SearchOutlined } from '@ant-design/icons';
 import { AirplaneTicket, Done, DoneAll, Escalator, Pause, Search } from '@mui/icons-material';
-import { Button, CircularProgress, Grid, TextField, Tooltip, Typography } from '@mui/material';
+import { Button, CircularProgress, FormControl, Grid, InputAdornment, OutlinedInput, TextField, Tooltip, Typography } from '@mui/material';
 import AutoComplement from 'Control/AutoComplet';
 import SimpleBackdrop from 'Control/Backdrop';
 import { CreateContexteGlobal } from 'GlobalContext';
 import { message } from 'antd';
 import axios from 'axios';
-import Input from 'components/Input';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { config, lien_issue } from 'static/Lien';
@@ -37,7 +37,6 @@ function Form({ update }) {
   } = React.useContext(CreateContexteTable);
 
   const [typeForm, setTypeForm] = React.useState('');
-  console.log(historique);
 
   const { client, setClient } = React.useContext(CreateContexteGlobal);
   const user = useSelector((state) => state?.user?.user);
@@ -102,10 +101,25 @@ function Form({ update }) {
 
   const [liste, setListe] = React.useState([]);
   const [sending, setSending] = React.useState(false);
+  const [audio, setAudioB] = React.useState(null);
+
+  const [filename, setFilename] = React.useState('');
+  const sendAudioToAPI = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('file', audio, 'recording.webm');
+      const response = await axios.post('http://localhost:60000/audio/upload', formData);
+      setFilename(response.data);
+    } catch (err) {
+      console.error('Erreur:', err);
+    }
+  };
+
   const sendAppel = async (statut, e) => {
+    stopRecording();
+    sendAudioToAPI();
     try {
       e.preventDefault();
-
       if (user?.plainteShop && user.plainteShop !== shopSelect?.shop) {
         success(`Ce client n'est pas de votre shop << ${user?.plainteShop} >>`, 'error');
       } else {
@@ -126,7 +140,8 @@ function Form({ update }) {
             raisonOngoing: raisonOngoing,
             adresse,
             open: statut === 'closed' ? false : true,
-            operation: statut === 'escalade' ? 'backoffice' : undefined
+            operation: statut === 'escalade' ? 'backoffice' : undefined,
+            audio: filename
           };
           const dataTicket = {
             typePlainte: plainteSelect?.title,
@@ -136,6 +151,7 @@ function Form({ update }) {
             adresse,
             nomClient,
             statut,
+            audio: filename,
             shop: shopSelect?.shop,
             commentaire: initiale.recommandation
           };
@@ -208,6 +224,8 @@ function Form({ update }) {
   }, [item]);
 
   const create_ticket = async (statut) => {
+    stopRecording();
+    sendAudioToAPI();
     try {
       setSending(true);
       const data = {
@@ -219,7 +237,8 @@ function Form({ update }) {
         statut,
         nomClient,
         shop: shopSelect?.shop,
-        commentaire: initiale.recommandation
+        commentaire: initiale.recommandation,
+        audio: filename
       };
       const response = await axios.post(lien_issue + '/ticker_callcenter', data, config);
       if (response.status === 201) {
@@ -257,14 +276,72 @@ function Form({ update }) {
       searchItems();
     }
   }, [plainteSelect]);
+
+  const [isRecording, setIsRecording] = React.useState(false);
+  //const [audioUrl, setAudioUrl] = React.useState(null);
+  const mediaRecorderRef = React.useRef(null);
+  const audioChunksRef = React.useRef([]);
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      // Crée un fichier audio à partir des chunks
+      mediaRecorderRef.current.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        //setAudioUrl(URL.createObjectURL(audioBlob));
+        // Envoie le fichier audio à l'API
+        setAudioB(audioBlob);
+      };
+    }
+  };
+
+  const startRecording = async () => {
+    setAudioB(null);
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioChunksRef.current = []; // Réinitialise les chunks
+    // Configure le MediaRecorder
+    const mediaRecorder = new MediaRecorder(stream);
+    mediaRecorderRef.current = mediaRecorder;
+
+    // Collecte les données au fur et à mesure
+    mediaRecorder.ondataavailable = (event) => {
+      audioChunksRef.current.push(event.data);
+    };
+    // Démarre l'enregistrement
+    mediaRecorder.start();
+    setIsRecording(true);
+  };
+  const change_codeclient = (e) => {
+    setCodeclient(e.target.value);
+    if (!isRecording) {
+      startRecording();
+    }
+  };
   return (
     <>
       {contextHolder}
       {sending && <SimpleBackdrop open={true} title="Please wait..." taille="10rem" />}
-
       <Grid container>
         <Grid item lg={10} sx={{ paddingRight: '10px' }}>
-          <Input label="Code client" setValue={setCodeclient} value={codeclient} showIcon />
+          <FormControl sx={{ width: '100%' }}>
+            <OutlinedInput
+              size="small"
+              id="header-search"
+              startAdornment={
+                <InputAdornment position="start" sx={{ mr: -0.5 }}>
+                  <SearchOutlined />
+                </InputAdornment>
+              }
+              aria-describedby="header-search-text"
+              inputProps={{
+                'aria-label': 'weight'
+              }}
+              value={codeclient}
+              onChange={(e) => change_codeclient(e)}
+              placeholder="Code client"
+            />
+          </FormControl>
         </Grid>
         <Grid item lg={2} sx={{ display: 'flex', alignItems: 'center' }}>
           <Tooltip title="confirm the search">
