@@ -1,28 +1,20 @@
 // eslint-disable-next-line no-undef
 
-//const link = 'https://backend.default-tracker.com';
-const link = 'http://localhost:60000';
-//const link = 'https://visitetwo.bboxxvm.com';
-//const link = 'https://backendcallcenter.onrender.com';
-//const link = 'https://backendcallcenter.onrender.com';
-
-export const big_data = 'https://backend.default-tracker.com';
-//export const big_data = 'http://localhost:60000/bboxx/support';
-//export const big_data = 'https://visitetwo.bboxxvm.com/bboxx/support';
-//export const big_data = 'https://backendcallcenter.onrender.com/bboxx/support';
-//export const big_data_issue = 'https://visitetwo.bboxxvm.com/issue';
-export const big_data_issue = 'https://backendcallcenter.onrender.com/issue';
-//export const big_data_issue = 'http://localhost:60000/issue';
-//export const big_data_issue = 'https://backend.default-tracker.com';
+const link = 'https://visitemenages.bboxxvm.com';
+const link_big = 'https://visitemenages.bboxxvm.com';
+//const link_big = 'http://localhost:5000';
 
 export const lien = `${link}/bboxx/support`;
+export const big_data = `${link}/bboxx/support`;
 export const lien_socket = link;
 export const lien_conge = `${link}/admin/conge`;
 export const lien_issue = `${link}/issue`;
+export const big_data_issue = `${link_big}/issue`;
 export const lien_servey = `${link}/servey`;
 export const lien_image = `${link}/bboxx/image`;
-export const lien_dt = `${link}/dt`;
+export const lien_dt = `${link_big}/dt`;
 export const lien_file = `${link}/bboxx/file`;
+export const lien_terrain = `${link}/bboxx/terrain`;
 export const config = {
   headers: {
     'Content-Type': 'Application/json',

@@ -6,23 +6,22 @@ import _ from 'lodash';
 import moment from 'moment';
 import React from 'react';
 import { config, lien, lien_image } from 'static/Lien';
-import DetailPlaintesRapport from './DetailPlainte';
 import './historique.style.css';
 import './style.css';
 // assets
+import { Clear } from '@mui/icons-material';
 import { Paper, Typography } from '@mui/material';
 import SimpleBackdrop from 'Control/Backdrop';
-import Couleur from 'pages/Issue/Appel/Table/Color';
+import UpdateForm from 'pages/Demandes/Updateform';
 import { useSelector } from 'react-redux';
 import Popup from 'static/Popup';
-import { Clear } from '../../../node_modules/@mui/icons-material/index';
+import { Tooltip } from '../../../node_modules/@mui/material/index';
 import WhyToDelete from './WhyToDelete';
 
 function ReponseComponent() {
   const [value, setValue] = React.useState('');
   const [data, setData] = React.useState();
   const [load, setLoading] = React.useState(false);
-  const [appel, setAppel] = React.useState([]);
   const user = useSelector((state) => state.user.user);
 
   const [messageApi, contextHolder] = message.useMessage();
@@ -35,12 +34,6 @@ function ReponseComponent() {
   };
 
   const [choose, setChoose] = React.useState(0);
-  const [donner, setDonner] = React.useState();
-
-  const show = (d) => {
-    setDonner(d);
-    setChoose(1);
-  };
 
   const sendDonner = async (client) => {
     try {
@@ -50,13 +43,15 @@ function ReponseComponent() {
       if (reponse.data === 'token expired') {
         localStorage.removeItem('auth');
         window.location.replace('/login');
-      } else {
+      }
+      if (reponse.status === 200) {
         setChoose(0);
-        setData(_.groupBy(reponse.data.visites, 'demande.lot'));
-        setAppel(_.groupBy(reponse.data.appels, 'periode'));
-        setLoading(false);
-        if (reponse.data.visites.length === 0) {
+        if (reponse.data.length === 0) {
           success('No visits found', 'error');
+          setLoading(false);
+        } else {
+          setData(_.groupBy(reponse.data, 'demande.lot'));
+          setLoading(false);
         }
       }
     } catch (error) {
@@ -79,21 +74,29 @@ function ReponseComponent() {
     setDataDelete(id);
     setOpenDelete(true);
   };
+
+  const [open, setOpen] = React.useState(false);
+  const [dataupdate, setDataUpdate] = React.useState('');
+  const updatecomponent = (updated) => {
+    setDataUpdate(updated);
+    setOpen(true);
+  };
   return (
     <>
       {contextHolder}
-      <SimpleBackdrop open={load} taille="20rem" title="Chargement..." />
-      <Paper
-        onClick={() => {
-          setValue('');
-          setData();
-          setAppel();
-        }}
-        elevation={1}
-        sx={{ padding: '5px', float: 'left', cursor: 'pointer' }}
-      >
-        <Clear />
-      </Paper>
+      <SimpleBackdrop open={load} taille="10rem" title="Chargement..." />
+      <Tooltip title="Go back">
+        <Paper
+          onClick={() => {
+            setValue('');
+            setData();
+          }}
+          elevation={1}
+          sx={{ padding: '5px', float: 'left', cursor: 'pointer' }}
+        >
+          <Clear />
+        </Paper>
+      </Tooltip>
       {!data && (
         <div className="historique">
           <div>
@@ -126,7 +129,7 @@ function ReponseComponent() {
 
       {choose === 0 && (
         <Grid container>
-          <Grid item lg={9}>
+          <Grid item lg={12}>
             <Grid sx={{ marginTop: '10px' }}>
               {data &&
                 Object.keys(data).map((item, key) => {
@@ -137,10 +140,10 @@ function ReponseComponent() {
                         {data['' + item].map((index, cle) => {
                           return (
                             <React.Fragment key={cle + 1}>
-                              <Grid item lg={4}>
+                              <Grid item lg={4} md={5} sm={5} xs={10}>
                                 <Card className="reponseClasse" variant="outlined" sx={{ padding: '5px', cursor: 'pointer' }}>
                                   <Typography className="code" component="p">
-                                    {index.codeclient}{' '}
+                                    {index.codeclient}
                                     {user && user.fonction === 'superUser' && (
                                       <Typography
                                         component="span"
@@ -156,8 +159,22 @@ function ReponseComponent() {
                                         Delete
                                       </Typography>
                                     )}
+                                    <Typography
+                                      component="span"
+                                      onClick={() => updatecomponent(index)}
+                                      style={{
+                                        backgroundColor: 'rgb(0,169,244)',
+                                        color: '#fff',
+                                        borderRadius: '5px',
+                                        marginLeft: '10px',
+                                        padding: '4px 10px',
+                                        cursor: 'pointer'
+                                      }}
+                                    >
+                                      Edit
+                                    </Typography>
                                   </Typography>
-                                  <p>{index.nomClient} </p>
+                                  <p className="customer_name">{index.nomClient} </p>
                                   <p>Statut du compte:</p>
                                   <p>
                                     statut client : <span style={{ fontWeight: 'bolder' }}>{index.clientStatut}</span>
@@ -165,64 +182,63 @@ function ReponseComponent() {
                                   <p>
                                     statut payement : <span style={{ fontWeight: 'bolder' }}>{index.PayementStatut}</span>
                                   </p>
-                                  <p>consExpDays : {index.consExpDays} jour(s)</p>
-                                  <p>Saved by : {index.agentSave.nom}</p>
+                                  <p>
+                                    consExpDays : <span style={{ fontWeight: 'bolder' }}>{index.consExpDays} jour(s)</span>
+                                  </p>
+                                  <p>
+                                    Saved by : <span style={{ fontWeight: 'bolder' }}>{index.agentSave.nom}</span>
+                                  </p>
 
                                   <p className="retard">
                                     <span style={{ fontWeight: 'bolder' }}>Kinshasa le, </span> {returnHeure(index.createdAt)}
                                   </p>
                                 </Card>
                               </Grid>
-                              <Grid item lg={8}>
-                                <Grid container>
-                                  <Grid item lg={3} sx={{ padding: '5px' }}>
-                                    <Space size={12}>
-                                      <Image
-                                        width={150}
-                                        height={150}
-                                        src={`${lien_image}/${index.demande?.file}`}
-                                        placeholder={
-                                          <Image preview={false} src={`${lien_image}/${index.demande?.file}`} width={200} height={100} />
-                                        }
-                                      />
-                                    </Space>
-                                  </Grid>
-                                  <Grid item lg={9} sx={{ paddingLeft: '30px' }}>
-                                    <Grid className="reponseClasse">
-                                      <p>
-                                        <span style={{ fontWeight: 'bolder' }}>Statut du client : </span> {index.demande.statut};
-                                      </p>
-                                      <Divider />
-                                      <p>
-                                        <span style={{ fontWeight: 'bolder' }}>Feedback : </span> {index.demande?.raison.toLowerCase()};
-                                      </p>
-                                      <Divider />
-                                      <p>
-                                        <span style={{ fontWeight: 'bolder' }}>Adresse </span>: {index.demande?.sector},{' '}
-                                        {index.demande?.cell}, {index.demande?.sat}, {index.demande.reference}{' '}
-                                      </p>
-                                      <Divider />
-                                      <p>
-                                        {index.demandeur.fonction} {index.demandeur.codeAgent}; {index.demandeur.nom};{' '}
-                                      </p>
-                                      {index.demande?.numero !== 'undefined' && (
-                                        <p>
-                                          <span style={{ fontWeight: 'bolder' }}>Numero joignable du client</span> : {index.demande?.numero}
-                                        </p>
-                                      )}
-                                      <Divider />
-                                      <p>
-                                        {index.coordonnee?.longitude !== 'undefined' && `long : ${index.coordonnee?.longitude}`}
-                                        {index.coordonnee?.latitude !== 'undefined' && `lat : ${index.coordonnee?.latitude}`}
-                                        {index.coordonnee?.altitude !== 'undefined' && `alt : ${index.coordonnee?.altitude}`}
-                                      </p>
-                                      <Divider />
-                                      <p className="retard">
-                                        <span style={{ fontWeight: 'bolder' }}>Kinshasa le, </span>{' '}
-                                        {returnHeure(index.demande.createdAt || index.demande?.updatedAt)}
-                                      </p>
-                                    </Grid>
-                                  </Grid>
+                              <Grid item lg={3} md={2} sm={2} xs={2} sx={{ padding: '5px' }}>
+                                <Space>
+                                  <Image
+                                    style={{ width: '100%', heigth: '100%' }}
+                                    src={`${lien_image}/${index.demande?.file}`}
+                                    placeholder={
+                                      <Image preview={false} src={`${lien_image}/${index.demande?.file}`} width={200} height={100} />
+                                    }
+                                  />
+                                </Space>
+                              </Grid>
+                              <Grid item lg={5} md={5} sm={5} xs={12} sx={{ lg: { paddingLeft: '30px' } }}>
+                                <Grid className="reponseClasse">
+                                  <p>
+                                    <span style={{ fontWeight: 'bolder' }}>Statut du client : </span> {index.demande.statut};
+                                  </p>
+                                  <Divider />
+                                  <p>
+                                    <span style={{ fontWeight: 'bolder' }}>Feedback : </span> {index.demande?.raison.toLowerCase()};
+                                  </p>
+                                  <Divider />
+                                  <p>
+                                    <span style={{ fontWeight: 'bolder' }}>Adresse </span>: {index.demande?.sector}, {index.demande?.cell},{' '}
+                                    {index.demande?.sat}, {index.demande.reference}{' '}
+                                  </p>
+                                  <Divider />
+                                  <p>
+                                    {index.demandeur.fonction} {index.demandeur.codeAgent}; {index.demandeur.nom};{' '}
+                                  </p>
+                                  {index.demande?.numero !== 'undefined' && (
+                                    <p>
+                                      <span style={{ fontWeight: 'bolder' }}>Numero joignable du client</span> : {index.demande?.numero}
+                                    </p>
+                                  )}
+                                  <Divider />
+                                  <p>
+                                    {index.coordonnee?.longitude !== 'undefined' && `long : ${index.coordonnee?.longitude}`}
+                                    {index.coordonnee?.latitude !== 'undefined' && `lat : ${index.coordonnee?.latitude}`}
+                                    {index.coordonnee?.altitude !== 'undefined' && `alt : ${index.coordonnee?.altitude}`}
+                                  </p>
+                                  <Divider />
+                                  <p className="retard">
+                                    <span style={{ fontWeight: 'bolder' }}>Kinshasa le, </span>{' '}
+                                    {returnHeure(index.demande.createdAt || index.demande?.updatedAt)}
+                                  </p>
                                 </Grid>
                               </Grid>
                             </React.Fragment>
@@ -236,35 +252,6 @@ function ReponseComponent() {
                 })}
             </Grid>
           </Grid>
-          <Grid item lg={3}>
-            {appel &&
-              Object.keys(appel).map((item, key) => {
-                return (
-                  <React.Fragment key={key}>
-                    <div className="lot">{item}</div>
-                    <Grid container>
-                      {appel['' + item].map((index, cle) => {
-                        return (
-                          <Grid onClick={() => show(index)} item lg={12} key={cle + 1} sx={{ marginBottom: '2px' }}>
-                            <Card className="reponseClasse" variant="outlined" sx={{ padding: '5px', cursor: 'pointer' }}>
-                              <p className="code">
-                                ID : {index.idPlainte}; type : {index.type}
-                              </p>
-                              <Couleur text={index.open ? 'Ouvert' : 'Fermer'} />
-                              <p>statut :{index?.statut} </p>
-
-                              <p className="retard">
-                                Date {moment(index.fullDateSave).format('DD/MM/YYYY hh:mm')} property : {index?.property}
-                              </p>
-                            </Card>
-                          </Grid>
-                        );
-                      })}
-                    </Grid>
-                  </React.Fragment>
-                );
-              })}
-          </Grid>
         </Grid>
       )}
       {dataDelete && (
@@ -272,8 +259,11 @@ function ReponseComponent() {
           <WhyToDelete id={dataDelete} />
         </Popup>
       )}
-
-      {choose === 1 && donner && <DetailPlaintesRapport plainteSelect={donner} />}
+      {dataupdate && (
+        <Popup open={open} setOpen={setOpen} title="Edit">
+          <UpdateForm update={dataupdate} show={false} />
+        </Popup>
+      )}
     </>
   );
 }

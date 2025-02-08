@@ -9,7 +9,6 @@ import parametre from 'Redux/Parametre';
 import periodeActive from 'Redux/PeriodeActive';
 import plainte from 'Redux/Plainte';
 import itemPlainte from 'Redux/PlainteItem';
-import raison from 'Redux/Raison';
 import reponse from 'Redux/Reponses';
 import shop from 'Redux/Shop';
 import zone from 'Redux/Zone';
@@ -29,7 +28,6 @@ const reducers = combineReducers({
   plainte,
   agentAdmin,
   user,
-  raison,
   agent,
   reponse,
   periodeActive,

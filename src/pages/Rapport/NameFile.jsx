@@ -32,7 +32,7 @@ const returnMois = (chiffre) => {
   if (chiffre === 10) {
     return 'Novembre';
   }
-  if (chiffre === 12) {
+  if (chiffre === 11) {
     return 'Décembre';
   }
 };
@@ -51,9 +51,8 @@ module.exports = {
               return `${texte} allant du ${date1.getDate()} au ${date2.getDate()} ${returnMois(date2.getMonth())} ${date2.getFullYear()}`;
             }
           } else {
-            return `${texte} allant du ${date1.getDate()} ${returnMois(date1.getMonth())} au ${date2.getDate()} ${returnMois(
-              date2.getMonth()
-            )} ${date2.getFullYear()}`;
+            return `${texte} allant du ${date1.getDate()} ${returnMois(date1.getMonth())} au ${date2.getDate()} 
+            ${returnMois(date2.getMonth())} ${date2.getFullYear()}`;
           }
         } else {
           return `${texte} allant du ${date1.getDate()} ${returnMois(

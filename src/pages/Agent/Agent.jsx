@@ -46,6 +46,7 @@ function AddAgent({ data }) {
 
   const agent = useSelector((state) => state.agent);
   const [open, setOpen] = React.useState(false);
+
   const send = (e) => {
     e.preventDefault();
     try {
@@ -58,6 +59,7 @@ function AddAgent({ data }) {
         idZone: valueRegionSelect?.idZone,
         idShop: valueShopSelect?.idShop
       };
+
       dispatch(AjouterAgent(donner));
       setValue({
         nom: '',
@@ -86,29 +88,21 @@ function AddAgent({ data }) {
   const [errorAlert, setErrorAlert] = React.useState();
   const sendUpdate = () => {
     try {
-      if (['ZBM', 'PO'].includes(fonction?.value)) {
-        setValue({
-          ...values,
-          fonction: fonction?.value
-        });
-        let donner = {
-          values,
-          zoneSelect: valueRegionSelect?.idZone,
-          shop: ''
-        };
-        dispatch(UpdateAgent(donner));
+      if (valueRegionSelect.idZone !== valueShopSelect.idZone && !['ZBM', 'PO'].includes(fonction?.value)) {
+        setErrorAlert(`le shop << ${valueShopSelect.shop} >> n'est pas de la region << ${valueRegionSelect.denomination} >>`);
+        setOpen(true);
       } else {
-        if (valueRegionSelect.idZone !== valueShopSelect.idZone) {
-          setErrorAlert(`le shop << ${valueShopSelect.shop} >> n'est pas de la region << ${valueRegionSelect.denomination} >>`);
-          setOpen(true);
-        } else {
-          let donner = {
-            values,
-            zoneSelect: valueRegionSelect?.idZone,
-            shop: ['ZBM', 'PO'].includes(fonction?.value) ? '' : valueShopSelect?.idShop
-          };
-          dispatch(UpdateAgent(donner));
-        }
+        let donner = {
+          nom,
+          telephone,
+          fonction: fonction?.value,
+          codeAgent,
+          _id: data._id,
+          idZone: valueRegionSelect?.idZone,
+          idShop: ['ZBM', 'PO'].includes(fonction?.value) ? '' : valueShopSelect?.idShop
+        };
+
+        dispatch(UpdateAgent(donner));
       }
     } catch (error) {
       console.log(error);

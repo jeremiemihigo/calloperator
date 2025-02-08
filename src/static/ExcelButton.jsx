@@ -1,6 +1,7 @@
-import { FileCopy } from '@mui/icons-material';
-import { Button } from '@mui/material';
 import * as XLSX from 'xlsx';
+import { Grid } from '../../node_modules/@mui/material/index';
+import './Excel.style.css';
+import ExcelIcon from './excelicon.jpg';
 
 // eslint-disable-next-line react/prop-types
 function ExcelButton({ data, title, fileName }) {
@@ -11,11 +12,15 @@ function ExcelButton({ data, title, fileName }) {
     XLSX.writeFile(workbook, fileName);
   };
   return (
-    <>
-      <Button color="success" variant="contained" fullWidth disabled={data ? false : true} onClick={() => downloadExcel(data)}>
-        <FileCopy fontSize="small" /> <span className="ml-2">{title}</span>
-      </Button>
-    </>
+    <Grid
+      className="divbtonExcel"
+      onClick={() => {
+        data && downloadExcel(data);
+      }}
+    >
+      <img width={20} height={20} src={ExcelIcon} alt="Excel_icon" />
+      <span>{title}</span>
+    </Grid>
   );
 }
 

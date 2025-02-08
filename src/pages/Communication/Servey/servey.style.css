@@ -1,0 +1,41 @@
+.q {
+  background-color: #dedede;
+  border-radius: 10px;
+  padding: 5px;
+  margin-bottom: 5px;
+  cursor: pointer;
+}
+.q > p {
+  padding: 0;
+  margin: 0;
+}
+.q_type {
+  font-size: 10px;
+  font-weight: normal !important;
+}
+.q_title {
+  font-size: 12px;
+  font-weight: 600;
+}
+.q_item {
+  font-size: 11px;
+}
+
+.leftitem > p {
+  padding: 0px 20px;
+  margin: 0;
+}
+.leftitem .title {
+  font-weight: bolder;
+  font-size: 13px;
+}
+.papier {
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.subtitle {
+  margin-top: 5px;
+  text-align: justify;
+  font-size: 12px;
+  line-height: 20px;
+}

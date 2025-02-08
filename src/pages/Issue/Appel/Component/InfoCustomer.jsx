@@ -72,6 +72,7 @@ function InfoCustomer({ plainteSelect }) {
             <Typography className="title">Type</Typography>
             <Typography className="values">{plainteSelect?.type}</Typography>
           </Grid>
+
           {plainteSelect?.decodeur && (
             <Grid item lg={6} xs={12} sm={12} md={12} className="grid">
               <Typography className="title">Décodeur</Typography>

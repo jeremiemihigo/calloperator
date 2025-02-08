@@ -32,109 +32,163 @@ function Index() {
 
   return (
     <Grid>
-      <Grid className="divAppel" component="div">
+      <Grid className="divAppel" component="div" container>
         <Grid
+          item
+          xs={6}
+          lg={1.7}
+          md={2}
+          sm={3}
           onClick={() => {
             annuler();
             setSelect(7);
           }}
-          className={`${select === 7 && 'select'} titres`}
+          className="firstGrid"
         >
-          <p>Dashboard</p>
+          <div className={`${select === 7 && 'select'} titres`}>
+            <Typography component="p">Dashboard</Typography>
+          </div>
         </Grid>
         {user && (user.plainte_callcenter || user.plainteShop) && (
           <Grid
+            item
+            xs={6}
+            lg={1.7}
+            md={2}
+            sm={3}
+            className="firstGrid"
             onClick={() => {
               annuler();
               setSelect(1);
             }}
-            className={`${select === 1 && 'select'} titres`}
           >
-            <p>Create one</p>
+            <div className={`${select === 1 && 'select'} titres`}>
+              <Typography component="p">Create one</Typography>
+            </div>
           </Grid>
         )}
         <Grid
+          item
+          xs={6}
+          lg={1.7}
+          md={2}
+          sm={3}
+          className="firstGrid"
           onClick={() => {
             annuler();
             setSelect(0);
           }}
-          className={`${select === 0 && 'select'} titres`}
-          sx={{ width: '10rem' }}
         >
-          <Typography component="p" noWrap>
-            No technical Issues
-          </Typography>
-          <Typography component="p" className="nbre">
-            {client && client.length > 0 && client.filter((x) => x.type === 'appel' && x.statut !== 'escalade').length}
-            {client && client.length === 0 && <CircularProgress size={10} />}
-          </Typography>
+          <div className={`${select === 0 && 'select'} titres`}>
+            <Typography component="p" noWrap>
+              No technical Issues
+            </Typography>
+            <Typography component="p" className="nbre">
+              {client && client.length > 0 && client.filter((x) => x.type === 'appel' && x.statut !== 'escalade').length}
+              {client && client.length === 0 && <CircularProgress size={10} />}
+            </Typography>
+          </div>
         </Grid>
         <Grid
+          item
+          lg={1.7}
+          xs={6}
+          md={2}
+          sm={3}
+          className="firstGrid"
           onClick={() => {
             annuler();
             setSelect(5);
           }}
-          className={`${select === 5 && 'select'} titres`}
-          sx={{ width: '10rem' }}
         >
-          <Typography component="p" noWrap>
-            Technical Issues
-          </Typography>
-          <Typography component="p" className="nbre">
-            {client && client.length > 0 && client.filter((x) => x.type === 'ticket').length}
-            {client && client.length == 0 && <CircularProgress size={10} />}
-          </Typography>
+          <div className={`${select === 5 && 'select'} titres`}>
+            <Typography component="p" noWrap>
+              Technical Issues
+            </Typography>
+            <Typography component="p" className="nbre">
+              {client && client.length > 0 && client.filter((x) => x.type === 'ticket' && x.statut !== 'awaiting_confirmation').length}
+              {client && client.length == 0 && <CircularProgress size={10} />}
+            </Typography>
+          </div>
         </Grid>
 
         {user.backOffice_plainte && (
           <Grid
+            item
+            lg={1.7}
+            md={2}
+            sm={3}
+            className="firstGrid"
+            xs={6}
             onClick={() => {
               annuler();
               setSelect(2);
             }}
-            className={`${select === 2 && 'select'} titres`}
           >
-            <Typography component="p">Back office</Typography>
-            <Typography component="p" className="nbre">
-              {client && client.length > 0 && client.filter((x) => x?.operation === 'backoffice').length}
-              {client && client.length == 0 && <CircularProgress size={10} />}
-            </Typography>
+            <div className={`${select === 2 && 'select'} titres`}>
+              <Typography component="p">Back office</Typography>
+              <Typography component="p" className="nbre">
+                {client && client.length > 0 && client.filter((x) => x?.operation === 'backoffice').length}
+                {client && client.length == 0 && <CircularProgress size={10} />}
+              </Typography>
+            </div>
           </Grid>
         )}
         {!user.backOffice_plainte && (
           <Grid
+            className="firstGrid"
+            item
+            md={2}
+            sm={3}
+            lg={1.7}
+            xs={6}
             onClick={() => {
               annuler();
               setSelect(8);
             }}
-            className={`${select === 8 && 'select'} titres`}
           >
-            <Typography component="p">Back office</Typography>
+            <div className={`${select === 8 && 'select'} titres`}>
+              <Typography component="p">Back office</Typography>
+            </div>
           </Grid>
         )}
         {(user.fonction === 'co' || user.fonction === 'superUser') && (
           <Grid
+            item
+            md={2}
+            sm={3}
+            xs={6}
+            lg={1.7}
             onClick={() => {
               annuler();
               setSelect(4);
             }}
-            className={`${select === 4 && 'select'} titres`}
+            className="firstGrid"
           >
-            <Typography component="p">Relocation</Typography>
-            <Typography component="p" className="nbre">
-              {client && client.length > 0 && client.filter((x) => x?.statut === 'awaiting_confirmation').length}
-              {client && client.length === 0 && <CircularProgress size={10} color="inherit" />}
-            </Typography>
+            <div className={`${select === 4 && 'select'} titres`}>
+              <Typography component="p">Relocation</Typography>
+              <Typography component="p" className="nbre">
+                {client && client.length > 0 && client.filter((x) => x?.statut === 'awaiting_confirmation').length}
+                {client && client.length === 0 && <CircularProgress size={10} color="inherit" />}
+              </Typography>
+            </div>
           </Grid>
         )}
         <Grid
+          item
+          xs={6}
+          md={2}
+          sm={3}
+          lg={1.7}
+          className="firstGrid"
           onClick={() => {
             annuler();
             setSelect(9);
           }}
-          className={`${select === 9 && 'select'} titres`}
         >
-          <Typography component="p">Search</Typography>
+          <div className={`${select === 9 && 'select'} titres`}>
+            <Typography component="p">Search</Typography>
+          </div>
         </Grid>
       </Grid>
       {select === 0 && <ThisMonth />}

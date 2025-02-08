@@ -14,31 +14,31 @@ function Doublon() {
     try {
       setLoad(true);
       const response = await axios.get(big_data + '/doublon', config);
+      console.log(response);
       if (response.status === 200) {
         let d = [];
         for (let i = 0; i < response.data.length; i++) {
           d.push({
             codeclient: response.data[i].precedent.codeclient,
-            premier_codeAgent: response.data[i].precedent.demandeur.codeAgent,
-            premier_nomAgent: response.data[i].precedent.demandeur.nom,
-            premier_shop: response.data[i].PresentShop[0]?.shop,
-            premier_sat: response.data[i].precedent.demande.sat,
+            premier_visiteur: response.data[i].precedent.demandeur.codeAgent,
+            premier_feedback: response.data[i].precedent.demande.raison,
             premiere_date: dayjs(response.data[i].precedent.demande.updatedAt).format('DD/MM/YYYY'),
-            deuxieme_codeAgent: response.data[i].agentPresent.codeAgent,
-            deuxieme_nomAgent: response.data[i].agentPresent.nom,
-            deuxieme_sat: response.data[i].presents.sat,
-            deuxieme_date: dayjs(response.data[i].presents.createdAt).format('DD/MM/YYYY')
+            deuxieme_codeAgent: response.data[i].presents.codeAgent,
+            deuxieme_feedback: response.data[i].presents.raison,
+            deuxieme_date: dayjs(response.data[i].createdAt).format('DD/MM/YYYY')
           });
         }
         setFile(d);
         setLoad(false);
       }
     } catch (error) {
+      console.log(error);
       if (error) {
         setLoad(false);
       }
     }
   };
+
   React.useEffect(() => {
     laoding();
   }, []);
@@ -47,6 +47,7 @@ function Doublon() {
       return items;
     }
   });
+  console.log(file);
   const handleChanges = (e) => {
     let target = e.target.value.toUpperCase();
 
@@ -79,14 +80,11 @@ function Doublon() {
             <tr>
               <th>code client</th>
               <th>codeAgent</th>
-              <th>nomAgent</th>
-              <th>shop</th>
-              <th>sat</th>
-              <th>date</th>
-              <th>codeAgent</th>
-              <th>nomAgent</th>
-              <th>sat</th>
-              <th>date</th>
+              <th>Premier feedback</th>
+
+              <th>Deuxieme codeAgent</th>
+              <th>Deuxieme Feedback</th>
+              <th>Deuxieme Date</th>
             </tr>
           </thead>
           <tbody>
@@ -94,15 +92,12 @@ function Doublon() {
               return (
                 <tr key={key}>
                   <td>{index.codeclient}</td>
-                  <td>{index.premier_codeAgent}</td>
-                  <td>{index.premier_nomAgent}</td>
-                  <td>{index.premier_shop}</td>
-                  <td>{index.premier_sat}</td>
-
+                  <td>{index.premier_visiteur}</td>
+                  <td>{index.premier_feedback}</td>
                   <td>{index.premiere_date}</td>
                   <td>{index.deuxieme_codeAgent}</td>
-                  <td>{index.deuxieme_nomAgent}</td>
-                  <td>{index.deuxieme_sat}</td>
+
+                  <td>{index.deuxieme_feedback}</td>
                   <td>{index.deuxieme_date}</td>
                 </tr>
               );

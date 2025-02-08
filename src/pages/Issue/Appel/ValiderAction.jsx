@@ -39,9 +39,11 @@ function ValiderAction({ clients }) {
       if (response.status === 200) {
         if (response.data.statut === 'resolved') {
           success('You can only refresh the page', 'success');
+          setSending(false);
         } else {
           let newclient = client.map((x) => (x._id === response.data._id ? response.data : x));
           setClient(newclient);
+          setSending(false);
         }
         setCommentaire('');
         setValue('');

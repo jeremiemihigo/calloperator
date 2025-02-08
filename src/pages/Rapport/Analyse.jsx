@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+import _ from 'lodash';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
@@ -6,6 +7,8 @@ function Analyse({ data }) {
   const returnValue = (type) => {
     return data.filter((x) => x.demandeur.fonction === type).length;
   };
+  const [fonction] = React.useState(Object.keys(_.groupBy(data, 'demandeur.fonction')));
+
   const zones = useSelector((state) => state.zone.zone);
   const loadingRegion = (codeZone, fonction) => {
     let region = [];
@@ -27,8 +30,11 @@ function Analyse({ data }) {
           <thead>
             <tr>
               <td>Région/Shop</td>
-              <td>SA</td>
-              <td>Tech</td>
+              {fonction &&
+                fonction.map((index) => {
+                  return <td key={index}>{index}</td>;
+                })}
+
               <td>Total</td>
             </tr>
           </thead>
@@ -40,16 +46,26 @@ function Analyse({ data }) {
                   <React.Fragment key={key}>
                     <tr>
                       <td style={{ backgroundColor: '#dedede' }}>{index.denomination}</td>
-                      <td style={{ backgroundColor: '#dedede' }}>{loadingRegion(index.idZone, 'agent').agentTech}</td>
-                      <td style={{ backgroundColor: '#dedede' }}>{loadingRegion(index.idZone, 'tech').agentTech}</td>
+                      {fonction &&
+                        fonction.map((item) => {
+                          return (
+                            <td key={item} style={{ backgroundColor: '#dedede' }}>
+                              {loadingRegion(index.idZone, item).agentTech}
+                            </td>
+                          );
+                        })}
+
                       <td style={{ backgroundColor: '#dedede' }}>{loadingRegion(index.idZone).region}</td>
                     </tr>
                     {index.shop?.map((item, cle) => {
                       return (
                         <tr key={cle}>
                           <td>{item.shop}</td>
-                          <td>{loadingShop(item.idShop, 'agent')}</td>
-                          <td>{loadingShop(item.idShop, 'tech')}</td>
+                          {fonction &&
+                            fonction.map((items) => {
+                              return <td key={item}>{loadingShop(item.idShop, items)}</td>;
+                            })}
+
                           <td>{loadingShop(item.idShop, 'tech') + loadingShop(item.idShop, 'agent')}</td>
                         </tr>
                       );
@@ -59,9 +75,12 @@ function Analyse({ data }) {
               })}
             <tr className="total">
               <td>Total général</td>
-              <td>{returnValue('agent')}</td>
-              <td>{returnValue('tech')}</td>
-              <td>{returnValue('tech') + returnValue('agent')}</td>
+              {fonction &&
+                fonction.map((item) => {
+                  return <td key={item}>{returnValue(item)}</td>;
+                })}
+
+              <td>{data.length}</td>
             </tr>
           </tbody>
         </table>

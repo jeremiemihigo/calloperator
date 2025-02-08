@@ -25,8 +25,6 @@ function AutoComplement({ value, setValue, options, title, propr }) {
       filterOptions={(options, params) => {
         const filtered = filter(options, params);
 
-        // Suggest the creation of a new value
-
         return filtered;
       }}
       selectOnFocus

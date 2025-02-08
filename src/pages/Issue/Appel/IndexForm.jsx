@@ -1,18 +1,17 @@
 import { Grid, Paper, Typography } from '@mui/material';
-import PropType from 'prop-types';
-import React from 'react';
-import Form from './Form';
-import HistoriqueClient from './HistoriqueClient';
-import Liste from './Liste';
-import './style.css';
-
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
+import PropType from 'prop-types';
+import React from 'react';
 import { useSelector } from 'react-redux';
+import Form from './Form';
+import HistoriqueClient from './HistoriqueClient';
+import Liste from './Liste';
 import Not_Our_Customer from './Not_Our_Customer';
+import './style.css';
 
 function IndexForm({ property }) {
   const [select, setSelected] = React.useState(0);
@@ -27,7 +26,7 @@ function IndexForm({ property }) {
           <Box sx={{ display: 'flex' }}>
             <FormControl onClick={() => setFormSelect('our')} component="fieldset" variant="standard">
               <FormGroup>
-                <FormControlLabel control={<Checkbox checked={formSelect === 'our'} name="gilad" />} label="Our customer" />
+                <FormControlLabel control={<Checkbox checked={formSelect === 'our'} name="gilad" />} label="Our_customer" />
               </FormGroup>
             </FormControl>
             <FormControl onClick={() => setFormSelect('information')} required component="fieldset" variant="standard">
@@ -37,7 +36,9 @@ function IndexForm({ property }) {
             </FormControl>
             {user && (
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <p style={{ padding: '0px', margin: '0px', fontSize: '13px' }}>{user.plainteShop && '' + user.plainteShop}</p>
+                <Typography noWrap style={{ padding: '0px', margin: '0px', fontSize: '13px' }}>
+                  {user.plainteShop && '' + user.plainteShop}
+                </Typography>
               </div>
             )}
           </Box>

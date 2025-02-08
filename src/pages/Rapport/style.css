@@ -42,8 +42,8 @@ table tbody tr:last-child td {
   border: none;
 }
 .total {
-  background-color: rgb(0, 0, 0);
-  color: white !important;
+  background-color: rgb(0, 169, 244);
+
   font-weight: bolder;
 }
 .messageItem {

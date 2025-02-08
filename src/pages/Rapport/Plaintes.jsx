@@ -5,17 +5,13 @@ import { DataGrid } from '@mui/x-data-grid';
 import _ from 'lodash';
 import React from 'react';
 import { dateFrancais } from 'static/Lien';
-import Popup from 'static/Popup';
-import Ajustage from './Ajustage';
 
-function Plaintes({ data, loadings, dates }) {
+function Plaintes({ data, dates }) {
   const [result, setResult] = React.useState();
-  const [open, setOpen] = React.useState(false);
-  const [objects, setObjects] = React.useState();
   const loading = () => {
     let table = [];
     let objects = _.toArray(Object.keys(_.countBy(data, 'demande.raison')));
-    setObjects(objects);
+
     for (let i = 0; i < objects.length; i++) {
       table.push({
         title: objects[i],
@@ -49,9 +45,6 @@ function Plaintes({ data, loadings, dates }) {
         <Typography component="span">
           Les plaintes du {dateFrancais(dates.debut)} au {dateFrancais(dates.fin)}
         </Typography>
-        <Typography component="span" onClick={() => setOpen(true)} style={{ marginLeft: '10px', color: 'red', cursor: 'pointer' }}>
-          Ajuster
-        </Typography>
       </Grid>
       {result && (
         <DataGrid
@@ -68,11 +61,6 @@ function Plaintes({ data, loadings, dates }) {
           checkboxSelection
           disableRowSelectionOnClick
         />
-      )}
-      {objects && (
-        <Popup open={open} setOpen={setOpen} title="Ajustage">
-          <Ajustage feedback={objects} loading={loadings} />
-        </Popup>
       )}
     </div>
   );

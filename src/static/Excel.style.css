@@ -1,0 +1,13 @@
+.divbtonExcel {
+  border: 1px solid green;
+  padding: 5px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  justify-content: center;
+}
+.divbtonExcel > span {
+  font-size: 12px;
+  margin-left: 5px;
+}

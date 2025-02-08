@@ -1,4 +1,4 @@
-import { Add } from '@mui/icons-material';
+import { Add, Edit } from '@mui/icons-material';
 import { Fab, Paper } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import React from 'react';
@@ -9,6 +9,13 @@ import Formulaire from './Formulaire';
 function Index() {
   const [open, setOpen] = React.useState(false);
   const role = useSelector((state) => state.role.role);
+  const [openEdit, setOpenEdit] = React.useState(false);
+  const [dataEdit, setDataEdit] = React.useState();
+  const functionEdit = (d) => {
+    setDataEdit(d);
+    setOpenEdit(true);
+  };
+
   const columns = [
     {
       field: 'idRole',
@@ -23,10 +30,29 @@ function Index() {
       editable: false
     },
     {
+      field: 'type',
+      headerName: 'Type',
+      width: 100,
+      editable: false
+    },
+    {
       field: 'filterBy',
       headerName: 'filterBy',
       width: 120,
       editable: false
+    },
+    {
+      field: 'Edit',
+      headerName: 'Edit',
+      width: 120,
+      editable: false,
+      renderCell: (params) => {
+        return (
+          <Fab size="small" onClick={() => functionEdit(params.row)} color="primary">
+            <Edit fontSize="small" />
+          </Fab>
+        );
+      }
     }
   ];
   function getId(row) {
@@ -63,6 +89,11 @@ function Index() {
       <Popup open={open} setOpen={setOpen} title="Add">
         <Formulaire />
       </Popup>
+      {dataEdit && (
+        <Popup open={openEdit} setOpen={setOpenEdit} title="Edit">
+          <Formulaire data={dataEdit} />
+        </Popup>
+      )}
     </>
   );
 }

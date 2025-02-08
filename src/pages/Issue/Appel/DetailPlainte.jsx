@@ -17,6 +17,7 @@ function DetailPlainte() {
         ticket: plainteSelect.idPlainte
       };
       const response = await axios.post(lien_issue + '/create_ticket', datas, config);
+      console.log(response);
       if (response.status === 200) {
         setClient(client.map((x) => (x._id === response.data._id ? response.data : x)));
         setSelect(5);

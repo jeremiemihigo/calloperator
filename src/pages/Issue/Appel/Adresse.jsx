@@ -24,7 +24,7 @@ function Adresse({ setOpen }) {
     e.preventDefault();
     setAdresse({
       ...adresse,
-      sat: satSelect,
+      sat: satSelect?.nom_SAT,
       shop: shopSelect?.shop
     });
     setOpen(false);

@@ -1,31 +1,38 @@
 import { Button } from '@mui/material';
 import AutoComplement from 'Control/AutoComplet';
+import SimpleBackdrop from 'Control/Backdrop';
 import { OtherUpdated } from 'Redux/AgentAdmin';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 function PlainteShop() {
-  const agentadmin = useSelector((state) => state.agentAdmin?.agentAdmin);
+  const agentadmin = useSelector((state) => state.agentAdmin);
   const [agentSelect, setAgentSelect] = React.useState('');
 
   const dispatch = useDispatch();
   const send = (e) => {
     e.preventDefault();
     const data = {
-      data: {
-        idAgent: agentSelect?._id,
-        data: { plainte_callcenter: true }
-      },
-      link: 'backoffice'
+      idAgent: agentSelect?._id,
+      data: { plainte_callcenter: true },
+      unset: { plainteShop: true }
     };
+
     dispatch(OtherUpdated(data));
     setAgentSelect('');
   };
   return (
     <div style={{ width: '22rem' }}>
-      {agentadmin && (
+      {agentadmin.otherUpdated === 'pending' && <SimpleBackdrop open={true} taille="10rem" title="Please wait..." />}
+      {agentadmin?.agentAdmin && (
         <div style={{ margin: '10px 0px' }}>
-          <AutoComplement value={agentSelect} setValue={setAgentSelect} options={agentadmin} title="Selectionnez un agent" propr="nom" />
+          <AutoComplement
+            value={agentSelect}
+            setValue={setAgentSelect}
+            options={agentadmin?.agentAdmin}
+            title="Selectionnez un agent"
+            propr="nom"
+          />
         </div>
       )}
       <div>

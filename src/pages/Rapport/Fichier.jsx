@@ -112,7 +112,9 @@ function Rapport() {
             let donner = [];
             for (let i = 0; i < response.data.length; i++) {
               donner.push({
+                idDemande: response.data[i].idDemande,
                 ID: response.data[i].codeclient,
+
                 NOMS: response.data[i].nomClient,
                 'SERIAL NUMBER': chekValue(response.data[i].codeCu),
                 'CLIENT STATUS': response.data[i].clientStatut,
@@ -135,6 +137,7 @@ function Rapport() {
                 ALTITUDE: chekValue(response.data[i].coordonnee?.altitude),
                 'ETAT PHYSIQUE': response.data[i].demande?.statut === 'allumer' ? 'allumé' : 'eteint',
                 RAISON: response.data[i].demande?.raison,
+                Item_Swap: response.data[i].demande?.itemswap,
                 COMMUNE: response.data[i].demande?.commune,
                 QUARTIER: response.data[i].demande?.sector,
                 AVENUE: response.data[i].demande?.cell,
@@ -228,7 +231,7 @@ function Rapport() {
               <Grid item lg={7} sm={7} xs={12}>
                 <StatistiqueCO data={donnerFound} />
               </Grid>
-              <Grid item lg={7} sm={7} xs={12}>
+              <Grid item lg={12} sm={12} xs={12}>
                 <Grid className="pagesTitle">
                   <Typography>
                     Analyse des visites ménages du {dateFrancais(dates.debut)} au {dateFrancais(dates.fin)}

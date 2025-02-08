@@ -1,74 +1,19 @@
-import { Button, TextField } from '@mui/material';
-import { message } from 'antd';
-import axios from 'axios';
-import { CreateContexteGlobal } from 'GlobalContext';
+import { TextField } from '@mui/material';
 import React from 'react';
-import { config, lien_issue } from 'static/Lien';
 import { CreateContexteTable } from '../Contexte';
+import ButtonEsc from './ButtonEsc';
 
 function Repossession() {
-  const { item, plainteSelect, annuler, initiale, shopSelect, codeclient } = React.useContext(CreateContexteTable);
-  const [autre, setAutres] = React.useState();
-  const [sending, setSending] = React.useState(false);
-  const { client, setClient } = React.useContext(CreateContexteGlobal);
-
-  const [messageApi, contextHolder] = message.useMessage();
-  const success = (texte, type) => {
-    messageApi.open({
-      type,
-      content: '' + texte,
-      duration: 10
-    });
-  };
-
-  const sendData = async (e) => {
-    e.preventDefault();
-    try {
-      setSending(true);
-      const data = {
-        codeclient,
-        shop: shopSelect?.shop,
-        property: 'shop',
-        contact: initiale?.contact,
-        nomClient: initiale?.nomClient,
-        plainteSelect: plainteSelect?.title,
-        typePlainte: item?.title,
-        statut: 'escalade',
-        num_synchro: autre?.num_synchro,
-        materiel: autre?.materiel,
-        raison: autre?.raison
-      };
-      const response = await axios.post(lien_issue + '/repo_volontaire', data, config);
-      if (response.status === 200) {
-        success('Done', 'success');
-        setClient([response.data, ...client]);
-        setSending(false);
-        annuler();
-      }
-      if (response.status === 201) {
-        success('' + response.data, 'error');
-        setSending(false);
-      }
-    } catch (error) {
-      if (error.code === 'ERR_NETWORK') {
-        success(error.message, 'error');
-        setSending(false);
-      }
-    }
-  };
+  const { state, onchange } = React.useContext(CreateContexteTable);
+  const { num_synchro_repo, materiel_repo, raison_repo } = state;
 
   return (
-    <div style={{ width: '20rem' }}>
-      {contextHolder}
+    <div>
       <div>
         <TextField
-          onChange={(e) =>
-            setAutres({
-              ...autre,
-              num_synchro: e.target.value
-            })
-          }
-          name="num_synchro"
+          value={num_synchro_repo}
+          onChange={(e) => onchange(e)}
+          name="num_synchro_repo"
           autoComplete="off"
           fullWidth
           label="Num_synchro"
@@ -76,37 +21,20 @@ function Repossession() {
       </div>
       <div style={{ margin: '10px 0px' }}>
         <TextField
-          onChange={(e) =>
-            setAutres({
-              ...autre,
-              materiel: e.target.value
-            })
-          }
-          name="materiel"
+          value={materiel_repo}
+          onChange={(e) => onchange(e)}
+          name="materiel_repo"
           autoComplete="off"
           fullWidth
           label="Materiels manquants"
         />
       </div>
       <div>
-        <TextField
-          onChange={(e) =>
-            setAutres({
-              ...autre,
-              raison: e.target.value
-            })
-          }
-          name="raison"
-          autoComplete="off"
-          fullWidth
-          label="raison"
-        />
+        <TextField value={raison_repo} onChange={(e) => onchange(e)} name="raison_repo" autoComplete="off" fullWidth label="raison" />
       </div>
 
       <div style={{ marginTop: '10px' }}>
-        <Button disabled={sending} onClick={(e) => sendData(e)} color="primary" fullWidth variant="contained">
-          Escalader_vers_le_Backoffice
-        </Button>
+        <ButtonEsc title="Escalader" statut="Repossession volontaire" />
       </div>
     </div>
   );

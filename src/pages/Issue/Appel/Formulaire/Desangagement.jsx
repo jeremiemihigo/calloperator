@@ -7,7 +7,7 @@ import { config, lien_issue } from 'static/Lien';
 import { CreateContexteTable } from '../Contexte';
 
 function Desangagement() {
-  const { item, plainteSelect, annuler, initiale, shopSelect, codeclient } = React.useContext(CreateContexteTable);
+  const { item, plainteSelect, state, annuler, initiale, shopSelect } = React.useContext(CreateContexteTable);
   const { client, setClient } = React.useContext(CreateContexteGlobal);
   const [file, setImage] = React.useState();
   const [raison, setRaison] = React.useState('');
@@ -26,10 +26,10 @@ function Desangagement() {
       setSending(true);
       const datas = new FormData();
       datas.append('raison', raison);
-      datas.append('codeclient', codeclient);
+      datas.append('codeclient', state.codeclient);
       datas.append('shop', shopSelect?.shop);
       datas.append('property', 'shop');
-      datas.append('contact', initiale?.contact);
+      datas.append('contact', state?.contact);
       datas.append('nomClient', initiale?.nomClient);
       datas.append('plainteSelect', plainteSelect?.title);
       datas.append('typePlainte', item?.title);
@@ -53,7 +53,7 @@ function Desangagement() {
   };
 
   return (
-    <div style={{ width: '20rem' }}>
+    <div>
       {contextHolder}
       <div>
         <TextField

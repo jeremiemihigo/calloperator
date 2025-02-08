@@ -15,13 +15,11 @@ import { useSelector } from 'react-redux';
 import { config, lien, lien_image } from 'static/Lien';
 import Selected from 'static/Select';
 import { Backdrop } from '../../../node_modules/@mui/material/index';
-import { CreateContexteDemande } from './ContextDemande';
 import './update.style.css';
 
-function UpdateForm({ update }) {
+function UpdateForm({ update, show }) {
   const regions = useSelector((state) => state.zone.zone);
   const shop = useSelector((state) => state.shop.shop);
-  const { changeImages, changeRecent } = React.useContext(CreateContexteDemande);
   const [valueRegionSelect, setValueRegionSelect] = React.useState('');
   const [valueShopSelect, setValueShopSelect] = React.useState('');
   const [fetching, setFeching] = React.useState(false);
@@ -106,36 +104,51 @@ function UpdateForm({ update }) {
         setOpenSnack(true);
         setSending(false);
       } else {
-        setOpenSnack(false);
-        const response = await axios.put(
-          lien + '/reponse',
-          {
-            idReponse: update._id,
-            data: {
-              codeclient: codeClient,
-              nomClient,
-              codeCu,
-              clientStatut: statut,
-              PayementStatut: payement,
-              consExpDays,
-              idZone: valueRegionSelect.idZone,
-              idShop: valueShopSelect.idShop,
-              adresse: valueAdresse
-            }
-          },
-          config
-        );
-        if (response.status === 200) {
-          changeReponse(response.data);
-          setSending(false);
-          setMessage('Mofication effectuée');
-          reset();
+        if (
+          codeClient === '' ||
+          nomClient === '' ||
+          codeCu === '' ||
+          statut === '' ||
+          payement === '' ||
+          consExpDays === '' ||
+          isNaN(parseInt(consExpDays)) ||
+          valueRegionSelect === '' ||
+          valueShopSelect === '' ||
+          valueAdresse === ''
+        ) {
+          setMessage(`Veuillez renseigner tous les champs`);
           setOpenSnack(true);
-          changeRecent();
         } else {
-          setSending(false);
-          setMessage('Error');
-          setOpenSnack(true);
+          setOpenSnack(false);
+          const response = await axios.put(
+            lien + '/reponse',
+            {
+              idReponse: update._id,
+              data: {
+                codeclient: codeClient,
+                nomClient,
+                codeCu,
+                clientStatut: statut,
+                PayementStatut: payement,
+                consExpDays,
+                idZone: valueRegionSelect.idZone,
+                idShop: valueShopSelect.idShop,
+                adresse: valueAdresse
+              }
+            },
+            config
+          );
+          if (response.status === 200) {
+            changeReponse(response.data);
+            setSending(false);
+            setMessage('Mofication effectuée');
+            reset();
+            setOpenSnack(true);
+          } else {
+            setSending(false);
+            setMessage('Error');
+            setOpenSnack(true);
+          }
         }
       }
     } catch (error) {
@@ -190,8 +203,8 @@ function UpdateForm({ update }) {
         setFeching(true);
         const response = await axios.get(`${lien}/customer/${clients}`);
         if (response.status === 200) {
-          const { visites, info } = response.data;
-          changeImages(visites);
+          const { info } = response.data;
+
           setInitial({
             ...intial,
             codeCu: info.customer_cu,
@@ -246,13 +259,16 @@ function UpdateForm({ update }) {
 
       <Grid container>
         <Grid item lg={10} xs={10}>
-          <Space size={12}>
-            <Image
-              width={200}
-              src={`${lien_image}/${update.demande.file}`}
-              placeholder={<Image preview={false} src={`${lien_image}/${update.demande.file}`} width={200} />}
-            />
-          </Space>
+          {show && (
+            <Space size={12}>
+              <Image
+                width={200}
+                src={`${lien_image}/${update.demande.file}`}
+                placeholder={<Image preview={false} src={`${lien_image}/${update.demande.file}`} width={200} />}
+              />
+            </Space>
+          )}
+
           <TextField
             style={{ marginTop: '10px' }}
             onChange={(e) => onChange(e)}

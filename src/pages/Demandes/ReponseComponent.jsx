@@ -10,7 +10,7 @@ import { CreateContexteGlobal } from 'GlobalContext';
 import React, { useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { postReponse } from 'Redux/Reponses';
-import { big_data, config, lien } from 'static/Lien';
+import { config, lien } from 'static/Lien';
 import Selected from 'static/Select';
 import { CreateContexteDemande } from './ContextDemande';
 
@@ -153,6 +153,7 @@ function ReponsesComponent({ update }) {
               statut: demande.statut,
               sector: demande.sector,
               jours: demande?.jours,
+              itemswap: demande?.itemswap,
               lot: demande.lot,
               cell: demande.cell,
               file: demande.file,
@@ -240,7 +241,7 @@ function ReponsesComponent({ update }) {
           codeClient.trim().length === 12 ? codeClient.toUpperCase().trim() : codeClient.length === 8 ? 'BDRC' + codeClient.trim() : '';
         if (clients !== '') {
           setFeching(true);
-          const response = await axios.get(`${big_data}/customer/${clients}`);
+          const response = await axios.get(`${lien}/customer/${clients}`);
           if (response.status === 200) {
             const { visites, info } = response.data;
             changeImages(visites);

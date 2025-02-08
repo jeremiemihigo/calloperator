@@ -155,9 +155,10 @@ function AllCall() {
         </Grid>
       </Paper>
       {!data && <LoaderGif width={400} height={400} />}
-      {data && data.length > 0 && (
-        <Paper sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }} elevation={4}>
-          <div>
+
+      <Paper sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }} elevation={4}>
+        {data && data.length > 0 && (
+          <>
             <DataGrid
               rows={filterFn.fn(data)}
               columns={columns}
@@ -172,11 +173,11 @@ function AllCall() {
               disableRowSelectionOnClick
               getRowId={getId}
             />
-          </div>
-        </Paper>
-      )}
+          </>
+        )}
+      </Paper>
+
       {data && data.length === 0 && <NoCustomer texte="No backoffice complaints" />}
-      {/* <Rebour /> */}
     </>
   );
 }

@@ -10,10 +10,10 @@ import { config, lien } from 'static/Lien';
 import Popup from 'static/Popup';
 import AgentAdmin from './AgentAdmin';
 
+import { Delete, Edit, ResetTvOutlined } from '@mui/icons-material';
+import { Fab, Tooltip } from '@mui/material';
 import Dot from 'components/@extended/Dot';
 import { returnRole } from 'utils/Lien';
-import { Delete, Edit, ResetTvOutlined } from '../../../node_modules/@mui/icons-material/index';
-import { Fab, Tooltip } from '../../../node_modules/@mui/material/index';
 import UpdateAgentAdmin from './UpdateAgentAdmin';
 
 function AgentListeAdmin() {
@@ -35,7 +35,7 @@ function AgentListeAdmin() {
     }
   };
   const resetPassword = async (agent) => {
-    const response = await axios.put(lien + '/resetAdmin', { id: agent._id }, config);
+    const response = await axios.post(lien + '/resetAdmin', { id: agent._id }, config);
     if (response.status === 200) {
       window.location.replace('/access');
     } else {

@@ -147,7 +147,11 @@ function ReponseAdmin(props) {
         )}
       </Grid>
       <Grid item lg={7}>
-        {recentAnswerSelect ? <UpdateForm update={recentAnswerSelect} /> : <BasicTabs titres={titres} components={components} />}
+        {recentAnswerSelect ? (
+          <UpdateForm update={recentAnswerSelect} show={true} />
+        ) : (
+          <BasicTabs titres={titres} components={components} />
+        )}
       </Grid>
     </Grid>
   );

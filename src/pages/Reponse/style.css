@@ -23,6 +23,9 @@
   margin: 3px;
   font-size: 12px;
 }
+.customer_name {
+  font-weight: bolder;
+}
 .marge {
   width: 100%;
   background-color: rgb(29, 29, 61);

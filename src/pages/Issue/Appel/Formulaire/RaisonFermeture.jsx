@@ -25,6 +25,7 @@ function RaisonFermeture({ idPlainte }) {
       e.preventDefault();
       setSend(true);
       const response = await axios.post(lien_issue + '/fermeture_plainte', { idPlainte, raison: value }, config);
+      console.log(response);
       if (response.status === 200) {
         success('Done', 'success');
         setClient(client.map((x) => (x.idPlainte === response.data.idPlainte ? response.data : x)));
@@ -54,6 +55,7 @@ function RaisonFermeture({ idPlainte }) {
           label="Raison de Fermeture"
         />
       </div>
+
       <div style={{ marginTop: '10px' }}>
         <Button disabled={send} onClick={(e) => sendData(e)} fullWidth variant="contained" color="primary">
           Escalader

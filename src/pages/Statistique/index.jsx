@@ -6,7 +6,7 @@ import { Input } from 'antd';
 import axios from 'axios';
 import MainCard from 'components/MainCard';
 import AutoComplement from 'Control/AutoComplet';
-import BasicTabs from 'Control/Tabs';
+import SimpleBackdrop from 'Control/Backdrop';
 import RadialBarChart from 'pages/Issue/Appel/Dashboard/Chart';
 import React from 'react';
 import { useSelector } from 'react-redux';
@@ -70,11 +70,6 @@ function Statistiques() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [donner]);
 
-  const titres = [
-    // { id: 0, label: 'Graphique' },
-    // { id: 1, label: 'Régions' },
-    { id: 0, label: 'Agents' }
-  ];
   const [donnerStrucuture, setDonneeStructure] = React.useState({
     followup: 0,
     visite: 0,
@@ -86,7 +81,7 @@ function Statistiques() {
   const restructure = () => {
     if (listeDemande) {
       const followups = listeDemande.filter((x) => x.feedback === 'followup');
-      const visites = listeDemande.filter((x) => x.valide === true);
+      const visites = listeDemande.filter((x) => x.valide && ['new', 'chat'].includes(x.feedback));
       const attentes = listeDemande.filter((x) => x.feedback === 'new' && !x.valide);
       const confor = listeDemande.filter((x) => !x.valide && x.feedback === 'chat');
       setDonneeStructure({ nconforme: confor.length, followup: followups.length, visite: visites.length, attente: attentes.length });
@@ -116,107 +111,98 @@ function Statistiques() {
     { id: 6, client: 'inactive', payment: 'terminated', text: 'Inactive' }
   ];
   return (
-    <MainCard>
-      {/* {valeur && <Alert severity="error">{message}</Alert>} */}
-      <Grid container>
-        {region?.zone.length > 0 && (
-          <Grid item lg={2} sm={6} xs={12} md={6} sx={{ padding: '5px' }}>
-            <AutoComplement value={value} setValue={setValue} options={region.zone} title="Régions" propr="denomination" />
-          </Grid>
-        )}
-        {value && (
-          <Grid item lg={2} sm={6} md={6} xs={12} sx={{ padding: '5px' }}>
-            <AutoComplement value={shopSelect} setValue={setShopSelect} options={value.shop} title="Shop" propr="shop" />
-          </Grid>
-        )}
-
-        <Grid item lg={3} sm={6} xs={12} md={6} sx={{ padding: '5px', display: 'flex', alignItems: 'center' }}>
-          <Input
-            type="date"
-            onChange={(e) =>
-              setDates({
-                ...dates,
-                debut: e.target.value
-              })
-            }
-            placeholder="Date"
-          />
-        </Grid>
-        <Grid item lg={3} sm={6} xs={12} md={6} sx={{ padding: '5px', display: 'flex', alignItems: 'center' }}>
-          <Input
-            onChange={(e) =>
-              setDates({
-                ...dates,
-                fin: e.target.value
-              })
-            }
-            type="date"
-            placeholder="Date"
-          />
-        </Grid>
-
-        <Grid item lg={2} sx={{ padding: '5px', display: 'flex', alignItems: 'center' }}>
-          <Button color="primary" variant="contained" disabled={fetch} onClick={(e) => sendDataFectch(e)}>
-            <Search fontSize="small" /> <span style={{ marginLeft: '5px' }}>{fetch ? 'Loading...' : 'Rechercher'}</span>
-          </Button>
-        </Grid>
-      </Grid>
-      {listeDemande && (
+    <>
+      <SimpleBackdrop open={fetch} taille="10rem" title="Chargement..." />
+      <MainCard>
         <Grid container>
-          <Grid item lg={3} xs={12} sm={6} md={4}>
-            {listeDemande.length > 0 ? (
-              <Datastucture
-                subtitle={`Toutes les visites validées soit ${((visite * 100) / listeDemande.length).toFixed(0)}%`}
-                title="Visites"
-                nombre={visite}
-              />
-            ) : (
-              <p style={{ textAlign: 'center' }}>Loading...</p>
-            )}
-          </Grid>
-          <Grid item lg={3} xs={12} sm={6} md={4}>
-            <Datastucture subtitle="Tous les followup" title="Follow up" nombre={followup} />
-          </Grid>
-          <Grid item lg={3} xs={12} sm={6} md={4}>
-            <Datastucture subtitle="Toutes les visites en attente" title="Attente" nombre={attente} />
-          </Grid>
-          <Grid item lg={3} xs={12} sm={6} md={4}>
-            <Datastucture subtitle="En attente de correction" title="Non conforme" nombre={nconforme} />
-          </Grid>
-        </Grid>
-      )}
-
-      {listeDemande && <AffichageStat listeDemande={listeDemande} />}
-      <Grid container sx={{ marginTop: '10px' }}>
-        {listeDemande &&
-          liste.map((index) => {
-            return (
-              <Grid item lg={2} xs={12} sm={6} md={4} key={index.id}>
-                <Paper elevation={3} sx={{ margin: '2px' }}>
-                  <RadialBarChart texte={index.text} nombre={returnNombre(index)} />
-                </Paper>
-              </Grid>
-            );
-          })}
-      </Grid>
-
-      <Grid container>
-        <Grid item lg={12}>
-          {listeDemande && (
-            <Grid>
-              <BasicTabs
-                titres={titres}
-                components={[
-                  // { id: 0, component: <Graphique donner={listeDemande} recherche={donner} /> },
-                  // { id: 1, component: <Regions region={value} listeDemande={listeDemande} /> },
-                  { id: 0, component: <Agents listeDemande={listeDemande} /> }
-                ]}
-              />
+          {region?.zone.length > 0 && (
+            <Grid item lg={2} sm={6} xs={12} md={6} sx={{ padding: '5px' }}>
+              <AutoComplement value={value} setValue={setValue} options={region.zone} title="Régions" propr="denomination" />
             </Grid>
           )}
+          {value && (
+            <Grid item lg={2} sm={6} md={6} xs={12} sx={{ padding: '5px' }}>
+              <AutoComplement value={shopSelect} setValue={setShopSelect} options={value.shop} title="Shop" propr="shop" />
+            </Grid>
+          )}
+
+          <Grid item lg={3} sm={6} xs={12} md={6} sx={{ padding: '5px', display: 'flex', alignItems: 'center' }}>
+            <Input
+              type="date"
+              onChange={(e) =>
+                setDates({
+                  ...dates,
+                  debut: e.target.value
+                })
+              }
+              placeholder="Date"
+            />
+          </Grid>
+          <Grid item lg={3} sm={6} xs={12} md={6} sx={{ padding: '5px', display: 'flex', alignItems: 'center' }}>
+            <Input
+              onChange={(e) =>
+                setDates({
+                  ...dates,
+                  fin: e.target.value
+                })
+              }
+              type="date"
+              placeholder="Date"
+            />
+          </Grid>
+
+          <Grid item lg={2} xs={12} sx={{ padding: '5px', display: 'flex', alignItems: 'center' }}>
+            <Button fullWidth color="primary" variant="contained" disabled={fetch} onClick={(e) => sendDataFectch(e)}>
+              <Search fontSize="small" /> <span style={{ marginLeft: '5px' }}>{fetch ? 'Loading...' : 'Rechercher'}</span>
+            </Button>
+          </Grid>
         </Grid>
-      </Grid>
-    </MainCard>
+        {listeDemande && (
+          <Grid container>
+            <Grid item lg={3} xs={12} sx={{ padding: '2px' }} sm={6} md={4}>
+              {listeDemande.length > 0 ? (
+                <Datastucture
+                  subtitle={`Toutes les visites validées soit ${((visite * 100) / listeDemande.length).toFixed(0)}%`}
+                  title="Visites"
+                  nombre={visite}
+                />
+              ) : (
+                <p style={{ textAlign: 'center' }}>Loading...</p>
+              )}
+            </Grid>
+            <Grid item lg={3} sx={{ padding: '2px' }} xs={12} sm={6} md={4}>
+              <Datastucture subtitle="Tous les followup" title="Follow up" nombre={followup} />
+            </Grid>
+            <Grid item lg={3} sx={{ padding: '2px' }} xs={12} sm={6} md={4}>
+              <Datastucture subtitle="Toutes les visites en attente" title="Attente" nombre={attente} />
+            </Grid>
+            <Grid item lg={3} sx={{ padding: '2px' }} xs={12} sm={6} md={4}>
+              <Datastucture subtitle="En attente de correction" title="Non conforme" nombre={nconforme} />
+            </Grid>
+          </Grid>
+        )}
+
+        {listeDemande && <AffichageStat listeDemande={listeDemande} />}
+        <Grid container sx={{ marginTop: '10px' }}>
+          {listeDemande &&
+            liste.map((index) => {
+              return (
+                <Grid item lg={2} xs={12} sm={6} md={4} key={index.id}>
+                  <Paper elevation={3} sx={{ margin: '2px' }}>
+                    <RadialBarChart texte={index.text} nombre={returnNombre(index)} />
+                  </Paper>
+                </Grid>
+              );
+            })}
+        </Grid>
+
+        <Grid container>
+          <Grid item lg={12}>
+            {listeDemande && <Agents listeDemande={listeDemande} />}
+          </Grid>
+        </Grid>
+      </MainCard>
+    </>
   );
 }
 

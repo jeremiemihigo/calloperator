@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { config, lien_issue, returnName } from 'static/Lien';
 import Popup from 'static/Popup';
+import { Paper } from '../../../../../node_modules/@mui/material/index';
 import { CreateContexteTable } from '../Contexte';
 import WhyEdit from '../Formulaire/WhyEdit';
 import Couleur from './Color';
@@ -199,24 +200,26 @@ function AllCall() {
       {contextHolder}
       {!data && <LoaderGif width={400} height={400} />}
       {data && data.length === 0 && <NoCustomer texte="No pending non-technical complaints" />}
-      {data && data.length > 0 && (
-        <div style={{ width: '100%' }}>
-          <DataGrid
-            rows={data}
-            columns={columns}
-            initialState={{
-              pagination: {
-                paginationModel: {
-                  pageSize: 100
+      <Paper elevation={3}>
+        {data && data.length > 0 && (
+          <div style={{ width: '100%' }}>
+            <DataGrid
+              rows={data}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 100
+                  }
                 }
-              }
-            }}
-            pageSizeOptions={[100]}
-            disableRowSelectionOnClick
-            getRowId={getId}
-          />
-        </div>
-      )}
+              }}
+              pageSizeOptions={[100]}
+              disableRowSelectionOnClick
+              getRowId={getId}
+            />
+          </div>
+        )}
+      </Paper>
       <Popup open={openEdit} setOpen={setOpenEdit} title="Why do you want to edit ?">
         <WhyEdit row={plainte} />
       </Popup>

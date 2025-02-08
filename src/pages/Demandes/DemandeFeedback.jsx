@@ -56,7 +56,7 @@ function ListeDemandeFeedBack({ setError }) {
     <div className="listeDemandeFeedback">
       <Grid container>
         <Grid item lg={12} sm={12} xs={12} sx={{ margin: '10px' }}>
-          <TextField onChange={(e) => handleChanges(e)} fullWidth label="ID visite ou ID agent" />
+          <TextField disabled={load} onChange={(e) => handleChanges(e)} fullWidth label="ID visite ou ID agent" />
         </Grid>
       </Grid>
       {load && <p style={{ textAlign: 'center', fontWeight: 'bolder' }}>Please wait...</p>}

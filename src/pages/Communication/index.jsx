@@ -8,6 +8,7 @@ import { Delete, Edit } from '../../../node_modules/@mui/icons-material/index';
 import { useDispatch } from '../../../node_modules/react-redux/es/exports';
 import './communication.style.css';
 import FormMessage from './FormMessage';
+import Servey from './Servey';
 import TextWithLineBreaks from './StructureText';
 
 function Index() {
@@ -103,6 +104,9 @@ function Index() {
               );
             })}
         </Grid>
+      </Grid>
+      <Grid container>
+        <Servey />
       </Grid>
       <ConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />
     </>

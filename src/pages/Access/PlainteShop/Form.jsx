@@ -1,5 +1,6 @@
 import { Button } from '@mui/material';
 import AutoComplement from 'Control/AutoComplet';
+import SimpleBackdrop from 'Control/Backdrop';
 import { OtherUpdated } from 'Redux/AgentAdmin';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,18 +8,19 @@ import { useDispatch, useSelector } from 'react-redux';
 function PlainteShop() {
   const shop = useSelector((state) => state.shop?.shop);
   const [shopSelect, setShopSelect] = React.useState('');
-  const agentadmin = useSelector((state) => state.agentAdmin?.agentAdmin);
+  const agentadmin = useSelector((state) => state.agentAdmin);
   const [agentSelect, setAgentSelect] = React.useState('');
 
   const dispatch = useDispatch();
   const send = (e) => {
     e.preventDefault();
     const data = {
+      idAgent: agentSelect?._id,
       data: {
-        idAgent: agentSelect?._id,
-        shop: shopSelect?.shop
+        plainteShop: shopSelect?.shop,
+        plainte_callcenter: false
       },
-      link: 'setplainteshop'
+      unset: {}
     };
     dispatch(OtherUpdated(data));
     setAgentSelect('');
@@ -26,14 +28,21 @@ function PlainteShop() {
   };
   return (
     <div style={{ width: '22rem' }}>
+      {agentadmin.otherUpdated === 'pending' && <SimpleBackdrop open={true} taille="10rem" title="Please wait..." />}
       {shop && (
         <div style={{ margin: '10px 0px' }}>
           <AutoComplement value={shopSelect} setValue={setShopSelect} options={shop} title="Shop" propr="shop" />
         </div>
       )}
-      {agentadmin && (
+      {agentadmin?.agentAdmin && (
         <div style={{ margin: '10px 0px' }}>
-          <AutoComplement value={agentSelect} setValue={setAgentSelect} options={agentadmin} title="Selectionnez un agent" propr="nom" />
+          <AutoComplement
+            value={agentSelect}
+            setValue={setAgentSelect}
+            options={agentadmin?.agentAdmin}
+            title="Selectionnez un agent"
+            propr="nom"
+          />
         </div>
       )}
       <div>

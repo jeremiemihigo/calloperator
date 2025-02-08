@@ -1,36 +1,24 @@
-// material-ui
-import { Grid, List, Typography } from '@mui/material';
-// project import
-import { CreateContexteGlobal } from 'GlobalContext.jsx';
-import MainCard from 'components/MainCard';
-import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
-import AudioRecorder from 'pages/Audio/index.jsx';
+import { GraphicEq, House } from '@mui/icons-material';
+import { Grid, Paper } from '@mui/material';
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { big_data, config } from 'static/Lien.jsx';
-import { ListItemButton, ListItemText } from '../../../node_modules/@mui/material/index.js';
-import axios from '../../../node_modules/axios/index.js';
-import FirstLogin from './FirstLogin.jsx';
-import ReportAreaChart from './ReportAreaChart';
+import { big_data, config } from 'static/Lien';
+import { Skeleton } from '../../../node_modules/@mui/material/index';
+import axios from '../../../node_modules/axios/index';
+import Analyse from './Analyse';
+import DashboardDefault from './Visite';
 
-// ==============================|| DASHBOARD - DEFAULT ||============================== //
-
-const DashboardDefault = () => {
-  const userConnect = useSelector((state) => state.user.user);
-  const agent = useSelector((state) => state.agent);
-  const periode = useSelector((state) => state.periodeActive);
-  const reponse = useSelector((state) => state.reponse.reponse);
-  const { client } = React.useContext(CreateContexteGlobal);
-  const [allListe, setAllListe] = React.useState(0);
-
+function Dashboard() {
+  const [select, setSelect] = React.useState(0);
+  const [attente, setAttente] = React.useState();
   const loadings = async () => {
     try {
       const response = await axios.get(`${big_data}/toutesDemandeAttente/1500`, config);
       if (response.status === 201 && response.data === 'token expired') {
         localStorage.removeItem('auth');
         window.location.replace('/login');
-      } else {
-        setAllListe(response.data.length);
+      }
+      if (response.status === 200) {
+        setAttente(response.data.length);
       }
     } catch (error) {
       console.log(error);
@@ -40,76 +28,72 @@ const DashboardDefault = () => {
   React.useEffect(() => {
     loadings();
   }, []);
-
   return (
-    <Grid container rowSpacing={4.5} columnSpacing={2.75}>
-      {userConnect && userConnect.first && <FirstLogin />}
-      {/* row 1 */}
-      <Grid item xs={12} sx={{ mb: -2.25 }}>
-        <AudioRecorder />
-      </Grid>
-      <Grid item xs={12} sx={{ mb: -2.25 }}>
-        <Typography variant="h5">Dashboard</Typography>
-      </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce color="#efe9aa" title="Visites en attente" count={allListe} />
-      </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce color="#d4d5ed" title="Agents & Techniciens" count={agent?.agent?.length} />
-      </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce color="#cdc8f4" title="Mois actif" count={periode?.periodeActive} />
-      </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce color="#efe9aa" title="Complaints of today" count={client?.length} />
-      </Grid>
+    <>
+      <Grid container>
+        <Grid item lg={2} sx={{ padding: '10px' }}>
+          <Paper elevation={2} sx={{ backgroundColo: 'rgb(0,169,254)' }}>
+            {attente ? (
+              <p
+                style={{
+                  padding: '10px',
+                  fontSize: '12px'
+                }}
+              >
+                {attente} visites sont en attente
+              </p>
+            ) : (
+              <Skeleton type="text" />
+            )}
+          </Paper>
 
-      <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
+          <Paper onClick={() => setSelect(0)} sx={select === 0 ? style.papierselect : style.papier}>
+            <div style={style.flex}>
+              <House />
+            </div>
 
-      {/* row 3 */}
-      <Grid item xs={12} md={7} lg={8}>
-        <Grid container alignItems="center" justifyContent="space-between">
-          <Grid item>
-            <Typography variant="h5">Variation in household visits</Typography>
-          </Grid>
-          <Grid item />
+            <p style={style.texte}>Visite Menage</p>
+          </Paper>
+          <Paper onClick={() => setSelect(1)} sx={select === 1 ? style.papierselect : style.papier}>
+            <div style={style.flex}>
+              <GraphicEq />
+            </div>
+            <p style={style.texte}>Analyse VM</p>
+          </Paper>
         </Grid>
-        <MainCard sx={{ mt: 2 }} content={false}>
-          <ReportAreaChart />
-        </MainCard>
-      </Grid>
-      <Grid item xs={12} md={5} lg={4}>
-        <Grid container alignItems="center" justifyContent="space-between">
-          <Grid item>
-            <Typography variant="h5">Visits answered beginning of month to date</Typography>
-          </Grid>
-          <Grid item />
+        <Grid item lg={10}>
+          {select === 0 && <DashboardDefault />}
+          {select === 1 && <Analyse />}
         </Grid>
-        <MainCard sx={{ mt: 2 }} content={false}>
-          <List sx={{ p: 0, '& .MuiListItemButton-root': { py: 2 } }}>
-            {!reponse && <p style={{ textAlign: 'center' }}>Loading...</p>}
-            {
-              // reponse && reponse.length > 0 && <Graphique clients={reponse} />
-              reponse &&
-                reponse.length > 0 &&
-                reponse.map((index, key) => {
-                  return (
-                    <ListItemButton divider key={key}>
-                      <ListItemText primary={index._id} />
-                      <Typography sx={{ marginLeft: '10px' }} variant="h5">
-                        {index.nombre}
-                      </Typography>
-                    </ListItemButton>
-                  );
-                })
-            }
-          </List>
-        </MainCard>
       </Grid>
-
-      {/* row 4 */}
-    </Grid>
+    </>
   );
-};
+}
+const style = {
+  texte: {
+    margin: '0px',
+    padding: '0px',
+    textAlign: 'center',
+    fontSize: '12px',
+    marginTop: '10px'
+  },
+  flex: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
 
-export default DashboardDefault;
+  papier: {
+    padding: '5px',
+    cursor: 'pointer',
+    marginBottom: '10px'
+  },
+  papierselect: {
+    backgroundColor: 'rgb(0,169,254)',
+    color: 'white',
+    padding: '5px',
+    cursor: 'pointer',
+    marginBottom: '10px'
+  }
+};
+export default Dashboard;

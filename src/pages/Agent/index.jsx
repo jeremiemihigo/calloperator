@@ -1,5 +1,5 @@
 import { Block, Edit, RestartAlt } from '@mui/icons-material';
-import { Button, Fab, Grid, Paper, Tooltip } from '@mui/material';
+import { Button, CircularProgress, Fab, Grid, Paper, Tooltip } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import DirectionSnackbar from 'Control/SnackBar';
 import { BloquerAgent, Reinitialiser } from 'Redux/Agent';
@@ -9,16 +9,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import ExcelButton from 'static/ExcelButton';
 import Popup from 'static/Popup';
 import AddAgent from './Agent';
-import BloqueOrNo from './BloqueOrNo.jsx';
 
 function AgentListe() {
   const [openAgent, setOpenAgent] = React.useState(false);
   const [openAgentUpdate, setOpenAgentUpdate] = React.useState(false);
   const dispatch = useDispatch();
-  const [open, setOpen] = React.useState(false);
-  const allListe = useSelector((state) => state.agent);
 
+  const allListe = useSelector((state) => state.agent);
+  const [agentReset, setAgentReset] = React.useState();
   const resetPassword = (agent) => {
+    setAgentReset(agent._id);
     dispatch(Reinitialiser({ id: agent._id }));
   };
   const [dataTo, setDataTo] = React.useState();
@@ -39,13 +39,13 @@ function AgentListe() {
   const columns = [
     {
       field: 'nom',
-      headerName: 'Noms',
+      headerName: 'Full name',
       width: 200,
       editable: false
     },
     {
       field: 'codeAgent',
-      headerName: 'code Agent',
+      headerName: 'ID Agent',
       width: 100,
       editable: false
     },
@@ -59,7 +59,7 @@ function AgentListe() {
       }
     },
     {
-      field: 'region.0.denomination',
+      field: 'region',
       headerName: 'Region',
       width: 100,
       editable: false,
@@ -78,28 +78,37 @@ function AgentListe() {
     },
     {
       field: 'telephone',
-      headerName: 'Téléphone',
+      headerName: 'Contact number',
       width: 100,
       editable: false
     },
     {
       field: 'fonction',
-      headerName: 'Fonction',
-      width: 100,
+      headerName: 'Function',
+      width: 90,
       editable: false,
       renderCell: (params) => {
         return <span style={{ color: `${params.row.active ? 'blue' : 'red'}`, fontWeight: 'bolder' }}>{params.row.fonction}</span>;
       }
     },
+    {
+      field: 'pass',
+      headerName: 'Default password',
+      width: 100,
+      editable: false,
+      renderCell: (params) => {
+        return <span>{params.row.first ? params.row.pass : 'Just edited'}</span>;
+      }
+    },
 
     {
       field: 'action',
-      headerName: 'Action',
-      width: 200,
+      headerName: 'Edit; Reset; Bloc account',
+      width: 180,
       editable: false,
       renderCell: (params) => {
         return (
-          <p>
+          <>
             {user?.fonction === 'superUser' && (
               <Tooltip title="Modifiez">
                 <Fab color="primary" size="small" onClick={(e) => update(params.row, e)}>
@@ -108,17 +117,19 @@ function AgentListe() {
               </Tooltip>
             )}
 
-            <>
-              {allListe.reinitialiser === 'pending' ? (
-                <>Wait...</>
+            <div style={{ margin: '10px' }}>
+              {allListe.reinitialiser === 'pending' && params.row._id === agentReset ? (
+                <Fab color="primary" size="small">
+                  <CircularProgress size={15} color="inherit" />
+                </Fab>
               ) : (
-                <Tooltip title="Réinitialisez ses accès" sx={{ margin: '10px' }}>
+                <Tooltip title="Réinitialisez ses accès">
                   <Fab color="success" size="small" onClick={() => resetPassword(params.row)}>
                     <RestartAlt fontSize="small" />
                   </Fab>
                 </Tooltip>
               )}
-            </>
+            </div>
             {user?.fonction === 'superUser' && (
               <Tooltip title={params.row.active ? 'Bloquer' : 'Débloquer'}>
                 <Fab color="warning" size="small" onClick={() => bloquer(params.row)}>
@@ -126,36 +137,36 @@ function AgentListe() {
                 </Fab>
               </Tooltip>
             )}
-          </p>
+          </>
         );
       }
     }
   ];
 
-  const [openBloque, setOpenBloque] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
 
   return (
     <Paper elevation={3} sx={{ padding: '5px' }}>
+      {allListe.reinitialiser === 'success' && agentReset && (
+        <DirectionSnackbar message={`Reinitialisation effectuée ${agentReset}`} open={open} setOpen={setOpen} />
+      )}
+
       {user?.fonction === 'superUser' && (
         <Grid container>
-          <Grid item lg={2}>
-            <Button fullWidth onClick={() => setOpenAgent(true)} variant="contained" color="primary">
-              Ajoutez_un_agent
-            </Button>
+          <Grid item lg={2} xs={6} sx={{ padding: '5px' }}>
+            <div>
+              <Button fullWidth onClick={() => setOpenAgent(true)} variant="contained" color="primary">
+                Ajoutez_un_agent
+              </Button>
+            </div>
           </Grid>
-          <Grid item lg={2} style={{ margin: '0px 5px' }}>
-            {allListe && <ExcelButton data={allListe.agent} title="Export to excel" fileName="agents.xlsx" />}
+          <Grid item lg={2} xs={6} sx={{ padding: '5px' }}>
+            <div>{allListe && <ExcelButton data={allListe.agent} title="Export to excel" fileName="agents.xlsx" />}</div>
           </Grid>
-          <Grid>
-            <Button fullWidth variant="contained" color="primary" onClick={() => setOpenBloque(true)}>
-              Bloquer | Debloquer
-            </Button>
-          </Grid>
+
           {/* <ExcelFile /> */}
         </Grid>
       )}
-
-      {open && <DirectionSnackbar open={open} setOpen={setOpen} message="Opération effectuée" />}
 
       {allListe.agent && (
         <DataGrid
@@ -164,11 +175,11 @@ function AgentListe() {
           initialState={{
             pagination: {
               paginationModel: {
-                pageSize: 10
+                pageSize: 50
               }
             }
           }}
-          pageSizeOptions={[10]}
+          pageSizeOptions={[50]}
           checkboxSelection
           disableRowSelectionOnClick
         />
@@ -179,9 +190,6 @@ function AgentListe() {
       </Popup>
       <Popup open={openAgentUpdate} setOpen={setOpenAgentUpdate} title="Modifier l'agent">
         <AddAgent data={dataTo} />
-      </Popup>
-      <Popup open={openBloque} setOpen={setOpenBloque}>
-        <BloqueOrNo />
       </Popup>
     </Paper>
   );

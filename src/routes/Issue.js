@@ -12,6 +12,7 @@ const Tech_value = Loadable(lazy(() => import('pages/Issue/Appel/Table/Technical
 const Promesse_Payement = Loadable(lazy(() => import('pages/Rapport/Promesse_Payement')));
 const IndexEdit = Loadable(lazy(() => import('pages/Issue/Appel/Component/IndexEdit')));
 const Non_Technique = Loadable(lazy(() => import('pages/Issue/Appel/Table/N_Technical')));
+const Renseignement = Loadable(lazy(() => import('pages/Rapport/Renseignement')));
 // const Actions = Loadable(lazy(() => import('pages/Actions')));
 
 // ==============================|| MAIN ROUTING ||============================== //
@@ -58,6 +59,10 @@ const MainRoutes = {
     {
       path: '/n_tech_value',
       element: <Non_Technique />
+    },
+    {
+      path: '/r_renseignement',
+      element: <Renseignement />
     }
   ]
 };

@@ -52,13 +52,16 @@ const ContexteGlobal = (props) => {
       if (client && client.length > 0) {
         let i = _.filter(client, { idPlainte: nowCall.idPlainte });
         if (i.length > 0) {
-          let index = client.indexOf({ idPlainte: nowCall.idPlainte });
-          let lastValue = [...client];
-          lastValue[index] = nowCall;
-          setClient(lastValue);
+          setClient(client.map((x) => (x._id === nowCall._id ? nowCall : x)));
+          // let index = client.indexOf({ idPlainte: nowCall.idPlainte });
+          // let lastValue = [...client];
+          // lastValue[index] = nowCall;
+          // setClient(lastValue);
         } else {
           setClient([...client, nowCall]);
         }
+      } else {
+        setClient(nowCall);
       }
     } catch (error) {
       console.log(error);

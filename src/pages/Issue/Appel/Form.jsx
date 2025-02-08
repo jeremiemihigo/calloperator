@@ -1,6 +1,6 @@
 import { SearchOutlined } from '@ant-design/icons';
 import { AirplaneTicket, Done, DoneAll, Escalator, Pause, Search } from '@mui/icons-material';
-import { Button, CircularProgress, FormControl, Grid, InputAdornment, OutlinedInput, TextField, Tooltip, Typography } from '@mui/material';
+import { Button, CircularProgress, FormControl, Grid, InputAdornment, OutlinedInput, TextField, Typography } from '@mui/material';
 import AutoComplement from 'Control/AutoComplet';
 import SimpleBackdrop from 'Control/Backdrop';
 import { CreateContexteGlobal } from 'GlobalContext';
@@ -18,23 +18,27 @@ import RaisonOngoing from './Formulaire/RaisonOngoing';
 
 function Form({ update }) {
   const {
+    onchange,
+    state,
     adresse,
-    codeclient,
-    setCodeclient,
     shopSelect,
     setShopSelect,
     historique,
     setHistorique,
-    initiale,
     raisonOngoing,
     plainteSelect,
     setPlainteSelect,
-    setInitiale,
+    setState,
     otherItem,
+    messages,
     item,
     setItem,
+    sending,
+    setSending,
     annuler
   } = React.useContext(CreateContexteTable);
+
+  const { codeclient, nomClient, contact, recommandation } = state;
 
   const [typeForm, setTypeForm] = React.useState('');
 
@@ -54,7 +58,6 @@ function Form({ update }) {
   const shop = useSelector((state) => state.shop?.shop);
   const [loadingcode, setLoadingcode] = React.useState(false);
 
-  const { recommandation, nomClient, contact } = initiale;
   const [messageApi, contextHolder] = message.useMessage();
   const success = (texte, type) => {
     messageApi.open({
@@ -66,33 +69,14 @@ function Form({ update }) {
 
   const plainte = useSelector((state) => state.plainte.plainte.filter((x) => x.property === property || x.property === 'all'));
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setInitiale({
-      ...initiale,
-      [name]: value
-    });
-  };
-
-  React.useEffect(() => {
-    setHistorique();
-    setShopSelect('');
-    setInitiale({
-      recommandation: '',
-      nomClient: '',
-      contact: ''
-    });
-  }, []);
-
   React.useEffect(() => {
     if (update) {
       let s = shop.filter((x) => x.shop === update.shop);
-      setInitiale({
+      setState({
         recommandation: update?.recommandation,
         nomClient: update?.nomClient,
         contact: update?.contact
       });
-      setCodeclient(update?.codeclient);
       setShopSelect(s[0]);
     }
   }, [update]);
@@ -100,24 +84,8 @@ function Form({ update }) {
   const [openOngoing, setOpenOngoing] = React.useState(false);
 
   const [liste, setListe] = React.useState([]);
-  const [sending, setSending] = React.useState(false);
-  const [audio, setAudioB] = React.useState(null);
-
-  const [filename, setFilename] = React.useState('');
-  const sendAudioToAPI = async () => {
-    try {
-      const formData = new FormData();
-      formData.append('file', audio, 'recording.webm');
-      const response = await axios.post('http://localhost:60000/audio/upload', formData);
-      setFilename(response.data);
-    } catch (err) {
-      console.error('Erreur:', err);
-    }
-  };
 
   const sendAppel = async (statut, e) => {
-    stopRecording();
-    sendAudioToAPI();
     try {
       e.preventDefault();
       if (user?.plainteShop && user.plainteShop !== shopSelect?.shop) {
@@ -127,6 +95,7 @@ function Form({ update }) {
           success('Les nouvelles adresses du client sont obligatoire', 'error');
         } else {
           setSending(true);
+
           const dataNonTech = {
             codeclient: codeclient,
             statut,
@@ -134,26 +103,24 @@ function Form({ update }) {
             shop: shopSelect?.shop,
             typePlainte: plainteSelect?.title,
             plainteSelect: item.other ? (!item.oneormany ? otherItem?.title : liste.join(';')) : item?.title,
-            recommandation: initiale.recommandation,
+            recommandation,
             nomClient,
-            contact: initiale.contact,
+            contact,
             raisonOngoing: raisonOngoing,
             adresse,
             open: statut === 'closed' ? false : true,
-            operation: statut === 'escalade' ? 'backoffice' : undefined,
-            audio: filename
+            operation: statut === 'escalade' ? 'backoffice' : undefined
           };
           const dataTicket = {
             typePlainte: plainteSelect?.title,
             plainte: item?.title,
-            contact: initiale.contact,
+            contact,
             codeclient,
             adresse,
             nomClient,
             statut,
-            audio: filename,
             shop: shopSelect?.shop,
-            commentaire: initiale.recommandation
+            commentaire: recommandation
           };
           const data = item?.ticket ? dataTicket : dataNonTech;
           const link = item?.ticket ? 'soumission_ticket' : 'appel';
@@ -182,23 +149,33 @@ function Form({ update }) {
     try {
       const response = await axios.get(`${lien_issue}/infoclient/${codeclient}`, config);
       if (response.status === 200) {
-        setHistorique(response.data);
-        setLoadingcode(false);
+        if (response.data.info.length > 0) {
+          setLoadingcode(false);
+          onchange({ target: { value: response.data.info[0].nomClient, name: 'nomClient' } });
+          setHistorique(response.data);
+        } else {
+          setShopSelect('');
+          onchange({ target: { value: '', name: 'nomClient' } });
+          setLoadingcode(false);
+          success('Aucune information trouvée', 'warning');
+        }
       }
     } catch (error) {
       console.log(error);
+      setLoadingcode(false);
     }
   };
   React.useEffect(() => {
     if (historique && historique?.info.length > 0) {
       setShopSelect(historique.info[0]?.shop);
-      setInitiale({ ...initiale, nomClient: historique.info[0]?.nomClient });
+      setState({ ...state, nomClient: historique.info[0]?.nomClient });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [historique]);
 
   React.useEffect(() => {
     if (item) {
+      setTypeForm('');
       if (['GLVGG', 'WVW3J'].includes(item.id)) {
         setTypeForm('Regularisation');
       }
@@ -224,21 +201,18 @@ function Form({ update }) {
   }, [item]);
 
   const create_ticket = async (statut) => {
-    stopRecording();
-    sendAudioToAPI();
     try {
       setSending(true);
       const data = {
         typePlainte: plainteSelect?.title,
-        contact: initiale.contact,
+        contact,
         plainte: item?.title,
         codeclient,
         type: statut === 'Educate_the_customer' ? 'Education' : 'ticket',
         statut,
         nomClient,
         shop: shopSelect?.shop,
-        commentaire: initiale.recommandation,
-        audio: filename
+        commentaire: recommandation
       };
       const response = await axios.post(lien_issue + '/ticker_callcenter', data, config);
       if (response.status === 201) {
@@ -277,53 +251,13 @@ function Form({ update }) {
     }
   }, [plainteSelect]);
 
-  const [isRecording, setIsRecording] = React.useState(false);
-  //const [audioUrl, setAudioUrl] = React.useState(null);
-  const mediaRecorderRef = React.useRef(null);
-  const audioChunksRef = React.useRef([]);
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-      // Crée un fichier audio à partir des chunks
-      mediaRecorderRef.current.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        //setAudioUrl(URL.createObjectURL(audioBlob));
-        // Envoie le fichier audio à l'API
-        setAudioB(audioBlob);
-      };
-    }
-  };
-
-  const startRecording = async () => {
-    setAudioB(null);
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    audioChunksRef.current = []; // Réinitialise les chunks
-    // Configure le MediaRecorder
-    const mediaRecorder = new MediaRecorder(stream);
-    mediaRecorderRef.current = mediaRecorder;
-
-    // Collecte les données au fur et à mesure
-    mediaRecorder.ondataavailable = (event) => {
-      audioChunksRef.current.push(event.data);
-    };
-    // Démarre l'enregistrement
-    mediaRecorder.start();
-    setIsRecording(true);
-  };
-  const change_codeclient = (e) => {
-    setCodeclient(e.target.value);
-    if (!isRecording) {
-      startRecording();
-    }
-  };
   return (
     <>
       {contextHolder}
       {sending && <SimpleBackdrop open={true} title="Please wait..." taille="10rem" />}
+
       <Grid container>
-        <Grid item lg={10} sx={{ paddingRight: '10px' }}>
+        <Grid item lg={10} xs={10} sm={10} md={10} sx={{ paddingRight: '10px' }}>
           <FormControl sx={{ width: '100%' }}>
             <OutlinedInput
               size="small"
@@ -337,23 +271,20 @@ function Form({ update }) {
               inputProps={{
                 'aria-label': 'weight'
               }}
+              name="codeclient"
               value={codeclient}
-              onChange={(e) => change_codeclient(e)}
+              onChange={(e) => onchange(e)}
               placeholder="Code client"
             />
           </FormControl>
         </Grid>
-        <Grid item lg={2} sx={{ display: 'flex', alignItems: 'center' }}>
-          <Tooltip title="confirm the search">
-            <Button onClick={(e) => InfoClient(e)} variant="contained" color="primary">
-              {loadingcode ? <CircularProgress size={20} color="inherit" /> : <Search fontSize="small" />}
-            </Button>
-          </Tooltip>
+        <Grid item lg={2} xs={2} sm={2} md={2} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          {loadingcode ? <CircularProgress size={20} color="inherit" /> : <Search onClick={(e) => InfoClient(e)} fontSize="small" />}
         </Grid>
       </Grid>
       <div style={{ marginBottom: '10px' }}>
         <TextField
-          onChange={(e) => handleChange(e)}
+          onChange={(e) => onchange(e)}
           value={nomClient}
           style={{ marginTop: '10px' }}
           name="nomClient"
@@ -367,7 +298,7 @@ function Form({ update }) {
       </div>
       <div style={{ marginBottom: '10px' }}>
         <TextField
-          onChange={(e) => handleChange(e)}
+          onChange={(e) => onchange(e)}
           value={contact}
           style={{ marginTop: '10px' }}
           name="contact"
@@ -383,10 +314,10 @@ function Form({ update }) {
         {items && <AutoComplement value={item} setValue={setItem} options={items} title="Probleme" propr="title" />}
       </div>
       {item && item.other && item?.tableother.length > 0 && <FormItem data={item} liste={liste} setListe={setListe} />}
-      <div></div>
+
       <div style={{ marginBottom: '10px' }}>
         <TextField
-          onChange={(e) => handleChange(e)}
+          onChange={(e) => onchange(e)}
           value={recommandation}
           style={{ marginTop: '10px' }}
           name="recommandation"
@@ -395,7 +326,6 @@ function Form({ update }) {
           label="Commentaire"
         />
       </div>
-
       <OpenForm type={typeForm} />
       {item && (
         <>
@@ -475,7 +405,7 @@ function Form({ update }) {
           )}
         </>
       )}
-
+      {messages && <p style={{ textAlign: 'center', color: 'red', fontSize: '14px' }}>{messages}</p>}
       <Popup open={open} setOpen={setOpen} title="New customer addresses">
         <Adresse setOpen={setOpen} />
       </Popup>

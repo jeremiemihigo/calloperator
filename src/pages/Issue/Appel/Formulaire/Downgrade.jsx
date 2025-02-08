@@ -1,70 +1,19 @@
-import { Button, TextField } from '@mui/material';
-import { message } from 'antd';
-import axios from 'axios';
-import { CreateContexteGlobal } from 'GlobalContext';
+import { TextField } from '@mui/material';
 import React from 'react';
-import { config, lien_issue } from 'static/Lien';
 import { CreateContexteTable } from '../Contexte';
+import ButtonEsc from './ButtonEsc';
 
 function Downgrade() {
-  const { item, plainteSelect, initiale, annuler, shopSelect, codeclient } = React.useContext(CreateContexteTable);
-  const [autre, setAutres] = React.useState();
-  const [sending, setSending] = React.useState(false);
-  const { client, setClient } = React.useContext(CreateContexteGlobal);
+  const { onchange, state } = React.useContext(CreateContexteTable);
+  const { kit_downgrade, num_synchro_downgrade } = state;
 
-  const [messageApi, contextHolder] = message.useMessage();
-  const success = (texte, type) => {
-    messageApi.open({
-      type,
-      content: '' + texte,
-      duration: 10
-    });
-  };
-  const sendData = async (e) => {
-    e.preventDefault();
-    try {
-      setSending(true);
-      const data = {
-        codeclient,
-        shop: shopSelect?.shop,
-        property: 'shop',
-        contact: initiale?.contact,
-        nomClient: initiale?.nomClient,
-        plainteSelect: plainteSelect?.title,
-        typePlainte: item?.title,
-        num_synchro: autre?.num_synchro,
-        kit: autre?.kit
-      };
-      const response = await axios.post(lien_issue + '/downgrade', data, config);
-      if (response.status === 200) {
-        success('Done', 'success');
-        setClient([response.data, ...client]);
-        setSending(false);
-        annuler();
-      }
-      if (response.status === 201) {
-        success('' + response.data, 'error');
-        setSending(false);
-      }
-    } catch (error) {
-      if (error.code === 'ERR_NETWORK') {
-        success(error.message, 'error');
-        setSending(false);
-      }
-    }
-  };
   return (
-    <div style={{ width: '20rem' }}>
-      {contextHolder}
+    <div>
       <div style={{ marginTop: '10px' }}>
         <TextField
-          onChange={(e) =>
-            setAutres({
-              ...autre,
-              kit: e.target.value
-            })
-          }
-          name="kit"
+          value={kit_downgrade}
+          onChange={(e) => onchange(e)}
+          name="kit_downgrade"
           autoComplete="off"
           fullWidth
           label="kit downgradé"
@@ -72,23 +21,16 @@ function Downgrade() {
       </div>
       <div style={{ margin: '10px 0px' }}>
         <TextField
-          onChange={(e) =>
-            setAutres({
-              ...autre,
-              num_synchro: e.target.value
-            })
-          }
-          name="num"
+          value={num_synchro_downgrade}
+          onChange={(e) => onchange(e)}
+          name="num_synchro_downgrade"
           autoComplete="off"
           fullWidth
           label="numéro synchro"
         />
       </div>
-
       <div style={{ marginTop: '10px' }}>
-        <Button disabled={sending} onClick={(e) => sendData(e)} color="primary" fullWidth variant="contained">
-          Escalader_vers_le_Backoffice
-        </Button>
+        <ButtonEsc title="Escalader_vers_le_Backoffice" statut="Downgrade" />
       </div>
     </div>
   );

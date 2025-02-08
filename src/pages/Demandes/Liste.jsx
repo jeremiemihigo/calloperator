@@ -10,7 +10,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import React, { useContext } from 'react';
 import { useSelector } from 'react-redux';
-import { config, lien } from 'static/Lien';
+import { big_data, config } from 'static/Lien';
 import { CreateContexteDemande } from './ContextDemande';
 import ListeDemandeFeedBack from './DemandeFeedback';
 import './style.css';
@@ -46,7 +46,7 @@ function DemandeListe() {
   const loadings = async () => {
     try {
       setChargement(true);
-      const response = await axios.get(`${lien}/toutesDemandeAttente/100`, config);
+      const response = await axios.get(`${big_data}/toutesDemandeAttente/100`, config);
       if (response.status === 201 && response.data === 'token expired') {
         localStorage.removeItem('auth');
         window.location.replace('/login');
@@ -106,7 +106,7 @@ function DemandeListe() {
               <div key={index}>
                 <Grid className="regionDemande" onClick={() => setRegionSelect(index)}>
                   <p>
-                    {returnZone(index)} <span className="nombre">{data['' + index].length}</span>{' '}
+                    {returnZone(index)} <span className="nombre">{data['' + index].length || 0}</span>
                   </p>
                 </Grid>
                 {regionSelect === index &&

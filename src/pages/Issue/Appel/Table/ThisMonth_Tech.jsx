@@ -141,140 +141,145 @@ function ThisMonth_Tech() {
           <>
             <Grid item lg={3} xs={12} sm={6} md={4} sx={{ padding: '2px' }}>
               <Paper onClick={(e) => openDataTech(e, 'technicien')} elevation={3} sx={style.paper}>
-                <Typography component="p" sx={style.padding0}>
-                  Open_technician_visit
-                  <Typography
-                    component="span"
-                    sx={{ fontSize: '11px', cursor: 'pointer', color: 'blue', fontWeight: 'bolder' }}
-                  >{` Détails`}</Typography>
-                </Typography>
-                <div className="Unaffected">
-                  <div>
-                    <Typography component="p" className="Unaffected_title">
-                      Unaffected
-                    </Typography>
-                    <Typography component="p" className="Unaffected_number">
-                      {attente.length}
-                    </Typography>
+                <div>
+                  <Typography component="p" sx={style.padding0}>
+                    Open_technician_visit
+                    <Typography
+                      component="span"
+                      sx={{ fontSize: '11px', cursor: 'pointer', color: 'blue', fontWeight: 'bolder' }}
+                    >{` Détails`}</Typography>
+                  </Typography>
+                  <div className="Unaffected">
+                    <div>
+                      <Typography component="p" className="Unaffected_title">
+                        Unaffected
+                      </Typography>
+                      <Typography component="p" className="Unaffected_number">
+                        {attente.length}
+                      </Typography>
+                    </div>
                   </div>
-                </div>
 
-                {data && data.length > 0 && (
-                  <div style={{ display: 'flex' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Dot color="error" />
-                      <p style={{ padding: '0px', margin: '0px', marginLeft: '5px', fontWeight: 'bolder' }}>
-                        {ReturnDelai('OUT SLA', 'attente')}
-                      </p>
+                  {data && data.length > 0 && (
+                    <div style={{ display: 'flex' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Dot color="error" />
+                        <p style={{ padding: '0px', margin: '0px', marginLeft: '5px', fontWeight: 'bolder' }}>
+                          {ReturnDelai('OUT SLA', 'attente')}
+                        </p>
+                      </div>
+                      <div style={{ display: 'flex', marginLeft: '20px', alignItems: 'center', justifyContent: 'center' }}>
+                        <Dot color="success" />
+                        <p style={{ padding: '0px', margin: '0px', marginLeft: '5px', fontWeight: 'bolder' }}>
+                          {ReturnDelai('IN SLA', 'attente')}
+                        </p>
+                      </div>
                     </div>
-                    <div style={{ display: 'flex', marginLeft: '20px', alignItems: 'center', justifyContent: 'center' }}>
-                      <Dot color="success" />
-                      <p style={{ padding: '0px', margin: '0px', marginLeft: '5px', fontWeight: 'bolder' }}>
-                        {ReturnDelai('IN SLA', 'attente')}
-                      </p>
-                    </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </Paper>
             </Grid>
             <Grid item lg={3} xs={12} sm={6} md={4} sx={{ padding: '2px' }}>
               <Paper onClick={(e) => openDataTech(e, 'encours')} elevation={3} sx={style.paper}>
-                <Typography component="p" sx={style.padding0}>
-                  Running{' '}
-                  <Typography
-                    component="span"
-                    sx={{ fontSize: '11px', cursor: 'pointer', color: 'blue', fontWeight: 'bolder' }}
-                  >{` Détails`}</Typography>
-                </Typography>
-                <div className="Unaffected">
-                  <div>
-                    <Typography component="p" className="Unaffected_title">
-                      Running
-                    </Typography>
-                    <Typography component="p" className="Unaffected_number">
-                      {encours.length}
-                    </Typography>
+                <div>
+                  <Typography component="p" sx={style.padding0}>
+                    Running{' '}
+                    <Typography
+                      component="span"
+                      sx={{ fontSize: '11px', cursor: 'pointer', color: 'blue', fontWeight: 'bolder' }}
+                    >{` Détails`}</Typography>
+                  </Typography>
+                  <div className="Unaffected">
+                    <div>
+                      <Typography component="p" className="Unaffected_title">
+                        Running
+                      </Typography>
+                      <Typography component="p" className="Unaffected_number">
+                        {encours.length}
+                      </Typography>
+                    </div>
                   </div>
+                  {data && data.length > 0 && (
+                    <div style={{ display: 'flex' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Dot color="error" />
+                        <p style={{ padding: '0px', margin: '0px', marginLeft: '5px', fontWeight: 'bolder' }}>
+                          {ReturnDelai('OUT SLA', 'encours')}
+                        </p>
+                      </div>
+                      <div style={{ display: 'flex', marginLeft: '20px', alignItems: 'center', justifyContent: 'center' }}>
+                        <Dot color="success" />
+                        <p style={{ padding: '0px', margin: '0px', marginLeft: '5px', fontWeight: 'bolder' }}>
+                          {ReturnDelai('IN SLA', 'encours')}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
-
-                {data && data.length > 0 && (
-                  <div style={{ display: 'flex' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Dot color="error" />
-                      <p style={{ padding: '0px', margin: '0px', marginLeft: '5px', fontWeight: 'bolder' }}>
-                        {ReturnDelai('OUT SLA', 'encours')}
-                      </p>
-                    </div>
-                    <div style={{ display: 'flex', marginLeft: '20px', alignItems: 'center', justifyContent: 'center' }}>
-                      <Dot color="success" />
-                      <p style={{ padding: '0px', margin: '0px', marginLeft: '5px', fontWeight: 'bolder' }}>
-                        {ReturnDelai('IN SLA', 'encours')}
-                      </p>
-                    </div>
-                  </div>
-                )}
               </Paper>
             </Grid>
             <Grid item lg={3} xs={12} sm={6} md={4} sx={{ padding: '2px' }}>
               <Paper onClick={(e) => openDataTech(e, 'callcenter')} elevation={3} sx={style.paper}>
-                <Typography component="p" sx={style.padding0}>
-                  Resolved_awaiting_confirmation
-                  <Typography component="span" sx={{ fontSize: '11px', cursor: 'pointer', color: 'blue', fontWeight: 'bolder' }}>
-                    Détails
+                <div>
+                  <Typography component="p" sx={style.padding0}>
+                    Resolved_awaiting_confirmation
+                    <Typography component="span" sx={{ fontSize: '11px', cursor: 'pointer', color: 'blue', fontWeight: 'bolder' }}>
+                      Détails
+                    </Typography>
                   </Typography>
-                </Typography>
-                <div className="Unaffected">
-                  <div>
-                    <Typography component="p" className="Unaffected_title">
-                      Waiting at CC
-                    </Typography>
-                    <Typography component="p" className="Unaffected_number">
-                      {callcenter.length}
-                    </Typography>
+                  <div className="Unaffected">
+                    <div>
+                      <Typography component="p" className="Unaffected_title">
+                        Waiting at CC
+                      </Typography>
+                      <Typography component="p" className="Unaffected_number">
+                        {callcenter.length}
+                      </Typography>
+                    </div>
                   </div>
+                  {data && data.length > 0 && (
+                    <div style={{ display: 'flex' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Dot color="error" />
+                        <p style={{ padding: '0px', margin: '0px', marginLeft: '5px', fontWeight: 'bolder' }}>
+                          {ReturnDelai('OUT SLA', 'callcenter')}
+                        </p>
+                      </div>
+                      <div style={{ display: 'flex', marginLeft: '20px', alignItems: 'center', justifyContent: 'center' }}>
+                        <Dot color="success" />
+                        <p style={{ padding: '0px', margin: '0px', marginLeft: '5px', fontWeight: 'bolder' }}>
+                          {ReturnDelai('IN SLA', 'callcenter')}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
-
-                {data && data.length > 0 && (
-                  <div style={{ display: 'flex' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Dot color="error" />
-                      <p style={{ padding: '0px', margin: '0px', marginLeft: '5px', fontWeight: 'bolder' }}>
-                        {ReturnDelai('OUT SLA', 'callcenter')}
-                      </p>
-                    </div>
-                    <div style={{ display: 'flex', marginLeft: '20px', alignItems: 'center', justifyContent: 'center' }}>
-                      <Dot color="success" />
-                      <p style={{ padding: '0px', margin: '0px', marginLeft: '5px', fontWeight: 'bolder' }}>
-                        {ReturnDelai('IN SLA', 'callcenter')}
-                      </p>
-                    </div>
-                  </div>
-                )}
               </Paper>
             </Grid>
           </>
         )}
         <Grid item lg={3} xs={12} sm={6} md={4} sx={{ padding: '2px', minHeight: 200 }}>
           <Paper elevation={3} sx={style.paper}>
-            <Typography component="p" sx={style.padding0}>
-              My Percentage on time for this month
-            </Typography>
-            <Typography sx={{ textAlign: 'center' }} component="p" className="Unaffected_title">
-              Technical issues
-            </Typography>
-
-            {pourcentage ? (
-              <RadialBarChart nombre={pourcentage} texte="IN SLA" />
-            ) : (
-              <div style={{ display: 'flex', minHeight: 150, alignItems: 'center', justifyContent: 'center' }}>
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'center' }}>
-                    <CircularProgress sx={{ textAlign: 'center' }} size={25} />
+            <div>
+              <Typography component="p" sx={style.padding0}>
+                My Percentage on time for this month
+              </Typography>
+              <Typography sx={{ textAlign: 'center' }} component="p" className="Unaffected_title">
+                Technical issues
+              </Typography>
+              {pourcentage ? (
+                <RadialBarChart nombre={pourcentage} texte="IN SLA" />
+              ) : (
+                <div style={{ display: 'flex', minHeight: 150, alignItems: 'center', justifyContent: 'center' }}>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                      <CircularProgress sx={{ textAlign: 'center' }} size={25} />
+                    </div>
+                    <p style={{ textAlign: 'center', marginTop: '10px' }}>Loading...</p>
                   </div>
-                  <p style={{ textAlign: 'center', marginTop: '10px' }}>Loading...</p>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </Paper>
         </Grid>
       </Grid>

@@ -1,4 +1,3 @@
-import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 
@@ -10,7 +9,6 @@ import { Provider as ReduxProvider } from 'react-redux';
 
 // apex-chart
 import 'assets/third-party/apex-chart.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 // project import
 import ContextGlobal from 'GlobalContext';
@@ -85,13 +83,11 @@ moment.locale('fr', {
 });
 
 root.render(
-  <StrictMode>
-    <ReduxProvider store={store}>
-      <BrowserRouter basename="/">
-        <ContextGlobal>
-          <App />
-        </ContextGlobal>
-      </BrowserRouter>
-    </ReduxProvider>
-  </StrictMode>
+  <ReduxProvider store={store}>
+    <BrowserRouter basename="/">
+      <ContextGlobal>
+        <App />
+      </ContextGlobal>
+    </BrowserRouter>
+  </ReduxProvider>
 );

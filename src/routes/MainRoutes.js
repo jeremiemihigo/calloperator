@@ -20,6 +20,7 @@ const Access = Loadable(lazy(() => import('pages/Access')));
 const Delai = Loadable(lazy(() => import('pages/Delai')));
 const Communication = Loadable(lazy(() => import('pages/Communication')));
 const Search_history = Loadable(lazy(() => import('pages/Search_history')));
+const Detail = Loadable(lazy(() => import('pages/Communication/Servey/Detail')));
 // const Actions = Loadable(lazy(() => import('pages/Actions')));
 
 // ==============================|| MAIN ROUTING ||============================== //
@@ -79,6 +80,10 @@ const MainRoutes = {
     {
       path: '/search_history',
       element: <Search_history />
+    },
+    {
+      path: '/servey/:id',
+      element: <Detail />
     }
   ]
 };

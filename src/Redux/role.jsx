@@ -8,7 +8,9 @@ const initialState = {
   getrole: '',
   getroleError: '',
   postrole: '',
-  postroleError: ''
+  postroleError: '',
+  edit: '',
+  editError: ''
 };
 export const Readrole = createAsyncThunk('role/Readrole', async (id, { rejectWithValue }) => {
   try {
@@ -26,6 +28,14 @@ export const Postrole = createAsyncThunk('role/Postrole', async (data, { rejectW
     return rejectWithValue(error.response.data);
   }
 });
+export const EditRole = createAsyncThunk('role/EditRole', async (data, { rejectWithValue }) => {
+  try {
+    const response = await axios.put(lien_dt + '/editrole', data, config);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error.response.data);
+  }
+});
 
 const role = createSlice({
   name: 'role',
@@ -38,7 +48,9 @@ const role = createSlice({
         getrole: 'pending',
         getroleError: '',
         postrole: '',
-        postroleError: ''
+        postroleError: '',
+        edit: '',
+        editError: ''
       };
     },
     [Readrole.fulfilled]: (state, action) => {
@@ -47,7 +59,9 @@ const role = createSlice({
         getrole: 'success',
         getroleError: '',
         postrole: '',
-        postroleError: ''
+        postroleError: '',
+        edit: '',
+        editError: ''
       };
     },
     [Readrole.rejected]: (state, action) => {
@@ -56,7 +70,9 @@ const role = createSlice({
         getrole: 'rejected',
         getroleError: action.payload,
         postrole: '',
-        postroleError: ''
+        postroleError: '',
+        edit: '',
+        editError: ''
       };
     },
     [Postrole.pending]: (state, action) => {
@@ -65,7 +81,9 @@ const role = createSlice({
         getrole: '',
         getroleError: '',
         postrole: 'pending',
-        postroleError: ''
+        postroleError: '',
+        edit: '',
+        editError: ''
       };
     },
     [Postrole.fulfilled]: (state, action) => {
@@ -74,7 +92,9 @@ const role = createSlice({
         getrole: 'success',
         getroleError: '',
         postrole: '',
-        postroleError: ''
+        postroleError: '',
+        edit: '',
+        editError: ''
       };
     },
     [Postrole.rejected]: (state, action) => {
@@ -83,7 +103,43 @@ const role = createSlice({
         getrole: '',
         getroleError: '',
         postrole: 'rejected',
-        postroleError: action.payload
+        postroleError: action.payload,
+        edit: '',
+        editError: ''
+      };
+    },
+    [EditRole.pending]: (state, action) => {
+      return {
+        ...state,
+        getrole: '',
+        getroleError: '',
+        postrole: '',
+        postroleError: '',
+        edit: 'pending',
+        editError: ''
+      };
+    },
+    [EditRole.fulfilled]: (state, action) => {
+      let new_role = state.role.map((x) => (x._id === action.payload._id ? action.payload : x));
+      return {
+        role: new_role,
+        getrole: '',
+        getroleError: '',
+        postrole: '',
+        postroleError: '',
+        edit: 'success',
+        editError: ''
+      };
+    },
+    [EditRole.rejected]: (state, action) => {
+      return {
+        ...state,
+        getrole: '',
+        getroleError: '',
+        postrole: '',
+        postroleError: '',
+        edit: 'rejected',
+        editError: action.payload
       };
     }
   }

@@ -10,7 +10,6 @@ import AfficheInfo from './AfficheInfo';
 
 function Agents({ listeDemande }) {
   const [donnee, setDonnees] = React.useState();
-
   const [show, setShow] = React.useState(false);
   const [dataToShow, setDataToShow] = React.useState();
   const sendDetails = (e, code) => {
@@ -27,9 +26,15 @@ function Agents({ listeDemande }) {
         table.push({
           nom: listeDemande.filter((x) => x.agent.codeAgent === donnerKey[i])[0].agent.nom,
           code: donnerKey[i],
-          nonRepondu: listeDemande.filter((x) => x.agent.codeAgent === donnerKey[i] && x.reponse.length === 0).length,
-          repondu: listeDemande.filter((x) => x.agent.codeAgent === donnerKey[i] && x.reponse.length > 0 && !x.reponse[0].followup).length,
-          followup: listeDemande.filter((x) => x.agent.codeAgent === donnerKey[i] && x.reponse.length > 0 && x.reponse[0].followup).length,
+          nonRepondu: listeDemande.filter(
+            (x) => x.agent.codeAgent === donnerKey[i] && x.reponse.length === 0 && !x.valide && ['new', 'chat'].includes(x.feedback)
+          ).length,
+          doublon: listeDemande.filter((x) => x.agent.codeAgent === donnerKey[i] && x.feedback === 'doublon').length,
+
+          repondu: listeDemande.filter(
+            (x) => x.agent.codeAgent === donnerKey[i] && x.reponse.length > 0 && x.valide && ['new', 'chat'].includes(x.feedback)
+          ).length,
+          followup: listeDemande.filter((x) => x.agent.codeAgent === donnerKey[i] && x.feedback === 'followup').length,
           total: listeDemande.filter((x) => x.agent.codeAgent === donnerKey[i]).length,
           id: i
         });
@@ -94,6 +99,12 @@ function Agents({ listeDemande }) {
       editable: false
     },
     {
+      field: 'doublon',
+      headerName: 'Doublon',
+      width: 70,
+      editable: false
+    },
+    {
       field: 'total',
       headerName: 'Total',
       width: 70,
@@ -118,36 +129,39 @@ function Agents({ listeDemande }) {
       }
     }
   ];
+
   return (
-    <Paper elevation={3} sx={{ padding: '10px' }}>
-      <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ width: '30%' }}>
+    <>
+      <Paper elevation={3} sx={{ padding: '10px' }}>
+        <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Input onChange={(e) => handleChanges(e)} placeholder="Cherchez le Code agent ou nom Agent" />
         </div>
-      </div>
-      {donnee && (
-        <DataGrid
-          rows={filterFn.fn(donnee)}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 7
-              }
-            }
-          }}
-          pageSizeOptions={[7]}
-          checkboxSelection
-          disableRowSelectionOnClick
-        />
-      )}
-
+      </Paper>
+      <Paper elevation={3}>
+        {donnee && (
+          <div>
+            <DataGrid
+              rows={filterFn.fn(donnee)}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 7
+                  }
+                }
+              }}
+              pageSizeOptions={[7]}
+              disableRowSelectionOnClick
+            />
+          </div>
+        )}
+      </Paper>
       {dataToShow && (
         <Popup open={show} setOpen={setShow} title={`pour ${dataToShow[0].agent.nom} -------- code : ${dataToShow[0].agent.codeAgent}`}>
           <AfficheInfo data={dataToShow} />
         </Popup>
       )}
-    </Paper>
+    </>
   );
 }
 

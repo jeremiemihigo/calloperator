@@ -31,7 +31,7 @@ function Role() {
   // };
 
   const table = [
-    { id: '31660', title: 'SUPPORT TEAM (reponse)' },
+    { id: '31660', title: 'SUPPORT TEAM' },
     { id: '31661', title: 'ENREGISTREMENT DES PLAINTES (shop)' },
     { id: '31663', title: 'ENREGISTREMENT DES PLAINTES (call center)' },
     { id: '31662', title: 'BACK OFFICE (plainte)' },
@@ -76,29 +76,11 @@ function Role() {
             <SychroTeam />
           </Grid>
         )}
-        {/* <Grid item lg={8}>
-          <div style={{ margin: '10px 0px' }}>
-            <AutoComplement value={value} setValue={setValue} options={agentAdmin?.agentAdmin} title="Selectionnez un agent" propr="nom" />
-          </div>
-          <div>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => {
-                setConfirmDialog({
-                  isOpen: true,
-                  title: 'Cette opération donne la permission de répondre aux demandes des SA & TECH',
-                  subTitle: "Cliquez sur YES pour valider l'operation",
-                  onConfirm: () => {
-                    sendParametre();
-                  }
-                });
-              }}
-            >
-              Valider
-            </Button>
-          </div>
-        </Grid> */}
+        {selected === '31660' && (
+          <Grid item lg={8}>
+            <p style={{ textAlign: 'center', fontSize: '25px', padding: '0px', margin: '0px' }}>For all call operator or super user</p>
+          </Grid>
+        )}
       </Grid>
 
       <Popup open={addDepartementOpen} setOpen={setAddDepartement} title="Département">

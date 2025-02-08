@@ -22,7 +22,6 @@ export const ReadAgentAdmin = createAsyncThunk('agentAdmin/ReadAgent', async (id
 });
 export const AjouterAgentAdmin = createAsyncThunk('agentAdmin/AjouterAgentAdmin', async (data, { rejectWithValue }) => {
   try {
-    console.log(data);
     const response = await axios.post(lien + '/addAdminAgent', data, config);
     return response.data;
   } catch (error) {
@@ -31,8 +30,8 @@ export const AjouterAgentAdmin = createAsyncThunk('agentAdmin/AjouterAgentAdmin'
 });
 export const OtherUpdated = createAsyncThunk('agentAdmin/OtherUpdated', async (donner, { rejectWithValue }) => {
   try {
-    const { link, data } = donner;
-    const response = await axios.post(`${lien}/${link}`, data, config);
+    const { idAgent, data, unset } = donner;
+    const response = await axios.post(`${lien}/edituseradminInfo`, { data, unset, idAgent }, config);
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response.data);

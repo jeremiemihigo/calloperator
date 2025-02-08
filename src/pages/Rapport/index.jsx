@@ -60,6 +60,18 @@ function Index() {
           </div>
         </Paper>
       </Grid>
+      <Grid item lg={3} xs={12} sm={6} md={4}>
+        <Paper
+          onClick={() => clic('/r_renseignement')}
+          className="elementPaper"
+          sx={{ height: '5rem', margin: '5px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          <div className="element">
+            <SupportAgent />
+            <p>Information</p>
+          </div>
+        </Paper>
+      </Grid>
     </Grid>
   );
 }
