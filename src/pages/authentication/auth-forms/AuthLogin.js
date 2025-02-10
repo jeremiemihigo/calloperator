@@ -134,7 +134,7 @@ const AuthLogin = () => {
               <Grid item xs={12}>
                 <AnimateButton>
                   <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
-                    Login
+                    Login with bboxx
                   </Button>
                 </AnimateButton>
               </Grid>

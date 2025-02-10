@@ -1,9 +1,9 @@
 import { GraphicEq, House } from '@mui/icons-material';
 import { Grid, Paper } from '@mui/material';
+import { Skeleton } from '@mui/material/index';
+import axios from 'axios';
 import React from 'react';
 import { big_data, config } from 'static/Lien';
-import { Skeleton } from '../../../node_modules/@mui/material/index';
-import axios from '../../../node_modules/axios/index';
 import Analyse from './Analyse';
 import DashboardDefault from './Visite';
 

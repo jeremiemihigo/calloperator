@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react-hooks/exhaustive-deps */
-import SoundAudio from 'assets/audio/sound.wav';
+import SoundAudio from 'assets/audio/sound.mp3';
 import IconImage from 'assets/images/users/iconImage.jpg';
 import _ from 'lodash';
 import React, { createContext, useRef } from 'react';
