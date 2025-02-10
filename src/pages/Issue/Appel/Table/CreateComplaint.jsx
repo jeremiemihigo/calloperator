@@ -1,7 +1,7 @@
 import { Edit } from '@mui/icons-material';
 import { Fab, Paper } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import SoundAudio from 'assets/audio/sound.wav';
+import SoundAudio from 'assets/audio/sound.mp3';
 import NoCustomer from 'components/Attente';
 import LoaderGif from 'components/LoaderGif';
 import ConfirmDialog from 'Control/ControlDialog';
