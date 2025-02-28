@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
+import PropType from 'prop-types';
 
 const filter = createFilterOptions();
 
@@ -25,12 +26,14 @@ function AutoComplement({ value, setValue, options, title, propr }) {
       filterOptions={(options, params) => {
         const filtered = filter(options, params);
 
+        // Suggest the creation of a new value
+
         return filtered;
       }}
       selectOnFocus
       clearOnBlur
       handleHomeEndKeys
-      id="free-solo-with"
+      id="free-solo-with-text-demo"
       options={options}
       getOptionLabel={(option) => {
         // Value selected with enter, right from the input
@@ -45,7 +48,7 @@ function AutoComplement({ value, setValue, options, title, propr }) {
         return option['' + propr];
       }}
       renderOption={(props, option) => (
-        <li key={option.id} {...props}>
+        <li key={option} {...props}>
           {option['' + propr]}
         </li>
       )}
@@ -55,4 +58,11 @@ function AutoComplement({ value, setValue, options, title, propr }) {
     />
   );
 }
+AutoComplement.propType = {
+  value: PropType.string,
+  setValue: PropType.func,
+  options: PropType.array,
+  title: PropType.string,
+  propr: PropType.string
+};
 export default AutoComplement;

@@ -15,6 +15,10 @@ const DashboardDefault = () => {
   const userConnect = useSelector((state) => state.user.user);
   const reponse = useSelector((state) => state.reponse.reponse);
 
+  const returnName = (name) => {
+    return name.split(' ')[name.split(' ').length - 1];
+  };
+
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
       {userConnect && userConnect.first && <FirstLogin />}
@@ -50,7 +54,7 @@ const DashboardDefault = () => {
                 reponse.map((index, key) => {
                   return (
                     <ListItemButton divider key={key}>
-                      <ListItemText primary={index._id} />
+                      <ListItemText primary={returnName(index._id)} />
                       <Typography sx={{ marginLeft: '10px' }} variant="h5">
                         <CountUp start={0} end={index.nombre || 0} duration={2.5} />
                       </Typography>

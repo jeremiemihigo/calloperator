@@ -32,7 +32,7 @@ function Analyse() {
     }
   };
   React.useEffect(() => {
-    loading(moment(new Date()).format('YYYY-MM-DD'));
+    loading(moment(new Date().setDate(new Date().getDate() - 1)).format('YYYY-MM-DD'));
   }, []);
 
   //filter = agent ou tech ou total general
@@ -113,7 +113,7 @@ function Analyse() {
             </p>
           </Grid>
           <Grid item lg={4} xs={12} sx={{ padding: '5px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Input onChange={(e) => setDates(e.target.value)} type="date" placeholder="Date" />
+            <Input value={date} onChange={(e) => setDates(e.target.value)} type="date" placeholder="Date" />
           </Grid>
           <Grid item lg={2} xs={12} sx={{ padding: '5px' }}>
             <Button disabled={load} fullWidth color="primary" variant="contained" onClick={() => loading()}>
@@ -122,7 +122,6 @@ function Analyse() {
           </Grid>
         </Grid>
       </Paper>
-
       <Paper elevation={3}>
         {data && !load && (
           <table>

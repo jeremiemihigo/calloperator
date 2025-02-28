@@ -1,14 +1,16 @@
 // eslint-disable-next-line no-undef
 
-const link = 'https://visitemenages.bboxxvm.com';
-const link_big = 'https://visitemenages.bboxxvm.com';
-//const link_big = 'http://localhost:5000';
+const link = 'https://supportapp.bboxxvm.com';
+const link_big = 'https://supportapp.bboxxvm.com';
+// const link_big = 'http://localhost:5000';
+// const link = 'http://localhost:5000';
 
 export const lien = `${link}/bboxx/support`;
 export const big_data = `${link}/bboxx/support`;
 export const lien_socket = link;
 export const lien_conge = `${link}/admin/conge`;
 export const lien_issue = `${link}/issue`;
+export const portofolio = `${link}/bboxx/portofolio`;
 export const big_data_issue = `${link_big}/issue`;
 export const lien_servey = `${link}/servey`;
 export const lien_image = `${link}/bboxx/image`;

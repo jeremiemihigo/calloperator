@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { lien, config } from 'static/Lien';
+import { config, lien } from 'static/Lien';
 
 const initialState = {
   shop: [],
@@ -52,7 +52,7 @@ export const UpdateShop = createAsyncThunk('shop/UpdateShop', async (data, { rej
 });
 
 const zone = createSlice({
-  name: 'zone',
+  name: 'shop',
   initialState,
   reducers: {},
   extraReducers: {

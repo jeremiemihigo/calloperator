@@ -111,7 +111,6 @@ function Index() {
             </Typography>
           </div>
         </Grid>
-
         {user.backOffice_plainte && (
           <Grid
             item

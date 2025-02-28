@@ -8,6 +8,7 @@ import { List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 import { useTheme } from '@mui/material/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { activeItem } from 'store/reducers/menu';
+import { Settings } from '../../../../../../node_modules/@mui/icons-material/index';
 // assets
 // import {  FreeBreakfast, } from '@mui/icons-material';
 
@@ -42,8 +43,8 @@ const Setting_Call = () => {
       navigation('/search_history');
     }
     if (index === 14) {
-      itemHandler('Serveil');
-      navigation('/serveil');
+      itemHandler('Parameter Portofolio');
+      navigation('/p_parametre', { replace: true });
     }
   };
   const userConenct = useSelector((state) => state.user?.user);
@@ -80,6 +81,14 @@ const Setting_Call = () => {
             <WorkHistory fontSize="small" />
           </ListItemIcon>
           <ListItemText primary="Search history" />
+        </ListItemButton>
+      )}
+      {userConenct && userConenct.fonction === 'superUser' && (
+        <ListItemButton selected={selectedIndex === 14} onClick={(event) => handleListItemClick(event, 14)}>
+          <ListItemIcon>
+            <Settings fontSize="small" />
+          </ListItemIcon>
+          <ListItemText primary="Parameter Portofolio" />
         </ListItemButton>
       )}
       {/* <ListItemButton selected={selectedIndex === 14} onClick={(event) => handleListItemClick(event, 14)}>

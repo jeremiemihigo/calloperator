@@ -79,6 +79,9 @@ function ReponseAdmin(props) {
   const returnZone = (id) => {
     return _.filter(regions, { idZone: id })[0]?.denomination;
   };
+  const returnName = (name) => {
+    return name.split(' ')[name.split(' ').length - 1];
+  };
   return (
     <Grid container>
       <>{contextHolder}</>
@@ -132,13 +135,13 @@ function ReponseAdmin(props) {
                   key={index._id}
                 >
                   <div>
-                    <p style={{ padding: '0px', fontSize: '12px', margin: '0px' }}>
-                      {index.agentSave?.nom};{returnZone(index.idZone)}
-                    </p>
-                    <p style={{ padding: '0px', fontSize: '12px', margin: '0px' }}>
-                      {index?.consExpDays + 'jr(s)'};{' ' + index?.clientStatut};{' ' + index?.PayementStatut}
+                    <Typography component="p" noWrap style={{ padding: '0px', fontSize: '12px', margin: '0px' }}>
+                      {returnName(index.agentSave?.nom)};{returnZone(index.idZone)}
+                    </Typography>
+                    <Typography component="p" noWrap style={{ padding: '0px', fontSize: '12px', margin: '0px' }}>
+                      {index?.consExpDays + 'jr(s)'};{' ' + index?.PayementStatut}
                       <span style={{ float: 'right', fontSize: '9px' }}>{moment(index.createdAt).fromNow()}</span>
-                    </p>
+                    </Typography>
                   </div>
                 </Card>
               );

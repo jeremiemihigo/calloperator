@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { lien, config } from 'static/Lien';
+import { lien } from 'static/Lien';
 
 const initialState = {
   raison: [],
@@ -39,7 +39,7 @@ export const updateRaison = createAsyncThunk('raison/updateRaison', async (data,
 });
 
 const demande = createSlice({
-  name: 'demande',
+  name: 'raison',
   initialState,
   reducers: {},
   extraReducers: {

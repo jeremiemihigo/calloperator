@@ -40,7 +40,7 @@ function Dashboard() {
                   fontSize: '12px'
                 }}
               >
-                {attente} visites sont en attente
+                {attente > 1 ? `${attente} visites sont en attente` : `${attente} visite est en attente`}
               </p>
             ) : (
               <Skeleton type="text" />

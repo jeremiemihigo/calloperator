@@ -1,33 +1,33 @@
 /* eslint-disable no-unused-vars */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { config, lien_servey } from 'static/Lien';
+import { config, portofolio } from 'static/Lien';
 
 const initialState = {
   projet: [],
-  addProjet: '',
-  addProjetError: '',
-  readProjet: '',
-  readProjetError: ''
+  addprojet: '',
+  addprojetError: '',
+  readprojet: '',
+  readprojetError: ''
 };
-export const ReadProjet = createAsyncThunk('projet/ReadAgent', async (id, { rejectWithValue }) => {
+export const ReadProjet = createAsyncThunk('projet/ReadProjet', async (id, { rejectWithValue }) => {
   try {
-    const response = await axios.get(lien_servey + '/projet', config);
+    const response = await axios.get(portofolio + '/readProjet', config);
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response.data);
   }
 });
-export const AddProjet = createAsyncThunk('projet/AddProjet', async (data, { rejectWithValue }) => {
+export const AjouterProjet = createAsyncThunk('projet/AjouterProjet', async (data, { rejectWithValue }) => {
   try {
-    const response = await axios.post(lien_servey + '/add_projet', data, config);
+    const response = await axios.post(portofolio + '/addProjet', data, config);
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response.data);
   }
 });
 
-const agent = createSlice({
+const projet = createSlice({
   name: 'projet',
   initialState,
   reducers: {},
@@ -35,58 +35,58 @@ const agent = createSlice({
     [ReadProjet.pending]: (state, action) => {
       return {
         ...state,
-        addProjet: '',
-        addProjetError: '',
-        readProjet: 'pending',
-        readProjetError: ''
+        addprojet: '',
+        addprojetError: '',
+        readprojet: 'pending',
+        readprojetError: ''
       };
     },
     [ReadProjet.fulfilled]: (state, action) => {
       return {
         projet: action.payload,
-        addProjet: '',
-        addProjetError: '',
-        readProjet: 'success',
-        readProjetError: ''
+        addprojet: '',
+        addprojetError: '',
+        readprojet: 'success',
+        readprojetError: ''
       };
     },
     [ReadProjet.rejected]: (state, action) => {
       return {
         ...state,
-        addProjet: '',
-        addProjetError: '',
-        readProjet: 'rejected',
-        readProjetError: action.payload
+        addprojet: '',
+        addprojetError: '',
+        readprojet: 'rejected',
+        readprojetError: action.payload
       };
     },
-    [AddProjet.pending]: (state, action) => {
+    [AjouterProjet.pending]: (state, action) => {
       return {
         ...state,
-        addProjet: 'pending',
-        addProjetError: '',
-        readProjet: '',
-        readProjetError: ''
+        addprojet: 'pending',
+        addprojetError: '',
+        readprojet: '',
+        readprojetError: ''
       };
     },
-    [AddProjet.fulfilled]: (state, action) => {
+    [AjouterProjet.fulfilled]: (state, action) => {
       return {
         projet: [action.payload, ...state.projet],
-        addProjet: 'success',
-        addProjetError: '',
-        readProjet: '',
-        readProjetError: ''
+        addprojet: 'success',
+        addprojetError: '',
+        readprojet: '',
+        readprojetError: ''
       };
     },
-    [AddProjet.rejected]: (state, action) => {
+    [AjouterProjet.rejected]: (state, action) => {
       return {
         ...state,
-        addProjet: 'rejected',
-        addProjetError: action.payload,
-        readProjet: '',
-        readProjetError: ''
+        addprojet: 'rejected',
+        addprojetError: action.payload,
+        readprojet: '',
+        readprojetError: ''
       };
     }
   }
 });
 
-export default agent.reducer;
+export default projet.reducer;

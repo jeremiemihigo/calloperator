@@ -12,7 +12,7 @@ const initialState = {
   otherUpdated: '',
   otherUpdatedError: ''
 };
-export const ReadAgentAdmin = createAsyncThunk('agentAdmin/ReadAgent', async (id, { rejectWithValue }) => {
+export const ReadAgentAdmin = createAsyncThunk('agentAdmin/ReadAgentAdmin', async (id, { rejectWithValue }) => {
   try {
     const response = await axios.get(lien + '/readAgentAdmin', config);
     return response.data;
