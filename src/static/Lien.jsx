@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-undef
 
-const link = 'https://supportapp.bboxxvm.com';
-const link_big = 'https://supportapp.bboxxvm.com';
+const link = 'https://bboxxbackendtest.onrender.com';
+const link_big = 'https://bboxxbackendtest.onrender.com';
 // const link_big = 'http://localhost:5000';
 // const link = 'http://localhost:5000';
 
