@@ -1,0 +1,86 @@
+.divHistorique {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 50vh;
+}
+.divHistorique > div {
+  width: 50%;
+}
+.inputclasse {
+  height: 3.5rem;
+  font-size: 20px;
+}
+.divHistorique > div > p {
+  text-align: center;
+  font-size: 25px;
+}
+
+.enteteclient > p {
+  padding: 0;
+  margin: 0;
+}
+.gridContent {
+  border: 1px solid rgb(0, 169, 224);
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  padding: 10px;
+}
+
+.grandItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.grandItem > div {
+  width: 100%;
+}
+.affichefeedback > p {
+  padding: 0;
+  margin: 0;
+  font-size: 11px;
+}
+.affichefeedback {
+  border: 1px solid black;
+  padding: 10px;
+  border-radius: 5px;
+  width: 100%;
+}
+.affichefeedback > p > span {
+  font-weight: bolder;
+}
+.visite > div > p,
+.visite > p,
+.visiteinfo > p,
+.information > p {
+  padding: 0;
+  margin: 0;
+}
+.visite .client {
+  display: flex;
+  background-color: rgb(0, 169, 224);
+  font-size: 12px;
+  padding: 5px;
+  justify-content: space-between;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+.visite {
+  border: 1px solid rgb(0, 169, 224);
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+.visiteinfo_div {
+  font-size: 12px;
+  padding: 10px;
+  display: flex;
+}
+.visiteinfo {
+  width: 70%;
+}
+.visiteImage {
+  width: 30%;
+  height: 3rem;
+  padding-left: 20px;
+}

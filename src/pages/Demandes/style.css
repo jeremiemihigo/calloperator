@@ -149,6 +149,16 @@ a {
 }
 .colorGreen {
   background-color: rgb(206, 230, 206);
+  cursor: pointer;
+  padding: 5px;
+  width: 100%;
+  margin-bottom: 4px;
+}
+.colornogreen {
+  cursor: pointer;
+  padding: 5px;
+  width: 100%;
+  margin-bottom: 4px;
 }
 .demandeJsx > p {
   background-color: rgb(241, 241, 241);

@@ -1,0 +1,47 @@
+.usexlsx {
+  border: 1px solid green;
+  min-width: 10%;
+  color: green;
+  padding: 5px 20px;
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: bolder;
+}
+.links {
+  text-decoration: none;
+  color: green;
+}
+.alloptions {
+  display: flex;
+  width: 100%;
+}
+.alloptions > div {
+  width: 20%;
+}
+.categorisation {
+  border: 1px solid green;
+  width: 10%;
+  padding: 5px;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: bolder;
+  margin-left: 10px;
+  cursor: pointer;
+}
+.titledash {
+  display: flex;
+  width: 100%;
+  padding: 10px;
+  background-color: #dedede;
+  margin-top: 10px;
+  border-radius: 10px;
+  align-items: center;
+}
+.excelFile {
+  display: flex;
+}
+
+.region {
+  padding: 10px;
+}

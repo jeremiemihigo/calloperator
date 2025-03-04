@@ -1,0 +1,31 @@
+thead,
+tbody,
+tr,
+td,
+table {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+thead {
+  background-color: #dedede;
+}
+td {
+  padding: 4px 10px;
+}
+.total {
+  background-color: #000;
+  color: white;
+}
+.statusDash {
+  display: flex;
+  margin-top: 20px;
+  justify-content: center;
+}
+tbody > tr > td {
+  text-align: center;
+}
+.action,
+.no_action {
+  cursor: pointer;
+  text-decoration: underline;
+}

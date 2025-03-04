@@ -1,0 +1,42 @@
+.tresmauvais {
+  color: rgb(205, 40, 40);
+}
+.paper_ {
+  padding: 10px;
+  text-align: center;
+}
+.mauvais {
+  color: rgb(196, 68, 68);
+}
+
+.tresbien {
+  color: rgb(12, 144, 10);
+}
+.bon {
+  color: rgb(43, 17, 211);
+}
+
+.title {
+  font-weight: bolder;
+  font-size: 13px;
+  padding: 0;
+  margin: 0;
+}
+.percent {
+  font-weight: bolder;
+  font-size: 25px;
+  margin: 20px;
+}
+.footerother {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.footerother > div > p {
+  text-align: center;
+  padding: 0;
+  margin: 0;
+}
+.f_footer {
+  font-size: 10px;
+}

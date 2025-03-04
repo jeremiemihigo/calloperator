@@ -1,5 +1,12 @@
+import AcceuilPage from './Acceuil';
+import Context from './Context';
+
 function index() {
-  return <div>Feedback</div>;
+  return (
+    <Context>
+      <AcceuilPage />
+    </Context>
+  );
 }
 
 export default index;

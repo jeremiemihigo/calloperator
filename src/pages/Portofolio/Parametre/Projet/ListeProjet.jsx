@@ -14,7 +14,6 @@ function ListeProjet({ projet }) {
       <p className="item">A rappeler : 40</p>
       <p className="item">On going : 105</p>
       <p className="item">Formulaire : {formulaire[0].titre}</p>
-      <Typography className="item_link">Ajouter des clients</Typography>
     </div>
   );
 }

@@ -1,9 +1,9 @@
 // eslint-disable-next-line no-undef
 
-const link = 'https://bboxxbackendtest.onrender.com';
-const link_big = 'https://bboxxbackendtest.onrender.com';
-// const link_big = 'http://localhost:5000';
-// const link = 'http://localhost:5000';
+//const link = 'https://visitetestapp.bboxxvm.com';
+//const link_big = 'https://visitetestapp.bboxxvm.com';
+const link_big = 'http://localhost:5000';
+const link = 'http://localhost:5000';
 
 export const lien = `${link}/bboxx/support`;
 export const big_data = `${link}/bboxx/support`;

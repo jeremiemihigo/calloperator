@@ -12,7 +12,3 @@
 .listeprojet .titre_projet {
   font-weight: bolder;
 }
-.listeprojet .item_link {
-  color: blue;
-  cursor: pointer;
-}

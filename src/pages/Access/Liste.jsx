@@ -61,6 +61,12 @@ function AgentListeAdmin() {
       width: 200,
       editable: false
     },
+    {
+      field: 'fonction',
+      headerName: 'Fonction',
+      width: 150,
+      editable: false
+    },
 
     {
       field: 'first',

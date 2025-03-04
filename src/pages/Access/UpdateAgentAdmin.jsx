@@ -71,16 +71,14 @@ function UpdateAgentAdmin({ agent }) {
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
           try {
             const donner = {
-              link: `editAgentadmin`,
+              unset: {},
               data: {
-                id: agent._id,
-                data: {
-                  role: roleSelect?.idRole,
-                  nom: values.nom,
-                  fonction: fonctionSelect,
-                  valueFilter: roleSelect?.filterBy === 'region' ? allFilterRegion : allFilterShop
-                }
-              }
+                role: roleSelect?.idRole,
+                nom: values.nom,
+                fonction: fonctionSelect,
+                valueFilter: roleSelect?.filterBy === 'region' ? allFilterRegion : allFilterShop
+              },
+              idAgent: agent._id
             };
             dispatch(OtherUpdated(donner));
           } catch (error) {

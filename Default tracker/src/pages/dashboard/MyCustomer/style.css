@@ -1,0 +1,35 @@
+.loading {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+}
+.load_papier {
+  padding: 10px;
+}
+.load_papier > p {
+  font-size: 12px;
+  padding: 0;
+  margin: 0;
+}
+
+.search {
+  display: flex;
+  gap: 20px;
+  margin: 10px;
+}
+.search > p {
+  cursor: pointer;
+  font-size: 11px;
+  color: black;
+  font-weight: bolder;
+}
+.search > p:hover {
+  text-decoration: underline;
+}
+.papier_attente {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

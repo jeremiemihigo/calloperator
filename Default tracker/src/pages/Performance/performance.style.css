@@ -1,0 +1,7 @@
+thead > tr > td {
+  width: 30rem;
+}
+td {
+  font-size: 11px;
+  border: 1px solid black;
+}

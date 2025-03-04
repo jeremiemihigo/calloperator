@@ -29,7 +29,7 @@ function Index() {
           cursor: 'pointer'
         }}
       >
-        Ajoutez un back office
+        Ajoutez
       </Typography>
       {agent.map((item) => {
         return (

@@ -1,0 +1,14 @@
+.titre {
+  font-weight: bolder;
+  padding: 0;
+  margin: 0;
+}
+.papierg {
+  margin-bottom: 10px;
+  padding: 10px;
+}
+.filtre {
+  display: flex;
+  gap: 20px;
+  width: 50%;
+}

@@ -1,0 +1,34 @@
+/* Modifier la largeur de la scrollbar */
+::-webkit-scrollbar {
+  width: 2px; /* Réduire la largeur de la scrollbar verticale */
+  height: 2px; /* Réduire la hauteur de la scrollbar horizontale */
+}
+
+/* Modifier l'apparence du track (fond de la scrollbar) */
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Couleur du fond */
+}
+
+/* Modifier l'apparence du thumb (curseur de la scrollbar) */
+::-webkit-scrollbar-thumb {
+  background: #888; /* Couleur du curseur */
+  border-radius: 5px; /* Arrondir le curseur */
+}
+
+/* Changer la couleur du curseur au survol */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+* {
+  scrollbar-width: thin; /* Options : auto | thin | none */
+  scrollbar-color: #888 #f1f1f1; /* thumb (curseur) | track (fond) */
+}
+
+body {
+  -ms-overflow-style: none; /* Cache la scrollbar */
+}
+
+body::-webkit-scrollbar {
+  display: none; /* Cache la scrollbar pour WebKit */
+}

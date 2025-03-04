@@ -1,0 +1,23 @@
+.feedbackdiv {
+  border: 1px solid black;
+  padding: 5px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+}
+.feedbackdiv > p > span {
+  font-weight: bolder;
+  font-size: 13px;
+}
+.name_createdAt {
+  display: flex;
+  justify-content: space-between;
+}
+.name_createdAt > span {
+  font-weight: normal !important;
+}
+.createdAt {
+  font-size: 10px !important;
+}
+.content {
+  padding: 5px;
+}

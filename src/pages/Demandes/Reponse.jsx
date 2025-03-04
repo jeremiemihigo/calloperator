@@ -7,8 +7,8 @@ import BasicTabs from 'Control/Tabs';
 import { CreateContexteGlobal } from 'GlobalContext';
 import moment from 'moment';
 import React, { useContext } from 'react';
+import { useSelector } from 'react-redux';
 import { lien_image } from 'static/Lien';
-import { useSelector } from '../../../node_modules/react-redux/es/exports';
 import Chat from './Chat';
 import { CreateContexteDemande } from './ContextDemande';
 import FeedbackComponent from './FeedBack';
@@ -85,7 +85,7 @@ function ReponseAdmin(props) {
   return (
     <Grid container>
       <>{contextHolder}</>
-      <Grid item lg={5}>
+      <Grid item lg={5} sx={{ width: '100%' }}>
         {(demande || update) && (
           <>
             <Space size={12}>
@@ -119,27 +119,34 @@ function ReponseAdmin(props) {
           </>
         )}
         {!demande && reponseNow && reponseNow.length > 0 && (
-          <div style={{ padding: '10px' }}>
-            <p style={{ padding: '0px', marginBottom: '15px', textAlign: 'center', fontWeight: 'bolder' }}>Recent answers</p>
-
+          <div style={{ marginTop: '30px' }}>
+            <p>Recent answers</p>
             {reponseNow.map((index) => {
               return (
                 <Card
                   onClick={() => changeRecent(index)}
-                  style={{
-                    cursor: 'pointer',
-                    padding: '5px',
-                    marginBottom: '4px'
-                  }}
-                  className={recentAnswerSelect && index._id === recentAnswerSelect?._id ? 'colorGreen' : ''}
+                  className={recentAnswerSelect && index._id === recentAnswerSelect?._id ? 'colorGreen' : 'colornogreen'}
                   key={index._id}
                 >
-                  <div>
+                  <div style={{ width: '100%' }}>
                     <Typography component="p" noWrap style={{ padding: '0px', fontSize: '12px', margin: '0px' }}>
                       {returnName(index.agentSave?.nom)};{returnZone(index.idZone)}
                     </Typography>
-                    <Typography component="p" noWrap style={{ padding: '0px', fontSize: '12px', margin: '0px' }}>
-                      {index?.consExpDays + 'jr(s)'};{' ' + index?.PayementStatut}
+                    <Typography
+                      component="p"
+                      noWrap
+                      style={{
+                        padding: '0px',
+                        justifyContent: 'space-between',
+                        fontSize: '12px',
+                        margin: '0px',
+                        display: 'flex',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <span>
+                        {index?.consExpDays + 'jr(s)'};{' ' + index?.PayementStatut}
+                      </span>
                       <span style={{ float: 'right', fontSize: '9px' }}>{moment(index.createdAt).fromNow()}</span>
                     </Typography>
                   </div>

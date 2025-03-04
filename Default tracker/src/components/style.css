@@ -1,0 +1,10 @@
+.usexlsx {
+  border: 1px solid green;
+  min-width: 10%;
+  color: green;
+  padding: 5px 20px;
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: bolder;
+}

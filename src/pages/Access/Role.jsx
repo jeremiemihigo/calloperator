@@ -8,6 +8,7 @@ import Departement from './Form/Departement';
 import RoleForm from './Form/Role';
 import PlainteCallCenter from './PlainteCallCenter';
 import PlainteShop from './PlainteShop';
+import Support from './Support';
 import SychroTeam from './SynchroTeam';
 
 function Role() {
@@ -74,6 +75,11 @@ function Role() {
         {selected === '31664' && (
           <Grid item lg={8}>
             <SychroTeam />
+          </Grid>
+        )}
+        {selected === '31660' && (
+          <Grid item lg={8}>
+            <Support />
           </Grid>
         )}
         {/* <Grid item lg={8}>
