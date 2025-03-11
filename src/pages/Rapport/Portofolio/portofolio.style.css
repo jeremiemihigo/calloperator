@@ -1,0 +1,16 @@
+.agent_stat {
+  display: flex;
+  gap: 20px;
+}
+.agent_stat > div > p,
+.agent_div .agent_name {
+  padding: 0;
+  margin: 0;
+}
+.agent_stat > div > p {
+  text-align: center;
+}
+.agent_name {
+  font-weight: bolder;
+  font-size: 13px;
+}

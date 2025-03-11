@@ -12,11 +12,9 @@ function PlainteShop() {
   const send = (e) => {
     e.preventDefault();
     const data = {
-      data: {
-        idAgent: agentSelect?._id,
-        data: { backOffice_plainte: true }
-      },
-      link: 'backoffice'
+      idAgent: agentSelect?._id,
+      data: { backOffice_plainte: true },
+      unset: {}
     };
     dispatch(OtherUpdated(data));
     setAgentSelect('');

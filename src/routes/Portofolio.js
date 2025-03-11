@@ -5,6 +5,7 @@ import MainLayout from 'layout/MainLayout';
 //const Appel = Loadable(lazy(() => import('pages/Issue/Appel/Dashboard/SuperUser')));
 const Portofolio = Loadable(lazy(() => import('pages/Portofolio/Feedback')));
 const Parametre = Loadable(lazy(() => import('pages/Portofolio/Parametre')));
+const Rapport = Loadable(lazy(() => import('pages/Rapport/Portofolio')));
 
 const MainRoutes = {
   path: '/',
@@ -17,6 +18,10 @@ const MainRoutes = {
     {
       path: '/p_parametre',
       element: <Parametre />
+    },
+    {
+      path: '/r_portofolio',
+      element: <Rapport />
     }
   ]
 };

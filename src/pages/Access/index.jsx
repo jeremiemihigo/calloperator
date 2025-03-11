@@ -6,6 +6,7 @@ import AgentListeAdmin from './Liste';
 function Index() {
   const titres = [
     { id: 0, label: 'Count' },
+    // { id: 1, label: 'Ticket shop' },
     { id: 1, label: 'Role' }
   ];
   const component = [

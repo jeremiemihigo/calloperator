@@ -1,13 +1,9 @@
 import { Paper, Typography } from '@mui/material';
-import _ from 'lodash';
 import React from 'react';
 import { ContextParametre } from '../Context';
 
 function QuestionListe() {
   const { data, loadQuestion } = React.useContext(ContextParametre);
-  const returnNextQuestion = (id) => {
-    return _.filter(data, { id })[0].question;
-  };
 
   return (
     <div style={{ margin: '20px' }}>
@@ -37,7 +33,14 @@ function QuestionListe() {
                   return (
                     <React.Fragment key={item._id}>
                       <p>{item.title}</p>
-                      {item.next_question !== '' && <p>Next question : {returnNextQuestion(item.next_question)}</p>}
+                      {item.next_question !== '' && (
+                        <p>
+                          Next question : {item.next_question}
+                          <span style={{ fontSize: '20px', position: 'absolute', color: 'red', fontWeight: 'bolder' }}>
+                            {item.required ? '*' : ''}
+                          </span>
+                        </p>
+                      )}
                     </React.Fragment>
                   );
                 })}

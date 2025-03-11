@@ -40,7 +40,7 @@ const DashboardDefault = () => {
         <Paper elevation={2} sx={{ padding: '5px' }}>
           <Grid container alignItems="center" justifyContent="space-between">
             <Grid item>
-              <Typography variant="h6">This month to date </Typography>
+              <Typography variant="h6">Top 5 of this month to date </Typography>
             </Grid>
             <Grid item />
           </Grid>

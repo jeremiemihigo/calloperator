@@ -6,6 +6,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { config, portofolio } from 'static/Lien';
 import Selected from 'static/Select';
+import { Save } from '../../../../../node_modules/@mui/icons-material/index';
 import { ContextParametre } from '../Context';
 
 function AddQuestion() {
@@ -24,6 +25,7 @@ function AddQuestion() {
   const [item, setItem] = React.useState([]);
   const [allItems, setAllItems] = React.useState([]);
   const [next_question, setNextQuestion] = React.useState('');
+  const [questionChoisie, setQuestionChoisie] = React.useState(false);
 
   const changeData = () => {
     setData([
@@ -38,20 +40,19 @@ function AddQuestion() {
         id: new Date().getTime()
       }
     ]);
-
     setType('');
     setRequired(false);
     setQuestion('');
     setItem([]);
     setAllItems([]);
     setNextQuestion('');
+    setQuestionChoisie(false);
   };
   const [sending, setSending] = React.useState(false);
   const [message, setMessage] = React.useState('');
   const sendData = async () => {
     try {
       let filter = data.filter((x) => x._id === undefined);
-      console.log(filter);
       setSending(true);
       const response = await axios.post(portofolio + '/addQuestion', { data: filter }, config);
       if (response.status === 200) {
@@ -92,7 +93,7 @@ function AddQuestion() {
             </FormControl>
           </Box>
         </Grid>
-        {['select_one', 'select_many'].includes(typeSelect) && (
+        {typeSelect === 'select_one' && (
           <Grid item lg={3}>
             <TextField value={item} onChange={(event) => setItem(event.target.value)} label="Item" variant="outlined" />
             <input
@@ -103,6 +104,7 @@ function AddQuestion() {
                   {
                     title: item,
                     id: new Date().getTime(),
+                    required: questionChoisie,
                     next_question
                   }
                 ]);
@@ -111,37 +113,34 @@ function AddQuestion() {
               }}
             />
 
-            {data.length > 0 && (
-              <select
-                name="pets"
-                id="pet-select"
-                style={{
-                  fontSize: '0.9rem',
-                  padding: '2px 5px'
-                }}
+            <div style={{ marginTop: '10px' }}>
+              <TextField
+                label="La question suivante si cette option est choisie"
                 value={next_question}
+                fullWidth
+                name="next_question"
                 onChange={(event) => setNextQuestion(event.target.value)}
-              >
-                <option value="">--Please choose an option--</option>
-                {data.map((index, key) => {
-                  return (
-                    <option key={key} value={index.id}>
-                      {index.question}
-                    </option>
-                  );
-                })}
-              </select>
-            )}
+              />
+              <FormControl sx={{ m: 1 }} component="fieldset" variant="standard">
+                <FormGroup>
+                  <FormControlLabel
+                    onClick={() => setQuestionChoisie(!questionChoisie)}
+                    control={<Checkbox checked={questionChoisie} name="obligatoire" />}
+                    label="Obligatoire ?"
+                  />
+                </FormGroup>
+              </FormControl>
+            </div>
           </Grid>
         )}
         <Grid item lg={3}>
           <Button onClick={() => changeData()} fullWidth variant="contained" color="primary">
-            Save
+            Next
           </Button>
         </Grid>
         <Grid item lg={3}>
           <Button onClick={() => sendData()} fullWidth variant="contained" color="primary">
-            Enregistrer
+            <Save fontSize="small" /> <span style={{ marginLeft: '10px' }}>Enregistrer</span>
           </Button>
         </Grid>
       </Grid>

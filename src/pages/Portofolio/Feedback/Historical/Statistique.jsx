@@ -11,7 +11,7 @@ function Statistique() {
         height: 300, // Ajout de la hauteur (optionnel)
         type: 'donut' // Assurez-vous que le type est "donut"
       },
-      labels: ['Joignable', 'Injoignable', 'Rappeler'], // Labels initialisés à vide
+      labels: ['Reachable', 'Unreachable', 'Remind'], // Labels initialisés à vide
       legend: {
         show: true,
         position: 'bottom',
@@ -38,7 +38,7 @@ function Statistique() {
 
   return (
     <Paper sx={{ height: '100%', marginTop: '10px', padding: '10px' }}>
-      <p style={{ fontSize: '13px' }}>Statistique d&apos;aujourd&apos;hui</p>
+      <p style={{ fontSize: '13px' }}>Statistics of today</p>
       <ReactApexChart
         options={state.options}
         series={state.series}

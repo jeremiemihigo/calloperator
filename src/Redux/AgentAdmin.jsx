@@ -31,9 +31,7 @@ export const AjouterAgentAdmin = createAsyncThunk('agentAdmin/AjouterAgentAdmin'
 export const OtherUpdated = createAsyncThunk('agentAdmin/OtherUpdated', async (donner, { rejectWithValue }) => {
   try {
     const { idAgent, data, unset } = donner;
-    console.log(idAgent, data, unset);
     const response = await axios.post(`${lien}/edituseradminInfo`, { data, unset, idAgent }, config);
-    console.log(response);
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response.data);

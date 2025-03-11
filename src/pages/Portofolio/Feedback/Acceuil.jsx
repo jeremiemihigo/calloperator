@@ -7,7 +7,7 @@ import './feedback.style.css';
 function AcceuilPage() {
   return (
     <Grid container className="fcontainer">
-      <Grid item lg={3}>
+      <Grid item lg={3} sx={{ height: '100%' }}>
         <Liste />
       </Grid>
       <Grid item lg={6}>

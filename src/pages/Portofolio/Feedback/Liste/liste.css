@@ -32,3 +32,24 @@ body {
 body::-webkit-scrollbar {
   display: none; /* Cache la scrollbar pour WebKit */
 }
+.customer_shop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.Pending {
+  color: rgb(120, 63, 225);
+  font-weight: bolder;
+}
+.Reachable {
+  color: green;
+  font-weight: bolder;
+}
+.Remind,
+.Unreachable {
+  color: rgb(226, 90, 22);
+  font-weight: bolder;
+}
+.select__ {
+  display: flex;
+}
