@@ -8,8 +8,8 @@ import ExcelButton from 'static/ExcelButton';
 import { config, portofolio } from 'static/Lien';
 import axios from '../../../../node_modules/axios/index';
 import { generateNomFile } from '../NameFile';
-import Agents from './Agents';
-import SalesColumnChart from './Graphique';
+// import Agents from './Agents';
+// import SalesColumnChart from './Graphique';
 
 function Rapport() {
   const [dates, setDates] = React.useState({ debut: '', fin: '' });
@@ -92,7 +92,7 @@ function Rapport() {
           </Grid>
         </div>
       </Paper>
-      <Grid container sx={{ marginTop: '10px' }}>
+      {/* <Grid container sx={{ marginTop: '10px' }}>
         <Grid item lg={6} sx={{ padding: '2px' }}>
           <Paper elevation={2}>
             <SalesColumnChart />
@@ -103,7 +103,7 @@ function Rapport() {
             <Agents />
           </Paper>
         </Grid>
-      </Grid>
+      </Grid> */}
     </>
   );
 }

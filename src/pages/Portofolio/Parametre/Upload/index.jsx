@@ -14,7 +14,7 @@ function UploadClient() {
   const projet = useSelector((state) => state.projet.projet);
   const [projetSelect, setProjetSelect] = React.useState('');
   const [sending, setSending] = React.useState(false);
-  const column = ['codeclient', 'customer_name', 'region', 'contact', 'shop', 'tracker_par', 'status'];
+  const column = ['codeclient', 'customer_name', 'region', 'contact', 'contact1', 'contact2', 'shop', 'status'];
   const [message, setMessage] = React.useState(false);
 
   const readUploadFile = (e) => {
@@ -38,11 +38,13 @@ function UploadClient() {
               region: x.region.trim(),
               shop: x.shop.trim(),
               status: x.status.trim(),
-              contact: x.contact.trim()
+              first_number: x.contact.trim(),
+              second_number: x.contact1.trim(),
+              payment_number: x.contact2.trim()
             };
           });
-          if (vrai.filter((x) => !x.codeclient || !x.customer_name || !x.region || !x.shop || !x.status).length > 0) {
-            setMessage('Y a une cellule qui est vide');
+          if (vrai.filter((x) => !x.first_number || !x.codeclient || !x.customer_name || !x.region || !x.shop || !x.status).length > 0) {
+            setMessage("Le champs ayant l'asterisque ne doit pas etre vide");
             setSending(false);
           } else if (nexistepas.length > 0) {
             setMessage(`Erreur sur la colonne ${nexistepas.join('')}`);
@@ -68,7 +70,6 @@ function UploadClient() {
           idProjet: projetSelect?.id
         };
       });
-      console.log(donner);
       const response = await axios.post(portofolio + '/database', { data: donner }, config);
       if (response.status === 200) {
         setMessage(response.data);
@@ -115,12 +116,26 @@ function UploadClient() {
       <table>
         <thead>
           <tr>
-            <td>codeclient</td>
-            <td>customer_name</td>
-            <td>status</td>
-            <td>region</td>
-            <td>shop</td>
-            <td>contact</td>
+            <td>
+              codeclient<span style={{ color: 'red', fontSize: '13px', fontWeight: 'bolder' }}>*</span>
+            </td>
+            <td>
+              customer_name <span style={{ color: 'red', fontWeight: 'bolder' }}>*</span>
+            </td>
+            <td>
+              status<span style={{ color: 'red', fontWeight: 'bolder' }}>*</span>
+            </td>
+            <td>
+              region<span style={{ color: 'red', fontWeight: 'bolder' }}>*</span>
+            </td>
+            <td>
+              shop<span style={{ color: 'red', fontWeight: 'bolder' }}>*</span>
+            </td>
+            <td>
+              first_number<span style={{ color: 'red', fontWeight: 'bolder' }}>*</span>
+            </td>
+            <td>second_number</td>
+            <td>payment_number</td>
           </tr>
         </thead>
 
@@ -134,7 +149,9 @@ function UploadClient() {
                   <td>{index.status}</td>
                   <td>{index.region}</td>
                   <td>{index.shop}</td>
-                  <td>{index.contact}</td>
+                  <td>{index.first_number}</td>
+                  <td>{index.second_number}</td>
+                  <td>{index.payment_number}</td>
                 </tr>
               );
             })}
@@ -147,7 +164,9 @@ function UploadClient() {
               <td>Cette colonne reçoit le statut du client (late ou default)</td>
               <td>Cette colonne reçoit la region du client</td>
               <td>Cette colonne reçoit le shop du client</td>
-              <td>Cette colonne reçoit le numero de telephone du client </td>
+              <td>Cette colonne reçoit le premier numero de telephone du client </td>
+              <td>Cette colonne reçoit le deuxieme numero de telephone du client </td>
+              <td>Cette colonne reçoit le troisieme numero de telephone du client </td>
             </tr>
           </tbody>
         )}

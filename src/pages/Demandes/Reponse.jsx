@@ -51,6 +51,19 @@ function ReponseAdmin(props) {
     return (
       <>
         <div className="demandeJsx" style={{ textAlign: 'justify' }}>
+          {demandes.feedbackrs && (
+            <p
+              style={{
+                padding: '0px',
+                margin: '0px',
+                fontSize: '14px',
+                color: 'red',
+                fontWeight: 'bolder'
+              }}
+            >
+              RS : <span>{demandes.feedbackrs}</span>
+            </p>
+          )}
           {demandes.codeclient !== 'undefined' && (
             <Typography
               component="p"
@@ -71,6 +84,7 @@ function ReponseAdmin(props) {
           <p>Reference : {demandes?.reference} </p>
           <p>Feedback : {demandes.raison.toLowerCase()}</p>
         </div>
+
         <Chat demandes={demandes.conversation} />
       </>
     );
@@ -95,6 +109,7 @@ function ReponseAdmin(props) {
                 placeholder={<Image preview={false} src={`${lien_image}/${update ? update.demande.file : demande.file}`} width={200} />}
               />
             </Space>
+
             {demande && !update && <AfficherJsx demandes={demande} />}
             {update && <AfficherJsx demandes={update.demande} />}
             <p style={{ textAlign: 'center', fontWeight: 'bolder' }}>{lastImages && lastImages.length + ' Recente(s) image(s)'} </p>

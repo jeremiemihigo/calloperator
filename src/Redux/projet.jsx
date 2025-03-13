@@ -15,7 +15,9 @@ export const ReadProjet = createAsyncThunk('projet/ReadProjet', async (id, { rej
     const response = await axios.get(portofolio + '/readProjet', config);
     return response.data;
   } catch (error) {
-    return rejectWithValue(error.response.data);
+    if (error) {
+      alert(JSON.stringify(error.message));
+    }
   }
 });
 export const AjouterProjet = createAsyncThunk('projet/AjouterProjet', async (data, { rejectWithValue }) => {
@@ -23,7 +25,9 @@ export const AjouterProjet = createAsyncThunk('projet/AjouterProjet', async (dat
     const response = await axios.post(portofolio + '/addProjet', data, config);
     return response.data;
   } catch (error) {
-    return rejectWithValue(error.response.data);
+    if (error) {
+      alert(JSON.stringify(error.message));
+    }
   }
 });
 

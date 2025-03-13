@@ -26,7 +26,8 @@ function FeedbackComponent({ demande, update }) {
       let visite = demande || update;
       const data = {
         _id: visite._id,
-        message: reclamation,
+        message: reclamation.title,
+        concerne: reclamation.concerne ? reclamation.concerne : 'agent',
         sender: 'co',
         idDemande: visite.idDemande,
         codeAgent: user?.codeAgent
@@ -116,13 +117,13 @@ function FeedbackComponent({ demande, update }) {
                 filterFn.fn(feedback[0]?.feedbackvm).map((index) => {
                   return (
                     <tr
-                      style={{ backgroundColor: `${index.title === reclamation ? '#dedede' : '#fff'}` }}
-                      onClick={() => setReclamation(index.title)}
+                      style={{ backgroundColor: `${index.title === reclamation?.title ? '#dedede' : '#fff'}` }}
+                      onClick={() => setReclamation(index)}
                       key={index._id}
                     >
                       <td>
                         <Typography component="p" sx={{ fontSize: '12px', cursor: 'pointer' }}>
-                          {index.title}
+                          {index.title} <span style={{ fontWeight: 'bolder' }}>{index.concerne ? index.concerne : 'agent'}</span>
                         </Typography>
                         {user && user.fonction === 'superUser' && (
                           <Typography

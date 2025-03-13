@@ -1,47 +1,61 @@
-import { Paper, TextField } from '@mui/material';
+import { Autocomplete, Paper, TextField } from '@mui/material';
+import _ from 'lodash';
 import React from 'react';
+import { ContextFeedback } from '../Context';
 import SaveComponent from './SaveComponent';
 
 function Injoignable() {
-  const [number, setNumber] = React.useState('');
+  const { client } = React.useContext(ContextFeedback);
 
-  const [allNumber, setAllNumber] = React.useState([]);
-  const addAnOther = (event) => {
-    event.preventDefault();
-    if (number !== '' && !allNumber.includes(number.trim())) {
-      setAllNumber([...allNumber, number.trim()]);
-      setNumber('');
+  const [phoneNumber, setPhoneNumber] = React.useState([]);
+  const [numberSelect, setNumberSelect] = React.useState([]);
+  React.useEffect(() => {
+    if (client) {
+      const { first_number, second_number, payment_number } = client;
+      setPhoneNumber(_.uniq([first_number, second_number, payment_number]).filter((x) => x !== ''));
     }
-  };
-  const deleteOne = (number) => {
-    setAllNumber(allNumber.filter((x) => x !== number));
-  };
+  }, [client]);
 
   return (
     <Paper sx={{ padding: '10px' }}>
-      {allNumber.map((index, key) => {
-        return (
-          <div key={key} style={{ marginBottom: '5px', display: 'flex', justifyContent: 'left' }}>
-            <TextField sx={{ width: '70%' }} variant="outlined" type="text" value={index} />
-            <input type="submit" value="Delete" onClick={() => deleteOne(index)} />
-          </div>
-        );
-      })}
-      <div style={{ marginBottom: '5px', display: 'flex', justifyContent: 'left' }}>
-        <TextField
-          value={number}
-          sx={{ width: '70%' }}
-          variant="outlined"
-          onChange={(event) => setNumber(event.target.value)}
-          label={allNumber.length > 0 ? 'Ajoutez un autre numero de telephone injoignable' : 'Numero de telephone'}
+      <div style={{ marginTop: '10px' }}>
+        <Autocomplete
+          multiple
+          value={numberSelect}
+          disabled={phoneNumber.length === 0 ? true : false}
+          id="tags-outlined"
+          onChange={(event, newValue) => {
+            if (typeof newValue === 'string') {
+              setNumberSelect({
+                title: newValue
+              });
+            } else if (newValue && newValue.inputValue) {
+              // Create a new value from the user input
+              setNumberSelect({
+                title: newValue.inputValue
+              });
+            } else {
+              setNumberSelect(newValue);
+            }
+          }}
+          options={phoneNumber}
+          getOptionLabel={(option) => option}
+          filterSelectedOptions
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Phone number"
+              placeholder={phoneNumber.length === 0 ? 'No Phone number upload for this customer' : 'Select a number'}
+            />
+          )}
         />
-        <input onClick={(event) => addAnOther(event)} type="submit" value="Add" />
       </div>
-      {allNumber.length > 0 && (
+
+      {numberSelect.length > 0 && (
         <SaveComponent
           donner={{
             type: 'Unreachable',
-            contact: allNumber.join(',')
+            contact: numberSelect.join(';')
           }}
         />
       )}

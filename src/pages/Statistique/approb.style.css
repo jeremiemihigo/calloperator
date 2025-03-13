@@ -1,0 +1,19 @@
+.colorGreen {
+  background-color: rgb(206, 230, 206);
+  cursor: pointer;
+  padding: 5px;
+  width: 100%;
+  margin-bottom: 4px;
+}
+.allP > p {
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+}
+.demandeJsx > p {
+  background-color: rgb(241, 241, 241);
+  padding: 3px 10px;
+  margin: 0px;
+  font-weight: 500;
+  font-size: 12px;
+}

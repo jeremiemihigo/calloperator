@@ -21,7 +21,9 @@ export const ReadAgent = createAsyncThunk('agent/ReadAgent', async (id, { reject
     const response = await axios.get(lien + '/agent', config);
     return response.data;
   } catch (error) {
-    return rejectWithValue(error.response.data);
+    if (error) {
+      alert(JSON.stringify(error.message));
+    }
   }
 });
 export const AjouterAgent = createAsyncThunk('agent/AjouterAgent', async (data, { rejectWithValue }) => {

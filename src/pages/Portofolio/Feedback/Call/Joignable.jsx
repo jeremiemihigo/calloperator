@@ -1,4 +1,4 @@
-import { Checkbox, FormControl, FormControlLabel, Paper, TextField } from '@mui/material';
+import { Autocomplete, Checkbox, FormControl, FormControlLabel, Paper, TextField } from '@mui/material';
 import _ from 'lodash';
 import React from 'react';
 import { useSelector } from 'react-redux';
@@ -6,9 +6,11 @@ import { ContextFeedback } from '../Context';
 import SaveComponent from './SaveComponent';
 
 function Joignable() {
-  const { projetSelect } = React.useContext(ContextFeedback);
-  const [contact, setContact] = React.useState('');
+  const { projetSelect, client } = React.useContext(ContextFeedback);
   const projet = useSelector((state) => state.projet.projet);
+  const [phoneNumber, setPhoneNumber] = React.useState([]);
+  const [numberSelect, setNumberSelect] = React.useState([]);
+
   const [formulaire, setFormulaire] = React.useState();
   React.useEffect(() => {
     let pro = _.filter(projet, { id: projetSelect });
@@ -66,20 +68,49 @@ function Joignable() {
       return false;
     }
   };
+  React.useEffect(() => {
+    if (client) {
+      const { first_number, second_number, payment_number } = client;
+      setPhoneNumber(_.uniq([first_number, second_number, payment_number]).filter((x) => x !== ''));
+    }
+  }, [client]);
 
   return (
     <div>
-      {formulaire && (
+      {formulaire && client && numberSelect && (
         <Paper sx={{ padding: '10px' }}>
           <div className="question">
             <p>Contact du client</p>
             <div style={{ marginTop: '10px' }}>
-              <TextField
-                variant="outlined"
-                fullWidth
-                label="Contact joignable du client"
-                name="contact"
-                onChange={(event) => setContact(event.target.value)}
+              <Autocomplete
+                multiple
+                value={numberSelect}
+                disabled={phoneNumber.length === 0 ? true : false}
+                id="tags-outlined"
+                onChange={(event, newValue) => {
+                  if (typeof newValue === 'string') {
+                    setNumberSelect({
+                      title: newValue
+                    });
+                  } else if (newValue && newValue.inputValue) {
+                    // Create a new value from the user input
+                    setNumberSelect({
+                      title: newValue.inputValue
+                    });
+                  } else {
+                    setNumberSelect(newValue);
+                  }
+                }}
+                options={phoneNumber}
+                getOptionLabel={(option) => option}
+                filterSelectedOptions
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Phone number"
+                    placeholder={phoneNumber.length === 0 ? 'No Phone number upload for this customer' : 'Select a number'}
+                  />
+                )}
               />
             </div>
           </div>
@@ -166,16 +197,17 @@ function Joignable() {
               </div>
             );
           })}
-
-          <SaveComponent
-            donner={{
-              feedback: values,
-              type: 'Reachable',
-              date_to_recall: 0,
-              contact
-            }}
-            formulaire={formulaire}
-          />
+          {numberSelect.length > 0 && values.length > 0 && (
+            <SaveComponent
+              donner={{
+                feedback: values,
+                type: 'Reachable',
+                date_to_recall: 0,
+                contact: numberSelect.join(';')
+              }}
+              formulaire={formulaire}
+            />
+          )}
         </Paper>
       )}
     </div>

@@ -4,6 +4,7 @@ import './liste.style.css';
 
 function ListeProjet({ projet }) {
   const { agents, formulaire } = projet;
+  console.log(projet);
   return (
     <div className="listeprojet">
       <Typography noWrap component="p" className="titre_projet">
@@ -13,7 +14,7 @@ function ListeProjet({ projet }) {
       <Agents liste={agents} />
       <p className="item">A rappeler : 40</p>
       <p className="item">On going : 105</p>
-      <p className="item">Formulaire : {formulaire[0]?.titre}</p>
+      {formulaire && <p className="item">Formulaire : {formulaire[0]?.titre}</p>}
     </div>
   );
 }

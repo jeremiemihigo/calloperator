@@ -1,12 +1,21 @@
 import { TextField } from '@mui/material';
 import React from 'react';
-import { Paper } from '../../../../../node_modules/@mui/material/index';
+import { Autocomplete, Paper } from '../../../../../node_modules/@mui/material/index';
+import { ContextFeedback } from '../Context';
 import SaveComponent from './SaveComponent';
 
 function Rappeler() {
   const [raison, setRaison] = React.useState('');
   const [date, setDate] = React.useState('');
-  const [contact, setContact] = React.useState('');
+  const { client } = React.useContext(ContextFeedback);
+  const [phoneNumber, setPhoneNumber] = React.useState([]);
+  const [numberSelect, setNumberSelect] = React.useState([]);
+  React.useEffect(() => {
+    if (client) {
+      const { first_number, second_number, payment_number } = client;
+      setPhoneNumber(_.uniq([first_number, second_number, payment_number]).filter((x) => x !== ''));
+    }
+  }, [client]);
   return (
     <Paper sx={{ padding: '20px' }}>
       <div style={{ marginBottom: '10px' }}>
@@ -20,13 +29,35 @@ function Rappeler() {
         />
       </div>
       <div style={{ marginBottom: '10px' }}>
-        <TextField
-          fullWidth
-          value={contact}
-          onChange={(event) => setContact(event.target.value)}
-          label="Contact du client"
-          variant="outlined"
-          type="text"
+        <Autocomplete
+          multiple
+          value={numberSelect}
+          disabled={phoneNumber.length === 0 ? true : false}
+          id="tags-outlined"
+          onChange={(event, newValue) => {
+            if (typeof newValue === 'string') {
+              setNumberSelect({
+                title: newValue
+              });
+            } else if (newValue && newValue.inputValue) {
+              // Create a new value from the user input
+              setNumberSelect({
+                title: newValue.inputValue
+              });
+            } else {
+              setNumberSelect(newValue);
+            }
+          }}
+          options={phoneNumber}
+          getOptionLabel={(option) => option}
+          filterSelectedOptions
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Phone number"
+              placeholder={phoneNumber.length === 0 ? 'No Phone number upload for this customer' : 'Select a number'}
+            />
+          )}
         />
       </div>
       <div>
@@ -39,12 +70,12 @@ function Rappeler() {
           type="date"
         />
       </div>
-      {raison && date && contact && (
+      {raison && date && numberSelect.length > 0 && (
         <SaveComponent
           donner={{
             raison_rappel: raison,
             date_to_recall: date,
-            contact,
+            contact: numberSelect.join(';'),
             type: 'Remind'
           }}
         />

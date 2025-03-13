@@ -1,4 +1,4 @@
-import { Card, Grid, Typography } from '@mui/material';
+import { Autocomplete, Card, Grid, Stack, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import React from 'react';
 import { useSelector } from 'react-redux';
@@ -11,11 +11,11 @@ function Index() {
   const status = ['late', 'default'];
   const [statu, setStatus] = React.useState('Overall');
   const [etat, setEtat] = React.useState('Overall');
-  const [shopselect, setShopSelect] = React.useState('');
+  const [shopselect, setShopSelect] = React.useState([]);
   const [load, setLoad] = React.useState(false);
 
   const projet = useSelector((state) => state.projet.projet);
-  const { projetSelect, setProjetSelect, client, setClient, data, setData } = React.useContext(ContextFeedback);
+  const { projetSelect, setProjetSelect, setChecked, client, setClient, data, setData } = React.useContext(ContextFeedback);
   const fetchData = async () => {
     try {
       setLoad(true);
@@ -24,7 +24,19 @@ function Index() {
       let sta = statu === 'Overall' ? ['late', 'default'] : [statu];
       const response = await axios.post(
         portofolio + '/client',
-        { etat, filter: { shop: shopselect, status: { $in: sta }, idProjet: projetSelect, etat: { $in: fetc } } },
+        {
+          etat,
+          filter: {
+            shop: {
+              $in: shopselect.map((index) => {
+                return index.shop;
+              })
+            },
+            status: { $in: sta },
+            idProjet: projetSelect,
+            etat: { $in: fetc }
+          }
+        },
         config
       );
       if (response.status === 200) {
@@ -41,72 +53,115 @@ function Index() {
     }
   }, [shopselect, projetSelect, etat, statu]);
   const shop = useSelector((state) => state.shop.shop);
+  const [show, setShow] = React.useState(true);
 
   return (
     <div>
-      {shop && projet && (
+      {!show && (
+        <Card onClick={() => setShow(true)} sx={{ padding: '4px', marginBottom: '10px', cursor: 'pointer' }}>
+          <Typography sx={{ fontSize: '12px' }}>
+            Show filter ------ {data.length > 1 ? data.length + ' clients trouvés ' : data.length + ' client trouvé '}
+          </Typography>
+        </Card>
+      )}
+      {shop && projet && show && (
         <Card sx={{ padding: '4px', marginBottom: '10px' }}>
-          <div className="select__">
+          <div className="select__" style={{ marginBottom: '10px' }}>
             <select
-              style={{ width: '60%', padding: '5px', border: 'none' }}
+              style={{ width: '75%', padding: '5px', border: 'none' }}
               onChange={(event) => setProjetSelect(event.target.value)}
               value={projetSelect}
             >
               <option value="">Projet-----</option>
-              {projet.map((index) => {
-                return (
-                  <option value={index.id} key={index.id}>
-                    {index.title}
-                  </option>
-                );
-              })}
+              {!load &&
+                projet.map((index) => {
+                  return (
+                    <option value={index.id} key={index.id}>
+                      {index.title}
+                    </option>
+                  );
+                })}
+            </select>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'right',
+                width: '25%'
+              }}
+            >
+              <Typography
+                onClick={() => setShow(false)}
+                sx={{
+                  padding: '0px',
+                  margin: '0px',
+                  fontSize: '12px',
+                  fontWeight: 'bolder',
+                  cursor: 'pointer',
+                  color: 'red'
+                }}
+              >
+                Close
+              </Typography>
+            </div>
+          </div>
+          <Stack spacing={3} sx={{ width: '100%', marginBottom: '10px' }}>
+            <Autocomplete
+              multiple
+              value={shopselect}
+              disabled={load}
+              id="tags-outlined"
+              onChange={(event, newValue) => {
+                if (typeof newValue === 'string') {
+                  setShopSelect({
+                    title: newValue
+                  });
+                } else if (newValue && newValue.inputValue) {
+                  // Create a new value from the user input
+                  setShopSelect({
+                    title: newValue.inputValue
+                  });
+                } else {
+                  setShopSelect(newValue);
+                }
+              }}
+              options={shop}
+              getOptionLabel={(option) => option.shop}
+              filterSelectedOptions
+              renderInput={(params) => <TextField {...params} label="Shop" placeholder="Select a shop" />}
+            />
+          </Stack>
+          <div className="select__">
+            <select style={{ width: '50%', padding: '5px', border: 'none' }} onChange={(event) => setEtat(event.target.value)} value={etat}>
+              <option value="Overall">Overall</option>
+              {!load &&
+                statut.map((index) => {
+                  return (
+                    <option value={index} key={index}>
+                      {index}
+                    </option>
+                  );
+                })}
             </select>
             <select
-              style={{ width: '40%', padding: '5px', border: 'none' }}
+              style={{ width: '50%', padding: '5px', border: 'none' }}
               onChange={(event) => setStatus(event.target.value)}
               value={statu}
             >
               <option value="Overall">Overall</option>
-              {status.map((index) => {
-                return (
-                  <option value={index} key={index}>
-                    {index}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-          <div className="select__">
-            <select
-              style={{ width: '60%', padding: '5px', border: 'none' }}
-              onChange={(event) => setShopSelect(event.target.value)}
-              value={shopselect}
-            >
-              <option value="">Shop-----</option>
-              {shop.map((index) => {
-                return (
-                  <option value={index.shop} key={index._id}>
-                    {index.shop}
-                  </option>
-                );
-              })}
-            </select>
-            <select style={{ width: '40%', padding: '5px', border: 'none' }} onChange={(event) => setEtat(event.target.value)} value={etat}>
-              <option value="Overall">Overall</option>
-              {statut.map((index) => {
-                return (
-                  <option value={index} key={index}>
-                    {index}
-                  </option>
-                );
-              })}
+              {!load &&
+                status.map((index) => {
+                  return (
+                    <option value={index} key={index}>
+                      {index}
+                    </option>
+                  );
+                })}
             </select>
           </div>
 
           <Typography noWrap style={{ padding: '0px', fontSize: '12px', margin: '0px', color: 'rgb(0, 169, 254)', fontWeight: 'bolder' }}>
-            {data.length > 1
-              ? data.length + ' clients pour le shop de ' + shopselect
-              : data.length + ' client pour le shop de ' + shopselect}
+            {data.length > 1 ? data.length + ' clients trouvés ' : data.length + ' client trouvé '}
           </Typography>
         </Card>
       )}
@@ -122,7 +177,10 @@ function Index() {
             return (
               <Grid
                 className={client && client._id === index._id ? 'client_select f_item' : 'f_item'}
-                onClick={() => setClient(index)}
+                onClick={() => {
+                  setChecked('');
+                  setClient(index);
+                }}
                 key={index._id}
               >
                 <p className="customer_id">{index.codeclient}</p>

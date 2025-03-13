@@ -2,32 +2,31 @@ import { Delete, Save } from '@mui/icons-material';
 import { Button, Grid } from '@mui/material';
 import axios from 'axios';
 import SimpleBackdrop from 'Control/Backdrop';
-import _ from 'lodash';
 import React from 'react';
 import { config, portofolio } from 'static/Lien';
 import { ContextFeedback } from '../Context';
 
-function SaveComponent({ donner, formulaire }) {
+function SaveComponent({ donner }) {
   const [sending, setSending] = React.useState(false);
   const { setChecked, client, setClient, setData, data } = React.useContext(ContextFeedback);
 
-  const checkData = () => {
-    let table = [];
-    for (let i = 0; i < formulaire.length; i++) {
-      if (formulaire[i].valueSelect.length > 0 && _.filter(formulaire[i].valueSelect, { required: true }).length > 0) {
-        for (let y = 0; y < _.filter(formulaire[i].valueSelect, { required: true }).length; y++) {
-          table.push(_.filter(formulaire[i].valueSelect, { required: true })[y].id);
-        }
-      } else {
-        if (formulaire[i].required) {
-          table.push(formulaire[i].id);
-        }
-      }
-    }
-    return table;
-  };
-  const cle = checkData();
-  console.log(cle);
+  // const checkData = () => {
+  //   let table = [];
+  //   if (formulaire) {
+  //     for (let i = 0; i < formulaire.length; i++) {
+  //       if (formulaire[i].valueSelect.length > 0 && _.filter(formulaire[i].valueSelect, { required: true }).length > 0) {
+  //         for (let y = 0; y < _.filter(formulaire[i].valueSelect, { required: true }).length; y++) {
+  //           table.push(_.filter(formulaire[i].valueSelect, { required: true })[y].id);
+  //         }
+  //       } else {
+  //         if (formulaire[i].required) {
+  //           table.push(formulaire[i].id);
+  //         }
+  //       }
+  //     }
+  //     return table;
+  //   }
+  // };
   const sendData = async () => {
     try {
       setSending(true);

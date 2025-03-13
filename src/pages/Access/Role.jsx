@@ -4,6 +4,7 @@ import React from 'react';
 import Popup from 'static/Popup';
 import '../style.css';
 import BackOffice from './BackOffice';
+import ConfirmationCas from './ConfirmationCas';
 import Departement from './Form/Departement';
 import RoleForm from './Form/Role';
 import PlainteCallCenter from './PlainteCallCenter';
@@ -16,27 +17,16 @@ function Role() {
   const [open, setOpen] = React.useState(false);
 
   const [selected, setSelected] = React.useState('');
-  // const agentAdmin = useSelector((state) => state.agentAdmin);
-  // const [value, setValue] = React.useState('');
 
   const [confirmDialog, setConfirmDialog] = React.useState({ isOpen: false, title: '', subTitle: '' });
-  // const sendParametre = async () => {
-  //   setConfirmDialog({
-  //     ...confirmDialog,
-  //     isOpen: false
-  //   });
-  //   const response = await axios.put(lien + '/addTache', { codeAgent: value?.codeAgent, tache: selected });
-  //   if (response) {
-  //     window.location.replace('/access');
-  //   }
-  // };
 
   const table = [
     { id: '31660', title: 'SUPPORT TEAM (reponse)' },
     { id: '31661', title: 'ENREGISTREMENT DES PLAINTES (shop)' },
     { id: '31663', title: 'ENREGISTREMENT DES PLAINTES (call center)' },
     { id: '31662', title: 'BACK OFFICE (plainte)' },
-    { id: '31664', title: 'SYNCHRO TEAM' }
+    { id: '31664', title: 'SYNCHRO TEAM' },
+    { id: '31665', title: 'CONFIRMATION DES CAS VISITES MENAGES' }
   ];
   return (
     <div>
@@ -82,29 +72,11 @@ function Role() {
             <Support />
           </Grid>
         )}
-        {/* <Grid item lg={8}>
-          <div style={{ margin: '10px 0px' }}>
-            <AutoComplement value={value} setValue={setValue} options={agentAdmin?.agentAdmin} title="Selectionnez un agent" propr="nom" />
-          </div>
-          <div>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => {
-                setConfirmDialog({
-                  isOpen: true,
-                  title: 'Cette opération donne la permission de répondre aux demandes des SA & TECH',
-                  subTitle: "Cliquez sur YES pour valider l'operation",
-                  onConfirm: () => {
-                    sendParametre();
-                  }
-                });
-              }}
-            >
-              Valider
-            </Button>
-          </div>
-        </Grid> */}
+        {selected === '31665' && (
+          <Grid item lg={8}>
+            <ConfirmationCas />
+          </Grid>
+        )}
       </Grid>
 
       <Popup open={addDepartementOpen} setOpen={setAddDepartement} title="Département">

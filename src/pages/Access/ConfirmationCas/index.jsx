@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import Popup from 'static/Popup';
@@ -5,8 +6,11 @@ import { Typography } from '../../../../node_modules/@mui/material/index';
 import Formulaire from './Formulaire';
 
 function Index() {
-  const agentadmin = useSelector((state) => state.agentAdmin?.agentAdmin.filter((x) => x.synchro_shop && x.synchro_shop.length > 0));
-
+  const agentadmin = useSelector((state) => state.agentAdmin?.agentAdmin.filter((x) => x.validateShop && x.validateShop.length > 0));
+  const shop = useSelector((state) => state.shop.shop);
+  const returnshop = (id) => {
+    return _.filter(shop, { idShop: id })[0].shop;
+  };
   const [open, setOpen] = React.useState(false);
   return (
     <div>
@@ -31,13 +35,14 @@ function Index() {
         </thead>
         <tbody>
           {agentadmin &&
+            shop &&
             agentadmin.map((index) => {
               return (
                 <tr key={index._id}>
                   <td>{index.nom}</td>
                   <td>
-                    {index.synchro_shop.map((item, key) => {
-                      return <span key={key}>{item}; </span>;
+                    {index.validateShop.map((item, key) => {
+                      return <span key={key}>{returnshop(item)}; </span>;
                     })}
                   </td>
                 </tr>
