@@ -16,7 +16,7 @@ export const ReadProjet = createAsyncThunk('projet/ReadProjet', async (id, { rej
     return response.data;
   } catch (error) {
     if (error) {
-      alert(JSON.stringify(error.message));
+      console.log('Error');
     }
   }
 });
@@ -26,7 +26,7 @@ export const AjouterProjet = createAsyncThunk('projet/AjouterProjet', async (dat
     return response.data;
   } catch (error) {
     if (error) {
-      alert(JSON.stringify(error.message));
+      console.log('Error');
     }
   }
 });
