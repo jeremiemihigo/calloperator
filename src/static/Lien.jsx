@@ -1,9 +1,10 @@
 // eslint-disable-next-line no-undef
 
-const link = 'https://visitemenagesbackend.bboxxvm.com';
-const link_big = 'https://visitemenagesbackend.bboxxvm.com';
-//const link_big = 'http://localhost:5000';
-//const link = 'http://localhost:5000';
+//const link = 'https://visitemenagesbackend.bboxxvm.com';
+//const link_big = 'https://visitemenagesbackend.bboxxvm.com';
+const link_big = 'http://localhost:5000';
+const link = 'http://localhost:5000';
+export const puls_img = 'https://pulse.bboxx.com/v2/assets/animations/loader.gif';
 
 export const lien = `${link}/bboxx/support`;
 export const big_data = `${link}/bboxx/support`;

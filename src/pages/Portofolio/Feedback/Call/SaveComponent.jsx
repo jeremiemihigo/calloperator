@@ -8,7 +8,7 @@ import { ContextFeedback } from '../Context';
 
 function SaveComponent({ donner }) {
   const [sending, setSending] = React.useState(false);
-  const { setChecked, client, setClient, setData, data } = React.useContext(ContextFeedback);
+  const { setChecked, analyse, setAnalyse, client, setClient, setData, data } = React.useContext(ContextFeedback);
 
   // const checkData = () => {
   //   let table = [];
@@ -36,6 +36,7 @@ function SaveComponent({ donner }) {
       setSending(false);
       if (response.status === 200) {
         setData(data.filter((x) => x.codeclient !== response.data.codeclient));
+        setAnalyse([...analyse, response.data]);
         setChecked('');
         setClient('');
       }

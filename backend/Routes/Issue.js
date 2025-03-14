@@ -47,7 +47,6 @@ const {
   ReadDelai,
   Default_Delai,
 } = require("../Controllers/Issue/Delai");
-const { AddSynchro } = require("../Controllers/AgentAdmin");
 
 router.post("/plainte", protect, AddPlainte, ReadPlainte);
 router.post("/itemPlainte", protect, AddTitlePlainte, ReadPlainte);
@@ -83,8 +82,6 @@ router.get("/delai", protect, ReadDelai);
 router.get("/infoclient/:codeclient", protect, InfoClient);
 
 router.post("/default_delai", protect, Default_Delai);
-
-router.post("/addsynchro", protect, AddSynchro);
 
 router.get("/client", protect, Readclient);
 router.get("/itemPlainte", protect, ReadItem_Plainte);
@@ -128,5 +125,5 @@ router.get("/backoffice_data", ReadData_Backoffice);
 router.get("/mydeedline/:type", protect, Mydeedline);
 
 router.post("/escalader", protect, Escalader);
-router.get("/r_renseignement", protect, Renseignement)
+router.get("/r_renseignement", protect, Renseignement);
 module.exports = router;

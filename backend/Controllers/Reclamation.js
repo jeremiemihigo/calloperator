@@ -8,8 +8,8 @@ var periode = moment(new Date()).format("MM-YYYY");
 
 const Reclamation = async (req, res) => {
   try {
-    const { _id, message, idDemande, sender, codeAgent } = req.body;
-    if (!_id || !message || !sender || !codeAgent) {
+    const { _id, message, idDemande, sender, concerne, codeAgent } = req.body;
+    if (!_id || !message || !sender || !codeAgent || !concerne) {
       return res.status(201).json("Error");
     }
     const io = req.io;
@@ -18,6 +18,7 @@ const Reclamation = async (req, res) => {
         message,
         codeAgent,
         sender,
+        concerne,
         code: new ObjectId(_id),
       })
       .then((response) => {

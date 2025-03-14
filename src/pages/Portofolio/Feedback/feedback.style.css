@@ -6,18 +6,18 @@
   background-color: #d9d9d9;
   border-radius: 10px;
   padding: 10px;
+  height: 100vh;
 }
 .feedback_liste {
   overflow-y: auto;
-  max-height: 100% !important;
+  max-height: 95vh;
   padding-right: 5px;
   overflow-x: auto;
 }
 .fcontainer > div {
   padding: 5px;
 }
-.f_item,
-.call_title {
+.f_item {
   background-color: #fff;
   border-radius: 5px;
   cursor: pointer;
@@ -33,12 +33,7 @@
   margin: 0;
   font-size: 12px;
 }
-.call_late {
-  color: rgb(0, 169, 254);
-  font-size: 25px;
-  font-weight: bolder;
-}
-.call_title > p,
+
 .call_option_item > p,
 .historical > p,
 .item_historical > p,
@@ -48,11 +43,7 @@
   padding: 0;
   margin: 0;
 }
-.call_subtitle {
-  color: #000000;
-  font-weight: bolder;
-  font-size: 10px;
-}
+
 .call_option,
 .call_option_item {
   display: flex;

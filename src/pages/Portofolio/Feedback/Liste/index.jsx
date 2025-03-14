@@ -1,5 +1,6 @@
 import { Autocomplete, Card, Grid, Stack, TextField, Typography } from '@mui/material';
 import axios from 'axios';
+import Input from 'components/Input';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { config, portofolio } from 'static/Lien';
@@ -15,7 +16,7 @@ function Index() {
   const [load, setLoad] = React.useState(false);
 
   const projet = useSelector((state) => state.projet.projet);
-  const { projetSelect, setProjetSelect, setChecked, client, setClient, data, setData } = React.useContext(ContextFeedback);
+  const { projetSelect, setChecked, client, setClient, data, setData } = React.useContext(ContextFeedback);
   const fetchData = async () => {
     try {
       setLoad(true);
@@ -54,11 +55,31 @@ function Index() {
   }, [shopselect, projetSelect, etat, statu]);
   const shop = useSelector((state) => state.shop.shop);
   const [show, setShow] = React.useState(true);
+  const [value, setValue] = React.useState('');
+
+  const [filterFn, setFilterFn] = React.useState({
+    fn: (items) => {
+      return items;
+    }
+  });
+  React.useEffect(() => {
+    setFilterFn({
+      fn: (items) => {
+        if (value === '') {
+          return items;
+        } else {
+          return items.filter(
+            (x) => x.customer_name.toUpperCase().includes(value.toUpperCase()) || x.codeclient.toUpperCase().includes(value.toUpperCase())
+          );
+        }
+      }
+    });
+  }, [value]);
 
   return (
-    <div>
+    <div className="feedback_liste">
       {!show && (
-        <Card onClick={() => setShow(true)} sx={{ padding: '4px', marginBottom: '10px', cursor: 'pointer' }}>
+        <Card onClick={() => setShow(true)} sx={{ padding: '4px', marginBottom: '5px', cursor: 'pointer' }}>
           <Typography sx={{ fontSize: '12px' }}>
             Show filter ------ {data.length > 1 ? data.length + ' clients trouvés ' : data.length + ' client trouvé '}
           </Typography>
@@ -67,43 +88,19 @@ function Index() {
       {shop && projet && show && (
         <Card sx={{ padding: '4px', marginBottom: '10px' }}>
           <div className="select__" style={{ marginBottom: '10px' }}>
-            <select
-              style={{ width: '75%', padding: '5px', border: 'none' }}
-              onChange={(event) => setProjetSelect(event.target.value)}
-              value={projetSelect}
-            >
-              <option value="">Projet-----</option>
-              {!load &&
-                projet.map((index) => {
-                  return (
-                    <option value={index.id} key={index.id}>
-                      {index.title}
-                    </option>
-                  );
-                })}
-            </select>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'right',
-                width: '25%'
+            <Typography
+              onClick={() => setShow(false)}
+              sx={{
+                width: '100%',
+                fontSize: '12px',
+                fontWeight: 'bolder',
+                cursor: 'pointer',
+                color: 'blue',
+                textAlign: 'right'
               }}
             >
-              <Typography
-                onClick={() => setShow(false)}
-                sx={{
-                  padding: '0px',
-                  margin: '0px',
-                  fontSize: '12px',
-                  fontWeight: 'bolder',
-                  cursor: 'pointer',
-                  color: 'red'
-                }}
-              >
-                Close
-              </Typography>
-            </div>
+              Reduce filter
+            </Typography>
           </div>
           <Stack spacing={3} sx={{ width: '100%', marginBottom: '10px' }}>
             <Autocomplete
@@ -165,7 +162,12 @@ function Index() {
           </Typography>
         </Card>
       )}
-      <div className="feedback_liste">
+      {data.length > 0 && (
+        <Card sx={{ padding: '5px', marginBottom: '5px' }}>
+          <Input label="Customer id or custumer name" setValue={setValue} value={value} showIcon={true} />
+        </Card>
+      )}
+      <div>
         {load && (
           <p style={{ textAlign: 'center', fontSize: '12px', fontWeight: 'bolder', color: 'blue' }} className="f_item">
             Loading...
@@ -173,7 +175,7 @@ function Index() {
         )}
         {!load &&
           data.length > 0 &&
-          data.map((index) => {
+          filterFn.fn(data).map((index) => {
             return (
               <Grid
                 className={client && client._id === index._id ? 'client_select f_item' : 'f_item'}

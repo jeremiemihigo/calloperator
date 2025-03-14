@@ -1,22 +1,26 @@
 const ModelFeedback = require("../../Models/Portofolio/PFeedback");
+const moment = require("moment");
 
 const AddFeedback = async (req, res) => {
   try {
+    const { nom } = req.user;
     const {
       codeclient,
       idProjet,
       feedback,
+      raison_rappel,
       shop,
       region,
       type,
-      statut,
+      status,
       date_to_recall,
       contact,
     } = req.body;
+    let rappel = date_to_recall ? new Date(date_to_recall).getTime() : 0;
     if (
       !codeclient ||
       !type ||
-      !statut ||
+      !status ||
       !contact ||
       !idProjet ||
       !shop ||
@@ -26,18 +30,21 @@ const AddFeedback = async (req, res) => {
         .status(201)
         .json("Veuillez renseigner les champs ayant l'asterisque");
     }
-    const dateSave = new Date().getTime();
+    const dateSave = new Date(
+      moment(new Date()).format("YYYY-MM-DD")
+    ).getTime();
     ModelFeedback.create({
       codeclient,
       idProjet,
       feedback,
-      codeAgent,
+      agent: nom,
       shop,
+      raison_rappel,
       region,
       dateSave,
       type,
-      statut,
-      date_to_recall,
+      status,
+      date_to_recall: rappel,
       contact,
     })
       .then((result) => {

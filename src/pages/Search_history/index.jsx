@@ -2,10 +2,10 @@ import { SearchOutlined } from '@ant-design/icons';
 import { FormControl, Grid, InputAdornment, OutlinedInput, Paper } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import axios from 'axios';
+import moment from 'moment';
 import React from 'react';
 import ExcelButton from 'static/ExcelButton';
 import { config, lien } from 'static/Lien';
-import moment from '../../../node_modules/moment/moment';
 import './search.style.css';
 
 function Index() {

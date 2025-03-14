@@ -10,10 +10,10 @@ function AcceuilPage() {
       <Grid item lg={3} sx={{ height: '100%' }}>
         <Liste />
       </Grid>
-      <Grid item lg={6}>
+      <Grid item lg={7}>
         <Call />
       </Grid>
-      <Grid item lg={3}>
+      <Grid item lg={2}>
         <Historical />
       </Grid>
     </Grid>

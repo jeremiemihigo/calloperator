@@ -18,18 +18,13 @@ export default function FullScreenDialog({ title, open, setOpen, children }) {
         <AppBar sx={{ position: 'relative' }}>
           <Toolbar>
             <Grid container>
-              <Grid item lg={5} sx={{ display: 'flex', alignItems: 'center' }}>
+              <Grid item lg={12} sx={{ display: 'flex', alignItems: 'center' }}>
                 <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
                   <CloseIcon />
                 </IconButton>
                 <Typography noWrap sx={{ ml: 2, fontSize: '25px', flex: 1 }} variant="p" component="div">
                   {title}
                 </Typography>
-              </Grid>
-              <Grid item lg={7}>
-                <p style={{ textAlign: 'center', padding: '0px', margin: '0px', fontSize: '25px' }}>
-                  Configure the form by adding questions
-                </p>
               </Grid>
             </Grid>
           </Toolbar>

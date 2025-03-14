@@ -4,6 +4,7 @@ const ValueSelect = new mongoose.Schema({
   title: { type: String, required: true },
   id: { type: String, required: true },
   next_question: { type: String, required: false },
+  required: { type: Boolean, required: true, default: false },
 });
 
 const schema = new mongoose.Schema(

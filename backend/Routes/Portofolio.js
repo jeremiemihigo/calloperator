@@ -3,6 +3,7 @@ const {
   PDatabase,
   ReadCustomerToTrack,
   ReadByFilter,
+  ClientInformation,
 } = require("../Controllers/Portofolio/Database");
 const router = express.Router();
 const { protect } = require("../MiddleWare/protect");
@@ -14,7 +15,12 @@ const {
   ReadQuestionProjet,
   EditQuestion,
 } = require("../Controllers/Portofolio/Formulaire");
-const { AddProjet, ReadProjet } = require("../Controllers/Portofolio/Projet");
+const {
+  AddProjet,
+  ReadProjet,
+  RapportPortofolio,
+  AnalyseToDay,
+} = require("../Controllers/Portofolio/Projet");
 
 //Projet
 router.post("/addProjet", protect, AddProjet);
@@ -37,5 +43,10 @@ router.put("/editQuestion", protect, EditQuestion);
 
 //Clients
 router.post("/client", protect, ReadByFilter);
+router.get("/information/:codeclient", protect, ClientInformation);
+
+//Rapport PORTOFOLIO
+router.post("/rapportportofolio", protect, RapportPortofolio);
+router.get("/analysetoday", protect, AnalyseToDay);
 
 module.exports = router;

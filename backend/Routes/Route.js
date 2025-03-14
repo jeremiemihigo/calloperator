@@ -28,6 +28,8 @@ const {
   updateDemandeAgent,
   updateDemandeAgentFile,
   R_Insert_Updated,
+  ReadApprobation,
+  ApprovedByRS,
 } = require("../Controllers/Demande");
 const {
   Parametre,
@@ -108,6 +110,8 @@ router.post("/postzone", Zone);
 router.post("/postAgent", protect, AddAgent, ReadAgent);
 router.post("/reponsedemande", protectReponse, reponse, Doublon);
 router.post("/reclamation", Reclamation);
+router.get("/approbation", protect, ReadApprobation);
+router.post("/approvedbyRs", protect, ApprovedByRS);
 //Update
 router.put("/zone", AffecterZone);
 router.put("/reponse", protect, updateReponse);

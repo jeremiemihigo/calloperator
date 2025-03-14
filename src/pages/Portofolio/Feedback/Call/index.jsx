@@ -1,5 +1,6 @@
 import { Checkbox, Grid } from '@mui/material';
 import React from 'react';
+import { Paper } from '../../../../../node_modules/@mui/material/index';
 import { ContextFeedback } from '../Context';
 import Injoignable from './Injoignable';
 import Joignable from './Joignable';
@@ -9,12 +10,8 @@ function Index() {
   const { checked, setChecked } = React.useContext(ContextFeedback);
 
   return (
-    <div>
-      <div className="call_title">
-        <p className="call_late">Late and Default calls</p>
-        <p className="call_subtitle">L&apos;appel pour les clients qui sont expirés</p>
-      </div>
-      <div className="call_option">
+    <div className="feedback_liste">
+      <Paper className="call_option" sx={{ marginBottom: '5px' }}>
         <Grid className="call_option_item" onClick={() => setChecked('joignable')}>
           <Checkbox checked={checked === 'joignable'} />
           <p>Reachable</p>
@@ -27,7 +24,7 @@ function Index() {
           <Checkbox checked={checked === 'rappeler'} />
           <p>Remind</p>
         </Grid>
-      </div>
+      </Paper>
       {checked === 'joignable' && <Joignable />}
       {checked === 'injoignable' && <Injoignable />}
       {checked === 'rappeler' && <Rappeler />}

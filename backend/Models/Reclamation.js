@@ -8,13 +8,18 @@ const conversatn = new mongoose.Schema(
     message: { type: String, required: true, trim: true },
     valide: { type: Boolean, required: true, default: false },
     codeAgent: { type: String, required: true },
+    concerne: { type: String, required: true },
   },
   { timestamps: true }
 );
 conversatn.index({ codeAgent: 1 });
 conversatn.pre("save", async function (next) {
   modelDemande
-    .findByIdAndUpdate(this.code, { $set: { feedback: "chat" } }, { new: true })
+    .findByIdAndUpdate(
+      this.code,
+      { $set: { feedback: "chat", concerne: this.concerne } },
+      { new: true }
+    )
     .then(() => {})
     .catch(function (err) {
       console.log(err);

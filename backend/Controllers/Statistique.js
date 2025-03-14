@@ -64,7 +64,6 @@ const readPeriodeGroup = async (req, res) => {
             },
           ])
           .then((response) => {
-            console.log(response);
             done(null, response.reverse());
           });
       },
@@ -76,10 +75,16 @@ const readPeriodeGroup = async (req, res) => {
             (x) => x.reponse.length < 1 && x.feedback === "new"
           ),
           nConforme: reponse.filter(
-            (x) => x.reponse.length === 0 && x.feedback === "chat"
+            (x) =>
+              x.reponse.length === 0 &&
+              x.feedback === "chat" &&
+              (x.concerne === "agent" || !x.concerne)
           ),
           followup: reponse.filter((x) => x.feedback === "followup"),
           valide: reponse.filter((x) => x.reponse.length > 0),
+          rs: reponse.filter(
+            (x) => x.concerne === "rs" && x.reponse.length === 0
+          ),
           allData: reponse,
         });
         res.status(200).json(table);

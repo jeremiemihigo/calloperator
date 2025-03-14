@@ -1,9 +1,9 @@
 // assets
-import { PhoneOutlined } from '@ant-design/icons';
+import { IssuesCloseOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
-  PhoneOutlined
+  IssuesCloseOutlined
 };
 
 // ==============================|| MENU ITEMS - UTILITIES ||============================== //
@@ -18,7 +18,7 @@ const issue = {
       title: 'Complaints',
       type: 'item',
       url: '/call',
-      icon: icons.PhoneOutlined
+      icon: icons.IssuesCloseOutlined
     }
   ]
 };

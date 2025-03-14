@@ -69,7 +69,7 @@ const Readclient = async (req, res) => {
             synchro_shop &&
             synchro_shop.length > 0 &&
             !backOffice_plainte &&
-            fonction === "co"
+            ["co", "admin"].includes(fonction)
           ) {
             let match = {
               $or: [
@@ -77,7 +77,7 @@ const Readclient = async (req, res) => {
                   type: "ticket",
                   periode,
                   open: true,
-                  // shop: { $in: synchro_shop },
+                  shop: { $in: synchro_shop },
                 },
               ],
             };
@@ -90,7 +90,7 @@ const Readclient = async (req, res) => {
                   type: "ticket",
                   periode,
                   open: true,
-                  // shop: { $in: synchro_shop },
+                  shop: { $in: synchro_shop },
                 },
                 {
                   open: true,
@@ -116,7 +116,12 @@ const Readclient = async (req, res) => {
             };
             done(null, match);
           }
-          if (plainteShop && fonction === "admin" && backOffice_plainte) {
+          if (
+            plainteShop &&
+            fonction === "admin" &&
+            backOffice_plainte &&
+            (!synchro_shop || synchro_shop.length === 0)
+          ) {
             let match = {
               $or: [
                 {

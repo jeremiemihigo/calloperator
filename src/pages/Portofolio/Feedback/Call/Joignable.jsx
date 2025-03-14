@@ -1,7 +1,8 @@
-import { Autocomplete, Checkbox, FormControl, FormControlLabel, Paper, TextField } from '@mui/material';
+import { Autocomplete, Checkbox, FormControlLabel, Paper, TextField } from '@mui/material';
 import _ from 'lodash';
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { FormGroup } from '../../../../../node_modules/@mui/material/index';
 import { ContextFeedback } from '../Context';
 import SaveComponent from './SaveComponent';
 
@@ -117,7 +118,7 @@ function Joignable() {
           {formulaire.map((index, key) => {
             return (
               <div key={index._id} className="question">
-                <p>
+                <p style={{ fontSize: '17px' }}>
                   {key + 1}.{index.question}
                   {index.required === true ? <span style={{ color: 'red', fontWeight: 'bolder' }}>*</span> : ''}
                 </p>
@@ -137,7 +138,7 @@ function Joignable() {
                   index.valueSelect.map((item) => {
                     return (
                       <React.Fragment key={item._id}>
-                        <FormControl component="fieldset" variant="standard">
+                        <FormGroup>
                           <FormControlLabel
                             control={
                               <Checkbox
@@ -149,7 +150,7 @@ function Joignable() {
                             label={item.title}
                             name={index.id}
                           />
-                        </FormControl>
+                        </FormGroup>
                       </React.Fragment>
                     );
                   })}
@@ -157,13 +158,13 @@ function Joignable() {
                   index.valueSelect.map((item) => {
                     return (
                       <React.Fragment key={item._id}>
-                        <FormControl component="fieldset" variant="standard">
+                        <FormGroup>
                           <FormControlLabel
                             control={<Checkbox onChange={handleChangeBoxMany} value={item.title} />}
                             label={item.title}
                             name={index.id}
                           />
-                        </FormControl>
+                        </FormGroup>
                         {values.filter((x) => x.idQuestion === item.id).length > 0 && item.next_question !== '' && (
                           <p>{item.next_question}</p>
                         )}
@@ -177,7 +178,7 @@ function Joignable() {
                         item.next_question !== '' &&
                         values.filter((x) => x.idQuestion === index.id)[0].reponse === item.title && (
                           <>
-                            <p>
+                            <p style={{ fontSize: '17px' }}>
                               {item.next_question}
                               {item.required ? <span style={{ fontWeight: 'bolder', color: 'red' }}>*</span> : ''}
                             </p>

@@ -4,7 +4,7 @@ import moment from 'moment';
 import React from 'react';
 import { config, portofolio } from 'static/Lien';
 import { ContextFeedback } from '../Context';
-import Statistique from './Statistique';
+import Today from './Today';
 
 function Index() {
   const { client } = React.useContext(ContextFeedback);
@@ -66,9 +66,11 @@ function Index() {
           </div>
         </Paper>
       )}
-
+      <Paper className="historical" style={{ marginTop: '10px' }}>
+        <p>My Record call of today</p>
+      </Paper>
       <div className="statistique">
-        <Statistique />
+        <Today />
       </div>
     </div>
   );

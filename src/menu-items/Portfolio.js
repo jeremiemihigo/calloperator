@@ -1,9 +1,9 @@
 // assets
-import { WechatOutlined } from '@ant-design/icons';
+import { PhoneOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
-  WechatOutlined
+  PhoneOutlined
 };
 
 // ==============================|| MENU ITEMS - UTILITIES ||============================== //
@@ -14,11 +14,11 @@ const Portfolio = {
   type: 'group',
   children: [
     {
-      id: 'Feedback',
-      title: 'Feedback',
+      id: 'Record call',
+      title: 'Record call',
       type: 'item',
       url: '/portfolio',
-      icon: icons.WechatOutlined
+      icon: icons.PhoneOutlined
     }
   ]
 };

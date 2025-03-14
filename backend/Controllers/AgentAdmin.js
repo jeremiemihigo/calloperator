@@ -136,35 +136,7 @@ const AddTache = async (req, res) => {
     console.log(error);
   }
 };
-const AddSynchro = async (req, res) => {
-  try {
-    const { allShop, agent } = req.body;
-    if (!agent || !allShop) {
-      return res.status(201).json("Veuillez renseigner les champs");
-    }
-    ModelAgentAdmin.findOneAndUpdate(
-      { codeAgent: agent },
-      {
-        $set: {
-          synchro_shop: allShop,
-        },
-      },
-      { new: true }
-    )
-      .then((result) => {
-        if (result) {
-          return res.status(200).json("Done");
-        } else {
-          return res.status(201).json("Error");
-        }
-      })
-      .catch(function (err) {
-        return res.status(200).json("Error " + err);
-      });
-  } catch (error) {
-    console.log(error);
-  }
-};
+
 const EditAgent = async (req, res) => {
   try {
     const { id, data } = req.body;
@@ -191,6 +163,5 @@ module.exports = {
   ReadAgentAdmin,
   BloquerAgentAdmin,
   AddTache,
-  AddSynchro,
   EditAgent,
 };

@@ -19,6 +19,7 @@ const schema = new mongoose.Schema(
     //Default tracker
     role: { type: String, required: false },
     valueFilter: { type: Array, required: false },
+    validateShop: { type: Array, required: false },
   },
   { timestamps: true }
 );

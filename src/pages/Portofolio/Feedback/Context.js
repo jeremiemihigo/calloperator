@@ -8,12 +8,15 @@ const Context = (props) => {
   const [client, setClient] = React.useState('');
   const [checked, setChecked] = React.useState('');
   const [data, setData] = React.useState([]);
+  const [analyse, setAnalyse] = React.useState([]);
 
   return (
     <ContextFeedback.Provider
       value={{
         projetSelect,
         setProjetSelect,
+        analyse,
+        setAnalyse,
         client,
         setClient,
         checked,

@@ -93,9 +93,9 @@ const rechercheClient = async (req, res) => {
 };
 const SetFeedback = async (req, res) => {
   try {
-    const { title } = req.body;
+    const { title, concerne } = req.body;
     const { nom } = req.user;
-    if (!title) {
+    if (!title || !concerne) {
       return res.status(201).json("Veuillez renseigner le champs");
     }
     modelPeriode
@@ -106,6 +106,7 @@ const SetFeedback = async (req, res) => {
             feedbackvm: {
               title,
               savedby: nom,
+              concerne,
             },
           },
         },

@@ -1,10 +1,10 @@
-import AcceuilPage from './Acceuil';
 import Context from './Context';
+import Projet from './Projet';
 
 function index() {
   return (
     <Context>
-      <AcceuilPage />
+      <Projet />
     </Context>
   );
 }

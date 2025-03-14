@@ -1,4 +1,8 @@
 const ModelDatabase = require("../../Models/Portofolio/PDataBase");
+const asyncLab = require("async");
+const ModelRapport = require("../../Models/Rapport");
+const moment = require("moment");
+const ModelIssue = require("../../Models/Issue/Appel_Issue");
 
 const PDatabase = async (req, res) => {
   try {
@@ -13,13 +17,13 @@ const PDatabase = async (req, res) => {
           update: {
             $set: client,
           },
+          upsert: true,
         },
       }));
       try {
         const result = await ModelDatabase.bulkWrite(bulkOperations);
-        return res
-          .status(200)
-          .json(`Mises à jour réussies : ${result.modifiedCount} clients`);
+        console.log(result);
+        return res.status(200).json(`Successful updates`);
       } catch (err) {
         return res.status(201).json("Error during updates : " + err.message);
       }
@@ -31,8 +35,14 @@ const PDatabase = async (req, res) => {
 };
 const ReadByFilter = async (req, res) => {
   try {
-    const { filter } = req.body;
-    ModelDatabase.find(filter)
+    const { filter, etat } = req.body;
+    let now = new Date(moment(new Date()).format("YYYY-MM-DD")).getTime();
+
+    let match =
+      etat === "Remind"
+        ? { ...filter, remindDate: { $lt: now, $gt: 0 } }
+        : filter;
+    ModelDatabase.find(match)
       .lean()
       .then((result) => {
         return res.status(200).json(result);
@@ -82,4 +92,55 @@ const ReadCustomerToTrack = async (req, res) => {
     console.log(error);
   }
 };
-module.exports = { PDatabase, ReadByFilter, ReadCustomerToTrack };
+const ClientInformation = async (req, res) => {
+  try {
+    const { codeclient } = req.params;
+    asyncLab.waterfall(
+      [
+        function (done) {
+          ModelRapport.find(
+            { codeclient },
+            {
+              "demande.raison": 1,
+              "demande.updatedAt": 1,
+              "demandeur.codeAgent": 1,
+            }
+          )
+            .sort({ "demande.updatedAt": -1 })
+            .limit(1)
+            .then((visite) => {
+              done(null, visite);
+            })
+            .catch(function (err) {
+              console.log(err);
+            });
+        },
+        function (visite, done) {
+          ModelIssue.find(
+            { codeclient },
+            { typePlainte: 1, statut: 1, dateSave: 1, plainteSelect: 1 }
+          )
+            .sort({ dateSave: -1 })
+            .limit(1)
+            .then((result) => {
+              done(visite, result);
+            })
+            .catch(function (err) {
+              console.log(err);
+            });
+        },
+      ],
+      function (visite, plainte) {
+        return res.status(200).json({ visite, plainte });
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+module.exports = {
+  PDatabase,
+  ReadByFilter,
+  ClientInformation,
+  ReadCustomerToTrack,
+};

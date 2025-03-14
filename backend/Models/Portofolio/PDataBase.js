@@ -5,11 +5,23 @@ const schema = new mongoose.Schema({
   customer_name: { type: String, required: true, trim: true },
   region: { type: String, required: true },
   shop: { type: String, required: true },
-  status: { type: String, required: true, enum: ["default", "late"] },
+  status: {
+    type: String,
+    lowecase: true,
+    required: true,
+    enum: ["default", "late"],
+  },
   idProjet: { type: String, required: true },
   remindDate: { type: Number, required: true, default: 0 },
-  contact: { type: String, required: false },
-  tracker_par: { type: String, required: false },
+  first_number: { type: String, required: false },
+  second_number: { type: String, required: false },
+  payment_number: { type: String, required: false },
+  etat: {
+    type: String,
+    required: true,
+    default: "Pending",
+    enum: ["Reachable", "Pending", "Unreachable", "Remind"],
+  },
 });
 const model = mongoose.model("pdatabase", schema);
 module.exports = model;

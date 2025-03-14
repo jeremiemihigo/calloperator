@@ -1,5 +1,5 @@
 // assets
-import { BarChartOutlined, BgColorsOutlined, FileOutlined, FontSizeOutlined, RollbackOutlined } from '@ant-design/icons';
+import { BarChartOutlined, BgColorsOutlined, CheckOutlined, FileOutlined, FontSizeOutlined, RollbackOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
@@ -7,7 +7,8 @@ const icons = {
   BgColorsOutlined,
   FileOutlined,
   RollbackOutlined,
-  BarChartOutlined
+  BarChartOutlined,
+  CheckOutlined
 };
 
 // ==============================|| MENU ITEMS - UTILITIES ||============================== //
@@ -37,6 +38,13 @@ const utilities = {
       type: 'item',
       url: '/statistiques',
       icon: icons.BarChartOutlined
+    },
+    {
+      id: 'Approbation',
+      title: 'Approbation',
+      type: 'item',
+      url: '/approbation',
+      icon: icons.CheckOutlined
     },
     {
       id: 'Report',

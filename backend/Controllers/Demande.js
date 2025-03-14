@@ -382,7 +382,6 @@ const lectureDemandeMobile = async (req, res) => {
 };
 const ToutesDemandeAttente = async (req, res) => {
   try {
-    const { limit } = req.params;
     var periode = moment(new Date()).format("MM-YYYY");
     asyncLab.waterfall(
       [
@@ -404,7 +403,6 @@ const ToutesDemandeAttente = async (req, res) => {
                   as: "conversation",
                 },
               },
-              { $limit: parseInt(limit) },
             ])
             .then((response) => {
               if (response.length > 0) {
@@ -617,9 +615,69 @@ const R_Insert_Updated = async (req, res) => {
       });
   } catch (error) {}
 };
-
+const ReadApprobation = async (req, res) => {
+  try {
+    const { validateShop } = req.user;
+    var periode = moment(new Date()).format("MM-YYYY");
+    modelDemande
+      .aggregate([
+        {
+          $match: {
+            concerne: "rs",
+            valide: false,
+            idShop: { $in: validateShop },
+            feedback: "chat",
+            lot: periode,
+          },
+        },
+        {
+          $lookup: {
+            from: "conversations",
+            localField: "_id",
+            foreignField: "code",
+            as: "conversation",
+          },
+        },
+      ])
+      .then((result) => {
+        return res.status(200).json(result);
+      });
+  } catch (error) {
+    console.log(error);
+  }
+};
+const ApprovedByRS = async (req, res) => {
+  try {
+    const { id, feedbackrs, concerne, feedback } = req.body;
+    if (!id || !feedbackrs || !concerne || !feedback) {
+      return res.status(201).json("Error");
+    }
+    modelDemande
+      .findByIdAndUpdate(
+        id,
+        {
+          $set: {
+            feedback,
+            feedbackrs,
+            concerne,
+          },
+        },
+        { new: true }
+      )
+      .then((result) => {
+        return res.status(200).json(result);
+      })
+      .catch(function (error) {
+        return res.status(201).json("Error " + error.message);
+      });
+  } catch (error) {
+    console.log(error);
+  }
+};
 module.exports = {
   demande,
+  ApprovedByRS,
+  ReadApprobation,
   ToutesDemandeAttente,
   R_Insert_Updated,
   updateDemandeAgentFile,

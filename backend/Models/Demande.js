@@ -46,6 +46,8 @@ const schema = new mongoose.Schema(
     lot: { type: String, required: true },
     itemswap: { type: String, required: false },
     jours: { type: Number, required: false },
+    concerne: { type: String, required: false, enum: ["agent", "rs"] },
+    feedbackrs: { type: String, required: false },
     typeVisit: {
       dateFollowup: { type: Date, required: false },
       //ID de la premiere visite

@@ -4,6 +4,7 @@ const schema1 = new mongoose.Schema(
   {
     title: { type: String, required: true },
     savedby: { type: String, required: true },
+    concerne: { type: String, required: true },
   },
   { timestamps: true }
 );
