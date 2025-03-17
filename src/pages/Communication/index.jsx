@@ -1,15 +1,13 @@
-import { Grid, Paper, Typography } from '@mui/material';
-import ConfirmDialog from 'Control/ControlDialog';
-import DirectionSnackbar from 'Control/SnackBar';
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { DeleteCommunication } from 'Redux/Communication';
-import { Delete, Edit } from '../../../node_modules/@mui/icons-material/index';
-import { useDispatch } from '../../../node_modules/react-redux/es/exports';
-import './communication.style.css';
-import FormMessage from './FormMessage';
-import Servey from './Servey';
-import TextWithLineBreaks from './StructureText';
+import { Delete, Edit } from "@mui/icons-material";
+import { Grid, Paper, Typography } from "@mui/material";
+import ConfirmDialog from "Control/ControlDialog";
+import DirectionSnackbar from "Control/SnackBar";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { DeleteCommunication } from "Redux/Communication";
+import "./communication.style.css";
+import FormMessage from "./FormMessage";
+import TextWithLineBreaks from "./StructureText";
 
 function Index() {
   const communiquer = useSelector((state) => state.communication);
@@ -29,14 +27,14 @@ function Index() {
 
   const [confirmDialog, setConfirmDialog] = React.useState({
     isOpen: false,
-    title: '',
-    subTitle: ''
+    title: "",
+    subTitle: "",
   });
   const dispatch = useDispatch();
   const DeleteMessage = async (id) => {
     setConfirmDialog({
       ...confirmDialog,
-      isOpen: false
+      isOpen: false,
     });
     dispatch(DeleteCommunication(id));
   };
@@ -47,55 +45,105 @@ function Index() {
 
   return (
     <>
-      {communiquer.addcommunication === 'success' && <DirectionSnackbar message="Done" />}
-      {communiquer.addcommunication === 'rejected' && <DirectionSnackbar message={communiquer.addcommunicationError} />}
-      {communiquer.updateCommuniquer === 'success' && <DirectionSnackbar message="Done" />}
-      {communiquer.updateCommuniquer === 'rejected' && <DirectionSnackbar message={communiquer.updateCommuniquerError} />}
-      {communiquer.deleteCommuniquer === 'success' && <DirectionSnackbar message="Done" />}
-      {communiquer.deleteCommuniquer === 'rejected' && <DirectionSnackbar message={communiquer.deleteCommuniquerError} />}
+      {communiquer.addcommunication === "success" && (
+        <DirectionSnackbar message="Done" />
+      )}
+      {communiquer.addcommunication === "rejected" && (
+        <DirectionSnackbar message={communiquer.addcommunicationError} />
+      )}
+      {communiquer.updateCommuniquer === "success" && (
+        <DirectionSnackbar message="Done" />
+      )}
+      {communiquer.updateCommuniquer === "rejected" && (
+        <DirectionSnackbar message={communiquer.updateCommuniquerError} />
+      )}
+      {communiquer.deleteCommuniquer === "success" && (
+        <DirectionSnackbar message="Done" />
+      )}
+      {communiquer.deleteCommuniquer === "rejected" && (
+        <DirectionSnackbar message={communiquer.deleteCommuniquerError} />
+      )}
       <Grid container>
-        {user?.fonction === 'superUser' && (
+        {user?.fonction === "superUser" && (
           <Grid item lg={4}>
-            <FormMessage dataToUpdate={dataToUpdate} setDataToUpdate={setDataToUpdate} />{' '}
+            <FormMessage
+              dataToUpdate={dataToUpdate}
+              setDataToUpdate={setDataToUpdate}
+            />{" "}
           </Grid>
         )}
 
-        <Grid item lg={user?.fonction === 'superUser' ? 8 : 12} sx={{ padding: '5px' }}>
+        <Grid
+          item
+          lg={user?.fonction === "superUser" ? 8 : 12}
+          sx={{ padding: "5px" }}
+        >
           {communiquer?.communication &&
             communiquer.communication.map((index) => {
               return (
-                <Paper key={index._id} sx={{ padding: '10px', marginTop: '5px' }}>
-                  <Typography variant="body" sx={{ textAlign: 'center', fontWeight: 'bolder' }}>
+                <Paper
+                  key={index._id}
+                  sx={{ padding: "10px", marginTop: "5px" }}
+                >
+                  <Typography
+                    variant="body"
+                    sx={{ textAlign: "center", fontWeight: "bolder" }}
+                  >
                     {index.title}
                   </Typography>
 
                   <TextWithLineBreaks text={index.content} />
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ width: '70%' }}>
-                      <p style={{ fontSize: '10px', margin: '0px', padding: '0px', color: 'blue', fontWeight: 'bolder' }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <div style={{ width: "70%" }}>
+                      <p
+                        style={{
+                          fontSize: "10px",
+                          margin: "0px",
+                          padding: "0px",
+                          color: "blue",
+                          fontWeight: "bolder",
+                        }}
+                      >
                         {returnText(index.date)}
                       </p>
                     </div>
-                    {user?.fonction === 'superUser' && (
-                      <div style={{ width: '10%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <div style={{ cursor: 'pointer' }}>
+                    {user?.fonction === "superUser" && (
+                      <div
+                        style={{
+                          width: "10%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <div style={{ cursor: "pointer" }}>
                           <Delete
                             color="warining"
                             onClick={() => {
                               setConfirmDialog({
                                 isOpen: true,
-                                title: 'Do you want to delete this message ?',
-                                subTitle: '',
+                                title: "Do you want to delete this message ?",
+                                subTitle: "",
                                 onConfirm: () => {
                                   DeleteMessage(index._id);
-                                }
+                                },
                               });
                             }}
                             fontSize="small"
                           />
                         </div>
-                        <div style={{ cursor: 'pointer' }}>
-                          <Edit color="primary" onClick={() => Update(index)} fontSize="small" />
+                        <div style={{ cursor: "pointer" }}>
+                          <Edit
+                            color="primary"
+                            onClick={() => Update(index)}
+                            fontSize="small"
+                          />
                         </div>
                       </div>
                     )}
@@ -105,10 +153,11 @@ function Index() {
             })}
         </Grid>
       </Grid>
-      <Grid container>
-        <Servey />
-      </Grid>
-      <ConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />
+
+      <ConfirmDialog
+        confirmDialog={confirmDialog}
+        setConfirmDialog={setConfirmDialog}
+      />
     </>
   );
 }

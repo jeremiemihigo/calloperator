@@ -46,7 +46,7 @@ const ReadFormulaire = async (req, res) => {
 const AddQuestion = async (req, res) => {
   try {
     const { data } = req.body;
-
+    console.log(data);
     ModelQuestion.insertMany(data)
       .then((result) => {
         return res.status(200).json(result);

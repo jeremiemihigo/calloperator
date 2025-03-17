@@ -20,7 +20,7 @@ import {
 import { useTheme } from '@mui/material/styles';
 
 // project import
-import userImage from 'assets/images/users/user.png';
+import userImage from 'assets/images/users/user.svg';
 import Transitions from 'components/@extended/Transitions';
 import MainCard from 'components/MainCard';
 import ProfileTab from './ProfileTab';
@@ -28,10 +28,10 @@ import Setting_Call from './Setting_Call';
 // assets
 import { LogoutOutlined } from '@ant-design/icons';
 // import {  RedoOutlined } from '@ant-design/icons';
+import { Person, Settings } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { returnName } from 'static/Lien';
-import { Person, Settings } from '../../../../../../node_modules/@mui/icons-material/index';
 // import Ticket from './Ticket';
 
 // tab panel wrapper

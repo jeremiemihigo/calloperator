@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
-import React, { useRef, useState } from 'react';
+import PropTypes from "prop-types";
+import React, { useRef, useState } from "react";
 // material-ui
 import {
   Badge,
@@ -12,23 +12,29 @@ import {
   Paper,
   Popper,
   Typography,
-  useMediaQuery
-} from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+  useMediaQuery,
+} from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 // project import
-import Transitions from 'components/@extended/Transitions';
-import MainCard from 'components/MainCard';
+import Transitions from "components/@extended/Transitions";
+import MainCard from "components/MainCard";
 // assets
-import { CloseOutlined, NotificationOutlined } from '@ant-design/icons';
-import { CreateContexteGlobal } from 'GlobalContext';
-import axios from 'axios';
-import moment from 'moment';
-import { config, lien_issue } from 'static/Lien';
-import { Divider } from '../../../../../../node_modules/@mui/material/index';
+import { CloseOutlined, NotificationOutlined } from "@ant-design/icons";
+import { Divider } from "@mui/material";
+import { CreateContexteGlobal } from "GlobalContext";
+import axios from "axios";
+import moment from "moment";
+import { config, lien_issue } from "static/Lien";
 
 function TabPanel({ children, value, index, ...other }) {
   return (
-    <div role="tabpanel" hidden={value !== index} id={`profile-tabpanel-${index}`} aria-labelledby={`profile-tab-${index}`} {...other}>
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`profile-tabpanel-${index}`}
+      aria-labelledby={`profile-tab-${index}`}
+      {...other}
+    >
       {value === index && children}
     </div>
   );
@@ -37,31 +43,31 @@ function TabPanel({ children, value, index, ...other }) {
 TabPanel.propTypes = {
   children: PropTypes.node,
   index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired
+  value: PropTypes.any.isRequired,
 };
 
 // sx styles
 const avatarSX = {
   width: 36,
   height: 36,
-  fontSize: '1rem'
+  fontSize: "1rem",
 };
 
 const actionSX = {
-  mt: '6px',
+  mt: "6px",
   ml: 1,
-  top: 'auto',
-  right: 'auto',
-  alignSelf: 'flex-start',
+  top: "auto",
+  right: "auto",
+  alignSelf: "flex-start",
 
-  transform: 'none'
+  transform: "none",
 };
 
 // ==============================|| HEADER CONTENT - NOTIFICATION ||============================== //
 
 const MyNotification = () => {
   const theme = useTheme();
-  const matchesXs = useMediaQuery(theme.breakpoints.down('md'));
+  const matchesXs = useMediaQuery(theme.breakpoints.down("md"));
 
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
@@ -78,7 +84,10 @@ const MyNotification = () => {
   const [donner, setDonner] = React.useState();
   const loading = async () => {
     try {
-      const response = await axios.get(lien_issue + '/notification_reader', config);
+      const response = await axios.get(
+        lien_issue + "/notification_reader",
+        config
+      );
       if (response.status === 200) {
         setDonner(response.data);
       }
@@ -90,13 +99,13 @@ const MyNotification = () => {
     loading();
   }, []);
 
-  const iconBackColorOpen = 'grey.300';
-  const iconBackColor = 'grey.100';
+  const iconBackColorOpen = "grey.300";
+  const iconBackColor = "grey.100";
 
   const { socket } = React.useContext(CreateContexteGlobal);
   const [change, setChange] = React.useState();
   React.useEffect(() => {
-    socket?.on('corbeille', (a) => {
+    socket?.on("corbeille", (a) => {
       setChange(a);
     });
   }, [socket]);
@@ -114,10 +123,13 @@ const MyNotification = () => {
       <IconButton
         disableRipple
         color="secondary"
-        sx={{ color: 'text.primary', bgcolor: open ? iconBackColorOpen : iconBackColor }}
+        sx={{
+          color: "text.primary",
+          bgcolor: open ? iconBackColorOpen : iconBackColor,
+        }}
         aria-label="open profile"
         ref={anchorRef}
-        aria-controls={open ? 'profile-grow' : undefined}
+        aria-controls={open ? "profile-grow" : undefined}
         aria-haspopup="true"
         onClick={handleToggle}
       >
@@ -127,7 +139,7 @@ const MyNotification = () => {
       </IconButton>
       {donner && (
         <Popper
-          placement={matchesXs ? 'bottom' : 'bottom-end'}
+          placement={matchesXs ? "bottom" : "bottom-end"}
           open={open}
           anchorEl={anchorRef.current}
           role={undefined}
@@ -136,12 +148,12 @@ const MyNotification = () => {
           popperOptions={{
             modifiers: [
               {
-                name: 'offset',
+                name: "offset",
                 options: {
-                  offset: [matchesXs ? -5 : 0, 9]
-                }
-              }
-            ]
+                  offset: [matchesXs ? -5 : 0, 9],
+                },
+              },
+            ],
           }}
         >
           {({ TransitionProps }) => (
@@ -149,12 +161,12 @@ const MyNotification = () => {
               <Paper
                 sx={{
                   boxShadow: theme.customShadows.z1,
-                  width: '100%',
+                  width: "100%",
                   minWidth: 285,
                   maxWidth: 420,
-                  [theme.breakpoints.down('md')]: {
-                    maxWidth: 285
-                  }
+                  [theme.breakpoints.down("md")]: {
+                    maxWidth: 285,
+                  },
                 }}
               >
                 <ClickAwayListener onClickAway={handleClose}>
@@ -173,11 +185,14 @@ const MyNotification = () => {
                       component="nav"
                       sx={{
                         p: 2,
-                        '& .MuiListItemButton-root': {
+                        "& .MuiListItemButton-root": {
                           py: 0.5,
-                          '& .MuiAvatar-root': avatarSX,
-                          '& .MuiListItemSecondaryAction-root': { ...actionSX, position: 'relative' }
-                        }
+                          "& .MuiAvatar-root": avatarSX,
+                          "& .MuiListItemSecondaryAction-root": {
+                            ...actionSX,
+                            position: "relative",
+                          },
+                        },
                       }}
                     >
                       {donner &&
@@ -188,12 +203,19 @@ const MyNotification = () => {
                               <ListItemText
                                 primary={
                                   <Typography variant="h6">
-                                    <Typography component="p" variant="subtitle2">
-                                      {index.plainte.codeclient + '; '} {moment(index.createdAt).fromNow()}
-                                    </Typography>{' '}
-                                    <Typography component="span" variant="subtitle2">
+                                    <Typography
+                                      component="p"
+                                      variant="subtitle2"
+                                    >
+                                      {index.plainte.codeclient + "; "}{" "}
+                                      {moment(index.createdAt).fromNow()}
+                                    </Typography>{" "}
+                                    <Typography
+                                      component="span"
+                                      variant="subtitle2"
+                                    >
                                       {index.content}
-                                    </Typography>{' '}
+                                    </Typography>{" "}
                                   </Typography>
                                 }
                               />
@@ -202,8 +224,17 @@ const MyNotification = () => {
                           );
                         })}
 
-                      <ListItemButton sx={{ textAlign: 'center', py: `${12}px !important` }}>
-                        <ListItemText primary={<Typography variant="h6" color="primary"></Typography>} />
+                      <ListItemButton
+                        sx={{ textAlign: "center", py: `${12}px !important` }}
+                      >
+                        <ListItemText
+                          primary={
+                            <Typography
+                              variant="h6"
+                              color="primary"
+                            ></Typography>
+                          }
+                        />
                       </ListItemButton>
                     </List>
                   </MainCard>

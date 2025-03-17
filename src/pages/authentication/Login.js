@@ -2,7 +2,7 @@
 import { Grid } from '@mui/material';
 
 // project import
-import LogoSection from 'components/Logo/css.jpg';
+import LogoSection from 'assets/images/icons/logo.svg';
 import AuthLogin from './auth-forms/AuthLogin';
 import AuthWrapper from './AuthWrapper';
 

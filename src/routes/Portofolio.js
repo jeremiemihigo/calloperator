@@ -6,6 +6,7 @@ import MainLayout from 'layout/MainLayout';
 const Portofolio = Loadable(lazy(() => import('pages/Portofolio/Feedback')));
 const Parametre = Loadable(lazy(() => import('pages/Portofolio/Parametre')));
 const Rapport = Loadable(lazy(() => import('pages/Rapport/Portofolio')));
+const Question = Loadable(lazy(() => import('pages/Portofolio/Parametre/Formulaire/Question')));
 
 const MainRoutes = {
   path: '/',
@@ -22,6 +23,11 @@ const MainRoutes = {
     {
       path: '/r_portofolio',
       element: <Rapport />
+    },
+    {
+      path: '/add_question/:id',
+      id: 'Complaints',
+      element: <Question />
     }
   ]
 };

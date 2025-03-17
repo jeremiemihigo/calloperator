@@ -1,16 +1,11 @@
-import { useEffect, useState } from 'react';
-
-// material-ui
-import { useTheme } from '@mui/material/styles';
-
-// third-party
-import ReactApexChart from 'react-apexcharts';
-
-// chart options
+import { useTheme } from "@mui/material/styles";
+import _ from "lodash";
+import { useEffect, useState } from "react";
+import ReactApexChart from "react-apexcharts";
 
 // ==============================|| SALES COLUMN CHART ||============================== //
 
-const SalesColumnChart = () => {
+const SalesColumnChart = ({ data }) => {
   const theme = useTheme();
 
   const { primary, secondary } = theme.palette.text;
@@ -19,61 +14,41 @@ const SalesColumnChart = () => {
   const warning = theme.palette.warning.main;
   const primaryMain = theme.palette.primary.main;
   const successDark = theme.palette.success.dark;
-  const [series] = useState([
-    {
-      name: 'Reachable',
-      data: [100, 100, 448]
-    },
-    {
-      name: 'Unreachable',
-      data: [50, 70, 300]
-    },
-    {
-      name: 'Remind',
-      data: [50, 70, 300]
-    }
-  ]);
+  const [series, setState] = useState([]);
 
   const [options, setOptions] = useState({
     chart: {
-      type: 'bar',
+      type: "bar",
       height: 430,
       toolbar: {
-        show: false
-      }
+        show: false,
+      },
     },
-    xaxis: {
-      categories: ['JEREMIE', 'PRINCE', 'Nyole']
-    },
+
     plotOptions: {
       bar: {
-        columnWidth: '30%',
-        borderRadius: 4
-      }
+        columnWidth: "30%",
+        borderRadius: 4,
+      },
     },
     dataLabels: {
-      enabled: false
+      enabled: false,
     },
     stroke: {
       show: true,
       width: 8,
-      colors: ['transparent']
+      colors: ["transparent"],
     },
 
-    yaxis: {
-      title: {
-        text: '$ (thousands)'
-      }
-    },
     fill: {
-      opacity: 1
+      opacity: 1,
     },
     tooltip: {
       y: {
         formatter(val) {
-          return ` ${val} ${val > 1 ? 'clients' : 'client'}`;
-        }
-      }
+          return ` ${val} ${val > 1 ? "clients" : "client"}`;
+        },
+      },
     },
     legend: {
       show: true,
@@ -81,30 +56,30 @@ const SalesColumnChart = () => {
       offsetX: 10,
       offsetY: 10,
       labels: {
-        useSeriesColors: false
+        useSeriesColors: false,
       },
       markers: {
         width: 16,
         height: 16,
-        radius: '50%',
+        radius: "50%",
         offsexX: 2,
-        offsexY: 2
+        offsexY: 2,
       },
       itemMargin: {
         horizontal: 15,
-        vertical: 10
-      }
+        vertical: 10,
+      },
     },
     responsive: [
       {
         breakpoint: 600,
         options: {
           yaxis: {
-            show: false
-          }
-        }
-      }
-    ]
+            show: false,
+          },
+        },
+      },
+    ],
   });
 
   useEffect(() => {
@@ -114,35 +89,88 @@ const SalesColumnChart = () => {
       xaxis: {
         labels: {
           style: {
-            colors: [secondary, secondary, secondary, secondary, secondary, secondary]
-          }
-        }
+            colors: [
+              secondary,
+              secondary,
+              secondary,
+              secondary,
+              secondary,
+              secondary,
+            ],
+          },
+        },
       },
       yaxis: {
         labels: {
           style: {
-            colors: [secondary]
-          }
-        }
+            colors: [secondary],
+          },
+        },
       },
       grid: {
-        borderColor: line
+        borderColor: line,
       },
       tooltip: {
-        theme: 'light'
+        theme: "light",
       },
       legend: {
-        position: 'top',
-        horizontalAlign: 'right',
+        position: "top",
+        horizontalAlign: "right",
         labels: {
-          colors: 'grey.500'
-        }
-      }
+          colors: "grey.500",
+        },
+      },
     }));
   }, [primary, secondary, line, warning, primaryMain, successDark]);
+
+  useEffect(() => {
+    if (data && data.length > 0) {
+      let cles = Object.keys(_.groupBy(data, "agent"));
+      setOptions({
+        ...options,
+        xaxis: {
+          categories: cles,
+        },
+      });
+      let reacheable = [];
+      let unreacheable = [];
+      let remind = [];
+      for (let i = 0; i < cles.length; i++) {
+        reacheable.push(
+          _.filter(data, { agent: cles[i], type: "Reachable" }).length
+        );
+        unreacheable.push(
+          _.filter(data, { agent: cles[i], type: "Unreachable" }).length
+        );
+        remind.push(_.filter(data, { agent: cles[i], type: "Remind" }).length);
+      }
+      setState([
+        {
+          name: "Reachable",
+          data: reacheable,
+        },
+        {
+          name: "Unreachable",
+          data: unreacheable,
+        },
+        {
+          name: "Remind",
+          data: remind,
+        },
+      ]);
+    }
+  }, [data]);
+  console.log(series);
   return (
     <>
-      <ReactApexChart options={options} series={series} type="bar" height={400} />
+      {series.length > 0 && (
+        <ReactApexChart
+          options={options}
+          series={series}
+          type="bar"
+          height={400}
+        />
+      )}
     </>
   );
 };

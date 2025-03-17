@@ -6,9 +6,9 @@ import { ButtonBase } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 
 // project import
+import Logo from 'assets/images/icons/logo.svg';
 import config from 'config';
 import { activeItem } from 'store/reducers/menu';
-import Logo from './css.jpg';
 
 // ==============================|| MAIN LOGO ||============================== //
 

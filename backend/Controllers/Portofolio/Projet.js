@@ -114,7 +114,7 @@ const RapportPortofolio = async (req, res) => {
         function (done) {
           ModelQuestion.find(
             { idFormulaire },
-            { question: 1, id: 1, valueSelect: 1 }
+            { question: 1, id: 1, type: 1, valueSelect: 1 }
           )
             .lean()
             .then((questions) => {
@@ -127,34 +127,33 @@ const RapportPortofolio = async (req, res) => {
             });
         },
         function (questions, done) {
-          let tablequestion = [];
+          var table = [];
           for (let i = 0; i < questions.length; i++) {
-            tablequestion.push({
+            table.push({
               title: questions[i].question,
               id: questions[i].id,
             });
             if (
               questions[i].valueSelect.length > 0 &&
-              questions[i].valueSelect.filter(
-                (x) => x.next_question !== "" && x !== undefined
-              ).length > 0
+              questions[i].type === "select_one"
             ) {
-              for (
-                let y = 0;
-                y <
-                questions[i].valueSelect.filter(
-                  (x) => x.next_question !== "" && x !== undefined
-                ).length;
-                y++
-              ) {
-                const { next_question, id } = questions[i].valueSelect.filter(
-                  (x) => x.next_question !== "" && x !== undefined
-                )[y];
-                tablequestion.push({ title: next_question, id, i: "next" });
+              for (let y = 0; y < questions[i].valueSelect.length; y++) {
+                if (questions[i].valueSelect[y].allItems.length > 0) {
+                  for (
+                    let z = 0;
+                    z < questions[i].valueSelect[y].allItems.length;
+                    z++
+                  ) {
+                    table.push({
+                      title: questions[i].valueSelect[y].allItems[z].question,
+                      id: questions[i].valueSelect[y].allItems[z].id,
+                    });
+                  }
+                }
               }
             }
           }
-          done(null, tablequestion);
+          done(null, table);
         },
         function (questions, done) {
           const beginDate = new Date(debut).getTime();

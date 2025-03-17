@@ -9,7 +9,7 @@ const schema = new mongoose.Schema({
     type: String,
     lowecase: true,
     required: true,
-    enum: ["default", "late"],
+    enum: ["default", "late", "normal"],
   },
   idProjet: { type: String, required: true },
   remindDate: { type: Number, required: true, default: 0 },

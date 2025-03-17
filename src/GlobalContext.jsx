@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react-hooks/exhaustive-deps */
 import SoundAudio from 'assets/audio/sound.mp3';
-import IconImage from 'assets/images/users/iconImage.jpg';
+import IconImage from 'assets/images/users/user.svg';
 import _ from 'lodash';
 import React, { createContext, useRef } from 'react';
 import { useSelector } from 'react-redux';

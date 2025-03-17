@@ -1,49 +1,51 @@
 /* eslint-disable no-unused-vars */
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { config, lien } from 'static/Lien';
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
+import { config, lien } from "static/Lien";
 
 const initialState = {
   user: [],
-  readUser: '',
-  readUserError: ''
+  readUser: "",
+  readUserError: "",
 };
-export const ReadUser = createAsyncThunk('user/ReadUser', async (id, { rejectWithValue }) => {
+export const ReadUser = createAsyncThunk("user/ReadUser", async () => {
   try {
-    const response = await axios.get(lien + '/userAdmin', config);
+    const response = await axios.get(lien + "/userAdmin", config);
     return response.data;
   } catch (error) {
-    return rejectWithValue(error.response.data);
+    if (error) {
+      console.log("Error");
+    }
   }
 });
 
 const user = createSlice({
-  name: 'user',
+  name: "user",
   initialState,
   reducers: {},
   extraReducers: {
     [ReadUser.pending]: (state, action) => {
       return {
         ...state,
-        readUser: 'pending',
-        readUserError: ''
+        readUser: "pending",
+        readUserError: "",
       };
     },
     [ReadUser.fulfilled]: (state, action) => {
       return {
         user: action.payload,
-        readUser: 'success',
-        readUserError: ''
+        readUser: "success",
+        readUserError: "",
       };
     },
     [ReadUser.rejected]: (state, action) => {
       return {
         ...state,
-        readUser: 'rejected',
-        readUserError: action.payload
+        readUser: "rejected",
+        readUserError: action.payload,
       };
-    }
-  }
+    },
+  },
 });
 
 export default user.reducer;

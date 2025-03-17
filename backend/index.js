@@ -78,7 +78,6 @@ app.use("/issue", require("./Routes/Issue"));
 app.use("/dt", require("./Routes/DefaultTracker"));
 app.use("/bboxx/image", express.static(path.resolve(__dirname, "Images")));
 app.use("/bboxx/file", express.static(path.resolve(__dirname, "Fichiers")));
-app.use("/bboxx/terrain", require("./Routes/Terrain"));
 app.use("/bboxx/dashboard", require("./Routes/dash_dt"));
 app.use("/bboxx/portofolio", require("./Routes/Portofolio"));
 

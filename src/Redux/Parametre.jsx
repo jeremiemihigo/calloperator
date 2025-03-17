@@ -1,49 +1,54 @@
 /* eslint-disable no-unused-vars */
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { config, lien } from 'static/Lien';
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
+import { config, lien } from "static/Lien";
 
 const initialState = {
   parametre: [],
-  getParametre: '',
-  getParametreError: ''
+  getParametre: "",
+  getParametreError: "",
 };
-export const ReadParametre = createAsyncThunk('Parametre/ReadParametre', async (id, { rejectWithValue }) => {
-  try {
-    const response = await axios.get(lien + '/readParametre', config);
-    return response.data;
-  } catch (error) {
-    return rejectWithValue(error.response.data);
+export const ReadParametre = createAsyncThunk(
+  "Parametre/ReadParametre",
+  async () => {
+    try {
+      const response = await axios.get(lien + "/readParametre", config);
+      return response.data;
+    } catch (error) {
+      if (error) {
+        console.log("Error");
+      }
+    }
   }
-});
+);
 
 const Parametre = createSlice({
-  name: 'Parametre',
+  name: "Parametre",
   initialState,
   reducers: {},
   extraReducers: {
     [ReadParametre.pending]: (state, action) => {
       return {
         ...state,
-        getParametre: 'pending',
-        getParametreError: ''
+        getParametre: "pending",
+        getParametreError: "",
       };
     },
     [ReadParametre.fulfilled]: (state, action) => {
       return {
         parametre: action.payload,
-        getParametre: 'success',
-        getParametreError: ''
+        getParametre: "success",
+        getParametreError: "",
       };
     },
     [ReadParametre.rejected]: (state, action) => {
       return {
         ...state,
-        getParametre: 'rejected',
-        getParametreError: action.payload
+        getParametre: "rejected",
+        getParametreError: action.payload,
       };
-    }
-  }
+    },
+  },
 });
 
 export default Parametre.reducer;

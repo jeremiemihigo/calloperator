@@ -1,10 +1,16 @@
 const mongoose = require("mongoose");
 
-const ValueSelect = new mongoose.Schema({
-  title: { type: String, required: true },
-  id: { type: String, required: true },
-  next_question: { type: String, required: false },
+const valueSelect = new mongoose.Schema({
+  question: { type: String, required: true, trim: true },
   required: { type: Boolean, required: true, default: false },
+  id: { type: String, required: true, unique: true },
+  allItems: { type: Array, required: false },
+  type: {
+    type: String,
+    required: true,
+    default: "text",
+    enum: ["select_one", "select_many", "text", "date"],
+  },
 });
 
 const schema = new mongoose.Schema(
@@ -18,7 +24,7 @@ const schema = new mongoose.Schema(
       required: true,
       enum: ["select_one", "select_many", "text", "date"],
     },
-    valueSelect: { type: [ValueSelect], required: false },
+    valueSelect: { type: [valueSelect], required: false },
     editedBy: { type: String, required: false },
     savedBy: { type: String, required: true },
   },
