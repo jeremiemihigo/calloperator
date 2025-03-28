@@ -1,20 +1,20 @@
 import { Search } from "@mui/icons-material";
 import { Button, CircularProgress, Grid, Paper } from "@mui/material";
 import { Input } from "antd";
-import AutoComplement from "Control/AutoComplet";
 import React from "react";
-import { useSelector } from "react-redux";
 import ExcelButton from "static/ExcelButton";
 import { config, portofolio } from "static/Lien";
+import { Typography } from "../../../../node_modules/@mui/material/index";
 import axios from "../../../../node_modules/axios/index";
 import { generateNomFile } from "../NameFile";
 import Agents from "./Agents";
+import Statistique_Status from "./Stat_status";
+import Static_Feedback from "./Static_Feedback";
+import TabAgent from "./TabAgent";
 
 function Rapport() {
   const [dates, setDates] = React.useState({ debut: "", fin: "" });
   const { debut, fin } = dates;
-  const projet = useSelector((state) => state.projet.projet);
-  const [projetSelect, setProjetSelect] = React.useState("");
 
   const [samplejson2, setsampleJson] = React.useState();
   const [nomFile, setNomFile] = React.useState("");
@@ -24,14 +24,12 @@ function Rapport() {
   const searchData = async () => {
     try {
       setLoading(true);
-      setNomFile(generateNomFile(dates, projetSelect?.title));
+      setNomFile(generateNomFile(dates, "Appels portefeuille "));
       const response = await axios.post(
         portofolio + "/rapportportofolio",
         {
           debut,
           fin,
-          idFormulaire: projetSelect?.idFormulaire,
-          idProjet: projetSelect?.id,
         },
         config
       );
@@ -49,17 +47,6 @@ function Rapport() {
       <Paper sx={{ padding: "5px" }} elevation={3}>
         <div>
           <Grid container>
-            <Grid item lg={4} sm={4} xs={6} md={3} sx={{ padding: "5px" }}>
-              {projet && projet.length > 0 && (
-                <AutoComplement
-                  value={projetSelect}
-                  setValue={setProjetSelect}
-                  options={projet}
-                  title="Select a project"
-                  propr="title"
-                />
-              )}
-            </Grid>
             <Grid item lg={2} sm={4} xs={6} md={3} sx={{ padding: "5px" }}>
               <Input
                 type="date"
@@ -113,10 +100,28 @@ function Rapport() {
       </Paper>
       {samplejson2 && samplejson2.length > 0 && (
         <Grid container sx={{ marginTop: "10px" }}>
-          <Grid item lg={6} sx={{ padding: "2px" }}>
-            <Paper elevation={2}>
-              <Agents data={samplejson2} />
+          <Grid item lg={6} xs={12} md={6} sx={{ padding: "2px" }}>
+            <Paper sx={{ padding: "5px", margin: "5px" }}>All calls made</Paper>
+            <Agents data={samplejson2} />
+          </Grid>
+          <Grid item lg={6} xs={12} md={6} sx={{ padding: "2px" }}>
+            <Paper sx={{ padding: "5px", margin: "5px" }}>
+              Status of calls from contacted customers
             </Paper>
+            <Statistique_Status data={samplejson2} />
+          </Grid>
+          <Grid item lg={7} xs={12} md={6} sx={{ padding: "2px" }}>
+            <Paper sx={{ padding: "5px", margin: "5px" }}>
+              <Typography noWrap>
+                Si tout va bien chez vous, Monsieur / Madame, nous aurons besoin
+                de savoir la raison du non-paiement de votre Kit solaire BBOXX.
+              </Typography>
+            </Paper>
+            <Static_Feedback data={samplejson2} />
+          </Grid>
+          <Grid item lg={5} xs={12} md={6} sx={{ padding: "2px" }}>
+            <Paper sx={{ padding: "5px", margin: "5px" }}>Agent</Paper>
+            <TabAgent data={samplejson2} />
           </Grid>
         </Grid>
       )}

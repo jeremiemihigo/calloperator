@@ -1,23 +1,23 @@
-import { Done } from '@mui/icons-material';
-import { Button, TextField } from '@mui/material';
-import AutoComplement from 'Control/AutoComplet';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { sat } from 'static/Lien';
-import { CreateContexteTable } from './Contexte';
+import { Done } from "@mui/icons-material";
+import { Button, TextField } from "@mui/material";
+import AutoComplement from "Control/AutoComplet";
+import PropTypes from "prop-types";
+import React from "react";
+import { useSelector } from "react-redux";
+import { sat } from "static/database";
+import { CreateContexteTable } from "./Contexte";
 
 function Adresse({ setOpen }) {
   const { adresse, setAdresse } = React.useContext(CreateContexteTable);
-  const [satSelect, setSatSelect] = React.useState('');
-  const [shopSelect, setShopSelect] = React.useState('');
+  const [satSelect, setSatSelect] = React.useState("");
+  const [shopSelect, setShopSelect] = React.useState("");
   const shop = useSelector((state) => state.shop?.shop);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setAdresse({
       ...adresse,
-      [name]: value
+      [name]: value,
     });
   };
   const continuer = (e) => {
@@ -25,20 +25,28 @@ function Adresse({ setOpen }) {
     setAdresse({
       ...adresse,
       sat: satSelect?.nom_SAT,
-      shop: shopSelect?.shop
+      shop: shopSelect?.shop,
     });
     setOpen(false);
   };
 
   return (
-    <div style={{ width: '20rem' }}>
-      <div style={{ marginTop: '10px' }}>
-        {shop && <AutoComplement value={shopSelect} setValue={setShopSelect} options={shop} title="New customer shop" propr="shop" />}
+    <div style={{ width: "20rem" }}>
+      <div style={{ marginTop: "10px" }}>
+        {shop && (
+          <AutoComplement
+            value={shopSelect}
+            setValue={setShopSelect}
+            options={shop}
+            title="New customer shop"
+            propr="shop"
+          />
+        )}
       </div>
-      <div style={{ marginBottom: '10px' }}>
+      <div style={{ marginBottom: "10px" }}>
         <TextField
           onChange={(e) => handleChange(e)}
-          style={{ marginTop: '10px' }}
+          style={{ marginTop: "10px" }}
           name="commune"
           autoComplete="off"
           fullWidth
@@ -46,10 +54,10 @@ function Adresse({ setOpen }) {
           value={adresse?.commune}
         />
       </div>
-      <div style={{ marginBottom: '10px' }}>
+      <div style={{ marginBottom: "10px" }}>
         <TextField
           onChange={(e) => handleChange(e)}
-          style={{ marginTop: '10px' }}
+          style={{ marginTop: "10px" }}
           name="quartier"
           autoComplete="off"
           value={adresse?.quartier}
@@ -57,10 +65,10 @@ function Adresse({ setOpen }) {
           label="Quartier"
         />
       </div>
-      <div style={{ marginBottom: '10px' }}>
+      <div style={{ marginBottom: "10px" }}>
         <TextField
           onChange={(e) => handleChange(e)}
-          style={{ marginTop: '10px' }}
+          style={{ marginTop: "10px" }}
           name="avenue"
           value={adresse?.avenue}
           autoComplete="off"
@@ -68,10 +76,10 @@ function Adresse({ setOpen }) {
           label="avenue"
         />
       </div>
-      <div style={{ marginBottom: '10px' }}>
+      <div style={{ marginBottom: "10px" }}>
         <TextField
           onChange={(e) => handleChange(e)}
-          style={{ marginTop: '10px' }}
+          style={{ marginTop: "10px" }}
           name="reference"
           autoComplete="off"
           fullWidth
@@ -79,11 +87,22 @@ function Adresse({ setOpen }) {
           label="Reference"
         />
       </div>
-      <div style={{ marginBottom: '10px' }}>
-        <AutoComplement value={satSelect} setValue={setSatSelect} options={sat} title="Sat" propr="nom_SAT" />
+      <div style={{ marginBottom: "10px" }}>
+        <AutoComplement
+          value={satSelect}
+          setValue={setSatSelect}
+          options={sat}
+          title="Sat"
+          propr="nom_SAT"
+        />
       </div>
-      <div style={{ marginBottom: '10px' }}>
-        <Button onClick={(e) => continuer(e)} fullWidth variant="contained" color="secondary">
+      <div style={{ marginBottom: "10px" }}>
+        <Button
+          onClick={(e) => continuer(e)}
+          fullWidth
+          variant="contained"
+          color="secondary"
+        >
           <Done fontSize="small" />
         </Button>
       </div>
@@ -91,6 +110,6 @@ function Adresse({ setOpen }) {
   );
 }
 Adresse.propTypes = {
-  setOpen: PropTypes.func
+  setOpen: PropTypes.func,
 };
 export default React.memo(Adresse);

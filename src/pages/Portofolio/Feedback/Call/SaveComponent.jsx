@@ -1,66 +1,121 @@
-import { Delete, Save } from '@mui/icons-material';
-import { Button, Grid } from '@mui/material';
-import axios from 'axios';
-import SimpleBackdrop from 'Control/Backdrop';
-import React from 'react';
-import { config, portofolio } from 'static/Lien';
-import { ContextFeedback } from '../Context';
+import { Delete, Save } from "@mui/icons-material";
+import { Button, Grid } from "@mui/material";
+import { message } from "antd";
+import axios from "axios";
+import SimpleBackdrop from "Control/Backdrop";
+import React from "react";
+import { config, portofolio } from "static/Lien";
+import { ContextFeedback } from "../Context";
 
 function SaveComponent({ donner }) {
   const [sending, setSending] = React.useState(false);
-  const { setChecked, analyse, setAnalyse, client, setClient, setData, data } = React.useContext(ContextFeedback);
+  const { setChecked, analyse, setAnalyse, client, setClient, setData, data } =
+    React.useContext(ContextFeedback);
 
-  // const checkData = () => {
-  //   let table = [];
-  //   if (formulaire) {
-  //     for (let i = 0; i < formulaire.length; i++) {
-  //       if (formulaire[i].valueSelect.length > 0 && _.filter(formulaire[i].valueSelect, { required: true }).length > 0) {
-  //         for (let y = 0; y < _.filter(formulaire[i].valueSelect, { required: true }).length; y++) {
-  //           table.push(_.filter(formulaire[i].valueSelect, { required: true })[y].id);
-  //         }
-  //       } else {
-  //         if (formulaire[i].required) {
-  //           table.push(formulaire[i].id);
-  //         }
-  //       }
-  //     }
-  //     return table;
-  //   }
-  // };
+  const [messageApi, contextHolder] = message.useMessage();
+  const success = (texte) => {
+    navigator.clipboard.writeText(texte);
+    messageApi.open({
+      type: "warning",
+      content: "warning : " + texte,
+      duration: 2,
+    });
+  };
+
   const sendData = async () => {
     try {
       setSending(true);
+
       const { codeclient, idProjet, region, shop, status } = client;
-      let resultat = { ...donner, codeclient, idProjet, shop, region, status };
-      const response = await axios.post(portofolio + '/addFeedback', resultat, config);
-      setSending(false);
-      if (response.status === 200) {
-        setData(data.filter((x) => x.codeclient !== response.data.codeclient));
-        setAnalyse([...analyse, response.data]);
-        setChecked('');
-        setClient('');
+      const {
+        feedback,
+        type,
+        date_to_recall,
+        contact,
+        fonctionne,
+        toutvabien,
+      } = donner;
+      const { sinon, sioui } = feedback;
+      if (
+        type === "Reachable" &&
+        (fonctionne === "" ||
+          (fonctionne === "OUI" &&
+            ((toutvabien?.id === 24 && sioui.texte === "") ||
+              toutvabien === "" ||
+              sioui.date === "")) ||
+          (fonctionne === "NON" && (sinon.texte === "" || sinon.date === "")))
+      ) {
+        success("Please fill in the fields marked with an asterisk.");
+        setSending(false);
+      } else {
+        let resultat = {
+          sioui_texte: toutvabien?.id === 24 ? sioui.texte : toutvabien?.title,
+          sioui_date: sioui.date,
+          sinon_date: sinon.date,
+          sinon_texte: sinon.texte,
+          fonctionne,
+          codeclient,
+          date_to_recall,
+          contact,
+          idProjet,
+          shop,
+          region,
+          type,
+          status,
+        };
+        const response = await axios.post(
+          portofolio + "/addFeedback",
+          resultat,
+          config
+        );
+        setSending(false);
+        if (response.status === 200) {
+          setData(
+            data.filter((x) => x.codeclient !== response.data.codeclient)
+          );
+          setAnalyse([...analyse, response.data]);
+          setChecked("");
+          setClient("");
+        } else {
+          success("" + response.data);
+          setSending(false);
+        }
       }
     } catch (error) {
       console.log(error);
     }
   };
   const annuler = () => {
-    setChecked('');
-    setClient('');
+    setChecked("");
+    setClient("");
   };
 
   return (
     <>
+      {contextHolder}
       <SimpleBackdrop open={sending} title="Please wait..." taille="10rem" />
       <Grid container>
-        <Grid item lg={6} sx={{ padding: '10px' }}>
-          <Button disabled={sending} onClick={() => sendData()} fullWidth variant="contained" color="primary">
-            <Save fontSize="small" /> <span style={{ marginLeft: '5px' }}>Valider</span>
+        <Grid item lg={6} sx={{ padding: "10px" }}>
+          <Button
+            disabled={sending}
+            onClick={() => sendData()}
+            fullWidth
+            variant="contained"
+            color="primary"
+          >
+            <Save fontSize="small" />{" "}
+            <span style={{ marginLeft: "5px" }}>Valider</span>
           </Button>
         </Grid>
-        <Grid item lg={6} sx={{ padding: '10px' }}>
-          <Button onClick={() => annuler()} fullWidth variant="contained" color="warning">
-            <Delete fontSize="small" /> <span style={{ marginLeft: '5px' }}>Annuler</span>
+        <Grid item lg={6} sx={{ padding: "10px" }}>
+          <Button
+            onClick={() => annuler()}
+            fullWidth
+            variant="contained"
+            color="warning"
+          >
+            <Delete fontSize="small" />{" "}
+            <span style={{ marginLeft: "5px" }}>Annuler</span>
           </Button>
         </Grid>
       </Grid>

@@ -2,6 +2,7 @@ import { useTheme } from "@mui/material/styles";
 import _ from "lodash";
 import { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
+import { Paper } from "../../../../node_modules/@mui/material/index";
 
 // ==============================|| SALES COLUMN CHART ||============================== //
 
@@ -160,9 +161,8 @@ const SalesColumnChart = ({ data }) => {
       ]);
     }
   }, [data]);
-  console.log(series);
   return (
-    <>
+    <Paper>
       {series.length > 0 && (
         <ReactApexChart
           options={options}
@@ -171,7 +171,7 @@ const SalesColumnChart = ({ data }) => {
           height={400}
         />
       )}
-    </>
+    </Paper>
   );
 };
 

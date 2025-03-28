@@ -1,12 +1,16 @@
 const mongoose = require("mongoose");
 const ModelDataBase = require("./PDataBase");
 
-const tfeedback = new mongoose.Schema({
-  idQuestion: { type: String, required: true },
-  reponse: { type: [String], required: true },
-});
-
 const schema = new mongoose.Schema({
+  sioui_texte: { type: String, required: false },
+  sioui_date: { type: Number, required: false },
+  sinon_date: { type: Number, required: false },
+  sinon_texte: { type: String, required: false },
+  fonctionne: {
+    type: String,
+    enum: ["OUI", "NON", ""],
+    default: "",
+  },
   codeclient: {
     type: String,
     required: true,
@@ -16,13 +20,11 @@ const schema = new mongoose.Schema({
     uppercase: true,
   },
   idProjet: { type: String, required: true },
-  feedback: { type: [tfeedback], required: false },
   agent: { type: String, required: false },
   shop: { required: true, type: String },
   region: { required: true, type: String },
-  dateSave: { type: Number, required: true, default: 0 },
+  dateSave: { type: Number, required: true },
   raison_rappel: { type: String, required: false },
-  date_rappel: { type: Number, required: true, default: 0 },
   type: {
     type: String,
     required: true,

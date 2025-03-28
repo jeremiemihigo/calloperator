@@ -22,8 +22,11 @@ const PDatabase = async (req, res) => {
       }));
       try {
         const result = await ModelDatabase.bulkWrite(bulkOperations);
-        console.log(result);
-        return res.status(200).json(`Successful updates`);
+        return res
+          .status(200)
+          .json(
+            `${result.upsertedCount} insertion and ${result.modifiedCount} customer updated`
+          );
       } catch (err) {
         return res.status(201).json("Error during updates : " + err.message);
       }

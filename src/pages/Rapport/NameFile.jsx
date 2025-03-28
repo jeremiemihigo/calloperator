@@ -1,67 +1,75 @@
 const returnMois = (chiffre) => {
   if (chiffre === 0) {
-    return 'Janvier';
+    return "Janvier";
   }
   if (chiffre === 1) {
-    return 'Février';
+    return "Février";
   }
   if (chiffre === 2) {
-    return 'Mars';
+    return "Mars";
   }
   if (chiffre === 3) {
-    return 'Avril';
+    return "Avril";
   }
   if (chiffre === 4) {
-    return 'Mai';
+    return "Mai";
   }
   if (chiffre === 5) {
-    return 'Juin';
+    return "Juin";
   }
   if (chiffre === 6) {
-    return 'Juillet';
+    return "Juillet";
   }
   if (chiffre === 7) {
-    return 'Aout';
+    return "Aout";
   }
   if (chiffre === 8) {
-    return 'Septembre';
+    return "Septembre";
   }
   if (chiffre === 9) {
-    return 'Octobre';
+    return "Octobre";
   }
   if (chiffre === 10) {
-    return 'Novembre';
+    return "Novembre";
   }
   if (chiffre === 11) {
-    return 'Décembre';
+    return "Décembre";
   }
 };
 
 module.exports = {
   generateNomFile: (dates, texte) => {
     try {
-      if (dates.debut !== '' && dates.fin !== '') {
+      if (dates.debut !== "" && dates.fin !== "") {
         let date1 = new Date(dates.debut);
         let date2 = new Date(dates.fin);
         if (date1.getFullYear() === date2.getFullYear()) {
           if (date1.getMonth() == date2.getMonth()) {
             if (date1.getDate() === date2.getDate()) {
-              return `${texte} du ${date2.getDate()} ${returnMois(date2.getMonth())} ${date2.getFullYear()}`;
+              return `${texte} du ${date2.getDate()} ${returnMois(
+                date2.getMonth()
+              )} ${date2.getFullYear()}`;
             } else {
-              return `${texte} allant du ${date1.getDate()} au ${date2.getDate()} ${returnMois(date2.getMonth())} ${date2.getFullYear()}`;
+              return `${texte} allant du ${date1.getDate()} au ${date2.getDate()} ${returnMois(
+                date2.getMonth()
+              )} ${date2.getFullYear()}`;
             }
           } else {
-            return `${texte} allant du ${date1.getDate()} ${returnMois(date1.getMonth())} au ${date2.getDate()} 
+            return `${texte} allant du ${date1.getDate()} ${returnMois(
+              date1.getMonth()
+            )} au ${date2.getDate()} 
             ${returnMois(date2.getMonth())} ${date2.getFullYear()}`;
           }
         } else {
           return `${texte} allant du ${date1.getDate()} ${returnMois(
             date1.getMonth()
-          )} ${date1.getFullYear()} au ${date2.getDate()} ${returnMois(date2.getMonth())} ${date2.getFullYear()}`;
+          )} ${date1.getFullYear()} au ${date2.getDate()} ${returnMois(
+            date2.getMonth()
+          )} ${date2.getFullYear()}`;
         }
       }
     } catch (error) {
       console.log(error);
     }
-  }
+  },
 };

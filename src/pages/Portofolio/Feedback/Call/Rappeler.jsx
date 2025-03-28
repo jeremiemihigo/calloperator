@@ -80,6 +80,10 @@ function Rappeler() {
       {raison && date && numberSelect.length > 0 && (
         <SaveComponent
           donner={{
+            feedback: {
+              sinon: { texte: "", date: "" },
+              sioui: { texte: "", date: "" },
+            },
             raison_rappel: raison,
             date_to_recall: date,
             contact: numberSelect.join(";"),

@@ -1,14 +1,15 @@
-import { Checkbox, TextField, Typography } from '@mui/material';
-import AutoComplement from 'Control/AutoComplet';
-import React from 'react';
-import { sat } from 'static/Lien';
-import { CreateContexteTable } from '../Contexte';
-import ButtonEsc from './ButtonEsc';
+import { Checkbox, TextField, Typography } from "@mui/material";
+import AutoComplement from "Control/AutoComplet";
+import React from "react";
+import { sat } from "static/database";
+import { CreateContexteTable } from "../Contexte";
+import ButtonEsc from "./ButtonEsc";
 
 function InfoClient() {
-  const [select, setSelect] = React.useState('');
+  const [select, setSelect] = React.useState("");
 
-  const { onchange, state, satSelect, setSatSelect } = React.useContext(CreateContexteTable);
+  const { onchange, state, satSelect, setSatSelect } =
+    React.useContext(CreateContexteTable);
   const { new_contact, commune, quartier, avenue, reference } = state;
 
   const changeOption = (value) => {
@@ -17,19 +18,27 @@ function InfoClient() {
 
   return (
     <div>
-      <div style={{ display: 'flex' }}>
-        <Typography onClick={() => changeOption('contact')} component="span" style={{ cursor: 'pointer' }}>
-          <Checkbox checked={select == 'contact' ? true : false} />
+      <div style={{ display: "flex" }}>
+        <Typography
+          onClick={() => changeOption("contact")}
+          component="span"
+          style={{ cursor: "pointer" }}
+        >
+          <Checkbox checked={select == "contact" ? true : false} />
           <label htmlFor="contact">Contact</label>
         </Typography>
-        <Typography onClick={() => changeOption('adresse')} component="span" style={{ cursor: 'pointer', marginLeft: '20px' }}>
-          <Checkbox checked={select == 'adresse' ? true : false} />
+        <Typography
+          onClick={() => changeOption("adresse")}
+          component="span"
+          style={{ cursor: "pointer", marginLeft: "20px" }}
+        >
+          <Checkbox checked={select == "adresse" ? true : false} />
           <label htmlFor="adresse">Adresses</label>
         </Typography>
       </div>
-      {select === 'contact' && (
+      {select === "contact" && (
         <>
-          <div style={{ marginTop: '10px' }}>
+          <div style={{ marginTop: "10px" }}>
             <TextField
               value={new_contact}
               onChange={(e) => onchange(e)}
@@ -41,12 +50,12 @@ function InfoClient() {
           </div>
         </>
       )}
-      {select === 'adresse' && (
+      {select === "adresse" && (
         <>
-          <div style={{ marginBottom: '10px' }}>
+          <div style={{ marginBottom: "10px" }}>
             <TextField
               onChange={(e) => onchange(e)}
-              style={{ marginTop: '10px' }}
+              style={{ marginTop: "10px" }}
               name="commune"
               value={commune}
               autoComplete="off"
@@ -54,10 +63,10 @@ function InfoClient() {
               label="Commune"
             />
           </div>
-          <div style={{ marginBottom: '10px' }}>
+          <div style={{ marginBottom: "10px" }}>
             <TextField
               onChange={(e) => onchange(e)}
-              style={{ marginTop: '10px' }}
+              style={{ marginTop: "10px" }}
               name="quartier"
               autoComplete="off"
               fullWidth
@@ -65,10 +74,10 @@ function InfoClient() {
               label="Quartier"
             />
           </div>
-          <div style={{ marginBottom: '10px' }}>
+          <div style={{ marginBottom: "10px" }}>
             <TextField
               onChange={(e) => onchange(e)}
-              style={{ marginTop: '10px' }}
+              style={{ marginTop: "10px" }}
               name="avenue"
               value={avenue}
               autoComplete="off"
@@ -76,10 +85,10 @@ function InfoClient() {
               label="avenue"
             />
           </div>
-          <div style={{ marginBottom: '10px' }}>
+          <div style={{ marginBottom: "10px" }}>
             <TextField
               onChange={(e) => onchange(e)}
-              style={{ marginTop: '10px' }}
+              style={{ marginTop: "10px" }}
               name="reference"
               autoComplete="off"
               value={reference}
@@ -87,14 +96,23 @@ function InfoClient() {
               label="Reference"
             />
           </div>
-          <div style={{ marginBottom: '10px' }}>
-            <AutoComplement value={satSelect} setValue={setSatSelect} options={sat} title="Sat" propr="nom_SAT" />
+          <div style={{ marginBottom: "10px" }}>
+            <AutoComplement
+              value={satSelect}
+              setValue={setSatSelect}
+              options={sat}
+              title="Sat"
+              propr="nom_SAT"
+            />
           </div>
         </>
       )}
       {select && (
-        <div style={{ marginTop: '10px' }}>
-          <ButtonEsc title="Escalader_vers_le_Backoffice" statut="Customer Information" />
+        <div style={{ marginTop: "10px" }}>
+          <ButtonEsc
+            title="Escalader_vers_le_Backoffice"
+            statut="Customer Information"
+          />
         </div>
       )}
     </div>

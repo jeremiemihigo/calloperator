@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
-import { useEffect, useRef, useState } from 'react';
+import PropTypes from "prop-types";
+import { useEffect, useRef, useState } from "react";
 
 // material-ui
 import {
@@ -15,29 +15,35 @@ import {
   Stack,
   Tab,
   Tabs,
-  Typography
-} from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+  Typography,
+} from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
 // project import
-import userImage from 'assets/images/users/user.svg';
-import Transitions from 'components/@extended/Transitions';
-import MainCard from 'components/MainCard';
-import ProfileTab from './ProfileTab';
-import Setting_Call from './Setting_Call';
+import userImage from "assets/images/users/user.svg";
+import Transitions from "components/@extended/Transitions";
+import MainCard from "components/MainCard";
+import ProfileTab from "./ProfileTab";
+import Setting_Call from "./Setting_Call";
 // assets
-import { LogoutOutlined } from '@ant-design/icons';
+import { LogoutOutlined } from "@ant-design/icons";
 // import {  RedoOutlined } from '@ant-design/icons';
-import { Person, Settings } from '@mui/icons-material';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { returnName } from 'static/Lien';
+import { Person, Settings } from "@mui/icons-material";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { returnName } from "static/Lien";
 // import Ticket from './Ticket';
 
 // tab panel wrapper
 function TabPanel({ children, value, index, ...other }) {
   return (
-    <div role="tabpanel" hidden={value !== index} id={`profile-tabpanel-${index}`} aria-labelledby={`profile-tab-${index}`} {...other}>
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`profile-tabpanel-${index}`}
+      aria-labelledby={`profile-tab-${index}`}
+      {...other}
+    >
       {value === index && children}
     </div>
   );
@@ -46,13 +52,13 @@ function TabPanel({ children, value, index, ...other }) {
 TabPanel.propTypes = {
   children: PropTypes.node,
   index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired
+  value: PropTypes.any.isRequired,
 };
 
 function a11yProps(index) {
   return {
     id: `profile-tab-${index}`,
-    'aria-controls': `profile-tabpanel-${index}`
+    "aria-controls": `profile-tabpanel-${index}`,
   };
 }
 
@@ -63,8 +69,8 @@ const Profile = () => {
   const navigation = useNavigate();
 
   const handleLogout = async () => {
-    localStorage.removeItem('auth');
-    navigation('/login');
+    localStorage.removeItem("auth");
+    navigation("/login");
     // window.location.replace('/login');
   };
 
@@ -87,28 +93,33 @@ const Profile = () => {
     setValue(newValue);
   };
 
-  const iconBackColorOpen = 'grey.300';
+  const iconBackColorOpen = "grey.300";
   const userConnect = useSelector((state) => state.user);
 
   useEffect(() => {
-    if (userConnect && userConnect.user.length < 1 && userConnect.readUser !== 'pending') {
-      localStorage.removeItem('user');
-      window.location.replace('/login');
+    if (
+      userConnect &&
+      userConnect.readUser !== "pending" &&
+      !userConnect.user &&
+      userConnect.user.length < 1
+    ) {
+      localStorage.removeItem("auth");
+      window.location.replace("/login");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userConnect]);
 
   const retourFonction = (text) => {
-    if (text === 'superUser') {
-      return 'Super utilisateur';
+    if (text === "superUser") {
+      return "Super utilisateur";
     }
-    if (text === 'admin') {
-      return 'Administrateur';
+    if (text === "admin") {
+      return "Administrateur";
     }
-    if (text === 'co') {
-      return 'Call Operator';
+    if (text === "co") {
+      return "Call Operator";
     }
-    return '';
+    return "";
   };
 
   return (
@@ -116,19 +127,25 @@ const Profile = () => {
       <ButtonBase
         sx={{
           p: 0.25,
-          bgcolor: open ? iconBackColorOpen : 'transparent',
+          bgcolor: open ? iconBackColorOpen : "transparent",
           borderRadius: 1,
-          '&:hover': { bgcolor: 'secondary.lighter' }
+          "&:hover": { bgcolor: "secondary.lighter" },
         }}
         aria-label="open profile"
         ref={anchorRef}
-        aria-controls={open ? 'profile-grow' : undefined}
+        aria-controls={open ? "profile-grow" : undefined}
         aria-haspopup="true"
         onClick={handleToggle}
       >
         <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
-          <Avatar alt="profile user" src={userImage} sx={{ width: 32, height: 32 }} />
-          <Typography variant="subtitle1">{returnName(userConnect?.user.nom)}</Typography>
+          <Avatar
+            alt="profile user"
+            src={userImage}
+            sx={{ width: 32, height: 32 }}
+          />
+          <Typography variant="subtitle1">
+            {returnName(userConnect?.user?.nom)}
+          </Typography>
         </Stack>
       </ButtonBase>
       <Popper
@@ -141,12 +158,12 @@ const Profile = () => {
         popperOptions={{
           modifiers: [
             {
-              name: 'offset',
+              name: "offset",
               options: {
-                offset: [0, 9]
-              }
-            }
-          ]
+                offset: [0, 9],
+              },
+            },
+          ],
         }}
       >
         {({ TransitionProps }) => (
@@ -158,20 +175,34 @@ const Profile = () => {
                   width: 290,
                   minWidth: 240,
                   maxWidth: 290,
-                  [theme.breakpoints.down('md')]: {
-                    maxWidth: 250
-                  }
+                  [theme.breakpoints.down("md")]: {
+                    maxWidth: 250,
+                  },
                 }}
               >
                 <ClickAwayListener onClickAway={handleClose}>
                   <MainCard elevation={0} border={false} content={false}>
                     <CardContent sx={{ px: 2.5, pt: 3 }}>
-                      <Grid container justifyContent="space-between" alignItems="center">
+                      <Grid
+                        container
+                        justifyContent="space-between"
+                        alignItems="center"
+                      >
                         <Grid item>
-                          <Stack direction="row" spacing={1.25} alignItems="center">
-                            <Avatar alt="profile user" src={userImage} sx={{ width: 32, height: 32 }} />
+                          <Stack
+                            direction="row"
+                            spacing={1.25}
+                            alignItems="center"
+                          >
+                            <Avatar
+                              alt="profile user"
+                              src={userImage}
+                              sx={{ width: 32, height: 32 }}
+                            />
                             <Stack>
-                              <Typography variant="h6">BBOXX_Support team</Typography>
+                              <Typography variant="h6">
+                                BBOXX_Support team
+                              </Typography>
                               <Typography variant="body2" color="textSecondary">
                                 {retourFonction(userConnect?.user.fonction)}
                               </Typography>
@@ -179,7 +210,11 @@ const Profile = () => {
                           </Stack>
                         </Grid>
                         <Grid item>
-                          <IconButton size="large" color="secondary" onClick={handleLogout}>
+                          <IconButton
+                            size="large"
+                            color="secondary"
+                            onClick={handleLogout}
+                          >
                             <LogoutOutlined />
                           </IconButton>
                         </Grid>
@@ -187,29 +222,48 @@ const Profile = () => {
                     </CardContent>
                     {open && (
                       <>
-                        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                          <Tabs variant="fullWidth" value={value} onChange={handleChange} aria-label="profile tabs">
+                        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                          <Tabs
+                            variant="fullWidth"
+                            value={value}
+                            onChange={handleChange}
+                            aria-label="profile tabs"
+                          >
                             <Tab
                               sx={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                textTransform: 'capitalize'
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                textTransform: "capitalize",
                               }}
-                              icon={<Person style={{ marginBottom: 0, marginRight: '10px' }} />}
+                              icon={
+                                <Person
+                                  style={{
+                                    marginBottom: 0,
+                                    marginRight: "10px",
+                                  }}
+                                />
+                              }
                               label="Profil"
                               {...a11yProps(0)}
                             />
                             <Tab
                               sx={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                textTransform: 'capitalize'
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                textTransform: "capitalize",
                               }}
-                              icon={<Settings style={{ marginBottom: 0, marginRight: '10px' }} />}
+                              icon={
+                                <Settings
+                                  style={{
+                                    marginBottom: 0,
+                                    marginRight: "10px",
+                                  }}
+                                />
+                              }
                               label="Setting"
                               {...a11yProps(1)}
                             />

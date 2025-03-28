@@ -6,8 +6,12 @@ const AddFeedback = async (req, res) => {
     const { nom } = req.user;
     const {
       codeclient,
+      sioui_texte,
+      sioui_date,
+      sinon_date,
+      sinon_texte,
+      fonctionne,
       idProjet,
-      feedback,
       raison_rappel,
       shop,
       region,
@@ -24,7 +28,8 @@ const AddFeedback = async (req, res) => {
       !contact ||
       !idProjet ||
       !shop ||
-      !region
+      !region ||
+      fonctionne === ""
     ) {
       return res
         .status(201)
@@ -36,7 +41,11 @@ const AddFeedback = async (req, res) => {
     ModelFeedback.create({
       codeclient,
       idProjet,
-      feedback,
+      sioui_texte,
+      sioui_date: sioui_date !== "" ? new Date(sioui_date).getTime() : 0,
+      sinon_date: sinon_date !== "" ? new Date(sinon_date).getTime() : 0,
+      sinon_texte,
+      fonctionne,
       agent: nom,
       shop,
       raison_rappel,

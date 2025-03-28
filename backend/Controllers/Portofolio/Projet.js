@@ -104,83 +104,62 @@ const ReadProjet = async (req, res) => {
 };
 const RapportPortofolio = async (req, res) => {
   try {
-    const { debut, fin, idFormulaire, idProjet } = req.body;
+    const { debut, fin } = req.body;
 
-    if (debut === "" || fin === "" || !idFormulaire || !idProjet) {
+    if (debut === "" || fin === "") {
       return res.status(201).json("Veuillez renseigner les dates et le projet");
     }
+    let title = [
+      {
+        id: "text",
+        title:
+          "Bonjour Monsieur/ Madame, je suis .......... du service client de BBOXX, nous voulons savoir si le materiel de BBOXX fonctionne bien chez vous ?",
+        value: "fonctionne",
+      },
+      {
+        id: "text",
+        title:
+          "Si Non, pourriez vous nous dire si ça ne fonctionne pas bien pourquoi?",
+        value: "sinon_texte",
+      },
+      {
+        id: "date",
+        title:
+          "Vu que votre système est désactivé vous comptez vous réactiver quel jour?",
+        value: "sinon_date",
+      },
+      {
+        id: "texte",
+        title:
+          "Si tout va bien chez vous, Monsieur / Madame, nous aurons besoin de savoir la raison du non-paiement de votre Kit solaire BBOXX.",
+        value: "sioui_texte",
+      },
+      {
+        id: "date",
+        title: "Et vous comptez vous réactiver quand?",
+        value: "sioui_date",
+      },
+    ];
+
     asyncLab.waterfall(
       [
         function (done) {
-          ModelQuestion.find(
-            { idFormulaire },
-            { question: 1, id: 1, type: 1, valueSelect: 1 }
-          )
-            .lean()
-            .then((questions) => {
-              if (questions.length > 0) {
-                done(null, questions);
-              }
-            })
-            .catch(function (err) {
-              console.log(err);
-            });
-        },
-        function (questions, done) {
-          var table = [];
-          for (let i = 0; i < questions.length; i++) {
-            table.push({
-              title: questions[i].question,
-              id: questions[i].id,
-            });
-            if (
-              questions[i].valueSelect.length > 0 &&
-              questions[i].type === "select_one"
-            ) {
-              for (let y = 0; y < questions[i].valueSelect.length; y++) {
-                if (questions[i].valueSelect[y].allItems.length > 0) {
-                  for (
-                    let z = 0;
-                    z < questions[i].valueSelect[y].allItems.length;
-                    z++
-                  ) {
-                    table.push({
-                      title: questions[i].valueSelect[y].allItems[z].question,
-                      id: questions[i].valueSelect[y].allItems[z].id,
-                    });
-                  }
-                }
-              }
-            }
-          }
-          done(null, table);
-        },
-        function (questions, done) {
           const beginDate = new Date(debut).getTime();
           const endDate = new Date(fin).getTime();
           ModelFeedback.find({
             dateSave: { $gte: beginDate, $lte: endDate },
-            idProjet,
           })
             .then((result) => {
-              done(null, questions, result);
+              done(null, result);
             })
             .catch(function (err) {
-              return res.status(201).json("Error");
+              return res.status(201).json("Error " + err.message);
             });
         },
-        function (questions, resultat, done) {
+        function (resultat, done) {
           let table = [];
           let tablefinal = [];
-          const returnReponse = (questio, feedback) => {
-            if (_.filter(feedback, { idQuestion: questio }).length > 0) {
-              return _.filter(feedback, {
-                idQuestion: questio,
-              })[0].reponse.join(",");
-            } else {
-              return "";
-            }
-          };
+
           for (let i = 0; i < resultat.length; i++) {
             table.push({
               codeclient: resultat[i].codeclient,
@@ -200,9 +179,15 @@ const RapportPortofolio = async (req, res) => {
                     )
                   : "",
             });
-            for (let y = 0; y < questions.length; y++) {
-              let { title, id } = questions[y];
-              table[0]["" + title] = returnReponse(id, resultat[i].feedback);
+            for (let y = 0; y < title.length; y++) {
+              table[0]["" + title[y].title] =
+                title[y].id === "date"
+                  ? resultat[i][title[y].value] > 0
+                    ? moment(new Date(resultat[i][title[y].value])).format(
+                        "YYYY-MM-DD"
+                      )
+                    : 0
+                  : resultat[i][title[y].value];
             }
             tablefinal.push(table[0]);
             table = [];

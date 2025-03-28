@@ -23,6 +23,10 @@ function UploadClient() {
     "payment_number",
     "shop",
     "status",
+    "par",
+    "dailyrate",
+    "weeklyrate",
+    "monthlyrate",
   ];
   const [message, setMessage] = React.useState(false);
 
@@ -40,7 +44,6 @@ function UploadClient() {
           const json = xlsx.utils.sheet_to_json(worksheet);
           const cleFile = Object.keys(json[0]);
           let nexistepas = column.filter((x) => !cleFile.includes(x));
-          console.log(json);
           let vrai = json.map((x) => {
             return {
               codeclient: x.codeclient.trim(),
@@ -48,6 +51,10 @@ function UploadClient() {
               region: x.region.trim(),
               shop: x.shop.trim(),
               status: x.status.trim(),
+              par: x.par.trim(),
+              dailyrate: x.dailyrate,
+              weeklyrate: x.weeklyrate,
+              monthlyrate: x.monthlyrate,
               first_number: x.first_number ? x.first_number : "",
               second_number: x.second_number ? x.second_number : "",
               payment_number: x.payment_number ? x.payment_number : "",
@@ -177,6 +184,10 @@ function UploadClient() {
             </td>
             <td>second_number</td>
             <td>payment_number</td>
+            <td>par</td>
+            <td>dailyrate</td>
+            <td>weeklyrate</td>
+            <td>monthlyrate</td>
           </tr>
         </thead>
 
@@ -193,6 +204,10 @@ function UploadClient() {
                   <td>{index.first_number}</td>
                   <td>{index.second_number}</td>
                   <td>{index.payment_number}</td>
+                  <td>{index.par}</td>
+                  <td>{index.dailyrate}</td>
+                  <td>{index.weeklyrate}</td>
+                  <td>{index.monthlyrate}</td>
                 </tr>
               );
             })}
@@ -200,22 +215,18 @@ function UploadClient() {
         ) : (
           <tbody>
             <tr>
-              <td>Cette colonne reçoit le code client</td>
-              <td>Cette colonne reçoit le nom du client</td>
-              <td>
-                Cette colonne reçoit le statut du client (late ou default)
-              </td>
-              <td>Cette colonne reçoit la region du client</td>
-              <td>Cette colonne reçoit le shop du client</td>
-              <td>
-                Cette colonne reçoit le premier numero de telephone du client{" "}
-              </td>
-              <td>
-                Cette colonne reçoit le deuxieme numero de telephone du client{" "}
-              </td>
-              <td>
-                Cette colonne reçoit le troisieme numero de telephone du client{" "}
-              </td>
+              <td>Code client</td>
+              <td>Nom du client</td>
+              <td>Statut du client (late ou default)</td>
+              <td>Region du client</td>
+              <td>Shop du client</td>
+              <td>Premier numero de telephone du client </td>
+              <td>Deuxieme numero de telephone du client </td>
+              <td>Troisieme numero de telephone du client </td>
+              <td>Par</td>
+              <td>Dailyrate</td>
+              <td>Weeklyrate</td>
+              <td>Monthlyrate</td>
             </tr>
           </tbody>
         )}

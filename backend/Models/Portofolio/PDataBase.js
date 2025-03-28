@@ -22,6 +22,10 @@ const schema = new mongoose.Schema({
     default: "Pending",
     enum: ["Reachable", "Pending", "Unreachable", "Remind"],
   },
+  dailyrate: { type: Number, required: false, default: 0 },
+  weeklyrate: { type: Number, required: false, default: 0 },
+  monthlyrate: { type: Number, required: false, default: 0 },
+  par: { type: String, required: false },
 });
 const model = mongoose.model("pdatabase", schema);
 module.exports = model;

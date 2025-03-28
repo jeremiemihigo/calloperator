@@ -3,3 +3,8 @@
   align-items: center;
   justify-content: center;
 }
+table > thead > tr > td {
+  border: 1px solid black;
+  font-size: 11px;
+  padding: 5px;
+}

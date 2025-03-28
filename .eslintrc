@@ -38,7 +38,7 @@
     },
     "ecmaVersion": 12
   },
-  "plugins": ["prettier", "react", "react-hooks"],
+  "plugins": ["prettier", "react", "react-hooks", "import"],
   "rules": {
     "react/jsx-uses-react": "error",
     "react/jsx-uses-vars": "error",
@@ -61,6 +61,7 @@
     "import/no-named-as-default": "off",
     "import/no-extraneous-dependencies": "off",
     "jsx-a11y/no-autofocus": "off",
+    "quotes": ["error", "double"],
     "no-restricted-imports": [
       "error",
       {
