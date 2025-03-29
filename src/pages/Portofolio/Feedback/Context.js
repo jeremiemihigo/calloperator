@@ -1,6 +1,9 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react-hooks/exhaustive-deps */
+import axios from "axios";
 import React, { createContext } from "react";
+import { io } from "socket.io-client";
+import { lien_socket, portofolio } from "static/Lien";
 export const ContextFeedback = createContext();
 
 const Context = (props) => {
@@ -10,6 +13,12 @@ const Context = (props) => {
   const [data, setData] = React.useState([]);
   const [analyse, setAnalyse] = React.useState([]);
   const [values, setValue] = React.useState([]);
+  const [statistique, setStatistique] = React.useState({
+    remind: 0,
+    reachable: 0,
+    unreachable: 0,
+    pending: 0,
+  });
 
   const handleChangeBoxMany = (event) => {
     const { name, value } = event.target;
@@ -48,6 +57,34 @@ const Context = (props) => {
     });
   };
 
+  const clientStat = async () => {
+    try {
+      const response = await axios.get(portofolio + "/clientStat");
+      if (response.status === 200) {
+        setStatistique(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  React.useEffect(() => {
+    clientStat();
+  }, []);
+  const [socket, setSocket] = React.useState(null);
+  React.useEffect(() => {
+    setSocket(io(lien_socket));
+  }, []);
+  React.useEffect(() => {
+    if (socket) {
+      socket.on("portofolio", (donner) => {
+        setStatistique({
+          ...statistique,
+          [donner]: statistique[donner] + 1,
+        });
+      });
+    }
+  }, [socket]);
+
   return (
     <ContextFeedback.Provider
       value={{
@@ -55,6 +92,7 @@ const Context = (props) => {
         handleChangeBoxMany,
         handleChange,
         setProjetSelect,
+        statistique,
         values,
         setValue,
         analyse,

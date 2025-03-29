@@ -1,5 +1,5 @@
 * {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .fcontainer {
@@ -35,9 +35,7 @@
 }
 
 .call_option_item > p,
-.historical > p,
-.item_historical > p,
-.item_historical .bottom_item > p,
+.bottom_item > p,
 .itemselect > p,
 .question > p {
   padding: 0;
@@ -60,26 +58,7 @@
 .client_select {
   background-color: rgb(0, 169, 254);
 }
-.historical {
-  background-color: #fff;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-bottom: 5px;
-  padding: 5px;
-}
-.historical > p {
-  font-size: 13px;
-  font-weight: bolder;
-  color: rgb(0, 169, 254);
-}
-.item_historical {
-  background-color: #fff;
-  border-radius: 5px;
-  padding: 5px;
-}
-.item_historical > p {
-  font-size: 12px;
-}
+
 .bottom_item {
   display: flex;
   align-items: center;

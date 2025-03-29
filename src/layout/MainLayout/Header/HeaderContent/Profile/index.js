@@ -99,9 +99,8 @@ const Profile = () => {
   useEffect(() => {
     if (
       userConnect &&
-      userConnect.readUser !== "pending" &&
-      !userConnect.user &&
-      userConnect.user.length < 1
+      userConnect.readUser !== "success" &&
+      userConnect.user === undefined
     ) {
       localStorage.removeItem("auth");
       window.location.replace("/login");

@@ -4,7 +4,8 @@
   margin: 5px 0px;
   padding: 15px;
 }
-.container_today > p {
+.container_today > p,
+.historical > p {
   text-align: center;
   padding: 0;
   margin: 0;
@@ -15,4 +16,17 @@
 }
 .container_today .texte {
   font-size: 12px;
+}
+.historical {
+  margin-bottom: 5px;
+  padding: 10px;
+}
+.historical .textes {
+  font-size: 12px;
+  font-weight: 600;
+}
+.historical .nombres {
+  font-size: 20px;
+  font-weight: bolder;
+  color: rgb(0, 169, 254);
 }

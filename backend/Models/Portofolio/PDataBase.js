@@ -11,7 +11,7 @@ const schema = new mongoose.Schema({
     required: true,
     enum: ["default", "late", "normal"],
   },
-  idProjet: { type: String, required: true },
+  month: { type: String, required: true },
   remindDate: { type: Number, required: true, default: 0 },
   first_number: { type: String, required: false },
   second_number: { type: String, required: false },
@@ -27,5 +27,7 @@ const schema = new mongoose.Schema({
   monthlyrate: { type: Number, required: false, default: 0 },
   par: { type: String, required: false },
 });
+schema.index({ month: 1, codeclient: 1 }, { unique: true });
+schema.index({ etat: 1, status: 1 });
 const model = mongoose.model("pdatabase", schema);
 module.exports = model;

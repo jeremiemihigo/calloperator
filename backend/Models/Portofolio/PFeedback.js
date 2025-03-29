@@ -19,7 +19,7 @@ const schema = new mongoose.Schema({
     trim: true,
     uppercase: true,
   },
-  idProjet: { type: String, required: true },
+  month: { type: String, required: true },
   agent: { type: String, required: false },
   shop: { required: true, type: String },
   region: { required: true, type: String },
@@ -36,14 +36,18 @@ const schema = new mongoose.Schema({
 });
 schema.post("save", function (docs, next) {
   try {
+    let remind =
+      docs.sioui_texte === "Promesse de paiement"
+        ? docs.sioui_date
+        : docs.date_to_recall;
     ModelDataBase.findOneAndUpdate(
       {
-        idProjet: docs.idProjet,
+        month: docs.month,
         codeclient: docs.codeclient,
       },
       {
         $set: {
-          remindDate: docs.date_to_recall,
+          remindDate: remind,
           etat: docs.type,
         },
       }
@@ -54,5 +58,6 @@ schema.post("save", function (docs, next) {
     console.log(error);
   }
 });
+schema.index({ dateSave: 1 });
 const model = mongoose.model("pfeedback_call", schema);
 module.exports = model;

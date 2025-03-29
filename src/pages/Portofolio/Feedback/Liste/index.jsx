@@ -14,7 +14,7 @@ import { config, portofolio } from "static/Lien";
 import { ContextFeedback } from "../Context";
 import "./liste.css";
 
-function Index() {
+function ListeCall() {
   const statut = ["Unreachable", "Pending", "Reachable", "Remind"];
   const status = ["late", "default", "normal"];
   const [statu, setStatus] = React.useState("Overall");
@@ -22,17 +22,15 @@ function Index() {
   const [shopselect, setShopSelect] = React.useState([]);
   const [load, setLoad] = React.useState(false);
 
-  const projet = useSelector((state) => state.projet.projet);
-  const { projetSelect, setChecked, client, setClient, data, setData } =
+  const { setChecked, client, setClient, data, setData } =
     React.useContext(ContextFeedback);
   const fetchData = async () => {
     try {
       setLoad(true);
       setData([]);
-      let fetc =
-        etat === "Overall"
-          ? ["Unreachable", "Pending", "Reachable", "Remind"]
-          : [etat];
+      let fetc = ["Overall", "Remind"].includes(etat)
+        ? ["Unreachable", "Pending", "Reachable", "Remind"]
+        : [etat];
       let sta = statu === "Overall" ? ["late", "default", "normal"] : [statu];
       const response = await axios.post(
         portofolio + "/client",
@@ -45,7 +43,6 @@ function Index() {
               }),
             },
             status: { $in: sta },
-            idProjet: projetSelect,
             etat: { $in: fetc },
           },
         },
@@ -60,10 +57,10 @@ function Index() {
     }
   };
   React.useEffect(() => {
-    if (shopselect !== "" && projetSelect !== "") {
+    if (shopselect.length > 0) {
       fetchData();
     }
-  }, [shopselect, projetSelect, etat, statu]);
+  }, [shopselect, etat, statu]);
   const shop = useSelector((state) => state.shop.shop);
   const [show, setShow] = React.useState(true);
   const [value, setValue] = React.useState("");
@@ -104,7 +101,7 @@ function Index() {
           </Typography>
         </Card>
       )}
-      {shop && projet && show && (
+      {shop && show && (
         <Card sx={{ padding: "4px", marginBottom: "10px" }}>
           <div className="select__" style={{ marginBottom: "10px" }}>
             <Typography
@@ -242,13 +239,17 @@ function Index() {
                 }}
                 key={index._id}
               >
-                <p className="customer_id">{index.codeclient}</p>
+                <p className="customer_id">
+                  {index.codeclient}/{index.status}
+                </p>
                 <Typography noWrap component="p" className="customer_name">
                   {index.customer_name.toUpperCase()}
                 </Typography>
                 <p className="customer_shop">
                   <span>{index.shop}</span>
-                  <span className={index.etat}>{index.etat}</span>
+                  <span className={etat === "Remind" ? etat : index.etat}>
+                    {etat === "Remind" ? etat : index.etat}
+                  </span>
                 </p>
               </Grid>
             );
@@ -258,4 +259,4 @@ function Index() {
   );
 }
 
-export default Index;
+export default ListeCall;

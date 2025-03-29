@@ -18,6 +18,11 @@ const schema = new mongoose.Schema(
     codeAgent: { type: String, required: false },
     shop: { type: String, required: true },
     region: { type: String, required: true },
+    plateforme: {
+      type: String,
+      required: true,
+      enum: ["callcenter", "default-tracker"],
+    },
     statut: {
       type: String,
       required: true,

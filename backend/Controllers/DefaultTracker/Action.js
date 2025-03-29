@@ -337,39 +337,51 @@ const SubmitedByExcel = async (req, res) => {
     const { nom } = req.user;
     const month = moment(new Date()).format("MM-YYYY");
 
-    for (let i = 0; i < data.length; i++) {
-      ModelAction.findOneAndUpdate(
-        {
-          codeclient: data[i].codeclient,
-          month,
-        },
-        {
-          $set: {
-            codeclient: data[i].codeclient,
+    async function updateClientsWithBulk() {
+      const bulkoperation = data.map((client) => ({
+        updateOne: {
+          filter: {
+            codeclient: client.codeclient,
             month,
-            shop: data[i].shop,
-            region: data[i].region,
-            savedBy: nom,
-            codeAgent: data[i].codeAgent,
-            action: data[i].action,
-            statut: "Pending",
           },
-          $push: {
-            last_statut: "No_Action",
-            next_statut: "Pending",
-            commentaire: data[i].commentaire,
-            name: nom,
+          update: {
+            $set: {
+              codeclient: client.codeclient,
+              month,
+              shop: client.shop,
+              region: client.region,
+              savedBy: nom,
+              plateforme: client.plateforme,
+              codeAgent: client.codeAgent,
+              action: client.action,
+              statut: client.statut,
+            },
+            $push: {
+              statuschangeBy: {
+                last_statut: "No_Action",
+                next_statut: client.statut,
+                commentaire: client.commentaire,
+                name: nom,
+              },
+            },
           },
+          upsert: true,
+          returnDocument: "after",
         },
-        { upsert: true, returnDocument: "after" }
-      )
-        .then(() => {})
-        .catch(function (err) {
-          console.log(err);
-        });
+      }));
+      try {
+        const result = await ModelAction.bulkWrite(bulkoperation);
+        return res
+          .status(200)
+          .json(
+            `${result.upsertedCount} insertion and ${result.modifiedCount} action(s) updated`
+          );
+      } catch (error) {}
     }
-    return res.status(200).json(`${data.length} clients enregistrés `);
-  } catch (error) {}
+    updateClientsWithBulk();
+  } catch (error) {
+    return res.status(201).json("Error : " + error.message);
+  }
 };
 module.exports = {
   AddAction,

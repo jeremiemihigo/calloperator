@@ -1,41 +1,9 @@
 const ModelProjet = require("../../Models/Portofolio/PProjet");
-const { generateNumber } = require("../../Static/Static_Function");
-const ModelQuestion = require("../../Models/Portofolio/PQuestion");
 const ModelFeedback = require("../../Models/Portofolio/PFeedback");
 const asyncLab = require("async");
 const _ = require("lodash");
 const moment = require("moment");
 
-const AddProjet = async (req, res) => {
-  try {
-    //savedBy, id
-    const id = `P${generateNumber(5)}`;
-    const { codeAgent } = req.user;
-    const { title, intervenant, idFormulaire } = req.body;
-    if (!title || !intervenant || !idFormulaire) {
-      return res.status(404).json("Veuillez renseigner les champs");
-    }
-    ModelProjet.create({
-      title,
-      savedBy: codeAgent,
-      id,
-      intervenant,
-      idFormulaire,
-    })
-      .then((result) => {
-        if (result) {
-          return res.status(200).json(result);
-        } else {
-          return res.status(404).json("Error");
-        }
-      })
-      .catch(function (error) {
-        return res.status(404).json("Error " + error.message);
-      });
-  } catch (error) {
-    return res.status(404).json("Error " + error.message);
-  }
-};
 const ReadProjet = async (req, res) => {
   try {
     const { fonction, codeAgent } = req.user;
@@ -219,4 +187,4 @@ const AnalyseToDay = async (req, res) => {
     console.log(error.message);
   }
 };
-module.exports = { AddProjet, AnalyseToDay, RapportPortofolio, ReadProjet };
+module.exports = { AnalyseToDay, RapportPortofolio, ReadProjet };

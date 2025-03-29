@@ -1,21 +1,20 @@
 const ModelDatabase = require("../../Models/Portofolio/PDataBase");
-const asyncLab = require("async");
-const ModelRapport = require("../../Models/Rapport");
 const moment = require("moment");
-const ModelIssue = require("../../Models/Issue/Appel_Issue");
+const asyncLab = require("async");
 
 const PDatabase = async (req, res) => {
   try {
     const { data } = req.body;
+    const month = moment(new Date()).format("MM-YYYY");
     async function updateClientsWithBulk() {
       const bulkOperations = data.map((client) => ({
         updateOne: {
           filter: {
             codeclient: client.codeclient,
-            idProjet: client.idProjet,
+            month,
           },
           update: {
-            $set: client,
+            $set: { ...client, month },
           },
           upsert: true,
         },
@@ -40,13 +39,34 @@ const ReadByFilter = async (req, res) => {
   try {
     const { filter, etat } = req.body;
     let now = new Date(moment(new Date()).format("YYYY-MM-DD")).getTime();
+    const month = moment(new Date()).format("MM-YYYY");
 
     let match =
       etat === "Remind"
-        ? { ...filter, remindDate: { $lt: now, $gt: 0 } }
-        : filter;
-    ModelDatabase.find(match)
-      .lean()
+        ? { ...filter, remindDate: { $lt: now, $gt: 0 }, month }
+        : { ...filter, month };
+    ModelDatabase.aggregate([
+      { $match: match },
+      {
+        $lookup: {
+          from: "pfeedback_calls",
+          let: { codeclient: "$codeclient", month },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$codeclient", "$$codeclient"] },
+                    { $eq: ["$month", "$$month"] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "feedback",
+        },
+      },
+    ])
       .then((result) => {
         return res.status(200).json(result);
       })
@@ -63,19 +83,20 @@ const ReadCustomerToTrack = async (req, res) => {
     let recherche = { ...search };
     const today = new Date().getTime();
     recherche.remindDate = { $lt: today };
+    const month = moment(new Date()).format("MM-YYYY");
     ModelDatabase.aggregate([
       { $match: recherche },
       {
         $lookup: {
           from: "pfeedback_calls",
-          let: { codeclient: "$codeclient", idPojet: "$idProjet" },
+          let: { codeclient: "$codeclient", month },
           pipeline: [
             {
               $match: {
                 $expr: {
                   $and: [
                     { $eq: ["$codeclient", "$$codeclient"] },
-                    { $eq: ["$idProjet", "$$idProjet"] },
+                    { $eq: ["$month", "$$month"] },
                   ],
                 },
               },
@@ -95,55 +116,45 @@ const ReadCustomerToTrack = async (req, res) => {
     console.log(error);
   }
 };
-const ClientInformation = async (req, res) => {
+const ClientStat = async (req, res) => {
   try {
-    const { codeclient } = req.params;
+    const month = moment(new Date()).format("MM-YYYY");
+    const now = new Date(moment(new Date()).format("YYYY-MM-DD")).getTime();
     asyncLab.waterfall(
       [
         function (done) {
-          ModelRapport.find(
-            { codeclient },
-            {
-              "demande.raison": 1,
-              "demande.updatedAt": 1,
-              "demandeur.codeAgent": 1,
-            }
-          )
-            .sort({ "demande.updatedAt": -1 })
-            .limit(1)
-            .then((visite) => {
-              done(null, visite);
+          ModelDatabase.find({ month }, { remindDate: 1, etat: 1, shop: 1 })
+            .lean()
+            .then((result) => {
+              done(null, result);
             })
-            .catch(function (err) {
-              console.log(err);
+            .catch(function (error) {
+              console.log(error);
             });
         },
-        function (visite, done) {
-          ModelIssue.find(
-            { codeclient },
-            { typePlainte: 1, statut: 1, dateSave: 1, plainteSelect: 1 }
-          )
-            .sort({ dateSave: -1 })
-            .limit(1)
-            .then((result) => {
-              done(visite, result);
-            })
-            .catch(function (err) {
-              console.log(err);
-            });
+        function (result, done) {
+          const table = {};
+          table.remind = result.filter(
+            (x) => x.remindDate < now && x.remindDate > 0
+          ).length;
+          table.reachable = result.filter((x) => x.etat === "Reachable").length;
+          table.unreachable = result.filter(
+            (x) => x.etat === "Unreachable"
+          ).length;
+          table.pending = result.filter((x) => x.etat === "Pending").length;
+
+          done(table);
         },
       ],
-      function (visite, plainte) {
-        return res.status(200).json({ visite, plainte });
+      function (result) {
+        return res.status(200).json(result);
       }
     );
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 };
 module.exports = {
   PDatabase,
   ReadByFilter,
-  ClientInformation,
   ReadCustomerToTrack,
+  ClientStat,
 };

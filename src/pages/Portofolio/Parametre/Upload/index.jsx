@@ -1,18 +1,15 @@
 import { CircularProgress, Grid, Typography } from "@mui/material";
 import axios from "axios";
-import AutoComplement from "Control/AutoComplet";
 import SimpleBackdrop from "Control/Backdrop";
 import DirectionSnackbar from "Control/SnackBar";
 import React from "react";
-import { useSelector } from "react-redux";
 import { config, portofolio } from "static/Lien";
 import * as xlsx from "xlsx";
 import "./upload.style.css";
 
 function UploadClient() {
   const [data, setData] = React.useState();
-  const projet = useSelector((state) => state.projet.projet);
-  const [projetSelect, setProjetSelect] = React.useState("");
+
   const [sending, setSending] = React.useState(false);
   const column = [
     "codeclient",
@@ -91,15 +88,9 @@ function UploadClient() {
     e.preventDefault();
     setSending(true);
     try {
-      let donner = data.map(function (x) {
-        return {
-          ...x,
-          idProjet: projetSelect?.id,
-        };
-      });
       const response = await axios.post(
         portofolio + "/database",
-        { data: donner },
+        { data },
         config
       );
       if (response.status === 200) {
@@ -117,18 +108,6 @@ function UploadClient() {
   return (
     <>
       <Grid container>
-        <Grid item lg={6}>
-          {projet && (
-            <AutoComplement
-              id="_id"
-              value={projetSelect}
-              setValue={setProjetSelect}
-              options={projet}
-              title="Selectionnez un projet *"
-              propr="title"
-            />
-          )}
-        </Grid>
         <Grid item lg={6} className="p_display">
           <p>Le fichier doit inclure ces colonnes avec une écriture uniforme</p>
         </Grid>
