@@ -2,7 +2,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import ReactApexChart from "react-apexcharts";
-import { config, lien } from "static/Lien";
+import { config, portofolio } from "static/Lien";
+import { Paper } from "@mui/material";
 
 const ReportAreaChart = () => {
   const [options, setOptions] = useState();
@@ -15,8 +16,8 @@ const ReportAreaChart = () => {
         let table = [];
         let option = [];
         for (let i = 0; i < donner.length; i++) {
-          table.push(donner[i].total);
-          option.push(donner[i]._id);
+          table.push(donner[i].value);
+          option.push(donner[i].name);
         }
 
         setOptions({
@@ -29,7 +30,7 @@ const ReportAreaChart = () => {
         });
         setSerie([
           {
-            name: "Demande au total",
+            name: "$",
             data: table,
           },
         ]);
@@ -42,10 +43,7 @@ const ReportAreaChart = () => {
   const loading = async () => {
     setLoad(true);
     try {
-      const response = await axios.get(
-        lien + "/demandePourChaquePeriode",
-        config
-      );
+      const response = await axios.get(portofolio + "/seachAmount", config);
       setDonner(response.data);
       setLoad(false);
     } catch (error) {
@@ -60,7 +58,7 @@ const ReportAreaChart = () => {
   }, [donner]);
 
   return (
-    <div>
+    <Paper sx={{ marginTop: "10px" }}>
       {load ? (
         <div
           style={{
@@ -83,7 +81,7 @@ const ReportAreaChart = () => {
           />
         )
       )}
-    </div>
+    </Paper>
   );
 };
 

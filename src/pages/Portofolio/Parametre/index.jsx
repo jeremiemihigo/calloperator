@@ -1,19 +1,19 @@
 import { Paper } from "@mui/material";
 import Tabs from "Control/Tabs";
-import Projet from "pages/Portofolio/Parametre/Projet";
 import UploadFile from "pages/Portofolio/Parametre/Upload";
-import Action from "./Action";
+import Payement from "./Payement";
+import SavePayment from "./SavePayment";
 
 function Index() {
   const titres = [
-    { id: 0, label: "Projet" },
-    { id: 1, label: "Upload" },
-    { id: 2, label: "Action" },
+    { id: 0, label: "Upload" },
+    { id: 1, label: "Payements" },
+    { id: 2, label: "Save_payment" },
   ];
   const component = [
-    { id: 0, component: <Projet /> },
-    { id: 1, component: <UploadFile /> },
-    { id: 2, component: <Action /> },
+    { id: 0, component: <UploadFile /> },
+    { id: 1, component: <Payement /> },
+    { id: 2, component: <SavePayment /> },
   ];
   return (
     <Paper>

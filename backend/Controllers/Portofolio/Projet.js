@@ -3,6 +3,7 @@ const ModelFeedback = require("../../Models/Portofolio/PFeedback");
 const asyncLab = require("async");
 const _ = require("lodash");
 const moment = require("moment");
+const ModelCorbeille = require("../../Models/Corbeille");
 
 const ReadProjet = async (req, res) => {
   try {
@@ -112,6 +113,19 @@ const RapportPortofolio = async (req, res) => {
     asyncLab.waterfall(
       [
         function (done) {
+          ModelCorbeille.create({
+            name: req.user.nom,
+            texte: `Rapport Portefeuille allant du ${debut} au ${fin}`,
+            date: moment(new Date()).format("DD-MM-YYYY"),
+          })
+            .then((result) => {
+              done(null, result);
+            })
+            .catch(function (error) {
+              done(null, true);
+            });
+        },
+        function (resul, done) {
           const beginDate = new Date(debut).getTime();
           const endDate = new Date(fin).getTime();
           ModelFeedback.find({

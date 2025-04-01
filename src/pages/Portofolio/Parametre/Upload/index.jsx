@@ -95,6 +95,7 @@ function UploadClient() {
       );
       if (response.status === 200) {
         setMessage(response.data);
+        setData();
         setSending(false);
       } else {
         setMessage("" + response?.data);

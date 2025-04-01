@@ -1,25 +1,32 @@
-import { Search } from '@mui/icons-material';
-import { Card, Divider, FormControl, Grid, InputAdornment, OutlinedInput } from '@mui/material';
-import { Image, Space, message } from 'antd';
-import axios from 'axios';
-import _ from 'lodash';
-import moment from 'moment';
-import React from 'react';
-import { config, lien, lien_image } from 'static/Lien';
-import './historique.style.css';
-import './style.css';
+import { Search } from "@mui/icons-material";
+import {
+  Card,
+  Divider,
+  FormControl,
+  Grid,
+  InputAdornment,
+  OutlinedInput,
+} from "@mui/material";
+import { Image, Space, message } from "antd";
+import axios from "axios";
+import _ from "lodash";
+import moment from "moment";
+import React from "react";
+import { config, lien, lien_image } from "static/Lien";
+import "./historique.style.css";
+import "./style.css";
 // assets
-import { Clear } from '@mui/icons-material';
-import { Paper, Typography } from '@mui/material';
-import SimpleBackdrop from 'Control/Backdrop';
-import UpdateForm from 'pages/Demandes/Updateform';
-import { useSelector } from 'react-redux';
-import Popup from 'static/Popup';
-import { Tooltip } from '../../../node_modules/@mui/material/index';
-import WhyToDelete from './WhyToDelete';
+import { Clear } from "@mui/icons-material";
+import { Paper, Typography } from "@mui/material";
+import SimpleBackdrop from "Control/Backdrop";
+import UpdateForm from "pages/Demandes/Updateform";
+import { useSelector } from "react-redux";
+import Popup from "static/Popup";
+import { Tooltip } from "../../../node_modules/@mui/material/index";
+import WhyToDelete from "./WhyToDelete";
 
 function ReponseComponent() {
-  const [value, setValue] = React.useState('');
+  const [value, setValue] = React.useState("");
   const [data, setData] = React.useState();
   const [load, setLoading] = React.useState(false);
   const user = useSelector((state) => state.user.user);
@@ -29,7 +36,7 @@ function ReponseComponent() {
     messageApi.open({
       type,
       content: texte,
-      duration: 5
+      duration: 5,
     });
   };
 
@@ -40,17 +47,17 @@ function ReponseComponent() {
       setLoading(true);
       setData();
       const reponse = await axios.get(`${lien}/oneReponse/${client}`, config);
-      if (reponse.data === 'token expired') {
-        localStorage.removeItem('auth');
-        window.location.replace('/login');
+      if (reponse.data === "token expired") {
+        localStorage.removeItem("auth");
+        window.location.replace("/login");
       }
       if (reponse.status === 200) {
         setChoose(0);
         if (reponse.data.length === 0) {
-          success('No visits found', 'error');
+          success("No visits found", "error");
           setLoading(false);
         } else {
-          setData(_.groupBy(reponse.data, 'demande.lot'));
+          setData(_.groupBy(reponse.data, "demande.lot"));
           setLoading(false);
         }
       }
@@ -63,9 +70,11 @@ function ReponseComponent() {
     if (date) {
       let today = new Date(date);
       let data1 = new Date(today.setHours(today.getHours() + 1)).toISOString();
-      return `${moment(data1.split('T')[0]).format('DD/MM/YYYY')} à ${data1.split('T')[1]}`;
+      return `${moment(data1.split("T")[0]).format("DD/MM/YYYY")} à ${
+        data1.split("T")[1]
+      }`;
     } else {
-      return '';
+      return "";
     }
   };
   const [openDelete, setOpenDelete] = React.useState(false);
@@ -76,7 +85,7 @@ function ReponseComponent() {
   };
 
   const [open, setOpen] = React.useState(false);
-  const [dataupdate, setDataUpdate] = React.useState('');
+  const [dataupdate, setDataUpdate] = React.useState("");
   const updatecomponent = (updated) => {
     setDataUpdate(updated);
     setOpen(true);
@@ -88,11 +97,11 @@ function ReponseComponent() {
       <Tooltip title="Go back">
         <Paper
           onClick={() => {
-            setValue('');
+            setValue("");
             setData();
           }}
           elevation={1}
-          sx={{ padding: '5px', float: 'left', cursor: 'pointer' }}
+          sx={{ padding: "5px", float: "left", cursor: "pointer" }}
         >
           <Clear />
         </Paper>
@@ -102,10 +111,12 @@ function ReponseComponent() {
           <div>
             <p>Customer code</p>
             <Paper elevation={2}>
-              <FormControl sx={{ width: '100%' }}>
+              <FormControl sx={{ width: "100%" }}>
                 <OutlinedInput
                   size="small"
-                  onKeyUp={(e) => e.keyCode === 13 && sendDonner(e.target.value)}
+                  onKeyUp={(e) =>
+                    e.keyCode === 13 && sendDonner(e.target.value)
+                  }
                   id="header-search"
                   className="inputclasse"
                   startAdornment={
@@ -115,7 +126,7 @@ function ReponseComponent() {
                   }
                   aria-describedby="header-search-text"
                   inputProps={{
-                    'aria-label': 'weight'
+                    "aria-label": "weight",
                   }}
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
@@ -130,30 +141,34 @@ function ReponseComponent() {
       {choose === 0 && (
         <Grid container>
           <Grid item lg={12}>
-            <Grid sx={{ marginTop: '10px' }}>
+            <Grid sx={{ marginTop: "10px" }}>
               {data &&
                 Object.keys(data).map((item, key) => {
                   return (
                     <React.Fragment key={key}>
                       <div className="lot">{item}</div>
                       <Grid container>
-                        {data['' + item].map((index, cle) => {
+                        {data["" + item].map((index, cle) => {
                           return (
                             <React.Fragment key={cle + 1}>
                               <Grid item lg={4} md={5} sm={5} xs={10}>
-                                <Card className="reponseClasse" variant="outlined" sx={{ padding: '5px', cursor: 'pointer' }}>
+                                <Card
+                                  className="reponseClasse"
+                                  variant="outlined"
+                                  sx={{ padding: "5px", cursor: "pointer" }}
+                                >
                                   <Typography className="code" component="p">
                                     {index.codeclient}
-                                    {user && user.fonction === 'superUser' && (
+                                    {user && user.fonction === "superUser" && (
                                       <Typography
                                         component="span"
                                         onClick={() => funcopen(index)}
                                         style={{
-                                          backgroundColor: 'red',
-                                          color: '#fff',
-                                          borderRadius: '5px',
-                                          padding: '4px 10px',
-                                          cursor: 'pointer'
+                                          backgroundColor: "red",
+                                          color: "#fff",
+                                          borderRadius: "5px",
+                                          padding: "4px 10px",
+                                          cursor: "pointer",
                                         }}
                                       >
                                         Delete
@@ -163,81 +178,143 @@ function ReponseComponent() {
                                       component="span"
                                       onClick={() => updatecomponent(index)}
                                       style={{
-                                        backgroundColor: 'rgb(0,169,244)',
-                                        color: '#fff',
-                                        borderRadius: '5px',
-                                        marginLeft: '10px',
-                                        padding: '4px 10px',
-                                        cursor: 'pointer'
+                                        backgroundColor: "rgb(0,169,244)",
+                                        color: "#fff",
+                                        borderRadius: "5px",
+                                        marginLeft: "10px",
+                                        padding: "4px 10px",
+                                        cursor: "pointer",
                                       }}
                                     >
                                       Edit
                                     </Typography>
                                   </Typography>
-                                  <p className="customer_name">{index.nomClient} </p>
+                                  <p className="customer_name">
+                                    {index.nomClient}{" "}
+                                  </p>
                                   <p>Statut du compte:</p>
                                   <p>
-                                    statut client : <span style={{ fontWeight: 'bolder' }}>{index.clientStatut}</span>
+                                    statut client :{" "}
+                                    <span style={{ fontWeight: "bolder" }}>
+                                      {index.clientStatut}
+                                    </span>
                                   </p>
                                   <p>
-                                    statut payement : <span style={{ fontWeight: 'bolder' }}>{index.PayementStatut}</span>
+                                    statut payement :{" "}
+                                    <span style={{ fontWeight: "bolder" }}>
+                                      {index.PayementStatut}
+                                    </span>
                                   </p>
                                   <p>
-                                    consExpDays : <span style={{ fontWeight: 'bolder' }}>{index.consExpDays} jour(s)</span>
+                                    consExpDays :{" "}
+                                    <span style={{ fontWeight: "bolder" }}>
+                                      {index.consExpDays} jour(s)
+                                    </span>
                                   </p>
                                   <p>
-                                    Saved by : <span style={{ fontWeight: 'bolder' }}>{index.agentSave.nom}</span>
+                                    Saved by :{" "}
+                                    <span style={{ fontWeight: "bolder" }}>
+                                      {index.agentSave.nom}
+                                    </span>
                                   </p>
 
                                   <p className="retard">
-                                    <span style={{ fontWeight: 'bolder' }}>Kinshasa le, </span> {returnHeure(index.createdAt)}
+                                    <span style={{ fontWeight: "bolder" }}>
+                                      Kinshasa le,{" "}
+                                    </span>{" "}
+                                    {returnHeure(index.createdAt)}
                                   </p>
                                 </Card>
                               </Grid>
-                              <Grid item lg={3} md={2} sm={2} xs={2} sx={{ padding: '5px' }}>
+                              <Grid
+                                item
+                                lg={3}
+                                md={2}
+                                sm={2}
+                                xs={2}
+                                sx={{ padding: "5px" }}
+                              >
                                 <Space>
                                   <Image
-                                    style={{ width: '100%', heigth: '100%' }}
+                                    style={{ width: "100%", heigth: "100%" }}
                                     src={`${lien_image}/${index.demande?.file}`}
                                     placeholder={
-                                      <Image preview={false} src={`${lien_image}/${index.demande?.file}`} width={200} height={100} />
+                                      <Image
+                                        preview={false}
+                                        src={`${lien_image}/${index.demande?.file}`}
+                                        width={200}
+                                        height={100}
+                                      />
                                     }
                                   />
                                 </Space>
                               </Grid>
-                              <Grid item lg={5} md={5} sm={5} xs={12} sx={{ lg: { paddingLeft: '30px' } }}>
+                              <Grid
+                                item
+                                lg={5}
+                                md={5}
+                                sm={5}
+                                xs={12}
+                                sx={{ lg: { paddingLeft: "30px" } }}
+                              >
                                 <Grid className="reponseClasse">
                                   <p>
-                                    <span style={{ fontWeight: 'bolder' }}>Statut du client : </span> {index.demande.statut};
+                                    <span style={{ fontWeight: "bolder" }}>
+                                      Statut du client :{" "}
+                                    </span>{" "}
+                                    {index.demande.statut};
                                   </p>
                                   <Divider />
                                   <p>
-                                    <span style={{ fontWeight: 'bolder' }}>Feedback : </span> {index.demande?.raison.toLowerCase()};
+                                    <span style={{ fontWeight: "bolder" }}>
+                                      Feedback :{" "}
+                                    </span>{" "}
+                                    {index.demande?.raison.toLowerCase()};
                                   </p>
                                   <Divider />
                                   <p>
-                                    <span style={{ fontWeight: 'bolder' }}>Adresse </span>: {index.demande?.sector}, {index.demande?.cell},{' '}
-                                    {index.demande?.sat}, {index.demande.reference}{' '}
+                                    <span style={{ fontWeight: "bolder" }}>
+                                      Adresse{" "}
+                                    </span>
+                                    : {index.demande?.sector},{" "}
+                                    {index.demande?.cell}, {index.demande?.sat},{" "}
+                                    {index.demande.reference}{" "}
                                   </p>
                                   <Divider />
                                   <p>
-                                    {index.demandeur.fonction} {index.demandeur.codeAgent}; {index.demandeur.nom};{' '}
+                                    {index.demandeur.fonction}{" "}
+                                    {index.demandeur.codeAgent};{" "}
+                                    {index.demandeur.nom};{" "}
                                   </p>
-                                  {index.demande?.numero !== 'undefined' && (
+                                  {index.demande?.numero !== "undefined" && (
                                     <p>
-                                      <span style={{ fontWeight: 'bolder' }}>Numero joignable du client</span> : {index.demande?.numero}
+                                      <span style={{ fontWeight: "bolder" }}>
+                                        Numero joignable du client
+                                      </span>{" "}
+                                      : {index.demande?.numero}
                                     </p>
                                   )}
                                   <Divider />
                                   <p>
-                                    {index.coordonnee?.longitude !== 'undefined' && `long : ${index.coordonnee?.longitude}`}
-                                    {index.coordonnee?.latitude !== 'undefined' && `lat : ${index.coordonnee?.latitude}`}
-                                    {index.coordonnee?.altitude !== 'undefined' && `alt : ${index.coordonnee?.altitude}`}
+                                    {index.coordonnee?.longitude !==
+                                      "undefined" &&
+                                      `long : ${index.coordonnee?.longitude}`}
+                                    {index.coordonnee?.latitude !==
+                                      "undefined" &&
+                                      `lat : ${index.coordonnee?.latitude}`}
+                                    {index.coordonnee?.altitude !==
+                                      "undefined" &&
+                                      `alt : ${index.coordonnee?.altitude}`}
                                   </p>
                                   <Divider />
                                   <p className="retard">
-                                    <span style={{ fontWeight: 'bolder' }}>Kinshasa le, </span>{' '}
-                                    {returnHeure(index.demande.createdAt || index.demande?.updatedAt)}
+                                    <span style={{ fontWeight: "bolder" }}>
+                                      Kinshasa le,{" "}
+                                    </span>{" "}
+                                    {returnHeure(
+                                      index.demande.createdAt ||
+                                        index.demande?.updatedAt
+                                    )}
                                   </p>
                                 </Grid>
                               </Grid>
@@ -255,7 +332,11 @@ function ReponseComponent() {
         </Grid>
       )}
       {dataDelete && (
-        <Popup open={openDelete} setOpen={setOpenDelete} title="Raison de suppression">
+        <Popup
+          open={openDelete}
+          setOpen={setOpenDelete}
+          title="Raison de suppression"
+        >
           <WhyToDelete id={dataDelete} />
         </Popup>
       )}

@@ -61,7 +61,6 @@
     "import/no-named-as-default": "off",
     "import/no-extraneous-dependencies": "off",
     "jsx-a11y/no-autofocus": "off",
-    "quotes": ["error", "double"],
     "no-restricted-imports": [
       "error",
       {

@@ -1,22 +1,21 @@
 // third-party
-import { combineReducers } from 'redux';
+import { combineReducers } from "redux";
 
 // project import
-import agent from 'Redux/Agent';
-import agentAdmin from 'Redux/AgentAdmin';
-import communication from 'Redux/Communication';
-import parametre from 'Redux/Parametre';
-import plainte from 'Redux/Plainte';
-import itemPlainte from 'Redux/PlainteItem';
-import reponse from 'Redux/Reponses';
-import shop from 'Redux/Shop';
-import zone from 'Redux/Zone';
-import delai from 'Redux/delai';
-import formulaire from 'Redux/formulaire';
-import projet from 'Redux/projet';
-import role from 'Redux/role';
-import user from 'Redux/user';
-import menu from './menu';
+import agent from "Redux/Agent";
+import agentAdmin from "Redux/AgentAdmin";
+import communication from "Redux/Communication";
+import parametre from "Redux/Parametre";
+import plainte from "Redux/Plainte";
+import itemPlainte from "Redux/PlainteItem";
+import reponse from "Redux/Reponses";
+import shop from "Redux/Shop";
+import zone from "Redux/Zone";
+import delai from "Redux/delai";
+import projet from "Redux/projet";
+import role from "Redux/role";
+import user from "Redux/user";
+import menu from "./menu";
 
 // import contrat from 'Redux/Contrat';
 
@@ -25,7 +24,6 @@ import menu from './menu';
 const reducers = combineReducers({
   menu,
   zone,
-  formulaire,
   projet,
   communication,
   delai,
@@ -37,7 +35,7 @@ const reducers = combineReducers({
   shop,
   itemPlainte,
   parametre,
-  role
+  role,
 });
 
 export default reducers;
