@@ -1,0 +1,98 @@
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.chat-form {
+  display: flex;
+  padding: 0.5rem;
+  border-top: 1px solid #ccc;
+  background-color: #fff;
+}
+.chat-form {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  padding: 0.5rem;
+  border-top: 1px solid #ccc;
+}
+.chat-form > input {
+  padding: 10px;
+}
+.display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.formbtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+}
+.formbtn > button {
+  width: 100%;
+  cursor: pointer;
+  padding: 15px;
+  border: none;
+}
+.identity > img {
+  height: 35px;
+  width: 35px;
+  border-radius: 50%;
+}
+
+.identity {
+  width: 20%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.display_centre {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.comment {
+  width: 80%;
+  margin-top: 20px;
+}
+.comment > p {
+  padding: 0;
+  margin: 0;
+}
+.identity > div > .temps {
+  font-size: 11px;
+  text-align: center;
+}
+.identity > div > .name {
+  font-size: 12px;
+  font-weight: bolder;
+}
+.messages > div {
+  width: 80%;
+}
+.messages {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.comment .commentaires {
+  text-align: justify;
+  line-height: 2rem;
+}
+.div_commentaire {
+  margin-bottom: 7rem;
+}
+.display_centre .identity > div > p {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.display_centre > div > .name {
+  background-color: red;
+  padding: 0;
+  margin: 0;
+}

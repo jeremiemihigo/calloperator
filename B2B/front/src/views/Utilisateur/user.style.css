@@ -1,0 +1,9 @@
+.checkboxx {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.checkboxx > p {
+  padding: 0;
+  margin: 0;
+}
