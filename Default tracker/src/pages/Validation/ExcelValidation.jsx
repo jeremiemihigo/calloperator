@@ -1,3 +1,4 @@
+import { Delete } from '@mui/icons-material';
 import { CircularProgress, Grid, Typography } from '@mui/material';
 import axios from 'axios';
 import SimpleBackdrop from 'components/Backdrop';
@@ -7,7 +8,6 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { config, lien_dt } from 'static/Lien';
 import * as xlsx from 'xlsx';
-import { Delete } from '../../../node_modules/@mui/icons-material/index';
 import '../Clients/style.css';
 
 function ActionValidation() {

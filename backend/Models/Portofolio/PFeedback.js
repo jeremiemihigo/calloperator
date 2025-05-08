@@ -25,6 +25,7 @@ const schema = new mongoose.Schema({
   region: { required: true, type: String },
   dateSave: { type: Number, required: true },
   raison_rappel: { type: String, required: false },
+  unreachable_feedback: { type: String, required: false },
   type: {
     type: String,
     required: true,
@@ -59,5 +60,6 @@ schema.post("save", function (docs, next) {
   }
 });
 schema.index({ dateSave: 1 });
+schema.index({ codeclient: 1, month: 1, type: 1 });
 const model = mongoose.model("pfeedback_call", schema);
 module.exports = model;

@@ -12,7 +12,6 @@ import { ReadReponse } from "Redux/Reponses";
 import { ReadShop } from "Redux/Shop";
 import { ReadAllZone } from "Redux/Zone";
 import { Readdelai } from "Redux/delai";
-import { ReadProjet } from "Redux/projet";
 import { Readrole } from "Redux/role";
 import { ReadUser } from "Redux/user";
 import reducers from "./reducers";
@@ -37,6 +36,5 @@ dispatch(ReadplainteItem());
 dispatch(Readcommunication());
 dispatch(ReadParametre());
 dispatch(Readrole());
-dispatch(ReadProjet());
 
 export { dispatch, store };

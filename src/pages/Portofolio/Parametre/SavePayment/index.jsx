@@ -1,25 +1,32 @@
 import { Delete } from "@mui/icons-material";
-import { Alert, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import axios from "axios";
 import NoCustomer from "components/Attente";
-import LoaderGif from "components/LoaderGif";
+import LoadingImage from "Control/Loading";
+import DirectionSnackbar from "Control/SnackBar";
 import React from "react";
-import { config, portofolio } from "static/Lien";
+import ExcelButton from "static/ExcelButton";
+import { config, portofolio, tronquerDecimales } from "static/Lien";
 
 function SavePayment() {
   const [data, setData] = React.useState();
   const [load, setLoad] = React.useState(true);
-  const [message, setMessage] = React.useState({ message: "", type: "" });
+  const [message, setMessage] = React.useState("");
   const loading = async () => {
     try {
-      setMessage({ message: "", type: "" });
+      setMessage("");
       setLoad(true);
       const response = await axios.get(`${portofolio}/readData`, config);
       if (response.status === 200) {
         setData(response.data);
         setLoad(false);
+      } else {
+        setLoad(false);
       }
     } catch (error) {
+      setMessage(error.message);
+      setLoad(false);
+
       console.log(error);
     }
   };
@@ -29,6 +36,7 @@ function SavePayment() {
   const sendData = async (event) => {
     event.preventDefault();
     setLoad(true);
+    setMessage("");
     try {
       const response = await axios.post(
         `${portofolio}/acceptDataPayement`,
@@ -36,24 +44,30 @@ function SavePayment() {
         config
       );
       if (response.status === 200) {
-        setMessage({ message: "Opération effectuée", type: "success" });
+        setMessage("Opération effectuée");
         setData();
         setLoad(false);
       } else {
-        setMessage({ message: "" + response.data, type: "warning" });
+        setMessage(response.data);
         setLoad(false);
       }
     } catch (error) {
-      setMessage({ message: error.message, type: "warning" });
+      setMessage(error.message);
       setLoad(false);
     }
   };
+
   return (
     <div>
-      {message.message !== "" && (
-        <Alert variant="filled" severity={message.type}>
-          {message.message}
-        </Alert>
+      {message && <DirectionSnackbar message={message} />}
+      {data && data.length > 0 && !load && (
+        <div style={{ width: "20%" }}>
+          <ExcelButton
+            data={data}
+            title="Export to Excel"
+            fileName="Payement_to_save.xlsx"
+          />
+        </div>
       )}
       {data && data.length > 0 && !load && (
         <table>
@@ -84,11 +98,21 @@ function SavePayment() {
                   <td>{key + 1}</td>
                   <td>{index.account_id}</td>
                   <td>{index.shop_name}</td>
-                  <td>${index.amount}</td>
+                  <td>${tronquerDecimales(index.amount)}</td>
                   <td>${index.dailyrate}</td>
                   <td>{index.days}</td>
                   <td>{index.par}</td>
-                  <td>{index.activation ? "Reactivation" : "No Action"}</td>
+                  <td>
+                    {index.activation ? (
+                      <p style={{ ...style.label, background: "green" }}>
+                        Reactivation
+                      </p>
+                    ) : (
+                      <p style={{ ...style.label, background: "yellow" }}>
+                        Isn&apos;t a reactivation
+                      </p>
+                    )}
+                  </td>
                   <td>
                     <Delete
                       color="secondary"
@@ -110,7 +134,7 @@ function SavePayment() {
       {data && data.length === 0 && !load && (
         <NoCustomer texte="No Pending action" />
       )}
-      {load && <LoaderGif />}
+      {load && <LoadingImage />}
       {data && data.length > 0 && !load && (
         <Typography
           onClick={(e) => sendData(e)}
@@ -122,11 +146,20 @@ function SavePayment() {
             color: "blue",
           }}
         >
-          Envoyer
+          Cliquez ici pour enregistrer
         </Typography>
       )}
     </div>
   );
 }
-
+const style = {
+  label: {
+    padding: "5px",
+    borderRadius: "2px",
+    margin: "0px",
+    fontWeight: 500,
+    width: "100%",
+    textAlign: "center",
+  },
+};
 export default SavePayment;

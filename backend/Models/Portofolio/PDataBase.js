@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { all_par } = require("../../utils/par");
 
 const schema = new mongoose.Schema({
   codeclient: { type: String, required: true, trim: true, max: 12, min: 12 },
@@ -26,7 +25,20 @@ const schema = new mongoose.Schema({
   dailyrate: { type: Number, required: false, default: 0 },
   weeklyrate: { type: Number, required: false, default: 0 },
   monthlyrate: { type: Number, required: false, default: 0 },
-  par: { type: String, required: true, enum: all_par },
+  total_paid: { type: Number, required: false, default: 0 },
+  par: {
+    type: String,
+    required: true,
+    enum: [
+      "PAR 0",
+      "PAR 15",
+      "PAR 30",
+      "PAR 60",
+      "PAR 90",
+      "PAR 120",
+      "NORMAL",
+    ],
+  },
 });
 schema.index({ month: 1, codeclient: 1 }, { unique: true });
 schema.index({ etat: 1, status: 1 });

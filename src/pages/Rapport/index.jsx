@@ -1,7 +1,13 @@
-import { ContactPhone, Handyman, MapsHomeWork, SupportAgent } from '@mui/icons-material';
-import { Grid, Paper } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import './style.css';
+import {
+  ContactsOutlined,
+  HomeOutlined,
+  IssuesCloseOutlined,
+  MoneyCollectOutlined,
+} from "@ant-design/icons";
+import { SupportAgent } from "@mui/icons-material";
+import { Grid, Paper } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import "./style.css";
 
 function Index() {
   const navigation = useNavigate();
@@ -13,12 +19,19 @@ function Index() {
     <Grid container>
       <Grid item lg={3} xs={12} sm={6} md={4}>
         <Paper
-          onClick={() => clic('/r_visit')}
+          onClick={() => clic("/r_visit")}
           className="elementPaper"
-          sx={{ height: '5rem', margin: '5px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          sx={{
+            height: "5rem",
+            margin: "5px",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           <div className="element">
-            <MapsHomeWork />
+            <HomeOutlined />
             <p>household visit</p>
           </div>
         </Paper>
@@ -26,33 +39,54 @@ function Index() {
 
       <Grid item lg={3} xs={12} sm={6} md={4}>
         <Paper
-          onClick={() => clic('/r_technical')}
+          onClick={() => clic("/r_technical")}
           className="elementPaper"
-          sx={{ height: '5rem', margin: '5px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          sx={{
+            height: "5rem",
+            margin: "5px",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           <div className="element">
-            <Handyman />
+            <IssuesCloseOutlined />
             <p>Technical issue</p>
           </div>
         </Paper>
       </Grid>
       <Grid item lg={3} xs={12} sm={6} md={4}>
         <Paper
-          onClick={() => clic('/r_callclient')}
+          onClick={() => clic("/r_callclient")}
           className="elementPaper"
-          sx={{ height: '5rem', margin: '5px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          sx={{
+            height: "5rem",
+            margin: "5px",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           <div className="element">
-            <ContactPhone />
+            <ContactsOutlined />
             <p>All contacts of the customer</p>
           </div>
         </Paper>
       </Grid>
       <Grid item lg={3} xs={12} sm={6} md={4}>
         <Paper
-          onClick={() => clic('/r_callback')}
+          onClick={() => clic("/r_callback")}
           className="elementPaper"
-          sx={{ height: '5rem', margin: '5px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          sx={{
+            height: "5rem",
+            margin: "5px",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           <div className="element">
             <SupportAgent />
@@ -62,9 +96,16 @@ function Index() {
       </Grid>
       <Grid item lg={3} xs={12} sm={6} md={4}>
         <Paper
-          onClick={() => clic('/r_renseignement')}
+          onClick={() => clic("/r_renseignement")}
           className="elementPaper"
-          sx={{ height: '5rem', margin: '5px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          sx={{
+            height: "5rem",
+            margin: "5px",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           <div className="element">
             <SupportAgent />
@@ -74,12 +115,19 @@ function Index() {
       </Grid>
       <Grid item lg={3} xs={12} sm={6} md={4}>
         <Paper
-          onClick={() => clic('/r_portofolio')}
+          onClick={() => clic("/r_portofolio")}
           className="elementPaper"
-          sx={{ height: '5rem', margin: '5px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          sx={{
+            height: "5rem",
+            margin: "5px",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           <div className="element">
-            <SupportAgent />
+            <MoneyCollectOutlined />
             <p>Portofolio</p>
           </div>
         </Paper>

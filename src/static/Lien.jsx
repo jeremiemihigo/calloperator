@@ -1,11 +1,9 @@
 // eslint-disable-next-line no-undef
 
-const link = "https://visitemenagesbackend.bboxxvm.com";
-const link_big = "https://visitemenagesbackend.bboxxvm.com";
-//const link_big = "http://localhost:5000";
-//const link = "http://localhost:5000";
-export const puls_img =
-  "https://pulse.bboxx.com/v2/assets/animations/loader.gif";
+//const link = "https://visitemenagesbackend.bboxxvm.com";
+//const link_big = "https://visitemenagesbackend.bboxxvm.com";
+const link_big = "http://localhost:5000";
+const link = "http://localhost:5000";
 
 export const lien = `${link}/bboxx/support`;
 export const big_data = `${link}/bboxx/support`;
@@ -219,4 +217,8 @@ export function dayDiff(d1, d2) {
   d1 = new Date(d1).getTime() / 86400000;
   d2 = new Date(d2).getTime() / 86400000;
   return new Number(d2 - d1).toFixed(0);
+}
+export function tronquerDecimales(nombre, decimales = 1) {
+  const facteur = Math.pow(10, decimales);
+  return Math.trunc(nombre * facteur) / facteur;
 }

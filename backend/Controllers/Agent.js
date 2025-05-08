@@ -22,8 +22,7 @@ const AddAgent = async (req, res, next) => {
               }
             })
             .catch(function (err) {
-              console.log(err);
-              return res.status(400).json("Erreur");
+              return res.status(400).json("Erreur "+err.message);
             });
         },
         function (agent, done) {
@@ -63,8 +62,7 @@ const AddAgent = async (req, res, next) => {
       }
     );
   } catch (error) {
-    console.log(error);
-    return res.status(400).json("Erreur d'enregistrement");
+    return res.status(400).json("Erreur "+error.message);
   }
 };
 const ReadAgent = async (req, res) => {

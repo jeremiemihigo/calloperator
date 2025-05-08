@@ -12,7 +12,6 @@ import reponse from "Redux/Reponses";
 import shop from "Redux/Shop";
 import zone from "Redux/Zone";
 import delai from "Redux/delai";
-import projet from "Redux/projet";
 import role from "Redux/role";
 import user from "Redux/user";
 import menu from "./menu";
@@ -24,7 +23,6 @@ import menu from "./menu";
 const reducers = combineReducers({
   menu,
   zone,
-  projet,
   communication,
   delai,
   plainte,

@@ -112,10 +112,7 @@ function Rapport() {
           </Grid>
           <Grid item lg={7} xs={12} md={6} sx={{ padding: "2px" }}>
             <Paper sx={{ padding: "5px", margin: "5px" }}>
-              <Typography noWrap>
-                Si tout va bien chez vous, Monsieur / Madame, nous aurons besoin
-                de savoir la raison du non-paiement de votre Kit solaire BBOXX.
-              </Typography>
+              <Typography noWrap>Raison du non-paiement.</Typography>
             </Paper>
             <Static_Feedback data={samplejson2} />
           </Grid>

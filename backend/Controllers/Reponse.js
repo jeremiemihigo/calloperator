@@ -247,7 +247,7 @@ const updateReponse = async (req, res) => {
 
 const SupprimerReponse = async (req, res) => {
   try {
-    const { id, message } = req.body;
+    const { id, message, concerne } = req.body;
     var periode = moment(new Date()).format("MM-YYYY");
     asyncLab.waterfall(
       [
@@ -276,6 +276,7 @@ const SupprimerReponse = async (req, res) => {
             code: demande._id,
             message,
             codeAgent: req.user.codeAgent,
+            concerne,
           })
             .then((message) => {
               if (message) {

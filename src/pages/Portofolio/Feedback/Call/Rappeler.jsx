@@ -84,6 +84,7 @@ function Rappeler() {
               sinon: { texte: "", date: "" },
               sioui: { texte: "", date: "" },
             },
+            unreachable_feedback: "",
             raison_rappel: raison,
             date_to_recall: date,
             contact: numberSelect.join(";"),

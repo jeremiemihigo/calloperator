@@ -1,15 +1,6 @@
-.chats {
-  background-color: #d3d8d7;
-  padding: 10px;
-}
-.chats .agent {
-  background-color: #d3d7ee;
-  border-radius: 20px;
-  margin-left: 40px;
-  margin-top: 5px;
-}
 .chats .co {
-  background-color: #f0f1f3;
+  background-color: #dedede;
+  width: 100%;
   padding: 0px 5px;
   border-radius: 20px;
   margin-top: 5px;

@@ -31,6 +31,7 @@ function SaveComponent({ donner }) {
         feedback,
         type,
         date_to_recall,
+        unreachable_feedback,
         contact,
         fonctionne,
         toutvabien,
@@ -40,7 +41,7 @@ function SaveComponent({ donner }) {
         type === "Reachable" &&
         (fonctionne === "" ||
           (fonctionne === "OUI" &&
-            ((toutvabien?.id === 24 && sioui.texte === "") ||
+            ((toutvabien?.id === "autre" && sioui.texte === "") ||
               toutvabien === "" ||
               sioui.date === "")) ||
           (fonctionne === "NON" && (sinon.texte === "" || sinon.date === "")))
@@ -49,13 +50,15 @@ function SaveComponent({ donner }) {
         setSending(false);
       } else {
         let resultat = {
-          sioui_texte: toutvabien?.id === 24 ? sioui.texte : toutvabien?.title,
+          sioui_texte:
+            toutvabien?.id === "autre" ? sioui.texte : toutvabien?.id,
           sioui_date: sioui.date,
           sinon_date: sinon.date,
           sinon_texte: sinon.texte,
           fonctionne,
           codeclient,
           date_to_recall,
+          unreachable_feedback,
           contact,
           idProjet,
           shop,

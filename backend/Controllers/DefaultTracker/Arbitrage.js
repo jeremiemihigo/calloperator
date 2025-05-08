@@ -56,8 +56,10 @@ const Arbitrage = async (req, res) => {
 const ReadArbitrage = async (req, res) => {
   try {
     const month = moment(new Date()).format("MM-YYYY");
+
     asyncLab.waterfall(
       [
+        // 1. Récupération du rôle
         function (done) {
           ModelRole.aggregate([
             { $match: { idRole: req.user.role } },
@@ -69,43 +71,47 @@ const ReadArbitrage = async (req, res) => {
                 as: "feedback",
               },
             },
-          ]).then((role) => {
-            done(null, role[0]);
-          });
+          ])
+            .then((role) => done(null, role[0]))
+            .catch((err) => done(err));
         },
+
+        // 2. Génération du filtre
         function (role, done) {
-          let idRoles = role.feedback.map(function (x) {
-            return x.idFeedback;
-          });
+          let idRoles = role.feedback.map((x) => x.idFeedback);
+
+          let baseFilter = {
+            feedback: { $in: ["Pending", "Rejected"] },
+          };
 
           if (role.filterBy === "all") {
-            done(null, {
-              feedback: { $in: ["Pending", "Rejected"] },
-              actif: true,
-              month,
-            });
+            return done(null, baseFilter);
           }
+
           if (["region", "shop"].includes(role.filterBy)) {
-            done(null, {
+            return done(null, {
+              ...baseFilter,
               [role.filterBy]: req.user.valueFilter,
-              feedback: { $in: ["Pending", "Rejected"] },
-              actif: true,
               currentFeedback: { $in: idRoles },
-              month,
             });
           }
+
           if (role.filterBy === "currentFeedback") {
-            done(null, {
-              feedback: { $in: ["Pending", "Rejected"] },
-              actif: true,
+            return done(null, {
+              ...baseFilter,
               currentFeedback: { $in: idRoles },
-              month,
             });
           }
+
+          // Par défaut si aucun cas ne matche
+          return done(null, baseFilter);
         },
+
+        // 3. Requête principale
         function (filter, done) {
           ModelClient.aggregate([
-            { $match: filter },
+            { $match: { month, actif: true } },
+
             {
               $lookup: {
                 from: "tfeedbacks",
@@ -122,9 +128,7 @@ const ReadArbitrage = async (req, res) => {
                 as: "fchangeto",
               },
             },
-
             { $unwind: "$currentfeedback" },
-            { $unwind: "$fchangeto" },
             {
               $lookup: {
                 from: "roles",
@@ -134,9 +138,78 @@ const ReadArbitrage = async (req, res) => {
               },
             },
             {
+              $lookup: {
+                from: "rapports",
+                localField: "codeclient",
+                foreignField: "codeclient",
+                as: "visites",
+              },
+            },
+            {
+              $lookup: {
+                from: "pfeedback_calls",
+                let: { codeclient: "$codeclient" },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: {
+                        $and: [
+                          { $eq: ["$codeclient", "$$codeclient"] },
+                          { $eq: ["$type", "Reachable"] },
+                        ],
+                      },
+                    },
+                  },
+                ],
+                as: "appelles",
+              },
+            },
+            {
+              $addFields: {
+                derniereVisite: {
+                  $arrayElemAt: [{ $reverseArray: "$visites" }, 0],
+                },
+                derniereappel: {
+                  $arrayElemAt: [{ $reverseArray: "$appelles" }, 0],
+                },
+              },
+            },
+            {
+              $lookup: {
+                from: "feedbacks",
+                localField: "derniereappel.sioui_texte",
+                foreignField: "id",
+                as: "feedbackinfo",
+              },
+            },
+            {
               $addFields: {
                 id: "$_id",
                 codeclient: "$codeclient",
+                visite: "$derniereVisite.demande.raison",
+                appel: "$derniereappel.sioui_texte",
+                matchappelvisite: {
+                  $cond: {
+                    if: {
+                      $and: [
+                        {
+                          $ne: ["$derniereVisite", null],
+                        },
+                        {
+                          $ne: ["$derniereappel", null],
+                        },
+                        {
+                          $eq: [
+                            "$derniereVisite.demande.raison",
+                            "$derniereappel.sioui_texte",
+                          ],
+                        },
+                      ],
+                    },
+                    then: true,
+                    else: false,
+                  },
+                },
                 shop: "$shop",
                 nomclient: "$nomclient",
                 currentTitle: "$currentfeedback.title",
@@ -150,41 +223,58 @@ const ReadArbitrage = async (req, res) => {
               },
             },
             {
+              $match: {
+                $or: [
+                  {
+                    matchappelvisite: true,
+                    visite: { $exists: true },
+                    appel: { $exists: true },
+                  },
+                  filter,
+                ],
+              },
+            },
+            {
               $project: {
                 id: 1,
                 codeclient: 1,
                 currentTitle: 1,
+                matchappelvisite: 1,
                 changetotitle: 1,
+                visite: 1,
+                appel: 1,
                 shop: 1,
                 nomclient: 1,
                 currentfeedback: 1,
+                feedbackinfo: 1,
                 current_incharge: 1,
                 changeto: 1,
                 par: 1,
                 submitedBy: 1,
-                feedback: 1,
+                feedback: "Pending",
               },
             },
           ])
-            .then((result) => {
-              done(result);
-            })
-            .catch(function (error) {
-              console.log(error);
-            });
+            .then((result) => done(null, result))
+            .catch((err) => done(err));
         },
       ],
-      function (result) {
-        if (result) {
-          return res.status(200).json(result);
-        } else {
+      function (err, result) {
+        if (err) {
+          console.error(err);
+          return res
+            .status(500)
+            .json({ error: "Erreur lors de l'exécution de la requête." });
         }
+        return res.status(200).json(result);
       }
     );
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    return res.status(500).json({ error: "Erreur serveur inattendue." });
   }
 };
+
 const Arbitrage_File = async (req, res) => {
   try {
     const { data } = req.body;

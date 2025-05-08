@@ -11,6 +11,8 @@ const initialState = {
   readAgentError: "",
   otherUpdated: "",
   otherUpdatedError: "",
+  ajoutershop: "",
+  ajoutershopError: "",
 };
 export const ReadAgentAdmin = createAsyncThunk(
   "agentAdmin/ReadAgentAdmin",
@@ -52,6 +54,22 @@ export const OtherUpdated = createAsyncThunk(
     }
   }
 );
+export const AjuterShopAgent = createAsyncThunk(
+  "agentAdmin/AjuterShopAgent",
+  async (donner, { rejectWithValue }) => {
+    try {
+      const { idAgent, plainteShop } = donner;
+      const response = await axios.post(
+        `${lien}/ajuterunshop`,
+        { idAgent, plainteShop },
+        config
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
 
 const agent = createSlice({
   name: "agentAdmin",
@@ -67,12 +85,16 @@ const agent = createSlice({
         readAgentError: "",
         otherUpdated: "",
         otherUpdatedError: "",
+        ajoutershop: "",
+        ajoutershopError: "",
       };
     },
     [ReadAgentAdmin.fulfilled]: (state, action) => {
       return {
         ...state,
         agentAdmin: action.payload,
+        ajoutershop: "",
+        ajoutershopError: "",
         addAgent: "",
         addAgentError: "",
         readAgent: "success",
@@ -90,6 +112,8 @@ const agent = createSlice({
         readAgentError: action.payload,
         otherUpdated: "",
         otherUpdatedError: "",
+        ajoutershop: "",
+        ajoutershopError: "",
       };
     },
     [AjouterAgentAdmin.pending]: (state, action) => {
@@ -101,6 +125,8 @@ const agent = createSlice({
         readAgentError: "",
         otherUpdated: "",
         otherUpdatedError: "",
+        ajoutershop: "",
+        ajoutershopError: "",
       };
     },
     [AjouterAgentAdmin.fulfilled]: (state, action) => {
@@ -112,6 +138,8 @@ const agent = createSlice({
         readAgentError: "",
         otherUpdated: "",
         otherUpdatedError: "",
+        ajoutershop: "",
+        ajoutershopError: "",
       };
     },
     [AjouterAgentAdmin.rejected]: (state, action) => {
@@ -123,6 +151,8 @@ const agent = createSlice({
         readAgentError: "",
         otherUpdated: "",
         otherUpdatedError: "",
+        ajoutershop: "",
+        ajoutershopError: "",
       };
     },
     [OtherUpdated.pending]: (state, action) => {
@@ -134,6 +164,8 @@ const agent = createSlice({
         readAgentError: "",
         otherUpdated: "pending",
         otherUpdatedError: "",
+        ajoutershop: "",
+        ajoutershopError: "",
       };
     },
     [OtherUpdated.fulfilled]: (state, action) => {
@@ -148,6 +180,8 @@ const agent = createSlice({
         readAgentError: "",
         otherUpdated: "success",
         otherUpdatedError: "",
+        ajoutershop: "",
+        ajoutershopError: "",
       };
     },
     [OtherUpdated.rejected]: (state, action) => {
@@ -159,6 +193,50 @@ const agent = createSlice({
         readAgentError: "",
         otherUpdated: "rejected",
         otherUpdatedError: action.payload,
+        ajoutershop: "",
+        ajoutershopError: "",
+      };
+    },
+    [AjuterShopAgent.pending]: (state, action) => {
+      return {
+        ...state,
+        addAgent: "",
+        addAgentError: "",
+        readAgent: "",
+        readAgentError: "",
+        otherUpdated: "",
+        otherUpdatedError: "",
+        ajoutershop: "pending",
+        ajoutershopError: "",
+      };
+    },
+    [AjuterShopAgent.fulfilled]: (state, action) => {
+      let l = state.agentAdmin.map((x) =>
+        x._id === action.payload._id ? action.payload : x
+      );
+      return {
+        agentAdmin: l,
+        addAgent: "",
+        addAgentError: "",
+        readAgent: "",
+        readAgentError: "",
+        otherUpdated: "",
+        otherUpdatedError: "",
+        ajoutershop: "success",
+        ajoutershopError: "",
+      };
+    },
+    [AjuterShopAgent.rejected]: (state, action) => {
+      return {
+        ...state,
+        addAgent: "",
+        addAgentError: "",
+        readAgent: "",
+        readAgentError: "",
+        otherUpdated: "",
+        otherUpdatedError: "",
+        ajoutershop: "rejected",
+        ajoutershopError: action.payload,
       };
     },
   },

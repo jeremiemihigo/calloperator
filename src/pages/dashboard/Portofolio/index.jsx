@@ -1,7 +1,7 @@
 import { Grid } from "@mui/material";
 import axios from "axios";
 import NoCustomer from "components/Attente";
-import LoaderGif from "components/LoaderGif";
+import LoadingImage from "Control/Loading";
 import React from "react";
 import { config, portofolio } from "static/Lien";
 import Amount from "./Amount";
@@ -36,10 +36,15 @@ function Index() {
       <Grid
         item
         lg={10}
-        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          width: "100%",
+          justifyContent: "center",
+        }}
       >
         <div>
-          {load && <LoaderGif />}
+          {load && <LoadingImage />}
           {data && !load && <Analyse data={data.analyse} />}
           {message && !load && <NoCustomer texte={message} />}
           <Amount />

@@ -14,6 +14,7 @@ const Region = Loadable(lazy(() => import("pages/Region")));
 const Agent = Loadable(lazy(() => import("pages/Agent")));
 const Statistiques = Loadable(lazy(() => import("pages/Statistique")));
 const Reponse = Loadable(lazy(() => import("pages/Reponse")));
+const Feedback = Loadable(lazy(() => import("pages/Feedback")));
 const Demande = Loadable(lazy(() => import("pages/Demandes")));
 const Rapport = Loadable(lazy(() => import("pages/Rapport")));
 const Access = Loadable(lazy(() => import("pages/Access")));
@@ -81,6 +82,10 @@ const MainRoutes = {
     {
       path: "/search_history",
       element: <Search_history />,
+    },
+    {
+      path: "/feedback",
+      element: <Feedback />,
     },
 
     {

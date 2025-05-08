@@ -9,13 +9,12 @@ import {
 import AutoComplement from "Control/AutoComplet";
 import _ from "lodash";
 import React from "react";
-import { feedback_portefeuille } from "static/database";
 import { ContextFeedback } from "../Context";
 import Question from "./Formular/Question";
 import SaveComponent from "./SaveComponent";
 
 function Joignable() {
-  const { client } = React.useContext(ContextFeedback);
+  const { client, feedback } = React.useContext(ContextFeedback);
   const [phoneNumber, setPhoneNumber] = React.useState([]);
   const [numberSelect, setNumberSelect] = React.useState([]);
   const [fonctionne, setFonctionne] = React.useState("");
@@ -137,12 +136,12 @@ function Joignable() {
               <AutoComplement
                 value={toutvabien}
                 setValue={setToutvabien}
-                options={feedback_portefeuille}
+                options={feedback}
                 title="Feedback"
                 propr="title"
               />
               <div style={{ marginTop: "10px" }}>
-                {toutvabien?.id === 24 && (
+                {toutvabien?.id === "autre" && (
                   <TextField
                     onChange={(event) =>
                       setSiOui({
@@ -181,6 +180,7 @@ function Joignable() {
             date_to_recall: 0,
             toutvabien,
             fonctionne,
+            unreachable_feedback: "",
             contact: numberSelect.join(";"),
           }}
         />

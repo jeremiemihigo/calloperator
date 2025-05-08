@@ -3,7 +3,7 @@
 import axios from "axios";
 import React, { createContext } from "react";
 import { io } from "socket.io-client";
-import { lien_socket, portofolio } from "static/Lien";
+import { config, lien, lien_socket, portofolio } from "static/Lien";
 export const ContextFeedback = createContext();
 
 const Context = (props) => {
@@ -59,7 +59,7 @@ const Context = (props) => {
 
   const clientStat = async () => {
     try {
-      const response = await axios.get(portofolio + "/clientStat");
+      const response = await axios.get(portofolio + "/clientStat", config);
       if (response.status === 200) {
         setStatistique(response.data);
       }
@@ -84,6 +84,20 @@ const Context = (props) => {
       });
     }
   }, [socket]);
+  const [feedback, setFeedback] = React.useState();
+  const loadingFeedback = async () => {
+    try {
+      const response = await axios.get(lien + "/readfeedback/portofolio");
+      if (response.status === 200) {
+        setFeedback(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  React.useEffect(() => {
+    loadingFeedback();
+  }, []);
 
   return (
     <ContextFeedback.Provider
@@ -103,6 +117,7 @@ const Context = (props) => {
         data,
         setData,
         setChecked,
+        feedback,
       }}
     >
       {props.children}

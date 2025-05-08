@@ -1,52 +1,52 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react-hooks/exhaustive-deps */
-import SoundAudio from 'assets/audio/sound.mp3';
-import IconImage from 'assets/images/users/user.svg';
-import _ from 'lodash';
-import React, { createContext, useRef } from 'react';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { io } from 'socket.io-client';
-import { config, lien_issue, lien_socket } from 'static/Lien';
-import Popup from 'static/Popup';
-import axios from '../node_modules/axios/index';
-import './index.css';
+import IconImage from "assets/images/users/user.svg";
+import _ from "lodash";
+import React, { createContext } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { io } from "socket.io-client";
+import { config, lien_issue, lien_socket } from "static/Lien";
+import Popup from "static/Popup";
+import axios from "../node_modules/axios/index";
+import "./index.css";
 export const CreateContexteGlobal = createContext();
 
 const ContexteGlobal = (props) => {
   const [socket, setSocket] = React.useState(null);
   const user = useSelector((state) => state?.user.user);
   const [client, setClient] = React.useState([]);
-  const [resetData, setResetData] = React.useState('');
+  const [resetData, setResetData] = React.useState("");
 
   React.useEffect(() => {
     setSocket(io(lien_socket));
   }, []);
   React.useEffect(() => {
     if (socket !== null && user) {
-      const data = { codeAgent: user.codeAgent, backOffice: user?.backOffice_plainte, nom: user.nom, fonction: 'admin' };
-      socket.emit('newUser', data);
+      const data = {
+        codeAgent: user.codeAgent,
+        backOffice: user?.backOffice_plainte,
+        nom: user.nom,
+        fonction: "admin",
+      };
+      socket.emit("newUser", data);
     }
   }, [socket, user]);
   const navigation = useNavigate();
   const handleLogout = async () => {
-    localStorage.removeItem('auth');
-    navigation('/login');
+    localStorage.removeItem("auth");
+    navigation("/login");
   };
 
   const [nowCall, setNowCall] = React.useState();
   React.useEffect(() => {
     if (socket) {
-      socket.on('plainte', (donner) => {
+      socket.on("plainte", (donner) => {
         setNowCall(donner);
       });
     }
   }, [socket]);
-  const audioRef = useRef(null);
 
-  const playAudio = () => {
-    audioRef.current.play();
-  };
   const fetchAndAdd = () => {
     try {
       if (client && client.length > 0) {
@@ -71,14 +71,15 @@ const ContexteGlobal = (props) => {
   React.useEffect(() => {
     try {
       if (nowCall) {
-        if (user?.backOffice_plainte && nowCall?.operation === 'backoffice') {
+        if (user?.backOffice_plainte && nowCall?.operation === "backoffice") {
           fetchAndAdd();
-          playAudio();
         } else {
           if (
-            user?.fonction === 'superUser' ||
-            (user?.fonction === 'admin' && user?.plainteShop === nowCall?.shop) ||
-            (user?.synchro_shop.length > 0 && user?.synchro_shop.includes(nowCall?.shop)) ||
+            user?.fonction === "superUser" ||
+            (user?.fonction === "admin" &&
+              user?.plainteShop === nowCall?.shop) ||
+            (user?.synchro_shop.length > 0 &&
+              user?.synchro_shop.includes(nowCall?.shop)) ||
             (user?.plainte_callcenter && nowCall?.submitedBy === user?.nom)
           ) {
             fetchAndAdd();
@@ -100,7 +101,7 @@ const ContexteGlobal = (props) => {
   const [user_connect, setDataChange] = React.useState([]);
   React.useEffect(() => {
     if (socket) {
-      socket.on('userConnected', (donner) => {
+      socket.on("userConnected", (donner) => {
         setDataChange(donner);
       });
     }
@@ -110,7 +111,7 @@ const ContexteGlobal = (props) => {
   const [donner, setDonner] = React.useState();
   React.useEffect(() => {
     if (socket) {
-      socket.on('demande', (donner) => {
+      socket.on("demande", (donner) => {
         if (donner._id) {
           setDonner(donner);
         }
@@ -121,7 +122,7 @@ const ContexteGlobal = (props) => {
   React.useEffect(() => {
     if (donner) {
       let all = [...allListe, donner];
-      setData(_.groupBy(all, 'codeZone'));
+      setData(_.groupBy(all, "codeZone"));
     }
   }, [donner]);
 
@@ -134,7 +135,7 @@ const ContexteGlobal = (props) => {
   };
   React.useEffect(() => {
     if (socket) {
-      socket.on('reponse', (donner) => {
+      socket.on("reponse", (donner) => {
         if (donner._id) {
           set_new_Reponse(donner);
         }
@@ -143,7 +144,7 @@ const ContexteGlobal = (props) => {
   }, [socket]);
   React.useEffect(() => {
     if (socket) {
-      socket.on('chat', (donner) => {
+      socket.on("chat", (donner) => {
         if (donner.idDemande) {
           set_new_Reponse(donner);
         }
@@ -154,9 +155,11 @@ const ContexteGlobal = (props) => {
   React.useEffect(() => {
     try {
       if (new_reponse) {
-        let filter = allListe.filter((x) => x.idDemande !== new_reponse.idDemande);
+        let filter = allListe.filter(
+          (x) => x.idDemande !== new_reponse.idDemande
+        );
         setAllListe(filter);
-        setData(_.groupBy(filter, 'codeZone'));
+        setData(_.groupBy(filter, "codeZone"));
         if (new_reponse._id) {
           setReponseNow([new_reponse, ...reponseNow]);
           set_new_Reponse();
@@ -176,7 +179,7 @@ const ContexteGlobal = (props) => {
   const [openPopup, setOpenPopup] = React.useState(false);
   React.useEffect(() => {
     if (socket) {
-      socket.on('message', (donner) => {
+      socket.on("message", (donner) => {
         setMessageAlert(donner);
         setOpenPopup(true);
       });
@@ -224,24 +227,26 @@ const ContexteGlobal = (props) => {
         allListe,
         setAllListe,
         setDemande,
-        reponseNow
+        reponseNow,
       }}
     >
-      <audio id="video" ref={audioRef} src={SoundAudio}>
-        <track kind="captions" src="captions.vtt" srcLang="en" label="English" default />
-      </audio>
-
-      <Popup open={openPopup} setOpen={setOpenPopup} title={`ID : ${messageAlert?.plainte?.codeclient}`}>
-        <div style={{ width: '20rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+      <Popup
+        open={openPopup}
+        setOpen={setOpenPopup}
+        title={`ID : ${messageAlert?.plainte?.codeclient}`}
+      >
+        <div style={{ width: "20rem" }}>
+          <div style={{ display: "flex", alignItems: "center" }}>
             <div>
               <img width={20} height={20} src={IconImage} alt="userIcon" />
             </div>
-            <div style={{ display: 'flex', alignContent: 'center' }}>
-              <p style={{ marginLeft: '20px', padding: '0px', margin: '0px' }}>{messageAlert?.agent}</p>
+            <div style={{ display: "flex", alignContent: "center" }}>
+              <p style={{ marginLeft: "20px", padding: "0px", margin: "0px" }}>
+                {messageAlert?.agent}
+              </p>
             </div>
           </div>
-          <div style={{ marginTop: '10px' }}>
+          <div style={{ marginTop: "10px" }}>
             <p>{messageAlert?.content}</p>
           </div>
         </div>

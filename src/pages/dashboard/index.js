@@ -1,5 +1,5 @@
 import { GraphicEq, House } from "@mui/icons-material";
-import { Grid, Paper } from "@mui/material";
+import { Grid, Paper, Typography } from "@mui/material";
 import { Skeleton } from "@mui/material/index";
 import axios from "axios";
 import React from "react";
@@ -14,7 +14,7 @@ function Dashboard() {
   const loadings = async () => {
     try {
       const response = await axios.get(
-        `${big_data}/toutesDemandeAttente/1500`,
+        `${big_data}/toutesDemandeAttente/2000`,
         config
       );
       if (response.status === 201 && response.data === "token expired") {
@@ -35,24 +35,24 @@ function Dashboard() {
   return (
     <>
       <Grid container>
-        <Grid item lg={2} sx={{ padding: "10px" }}>
-          <Paper elevation={2} sx={{ backgroundColo: "rgb(0,169,254)" }}>
+        <Grid item lg={2} xs={12} sx={{ padding: "10px" }}>
+          <Paper elevation={2} sx={{ marginBottom: "5px" }}>
             {attente ? (
-              <p
+              <Typography
                 style={{
                   padding: "10px",
                   fontSize: "12px",
                 }}
+                noWrap
               >
                 {attente > 1
                   ? `${attente} visites sont en attente`
                   : `${attente} visite est en attente`}
-              </p>
+              </Typography>
             ) : (
               <Skeleton type="text" />
             )}
           </Paper>
-
           <Paper
             onClick={() => setSelect(0)}
             sx={select === 0 ? style.papierselect : style.papier}
@@ -82,7 +82,7 @@ function Dashboard() {
             <p style={style.texte}>Portofolio</p>
           </Paper>
         </Grid>
-        <Grid item lg={10}>
+        <Grid item lg={10} xs={12}>
           {select === 0 && <DashboardDefault />}
           {select === 1 && <Analyse />}
           {select === 2 && <Portofolio />}

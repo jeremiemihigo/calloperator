@@ -107,7 +107,7 @@ function DemandeListe() {
 
   const ListeDemande = () => {
     return (
-      <>
+      <div className="lesdemandes">
         {chargement && allListe.length === 0 && (
           <p style={{ textAlign: "center", fontSize: "12px" }}>Chargement...</p>
         )}
@@ -169,7 +169,7 @@ function DemandeListe() {
               </div>
             );
           })}
-      </>
+      </div>
     );
   };
 
@@ -190,4 +190,4 @@ function DemandeListe() {
   );
 }
 
-export default DemandeListe;
+export default React.memo(DemandeListe);

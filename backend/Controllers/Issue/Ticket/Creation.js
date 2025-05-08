@@ -126,6 +126,18 @@ const Soumission_Ticket = async (req, res) => {
               periode: periodes,
               codeclient,
               plainteSelect: plainte,
+              $or: [
+                {
+                  statut: {
+                    $in: [
+                      "resolved",
+                      "Open_technician_visit",
+                      "resolved_awaiting_confirmation",
+                    ],
+                  },
+                },
+                { statut: "Complaint to close", open: true },
+              ],
             })
             .lean()
             .then((client) => {

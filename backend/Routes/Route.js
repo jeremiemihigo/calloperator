@@ -19,11 +19,10 @@ const {
 } = require("../Controllers/Login");
 const {
   demande,
-  DemandeAttente,
   ToutesDemande,
-  ToutesDemandeAgent,
+  // ToutesDemandeAgent,
   lectureDemandeBd,
-  lectureDemandeMobile,
+  // lectureDemandeMobile,
   ToutesDemandeAttente,
   updateDemandeAgent,
   updateDemandeAgentFile,
@@ -129,8 +128,7 @@ router.put("/userAdmin", UpdatePasswordAdmin);
 router.put("/agent", UpdateAgent, ReadAgent);
 
 //Mobiles
-router.get("/demandeReponse/:id", ToutesDemandeAgent);
-router.get("/readDemande", DemandeAttente);
+// router.get("/demandeReponse/:id", ToutesDemandeAgent);
 router.post("/demande", upload.single("file"), demande);
 
 router.post("/demandeAgentAll", protect, lectureDemandeBd);
@@ -139,7 +137,7 @@ router.post("/login", login);
 router.post("/loginUserAdmin", LoginAgentAdmin);
 
 //Lien après presentation du systeme
-router.get("/demandeAll/:lot/:codeAgent", lectureDemandeMobile);
+// router.get("/demandeAll/:lot/:codeAgent", lectureDemandeMobile);
 router.get("/paquet", protectTech, readPeriodeGroup);
 // router.get('/lot', searchPaquet)
 router.get("/demandePourChaquePeriode", protect, demandePourChaquePeriode);
@@ -161,6 +159,7 @@ const { AddShop, ReadShop, UpdateOneField } = require("../Controllers/Shop");
 const {
   set_Plainte_Shop,
   set_ModelAgentAdmin,
+  AjouterUnShop,
 } = require("../Controllers/Permission");
 const {
   Communication,
@@ -171,6 +170,11 @@ const {
 } = require("../Controllers/Communication");
 const { ReadCorbeille } = require("../Controllers/Corbeille");
 const { AnalyseVisites } = require("../Controllers/Dashboard");
+const {
+  AddFeedback,
+  ReadFeedback,
+  EditFeedbackVmPortofolio,
+} = require("../Controllers/Feedback");
 
 //Shop
 router.post("/shop", AddShop, ReadShop);
@@ -205,6 +209,7 @@ router.post("/contact", protect, ContactClient);
 
 router.post("/setplainteshop", protect, set_Plainte_Shop);
 router.post("/edituseradminInfo", protect, set_ModelAgentAdmin);
+router.post("/ajuterunshop", protect, AjouterUnShop);
 
 router.get("/call_today", Call_ToDay);
 router.post("/refresh_payment", protect, Refresh_Payment);
@@ -215,12 +220,14 @@ router.delete("/communication/:id", protect, DeleteCommuniquer);
 router.put("/communication", protect, UpdateCommuniquer);
 router.get("/get_corbeille", protect, ReadCorbeille);
 router.post("/deletedemande", protect, SupprimerReponse);
-
 router.post("/setFeedback", protect, SetFeedback);
 router.get("/readParametre", protect, ReadParametre);
 router.post("/deleteOneItem", protect, DeleteOneItem);
-
 router.post("/analyseVisites", protect, AnalyseVisites);
+
+router.post("/addfeedback", protect, AddFeedback);
+router.get("/readfeedback/:plateforme", ReadFeedback);
+router.put("/editfeedback", protect, EditFeedbackVmPortofolio);
 
 //-------------------------------------Conge-------------------------------------
 

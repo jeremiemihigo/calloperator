@@ -152,9 +152,61 @@ const ClientStat = async (req, res) => {
     );
   } catch (error) {}
 };
+const dataupload = async (req, res) => {
+  try {
+    const month = moment(new Date()).format("MM-YYYY");
+    const response = await ModelDatabase.find(
+      { month },
+      {
+        id: "$_id",
+        codeclient: 1,
+        region: 1,
+        shop: 1,
+        customer_name: 1,
+        par: 1,
+        status: 1,
+        etat: 1,
+        dailyrate: 1,
+        weeklyrate: 1,
+        monthlyrate: 1,
+        month: 1,
+        first_number: 1,
+        second_number: 1,
+        payment_number: 1,
+      }
+    ).lean();
+    return res.status(200).json(response);
+  } catch (error) {}
+};
+const deleteupload = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const response = await ModelDatabase.findByIdAndDelete(id);
+    return res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const editoneupload = async (req, res) => {
+  try {
+    const { data, id } = req.body;
+    const response = await ModelDatabase.findByIdAndUpdate(
+      id,
+      { $set: data },
+      { new: true }
+    );
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(201).json(error.message);
+  }
+};
 module.exports = {
   PDatabase,
+  editoneupload,
   ReadByFilter,
   ReadCustomerToTrack,
+  deleteupload,
   ClientStat,
+  dataupload,
 };

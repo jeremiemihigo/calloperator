@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-undef
 
-const serverhost = 'https://visitetestapp.bboxxvm.com';
-//const serverhost = 'http://localhost:5000';
+//const serverhost = 'https://visitemenagesbackend.bboxxvm.com';
+const serverhost = 'http://localhost:5000';
 export const puls_img = 'https://pulse.bboxx.com/v2/assets/animations/loader.gif';
 export const lien_socket = serverhost;
 export const lien_post = `${serverhost}/bboxx/support`;
@@ -10,7 +10,7 @@ export const lien_read = `${serverhost}/bboxx/support`;
 export const lien_readclient = `${serverhost}/bboxx/support`;
 export const lien_update = `${serverhost}/bboxx/support`;
 export const lien_dash = `${serverhost}/bboxx/dashboard`;
-export const lien_image = `https://visitetestapp.bboxxvm.com/bboxx/image`;
+export const lien_image = `https://visitemenagesbackend.bboxxvm.com/bboxx/image`;
 export const config = {
   headers: {
     'Content-Type': 'Application/json',

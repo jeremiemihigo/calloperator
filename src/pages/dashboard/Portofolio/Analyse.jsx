@@ -1,5 +1,6 @@
 import { Paper } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
+import { tronquerDecimales } from "static/Lien";
 
 function Analyse({ data }) {
   const columns = [
@@ -33,7 +34,7 @@ function Analyse({ data }) {
       width: 100,
       editable: false,
       renderCell: (params) => {
-        return `$${params.row.cash}`;
+        return `$${tronquerDecimales(params.row.cash)}`;
       },
     },
     {

@@ -78,7 +78,8 @@ const ActionAppel = async (req, res) => {
             return {
               agent,
               id: key,
-              cash: _.filter(agents_amount, { codeAgent: agent })[0]?.amount,
+              cash:
+                _.filter(agents_amount, { codeAgent: agent })[0]?.amount || 0,
               nbre_appel: _.filter(result, { agent }).length,
               non_action: result.filter(
                 (x) => x.agent === agent && x.reactivation.length === 0
@@ -95,6 +96,7 @@ const ActionAppel = async (req, res) => {
               ).toFixed(0),
             };
           });
+
           analyse.push({
             agent: "Total",
             id: analyse.length + 1,
@@ -154,4 +156,5 @@ const SeachAmount = async (req, res) => {
     console.log(error);
   }
 };
+
 module.exports = { ActionAppel, SeachAmount };

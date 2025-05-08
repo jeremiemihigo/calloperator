@@ -5,11 +5,11 @@ import DirectionSnackbar from "Control/SnackBar";
 import React from "react";
 import { config, portofolio } from "static/Lien";
 import * as xlsx from "xlsx";
+import UploadData from "../Data/Upload";
 import "./upload.style.css";
 
 function UploadClient() {
   const [data, setData] = React.useState();
-
   const [sending, setSending] = React.useState(false);
   const column = [
     "codeclient",
@@ -17,6 +17,7 @@ function UploadClient() {
     "region",
     "first_number",
     "second_number",
+    "total_paid",
     "payment_number",
     "shop",
     "status",
@@ -43,15 +44,16 @@ function UploadClient() {
           let nexistepas = column.filter((x) => !cleFile.includes(x));
           let vrai = json.map((x) => {
             return {
-              codeclient: x.codeclient.trim(),
-              customer_name: x.customer_name.trim(),
-              region: x.region.trim(),
-              shop: x.shop.trim(),
-              status: x.status.trim(),
-              par: x.par.trim(),
+              codeclient: x.codeclient,
+              customer_name: x.customer_name,
+              region: x.region,
+              shop: x.shop,
+              status: x.status,
+              par: x.par,
               dailyrate: x.dailyrate,
               weeklyrate: x.weeklyrate,
               monthlyrate: x.monthlyrate,
+              total_paid: x.total_paid,
               first_number: x.first_number ? x.first_number : "",
               second_number: x.second_number ? x.second_number : "",
               payment_number: x.payment_number ? x.payment_number : "",
@@ -68,6 +70,17 @@ function UploadClient() {
                 !x.status
             ).length > 0
           ) {
+            console.log(
+              vrai.filter(
+                (x) =>
+                  !x.first_number ||
+                  !x.codeclient ||
+                  !x.customer_name ||
+                  !x.region ||
+                  !x.shop ||
+                  !x.status
+              )
+            );
             setMessage("Le champs ayant l'asterisque ne doit pas etre vide");
             setSending(false);
           } else if (nexistepas.length > 0) {
@@ -108,14 +121,10 @@ function UploadClient() {
   };
   return (
     <>
-      <Grid container>
-        <Grid item lg={6} className="p_display">
-          <p>Le fichier doit inclure ces colonnes avec une écriture uniforme</p>
-        </Grid>
-      </Grid>
+      <Grid container></Grid>
       {message && <DirectionSnackbar message={message} />}
       {sending && (
-        <SimpleBackdrop open={sending} title="Chargement..." taille="10rem" />
+        <SimpleBackdrop open={sending} title="Please wait..." taille="10rem" />
       )}
       {!sending && (
         <Grid item lg={3} xs={12} sm={6} md={6} sx={{ margin: "10px" }}>
@@ -168,10 +177,11 @@ function UploadClient() {
             <td>dailyrate</td>
             <td>weeklyrate</td>
             <td>monthlyrate</td>
+            <td>total_paid</td>
           </tr>
         </thead>
 
-        {data && data.length > 0 ? (
+        {data && data.length > 0 && (
           <tbody>
             {data.map((index, key) => {
               return (
@@ -188,26 +198,10 @@ function UploadClient() {
                   <td>{index.dailyrate}</td>
                   <td>{index.weeklyrate}</td>
                   <td>{index.monthlyrate}</td>
+                  <td>{index.total_paid}</td>
                 </tr>
               );
             })}
-          </tbody>
-        ) : (
-          <tbody>
-            <tr>
-              <td>Code client</td>
-              <td>Nom du client</td>
-              <td>Statut du client (late ou default)</td>
-              <td>Region du client</td>
-              <td>Shop du client</td>
-              <td>Premier numero de telephone du client </td>
-              <td>Deuxieme numero de telephone du client </td>
-              <td>Troisieme numero de telephone du client </td>
-              <td>Par</td>
-              <td>Dailyrate</td>
-              <td>Weeklyrate</td>
-              <td>Monthlyrate</td>
-            </tr>
           </tbody>
         )}
       </table>
@@ -233,6 +227,7 @@ function UploadClient() {
           <CircularProgress size={15} />
         </div>
       )}
+      {!data && <UploadData />}
     </>
   );
 }

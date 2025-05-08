@@ -7,7 +7,9 @@ import ChangeByExcel from 'components/ChangeByExcel';
 import ExcelFile from 'components/ExcelFile';
 import LoaderGif from 'components/LoaderGif';
 import NoCustomer from 'components/NoCustomer';
+import _ from 'lodash';
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { config, lien_dt } from 'static/Lien';
 import Popup from 'static/Popup';
@@ -33,6 +35,7 @@ function Index() {
     try {
       setLoading(true);
       const response = await axios.get(lien_dt + '/arbitrage', config);
+      console.log(response);
       if (response.data === 'token expired') {
         logout();
       }
@@ -51,11 +54,26 @@ function Index() {
   React.useEffect(() => {
     loadingData();
   }, []);
+  const feedporto = useSelector((state) => state.feedportovm.feedback);
+  const returnFeedback = (id) => {
+    if (_.filter(feedporto, { id }).length > 0) {
+      return _.filter(feedporto, { id })[0].title;
+    } else {
+      return id;
+    }
+  };
+  const returnDt = (row) => {
+    if (row.appel && row.visite && row.appel === row.visite && _.filter(feedporto, { id: row.appel }).length > 0) {
+      return _.filter(feedporto, { id: row.appel })[0].feeddt[0].title;
+    } else {
+      return row.changetotitle;
+    }
+  };
   const columns = [
     {
       field: 'codeclient',
       headerName: 'customer ID',
-      width: 120,
+      width: 110,
       editable: false
     },
     {
@@ -88,6 +106,25 @@ function Index() {
       }
     },
     {
+      field: 'appel',
+      headerName: 'Appel',
+      width: 150,
+      editable: false,
+      renderCell: (p) => {
+        return <Dot texte={returnFeedback(p.row.appel)} />;
+      }
+    },
+    {
+      field: 'visite',
+      headerName: 'Visite',
+      width: 150,
+      editable: false,
+      renderCell: (p) => {
+        return <Dot texte={returnFeedback(p.row.visite)} />;
+      }
+    },
+
+    {
       field: 'currentTitle',
       headerName: 'current_Feedback',
       width: 180,
@@ -97,7 +134,10 @@ function Index() {
       field: 'changetotitle',
       headerName: 'Next_feedback',
       width: 180,
-      editable: false
+      editable: false,
+      renderCell: (p) => {
+        return <>{returnDt(p.row, 'dt')}</>;
+      }
     },
     {
       field: 'submitedBy',

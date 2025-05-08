@@ -4,6 +4,7 @@ import { configureStore } from '@reduxjs/toolkit';
 // project import
 import { Readagent } from 'Redux/agent';
 import { Readfeedback } from 'Redux/feedback';
+import { ReadfeedbackPortoVm } from 'Redux/feedbackvmportof';
 import { ReadMesfeedback } from 'Redux/mesfeedback';
 import { Readparametre } from 'Redux/parametre';
 import { Readrole } from 'Redux/Role';
@@ -27,5 +28,6 @@ dispatch(Readrole());
 dispatch(ReadAllZone());
 dispatch(ReadMesfeedback());
 dispatch(ReadShop());
+dispatch(ReadfeedbackPortoVm());
 
 export { dispatch, store };

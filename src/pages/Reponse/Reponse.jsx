@@ -236,6 +236,8 @@ function ReponseComponent() {
                               >
                                 <Space>
                                   <Image
+                                    height={150}
+                                    width={200}
                                     style={{ width: "100%", heigth: "100%" }}
                                     src={`${lien_image}/${index.demande?.file}`}
                                     placeholder={

@@ -142,43 +142,7 @@ const demande = async (req, res) => {
     return res.status(201).json("Erreur");
   }
 };
-const DemandeAttente = async (req, res) => {
-  try {
-    const { id, valide } = req.params;
-    let value = valide === "1" ? true : false;
 
-    modelDemande
-      .aggregate([
-        { $match: { codeAgent: id, valide: value } },
-        {
-          $lookup: {
-            from: "agents",
-            localField: "codeAgent",
-            foreignField: "codeAgent",
-            as: "agent",
-          },
-        },
-        {
-          $lookup: {
-            from: "zones",
-            localField: "codeZone",
-            foreignField: "idZone",
-            as: "zone",
-          },
-        },
-        { $unwind: "$agent" },
-        { $unwind: "$zone" },
-      ])
-      .then((response) => {
-        return res.status(200).json(response);
-      })
-      .catch(function (err) {
-        console.log(err);
-      });
-  } catch (error) {
-    console.log(error);
-  }
-};
 const ToutesDemande = async (req, res) => {
   var periode = moment(new Date()).format("MM-YYYY");
   try {
@@ -208,39 +172,40 @@ const ToutesDemande = async (req, res) => {
     console.log(error);
   }
 };
-const ToutesDemandeAgent = async (req, res) => {
-  try {
-    const { id } = req.params;
-    modelDemande
-      .aggregate([
-        { $match: { codeAgent: id } },
-        {
-          $lookup: {
-            from: "reponses",
-            localField: "idDemande",
-            foreignField: "idDemande",
-            as: "reponse",
-          },
-        },
-        {
-          $lookup: {
-            from: "reclamation",
-            localField: "idDemande",
-            foreignField: "idDemande",
-            as: "conversation",
-          },
-        },
-      ])
-      .then((response) => {
-        return res.status(200).json(response);
-      })
-      .catch(function (err) {
-        console.log(err);
-      });
-  } catch (error) {
-    console.log(error);
-  }
-};
+// const ToutesDemandeAgent = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     modelDemande
+//       .aggregate([
+//         { $match: { codeAgent: id } },
+//         {
+//           $lookup: {
+//             from: "reponses",
+//             localField: "idDemande",
+//             foreignField: "idDemande",
+//             as: "reponse",
+//           },
+//         },
+//         {
+//           $lookup: {
+//             from: "reclamation",
+//             localField: "idDemande",
+//             foreignField: "idDemande",
+//             as: "conversation",
+//           },
+//         },
+//       ])
+//       .then((response) => {
+//         return res.status(200).json(response);
+//       })
+//       .catch(function (err) {
+//         console.log(err);
+//       });
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+
 const lectureDemandeBd = async (req, res) => {
   try {
     const { data, debut, fin } = req.body;
@@ -334,55 +299,56 @@ const lectureDemandeBd = async (req, res) => {
     console.log(error);
   }
 };
-const lectureDemandeMobile = async (req, res) => {
-  try {
-    const { lot, codeAgent } = req.params;
-    let match = {
-      $match: { lot, codeAgent },
-    };
-    modelDemande
-      .aggregate([
-        match,
-        {
-          $lookup: {
-            from: "reponses",
-            localField: "idDemande",
-            foreignField: "idDemande",
-            as: "reponse",
-          },
-        },
-        {
-          $lookup: {
-            from: "conversations",
-            localField: "_id",
-            foreignField: "code",
-            as: "conversation",
-          },
-        },
-        {
-          $lookup: {
-            from: "agents",
-            localField: "codeAgent",
-            foreignField: "codeAgent",
-            as: "agent",
-          },
-        },
-        {
-          $unwind: "$agent",
-        },
-      ])
-      .then((response) => {
-        if (response) {
-          return res.status(200).json(response.reverse());
-        }
-      });
-  } catch (error) {
-    console.log(error);
-  }
-};
+// const lectureDemandeMobile = async (req, res) => {
+// try {
+//   const { lot, codeAgent } = req.params;
+//   let match = {
+//     $match: { lot, codeAgent },
+//   };
+//   modelDemande
+//     .aggregate([
+//       match,
+//       {
+//         $lookup: {
+//           from: "reponses",
+//           localField: "idDemande",
+//           foreignField: "idDemande",
+//           as: "reponse",
+//         },
+//       },
+//       {
+//         $lookup: {
+//           from: "conversations",
+//           localField: "_id",
+//           foreignField: "code",
+//           as: "conversation",
+//         },
+//       },
+//       {
+//         $lookup: {
+//           from: "agents",
+//           localField: "codeAgent",
+//           foreignField: "codeAgent",
+//           as: "agent",
+//         },
+//       },
+//       {
+//         $unwind: "$agent",
+//       },
+//     ])
+//     .then((response) => {
+//       if (response) {
+//         return res.status(200).json(response.reverse());
+//       }
+//     });
+// } catch (error) {
+//   console.log(error);
+// }
+// };
 const ToutesDemandeAttente = async (req, res) => {
   try {
     var periode = moment(new Date()).format("MM-YYYY");
+    const { limit } = req.params;
     asyncLab.waterfall(
       [
         function (done) {
@@ -403,6 +369,7 @@ const ToutesDemandeAttente = async (req, res) => {
                   as: "conversation",
                 },
               },
+              { $limit: parseInt(limit) === 100 ? 100 : 2000 },
             ])
             .then((response) => {
               if (response.length > 0) {
@@ -682,9 +649,9 @@ module.exports = {
   R_Insert_Updated,
   updateDemandeAgentFile,
   updateDemandeAgent,
-  DemandeAttente,
+  // DemandeAttente,
   lectureDemandeBd,
-  lectureDemandeMobile,
+  // lectureDemandeMobile,
   ToutesDemande,
-  ToutesDemandeAgent,
+  // ToutesDemandeAgent,
 };

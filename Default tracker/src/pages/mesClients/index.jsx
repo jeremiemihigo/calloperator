@@ -16,7 +16,6 @@ import AddAction from './AddAction';
 import Options from './ChangeStatus';
 import Chargement from './Chargement';
 import Agent from './Modification/Agent';
-import Appel from './Modification/Appel';
 import VisiteMenage from './Modification/VisiteMenage';
 import './mesclient.style.css';
 
@@ -59,7 +58,7 @@ function Index() {
         data['tfeedback.idRole'] = departement;
       }
       const response = await axios.post(lien_dt + '/lienclient', { data, defaultv, taille: { $lte: 0 } }, config);
-
+      console.log(response);
       if (response.status === 200) {
         setClient(response.data.client);
         setDateServer(response.data.dateServer);
@@ -102,7 +101,7 @@ function Index() {
           shop: x.shop,
           action: x.action,
           currentFeedback: x.tfeedback?.title,
-          feedback_call: x.appel ? x.appel : 'no_calls',
+          feedback_call: x?.derniereappel?.sioui_texte || 'no_calls',
           last_vm: x?.derniereVisite ? x.derniereVisite.demande.raison : 'no_visits',
           visited_by: willBeVisitedBy(x.objectif),
           sla: x.tfeedback.delai * 1440,
@@ -123,7 +122,6 @@ function Index() {
   }, [client]);
 
   const [openAgent, setOpenAgent] = React.useState(false);
-  const [openAppel, setOpenAppel] = React.useState(false);
   const [openvisite, setOpenVisite] = React.useState(false);
   const [openAction, setOpenAction] = React.useState(false);
   const [types, setType] = React.useState('');
@@ -131,9 +129,6 @@ function Index() {
   const editOne = (type, data) => {
     if (type === 'agent') {
       setOpenAgent(true);
-    }
-    if (type === 'appel') {
-      setOpenAppel(true);
     }
     if (type === 'visite') {
       setOpenVisite(true);
@@ -267,7 +262,7 @@ function Index() {
       width: 250,
       editable: false,
       renderCell: (p) => {
-        return <Dot onClick={() => editOne('appel', p.row)} texte={p.row.feedback_call} />;
+        return <Dot texte={p.row.feedback_call} />;
       }
     },
 
@@ -387,7 +382,6 @@ function Index() {
         {data && !loading && data.length > 0 && (
           <div className="excelFile">
             <ChangeByExcel texte="Export in Excel" onClick={(e) => StructureDataExcel(e)} />
-            <ChangeByExcel texte="Import Feedback calls" onClick={() => changeDirection('/import_excel_call')} />
             <ChangeByExcel texte="Import actions" onClick={() => changeDirection('/change_action_excel')} />
             <ChangeByExcel texte="Change status" onClick={() => changeDirection('/change_status_excel')} />
             <ChangeByExcel texte="Import decisions" onClick={() => changeDirection('/change_decision_excel')} />
@@ -418,12 +412,6 @@ function Index() {
       {dataedit && openAgent && (
         <Popup open={openAgent} setOpen={setOpenAgent} title={`Edit agent for customer ${dataedit?.codeclient}`}>
           <Agent data={dataedit} fetchData={fetchData} />
-        </Popup>
-      )}
-
-      {dataedit && openAppel && (
-        <Popup open={openAppel} setOpen={setOpenAppel} title={`Edit feedback call for customer ${dataedit?.codeclient}`}>
-          <Appel data={dataedit} fetchData={fetchData} />
         </Popup>
       )}
 

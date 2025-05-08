@@ -19,7 +19,6 @@ const {
   ReadClientAfterChange,
   ReadCertainClient,
   ReadFilterClient,
-  EditFeedbackAppel,
 } = require("../Controllers/DefaultTracker/Client");
 const {
   Rapport,
@@ -81,7 +80,6 @@ router.post("/appel", protect, Appel);
 router.post("/objectif", protect, AddObjectif);
 router.put("/objectif", protect, EditObjectif);
 router.put("/edit_feeback_vm", protect, EditFeedbackVM);
-router.put("/edit_appel", EditFeedbackAppel);
 
 //Dashboard
 router.get("/rapport", Rapport);

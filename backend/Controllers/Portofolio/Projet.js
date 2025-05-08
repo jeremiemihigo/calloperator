@@ -1,76 +1,9 @@
-const ModelProjet = require("../../Models/Portofolio/PProjet");
 const ModelFeedback = require("../../Models/Portofolio/PFeedback");
 const asyncLab = require("async");
 const _ = require("lodash");
 const moment = require("moment");
 const ModelCorbeille = require("../../Models/Corbeille");
 
-const ReadProjet = async (req, res) => {
-  try {
-    const { fonction, codeAgent } = req.user;
-    let match = fonction === "superUser" ? {} : { intervenant: codeAgent };
-    ModelProjet.aggregate([
-      { $match: match },
-      {
-        $lookup: {
-          from: "agentadmins",
-          localField: "intervenant",
-          foreignField: "codeAgent",
-          as: "agents",
-        },
-      },
-      {
-        $lookup: {
-          from: "pdatabases",
-          localField: "id",
-          foreignField: "idProjet",
-          as: "database",
-        },
-      },
-      {
-        $lookup: {
-          from: "pfeedback_calls",
-          localField: "id",
-          foreignField: "idProjet",
-          as: "feedback",
-        },
-      },
-      {
-        $lookup: {
-          from: "pformulaires",
-          localField: "idFormulaire",
-          foreignField: "idFormulaire",
-          as: "formulaire",
-        },
-      },
-      { $unwind: "$formulaire" },
-      {
-        $lookup: {
-          from: "pquestions",
-          localField: "idFormulaire",
-          foreignField: "idFormulaire",
-          as: "questions",
-        },
-      },
-      {
-        $project: {
-          feedback: 1,
-          database: 1,
-          formulaire: 1,
-          id: 1,
-          agents: 1,
-          idFormulaire: 1,
-          questions: 1,
-          title: 1,
-        },
-      },
-    ]).then((result) => {
-      return res.status(200).json(result.reverse());
-    });
-  } catch (error) {
-    return res.status(404).json("Error " + error.message);
-  }
-};
 const RapportPortofolio = async (req, res) => {
   try {
     const { debut, fin } = req.body;
@@ -101,12 +34,17 @@ const RapportPortofolio = async (req, res) => {
         id: "texte",
         title:
           "Si tout va bien chez vous, Monsieur / Madame, nous aurons besoin de savoir la raison du non-paiement de votre Kit solaire BBOXX.",
-        value: "sioui_texte",
+        value: "sioutexte",
       },
       {
         id: "date",
         title: "Et vous comptez vous réactiver quand?",
         value: "sioui_date",
+      },
+      {
+        id: "texte",
+        title: "Feedback_Injoignable",
+        value: "unreachable_feedback",
       },
     ];
 
@@ -128,9 +66,30 @@ const RapportPortofolio = async (req, res) => {
         function (resul, done) {
           const beginDate = new Date(debut).getTime();
           const endDate = new Date(fin).getTime();
-          ModelFeedback.find({
-            dateSave: { $gte: beginDate, $lte: endDate },
-          })
+          ModelFeedback.aggregate([
+            { $match: { dateSave: { $gte: beginDate, $lte: endDate } } },
+            {
+              $lookup: {
+                from: "feedbacks",
+                localField: "sioui_texte",
+                foreignField: "id",
+                as: "feedback",
+              },
+            },
+            {
+              $addFields: {
+                sioutexte: {
+                  $cond: {
+                    if: {
+                      $lte: [{ $size: "$feedback" }, 0],
+                    },
+                    then: "$sioui_texte",
+                    else: { $arrayElemAt: ["$feedback.title", 0] },
+                  },
+                },
+              },
+            },
+          ])
             .then((result) => {
               done(null, result);
             })
@@ -169,7 +128,7 @@ const RapportPortofolio = async (req, res) => {
                         "YYYY-MM-DD"
                       )
                     : 0
-                  : resultat[i][title[y].value];
+                  : resultat[i][title[y]?.value];
             }
             tablefinal.push(table[0]);
             table = [];
@@ -201,4 +160,4 @@ const AnalyseToDay = async (req, res) => {
     console.log(error.message);
   }
 };
-module.exports = { AnalyseToDay, RapportPortofolio, ReadProjet };
+module.exports = { AnalyseToDay, RapportPortofolio };

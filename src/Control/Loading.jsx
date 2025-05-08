@@ -1,9 +1,27 @@
-import { puls_img } from 'static/Lien';
+import { CircularProgress } from "@mui/material";
 
 function LoadingImage() {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <img src={puls_img} alt="chargement_image" />
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: "5px",
+          }}
+        >
+          <CircularProgress size={20} />
+        </div>
+        <p style={{ padding: "0px", margin: "0px" }}>Loading...</p>
+      </div>
     </div>
   );
 }

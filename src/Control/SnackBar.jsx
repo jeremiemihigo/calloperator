@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
-import Snackbar from '@mui/material/Snackbar';
-import React from 'react';
+import Snackbar from "@mui/material/Snackbar";
+import React from "react";
 
 function DirectionSnackbar(props) {
   const { message } = props;
@@ -13,7 +13,7 @@ function DirectionSnackbar(props) {
   return (
     <div>
       <Snackbar
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         open={open}
         onClose={handleClose}
         message={message}

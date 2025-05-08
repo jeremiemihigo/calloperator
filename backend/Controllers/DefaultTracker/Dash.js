@@ -230,7 +230,6 @@ const Analyse_Dash_All = async (req, res) => {
   try {
     const { recherche, date } = req.body;
     let data = { ...recherche, active: true };
-    console.log(req.body);
 
     const currentDate = new Date(date);
     currentDate.setDate(1);
@@ -239,8 +238,6 @@ const Analyse_Dash_All = async (req, res) => {
     const lastNowDate = new Date(l);
     const today = new Date(new Date(date).toISOString().split("T")[0]);
     const month = moment().format("MM-YYYY");
-
-    console.log(lastNowDate, today);
 
     asyncLab.waterfall(
       [
@@ -387,7 +384,6 @@ const Analyse_Dash_All = async (req, res) => {
             })
             .catch((err) => {
               console.log(err);
-              console.error("Erreur lors de l'aggregation des données :", err);
               res.status(500).json({ error: "Erreur interne du serveur" });
             });
         },
@@ -397,7 +393,6 @@ const Analyse_Dash_All = async (req, res) => {
       }
     );
   } catch (error) {
-    console.error("Erreur générale :", error);
     res.status(500).json({ error: "Erreur interne du serveur" });
   }
 };

@@ -1,19 +1,19 @@
-import { CircularProgress, Grid, Typography } from '@mui/material';
-import { CreateContexteGlobal } from 'GlobalContext';
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { CreateContexteTable } from './Contexte';
-import Dashboard from './Dashboard';
-import DetailPlainte from './DetailPlainte';
-import IndexForm from './IndexForm';
-import './style.css';
-import BackOffice from './Table/BackOffice';
-import Conversation from './Table/Conversation';
-import CreateComplaint from './Table/CreateComplaint';
-import MyBackOffice from './Table/MyBackOffice';
-import Recherche from './Table/Recherche';
-import ThisMonth from './Table/ThisMonth';
-import ThisMonth_Tech from './Table/ThisMonth_Tech';
+import { CircularProgress, Grid, Typography } from "@mui/material";
+import { CreateContexteGlobal } from "GlobalContext";
+import React from "react";
+import { useSelector } from "react-redux";
+import { CreateContexteTable } from "./Contexte";
+import Dashboard from "./Dashboard";
+import DetailPlainte from "./DetailPlainte";
+import IndexForm from "./IndexForm";
+import "./style.css";
+import BackOffice from "./Table/BackOffice";
+import Conversation from "./Table/Conversation";
+import CreateComplaint from "./Table/CreateComplaint";
+import MyBackOffice from "./Table/MyBackOffice";
+import Recherche from "./Table/Recherche";
+import ThisMonth from "./Table/ThisMonth";
+import ThisMonth_Tech from "./Table/ThisMonth_Tech";
 
 function Index() {
   const { select, setSelect, annuler } = React.useContext(CreateContexteTable);
@@ -23,16 +23,16 @@ function Index() {
   const [property, setProperty] = React.useState();
   React.useEffect(() => {
     if (user.plainte_callcenter) {
-      setProperty('callcenter');
+      setProperty("callcenter");
     }
     if (user.plainteShop) {
-      setProperty('shop');
+      setProperty("shop");
     }
   }, [user]);
 
   return (
     <Grid>
-      <Grid className="divAppel" component="div" container>
+      <Grid component="div" container>
         <Grid
           item
           xs={6}
@@ -45,7 +45,7 @@ function Index() {
           }}
           className="firstGrid"
         >
-          <div className={`${select === 7 && 'select'} titres`}>
+          <div className={`${select === 7 && "select"} titres`}>
             <Typography component="p">Dashboard</Typography>
           </div>
         </Grid>
@@ -62,7 +62,7 @@ function Index() {
               setSelect(1);
             }}
           >
-            <div className={`${select === 1 && 'select'} titres`}>
+            <div className={`${select === 1 && "select"} titres`}>
               <Typography component="p">Create one</Typography>
             </div>
           </Grid>
@@ -79,12 +79,16 @@ function Index() {
             setSelect(0);
           }}
         >
-          <div className={`${select === 0 && 'select'} titres`}>
+          <div className={`${select === 0 && "select"} titres`}>
             <Typography component="p" noWrap>
               No technical Issues
             </Typography>
             <Typography component="p" className="nbre">
-              {client && client.length > 0 && client.filter((x) => x.type === 'appel' && x.statut !== 'escalade').length}
+              {client &&
+                client.length > 0 &&
+                client.filter(
+                  (x) => x.type === "appel" && x.statut !== "escalade"
+                ).length}
               {client && client.length === 0 && <CircularProgress size={10} />}
             </Typography>
           </div>
@@ -101,12 +105,17 @@ function Index() {
             setSelect(5);
           }}
         >
-          <div className={`${select === 5 && 'select'} titres`}>
+          <div className={`${select === 5 && "select"} titres`}>
             <Typography component="p" noWrap>
               Technical Issues
             </Typography>
             <Typography component="p" className="nbre">
-              {client && client.length > 0 && client.filter((x) => x.type === 'ticket' && x.statut !== 'awaiting_confirmation').length}
+              {client &&
+                client.length > 0 &&
+                client.filter(
+                  (x) =>
+                    x.type === "ticket" && x.statut !== "awaiting_confirmation"
+                ).length}
               {client && client.length == 0 && <CircularProgress size={10} />}
             </Typography>
           </div>
@@ -124,10 +133,12 @@ function Index() {
               setSelect(2);
             }}
           >
-            <div className={`${select === 2 && 'select'} titres`}>
+            <div className={`${select === 2 && "select"} titres`}>
               <Typography component="p">Back office</Typography>
               <Typography component="p" className="nbre">
-                {client && client.length > 0 && client.filter((x) => x?.operation === 'backoffice').length}
+                {client &&
+                  client.length > 0 &&
+                  client.filter((x) => x?.operation === "backoffice").length}
                 {client && client.length == 0 && <CircularProgress size={10} />}
               </Typography>
             </div>
@@ -146,12 +157,12 @@ function Index() {
               setSelect(8);
             }}
           >
-            <div className={`${select === 8 && 'select'} titres`}>
+            <div className={`${select === 8 && "select"} titres`}>
               <Typography component="p">Back office</Typography>
             </div>
           </Grid>
         )}
-        {(user.fonction === 'co' || user.fonction === 'superUser') && (
+        {(user.fonction === "co" || user.fonction === "superUser") && (
           <Grid
             item
             md={2}
@@ -164,11 +175,16 @@ function Index() {
             }}
             className="firstGrid"
           >
-            <div className={`${select === 4 && 'select'} titres`}>
+            <div className={`${select === 4 && "select"} titres`}>
               <Typography component="p">Relocation</Typography>
               <Typography component="p" className="nbre">
-                {client && client.length > 0 && client.filter((x) => x?.statut === 'awaiting_confirmation').length}
-                {client && client.length === 0 && <CircularProgress size={10} color="inherit" />}
+                {client &&
+                  client.length > 0 &&
+                  client.filter((x) => x?.statut === "awaiting_confirmation")
+                    .length}
+                {client && client.length === 0 && (
+                  <CircularProgress size={10} color="inherit" />
+                )}
               </Typography>
             </div>
           </Grid>
@@ -185,7 +201,7 @@ function Index() {
             setSelect(9);
           }}
         >
-          <div className={`${select === 9 && 'select'} titres`}>
+          <div className={`${select === 9 && "select"} titres`}>
             <Typography component="p">Search</Typography>
           </div>
         </Grid>

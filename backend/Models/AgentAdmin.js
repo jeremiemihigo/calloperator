@@ -14,7 +14,7 @@ const schema = new mongoose.Schema(
     first: { type: Boolean, required: true, default: true },
     taches: { type: Array, required: false },
     fonction: { type: String, required: true },
-    plainteShop: { type: String, required: false },
+    plainteShop: { type: [String], required: false },
     synchro_shop: { type: Array, required: false },
     //Default tracker
     role: { type: String, required: false },

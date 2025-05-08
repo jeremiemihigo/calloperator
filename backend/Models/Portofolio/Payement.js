@@ -11,5 +11,7 @@ const schema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-const model = mongoose.model("payement", schema);
+const model = mongoose.model("payementclient", schema);
+schema.index({ month: 1, considerer: 1 });
+schema.index({ account_id: 1 });
 module.exports = model;

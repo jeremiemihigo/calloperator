@@ -102,22 +102,31 @@ const Readclient = async (req, res) => {
             };
             done(null, match);
           }
-          if (plainteShop && fonction === "admin" && !backOffice_plainte) {
+          if (
+            plainteShop &&
+            plainteShop.length > 0 &&
+            fonction === "admin" &&
+            !backOffice_plainte
+          ) {
             let match = {
               $or: [
                 {
                   dateSave: { $lte: new Date(dates), $gte: new Date(dates) },
-
-                  shop: plainteShop,
+                  shop: { $in: plainteShop },
                 },
-                { open: true, operation: "backoffice", shop: plainteShop },
-                { open: true, shop: plainteShop, periode },
+                {
+                  open: true,
+                  operation: "backoffice",
+                  shop: { $in: plainteShop },
+                },
+                { open: true, shop: { $in: plainteShop }, periode },
               ],
             };
             done(null, match);
           }
           if (
             plainteShop &&
+            plainteShop.length > 0 &&
             fonction === "admin" &&
             backOffice_plainte &&
             (!synchro_shop || synchro_shop.length === 0)
@@ -126,10 +135,10 @@ const Readclient = async (req, res) => {
               $or: [
                 {
                   dateSave: { $lte: new Date(dates), $gte: new Date(dates) },
-                  shop: plainteShop,
+                  shop: { $in: plainteShop },
                 },
                 { open: true, operation: "backoffice" },
-                { open: true, shop: plainteShop, periode },
+                { open: true, shop: { $in: plainteShop }, periode },
               ],
             };
             done(null, match);

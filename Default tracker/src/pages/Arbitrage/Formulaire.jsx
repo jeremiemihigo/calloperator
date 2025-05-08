@@ -49,13 +49,13 @@ function Formulaire({ client }) {
       </div>
       <div style={{ marginTop: '10px', display: 'flex' }}>
         <div style={{ padding: '5px', width: '50%' }}>
-          <Button onClick={() => sendData('Rejected')} color="warning" variant="contained" fullWidth>
-            Rejected
+          <Button onClick={() => sendData('Approved')} color="success" variant="contained" fullWidth>
+            Done
           </Button>
         </div>
         <div style={{ padding: '5px', width: '50%' }}>
-          <Button onClick={() => sendData('Approved')} color="success" variant="contained" fullWidth>
-            Done
+          <Button onClick={() => sendData('Rejected')} color="warning" variant="contained" fullWidth>
+            Rejected
           </Button>
         </div>
       </div>

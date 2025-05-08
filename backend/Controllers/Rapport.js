@@ -59,7 +59,7 @@ const Rapport = async (req, res) => {
       "demande.cell": 1,
       "demande.reference": 1,
       "demande.sat": 1,
-      "demande.raison": 1,
+      raison: 1,
       "demande.itemswap": 1,
       "coordonnee.longitude": 1,
       "coordonnee.latitude": 1,
@@ -88,8 +88,32 @@ const Rapport = async (req, res) => {
       },
       function (corbei, done) {
         modelRapport
-          .find(match_not_followup, project)
-          .lean()
+          .aggregate([
+            { $match: match_not_followup },
+            {
+              $lookup: {
+                from: "feedbacks",
+                localField: "demande.raison",
+                foreignField: "id",
+                as: "feedback",
+              },
+            },
+            {
+              $addFields: {
+                raison: {
+                  $cond: {
+                    if: {
+                      $lte: [{ $size: "$feedback" }, 0],
+                    },
+                    then: "$demande.raison",
+                    else: { $arrayElemAt: ["$feedback.title", 0] },
+                  },
+                },
+              },
+            },
+            { $project: project },
+          ])
+
           .then((response) => {
             return res.status(200).json(response);
           })
@@ -266,7 +290,6 @@ const Technical = async (req, res) => {
         },
       ])
       .then((result) => {
-        console.log(result);
         return res.status(200).json(result);
       })
       .catch(function (err) {

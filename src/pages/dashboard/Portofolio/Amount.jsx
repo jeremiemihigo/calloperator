@@ -1,9 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
-import axios from "axios";
-import ReactApexChart from "react-apexcharts";
-import { config, portofolio } from "static/Lien";
 import { Paper } from "@mui/material";
+import axios from "axios";
+import LoadingImage from "Control/Loading";
+import { useEffect, useState } from "react";
+import ReactApexChart from "react-apexcharts";
+import { config, portofolio, tronquerDecimales } from "static/Lien";
 
 const ReportAreaChart = () => {
   const [options, setOptions] = useState();
@@ -16,7 +17,7 @@ const ReportAreaChart = () => {
         let table = [];
         let option = [];
         for (let i = 0; i < donner.length; i++) {
-          table.push(donner[i].value);
+          table.push(tronquerDecimales(donner[i].value, 10));
           option.push(donner[i].name);
         }
 
@@ -58,30 +59,19 @@ const ReportAreaChart = () => {
   }, [donner]);
 
   return (
-    <Paper sx={{ marginTop: "10px" }}>
-      {load ? (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            height: "20rem",
-          }}
-        >
-          <p style={{ textAlign: "center" }}>Loading...</p>
-        </div>
-      ) : (
-        options &&
-        series && (
+    <>
+      {load && <LoadingImage />}
+      <Paper sx={{ marginTop: "10px" }}>
+        {options && series && (
           <ReactApexChart
             options={options}
             series={series}
             type="line"
             height={345}
           />
-        )
-      )}
-    </Paper>
+        )}
+      </Paper>
+    </>
   );
 };
 

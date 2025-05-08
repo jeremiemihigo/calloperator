@@ -135,7 +135,6 @@ const Demande_FermeturePlainte = async (req, res) => {
     const { idPlainte, raison } = req.body;
     const { nom } = req.user;
     const date = new Date();
-    console.log(req.body);
     const io = req.io;
     if (!idPlainte || !raison) {
       return res.status(201).json("Veuillez renseigner la raison de fermeture");

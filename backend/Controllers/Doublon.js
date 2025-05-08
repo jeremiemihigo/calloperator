@@ -103,7 +103,6 @@ const ReadDoublon = async (req, res) => {
         },
       ])
       .then((response) => {
-        console.log(response);
         if (response.length > 0) {
           return res.status(200).json(response.reverse());
         }
@@ -198,7 +197,6 @@ const NonConformes = async (req, res) => {
               { allowDiskUse: true }
             )
             .then((response) => {
-              console.log(response);
               done(response);
             })
             .catch(function (err) {

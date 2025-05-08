@@ -1,0 +1,6 @@
+.childcomposant > div {
+  margin-bottom: 10px;
+}
+.childcomposant {
+  padding: 5px;
+}

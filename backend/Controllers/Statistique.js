@@ -77,7 +77,7 @@ const readPeriodeGroup = async (req, res) => {
           nConforme: reponse.filter(
             (x) =>
               x.reponse.length === 0 &&
-              x.feedback === "chat" &&
+              ["chat", "doublon"].includes(x.feedback) &&
               (x.concerne === "agent" || !x.concerne)
           ),
           followup: reponse.filter((x) => x.feedback === "followup"),

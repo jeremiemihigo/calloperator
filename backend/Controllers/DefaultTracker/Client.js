@@ -23,11 +23,38 @@ let initialeSearch = [
     },
   },
   {
+    $lookup: {
+      from: "pfeedback_calls",
+      let: { codeclient: "$codeclient" },
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $and: [
+                { $eq: ["$codeclient", "$$codeclient"] },
+                { $eq: ["$type", "Reachable"] },
+              ],
+            },
+          },
+        },
+      ],
+      as: "appelles",
+    },
+  },
+  {
     $addFields: {
       derniereVisite: {
         $arrayElemAt: [
           {
             $reverseArray: "$visites", // Renverse l'ordre du tableau
+          },
+          0,
+        ],
+      },
+      derniereappel: {
+        $arrayElemAt: [
+          {
+            $reverseArray: "$appelles", // Renverse l'ordre du tableau
           },
           0,
         ],
@@ -78,6 +105,7 @@ let initialeSearch = [
       currentFeedback: 1,
       tfeedback: 1,
       derniereVisite: 1,
+      derniereappel: 1,
       appel: 1,
       fullDate: 1,
       statut_decision: 1,
@@ -110,11 +138,38 @@ let searchData2 = [
     },
   },
   {
+    $lookup: {
+      from: "pfeedback_calls",
+      let: { codeclient: "$codeclient" },
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $and: [
+                { $eq: ["$codeclient", "$$codeclient"] },
+                { $eq: ["$type", "Reachable"] },
+              ],
+            },
+          },
+        },
+      ],
+      as: "appelles",
+    },
+  },
+  {
     $addFields: {
       derniereVisite: {
         $arrayElemAt: [
           {
             $reverseArray: "$visites", // Renverse l'ordre du tableau
+          },
+          0,
+        ],
+      },
+      derniereappel: {
+        $arrayElemAt: [
+          {
+            $reverseArray: "$appelles", // Renverse l'ordre du tableau
           },
           0,
         ],
@@ -163,6 +218,7 @@ let searchData2 = [
       currentFeedback: 1,
       tfeedback: 1,
       derniereVisite: 1,
+      derniereappel: 1,
       appel: 1,
       fullDate: 1,
       statut_decision: 1,
@@ -375,6 +431,7 @@ const ReadFilterClient = async (req, res) => {
               : [...searchData, { $match: filtre }, ...searchData2]
           )
             .then((result) => {
+              console.log(result);
               done(null, result);
             })
             .catch(function (err) {
@@ -494,34 +551,11 @@ const ReadCertainClient = async (req, res) => {
   }
 };
 //Modification
-const EditFeedbackAppel = async (req, res) => {
-  try {
-    let month = moment(new Date()).format("MM-YYYY");
-    const { codeclient, appel } = req.body;
-    if (!appel || !codeclient) {
-      return res.status(201).json("Veuillez renseigner les champs");
-    }
 
-    ModelClient.findOneAndUpdate(
-      { codeclient, month },
-      { $set: { appel } },
-      { new: true }
-    ).then((result) => {
-      if (result.appel === appel) {
-        return res.status(200).json("Done");
-      } else {
-        return res.status(201).json("Error");
-      }
-    });
-  } catch (error) {
-    return res.status(200).json(JSON.stringify(error));
-  }
-};
 module.exports = {
   AddClientDT,
   ChangeStatus,
   Appel,
-  EditFeedbackAppel,
   ReadClientAfterChange,
   ReadCertainClient,
   ChangeByFile,

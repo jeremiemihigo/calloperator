@@ -29,7 +29,6 @@ const Appel = async (req, res) => {
       statut,
       priorite,
     } = req.body;
-    console.log(req.body);
     if (
       !codeclient ||
       !typePlainte ||
