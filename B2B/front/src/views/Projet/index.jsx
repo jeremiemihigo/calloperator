@@ -12,11 +12,11 @@ function Projets() {
       <PageContainer title="Projets" description="Projets B2B DRC">
         <ContexteProjet>
           <Acceuil />
+          <Popup open={open} setOpen={setOpen} title="Nouveau Projet">
+            <FormProjet />
+          </Popup>
         </ContexteProjet>
       </PageContainer>
-      <Popup open={open} setOpen={setOpen} title="Nouveau Projet">
-        <FormProjet />
-      </Popup>
     </>
   );
 }

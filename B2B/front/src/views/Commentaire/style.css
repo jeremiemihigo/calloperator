@@ -22,7 +22,7 @@
 .chat-form > input {
   padding: 10px;
 }
-.display {
+.display_ {
   display: flex;
   align-items: center;
   justify-content: center;

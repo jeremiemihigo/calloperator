@@ -16,4 +16,6 @@ export const allstatus = [
   { id: 1, title: "En cours", value: "En cours" },
   { id: 2, title: "En pause", value: "En pause" },
   { id: 3, title: "Abandonner", value: "Abandonner" },
+  { id: 4, title: "Cloturer", value: "clorurer" },
+  { id: 4, title: "En attente", value: "En attente" },
 ];

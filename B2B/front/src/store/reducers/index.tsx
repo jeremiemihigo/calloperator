@@ -7,12 +7,18 @@ import { combineReducers } from "redux";
 // import communiquer from "../../Redux/Documentation";
 import alluser from "../../Redux/AllUser";
 import user from "../../Redux/Utilisateur";
-import projet from "../../Redux/projet";
+import categorie from "../../Redux/categorisation";
 import prospect from "../../Redux/prospect";
 import steps from "../../Redux/step";
 
 // ==============================|| COMBINE REDUCERS ||============================== //
 
-const reducers = combineReducers({ user, alluser, projet, prospect, steps });
+const reducers = combineReducers({
+  user,
+  categorie,
+  alluser,
+  prospect,
+  steps,
+});
 
 export default reducers;

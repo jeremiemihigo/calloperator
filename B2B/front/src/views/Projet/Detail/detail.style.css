@@ -1,0 +1,21 @@
+.titre_projet {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+.description_projet {
+  font-size: 15px;
+  text-align: justify;
+  margin-bottom: 15px;
+}
+.papier_projet {
+  padding: 10px;
+  margin-top: 10px;
+}
+.autres_projet {
+  margin: 5px;
+}
+.autres_projet > span {
+  font-weight: bolder;
+  opacity: 0.5;
+}

@@ -1,4 +1,4 @@
-import { Button, Typography } from "@mui/material";
+import { Button, TextField, Typography } from "@mui/material";
 import { Grid } from "@mui/system";
 import { IconMessage } from "@tabler/icons-react";
 import _ from "lodash";
@@ -8,11 +8,15 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import DashboardCard from "src/components/shared/DashboardCard";
 import Popup from "src/static/Popup";
+import { allstatus } from "../../static/Lien";
+import Loading from "../../static/Loading";
+import Selected from "../../static/Select";
+import { ContexteProjet } from "./Context";
 import FormProjet from "./FormProjet";
 import "./projet.style.css";
 
 const RecentTransactions = () => {
-  const projet = useSelector((state) => state.projet);
+  const { projetListe, state } = React.useContext(ContexteProjet);
   const [openform, setOpenForm] = React.useState(false);
   const step = useSelector((state) =>
     state.steps.step.filter((x) => x.concerne === "projet")
@@ -27,6 +31,7 @@ const RecentTransactions = () => {
   };
   const clickCommentaire = (projet, event) => {
     event.preventDefault();
+
     navigation("/commentaire", { state: { data: projet, type: "projet" } });
   };
   const clickProspect = (projet, event) => {
@@ -45,92 +50,152 @@ const RecentTransactions = () => {
       return "abandonner";
     }
   };
+  const [statut, setStatut] = React.useState("");
+  const lastComment = (index) => {
+    if (index?.commentaire && index?.commentaire.length > 0) {
+      return (
+        <Typography
+          style={{
+            fontSize: "12px",
+            textAlign: "justify",
+          }}
+        >
+          <span style={{ fontWeight: "bolder" }}>
+            {index.commentaire[index.commentaire.length - 1].doby.split(
+              " "
+            )[1] + " : "}
+          </span>
+          <span>
+            {index.commentaire[index.commentaire.length - 1].commentaire}
+          </span>
+        </Typography>
+      );
+    }
+  };
 
   return (
     <>
-      <DashboardCard
-        title="Projets"
-        subtitle="Tous les projets"
-        action={
+      {state.etat ? (
+        <Loading />
+      ) : (
+        <DashboardCard
+          title={state?.titre.title}
+          subtitle="Tous les projets ayant cette catégorie"
+          action={
+            <>
+              <Button
+                onClick={() => setOpenForm(true)}
+                color="primary"
+                variant="contained"
+              >
+                Nouveau projet
+              </Button>
+            </>
+          }
+        >
           <>
-            <Button
-              onClick={() => setOpenForm(true)}
-              color="primary"
-              variant="contained"
-            >
-              New project
-            </Button>
+            <Grid container>
+              <Grid item size={{ lg: 6 }} className="display_">
+                <TextField
+                  name="id"
+                  label="ID Projet"
+                  id="id"
+                  variant="outlined"
+                  fullWidth
+                  sx={{
+                    mt: 2,
+                    mb: 2,
+                    minWidth: "20rem",
+                  }}
+                />
+              </Grid>
+              <Grid
+                item
+                size={{ lg: 3 }}
+                style={{ padding: "3px", width: "15%" }}
+                className="display_"
+              >
+                <Selected
+                  label="Statut"
+                  data={[...allstatus, { id: 4, title: "Tous", value: "all" }]}
+                  value={statut}
+                  setValue={setStatut}
+                />
+              </Grid>
+            </Grid>
+            {projetListe &&
+              step &&
+              step.length > 0 &&
+              projetListe.length > 0 &&
+              projetListe.map((index) => {
+                return (
+                  <Grid
+                    container
+                    key={index._id}
+                    className={returnclasse(index.statut)}
+                  >
+                    <Grid item size={{ lg: 10 }} className="projetname">
+                      <Typography className="titreprojet">
+                        {index.id} #
+                        <span onClick={() => clickProjet(index)}>
+                          {index.designation}
+                        </span>
+                      </Typography>
+                      <Typography className="description">
+                        {index.description}
+                      </Typography>
+                      <Typography className="next_step" noWrap>
+                        Next : {returnStep(index.next_step)}
+                      </Typography>
+
+                      <Typography
+                        onClick={(event) =>
+                          index?.prospects.length > 0 &&
+                          clickProspect(index?.prospects, event)
+                        }
+                        style={{
+                          fontSize: "12px",
+                          textDecoration: "underline",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {index?.prospects?.length}
+                        {index?.prospects?.length > 1
+                          ? "prospects"
+                          : " prospect"}
+                      </Typography>
+                      {lastComment(index)}
+
+                      <Typography
+                        color="textSecondary"
+                        sx={{
+                          fontSize: "10px",
+                        }}
+                      >
+                        {moment(index.createdAt).fromNow()}
+                      </Typography>
+                    </Grid>
+                    <Grid item size={{ lg: 2 }} className="display">
+                      <div style={{ cursor: "pointer" }}>
+                        <IconMessage
+                          onClick={(event) => clickCommentaire(index, event)}
+                          fontSize="small"
+                        />
+                      </div>
+                      <Typography component="p" className="next_step" noWrap>
+                        Last Update {moment(index.updatedAt).fromNow()}
+                      </Typography>
+                      <Typography component="p" className="next_step" noWrap>
+                        <p>{index.statut}</p>
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                );
+              })}
           </>
-        }
-      >
-        <>
-          {projet &&
-            step &&
-            step.length > 0 &&
-            projet.projet.length > 0 &&
-            projet.projet.map((index) => {
-              return (
-                <Grid
-                  container
-                  key={index._id}
-                  className={returnclasse(index.statut)}
-                >
-                  <Grid item size={{ lg: 10 }} className="projetname">
-                    <Typography
-                      className="titreprojet"
-                      onClick={() => clickProjet(index)}
-                    >
-                      #{index.designation}{" "}
-                    </Typography>
-                    <Typography className="description">
-                      {index.description}
-                    </Typography>
-                    <Typography className="next_step" noWrap>
-                      Next : {returnStep(index.next_step)}
-                    </Typography>
+        </DashboardCard>
+      )}
 
-                    <Typography
-                      onClick={(event) =>
-                        clickProspect(index?.prospects, event)
-                      }
-                      style={{
-                        fontSize: "12px",
-                        textDecoration: "underline",
-                        cursor: "pointer",
-                      }}
-                    >
-                      {index?.prospects?.length}
-                      {index?.prospects?.length > 1 ? "prospects" : " prospect"}
-                    </Typography>
-
-                    <Typography
-                      color="textSecondary"
-                      sx={{
-                        fontSize: "10px",
-                      }}
-                    >
-                      {moment(index.createdAt).fromNow()}
-                    </Typography>
-                  </Grid>
-                  <Grid item size={{ lg: 2 }} className="display">
-                    <div style={{ cursor: "pointer" }}>
-                      <IconMessage
-                        onClick={(event) => clickCommentaire(index, event)}
-                        fontSize="small"
-                      />
-                    </div>
-                    <Typography component="p" className="next_step" noWrap>
-                      Last Update {moment(index.updatedAt).fromNow()}
-                    </Typography>
-                    <Typography component="p" className="next_step" noWrap>
-                      <p>{index.statut}</p>
-                    </Typography>
-                  </Grid>
-                </Grid>
-              );
-            })}
-        </>
-      </DashboardCard>
       <Popup open={openform} setOpen={setOpenForm} title="Project">
         <FormProjet />
       </Popup>

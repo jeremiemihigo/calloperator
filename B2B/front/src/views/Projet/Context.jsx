@@ -5,11 +5,17 @@ export const ContexteProjet = createContext();
 
 const ContexteAll = (props) => {
   const [projetSelect, setProjetSelect] = React.useState();
+  const [projetListe, setProjetListe] = React.useState();
+  const [state, setState] = React.useState({ titre: "", etat: false });
   return (
     <ContexteProjet.Provider
       value={{
         projetSelect,
         setProjetSelect,
+        projetListe,
+        setProjetListe,
+        state,
+        setState,
       }}
     >
       {props.children}

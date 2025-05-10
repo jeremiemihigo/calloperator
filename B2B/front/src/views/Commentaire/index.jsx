@@ -64,7 +64,7 @@ function CommentaireIndex() {
           </div>
         </div>
       )}
-      <form className="chat-form display">
+      <form className="chat-form display_">
         <TextField
           name="Commentaire"
           label="Commentaire"

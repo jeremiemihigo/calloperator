@@ -6,7 +6,7 @@ import { configureStore } from "@reduxjs/toolkit";
 // import { Readaction } from "../Redux/actions";
 // import { ReadCommuniquer } from "../Redux/Documentation";
 import { Readusers } from "../Redux/AllUser";
-import { Readprojets } from "../Redux/projet";
+import { Readcategories } from "../Redux/categorisation";
 import { Readprospects } from "../Redux/prospect";
 import { Readsteps } from "../Redux/step";
 import { ReadUser } from "../Redux/Utilisateur";
@@ -20,7 +20,7 @@ const { dispatch } = store;
 dispatch(ReadUser());
 dispatch(Readusers());
 dispatch(Readsteps());
-dispatch(Readprojets());
 dispatch(Readprospects());
+dispatch(Readcategories());
 
 export { dispatch, store };

@@ -12,7 +12,7 @@ const LinkStyled = styled(Link)(() => ({
 const Logo = () => {
   return (
     <LinkStyled
-      to="/"
+      to="/auth/login"
       height={70}
       style={{
         display: "flex",

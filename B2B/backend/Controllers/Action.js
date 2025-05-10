@@ -134,28 +134,55 @@ const EditAction = async (req, res) => {
 };
 const AddProjet = async (req, res) => {
   try {
-    const { designation, description, next_step } = req.body;
-    if (!designation || !description || !next_step) {
-      return res.status(404).json("Veuillez renseigner les champs");
+    const {
+      designation,
+      responsable,
+      email,
+      adresse,
+      contact,
+      suivi_par,
+      description,
+      idCategorie,
+      next_step,
+    } = req.body;
+    if (
+      !designation ||
+      !description ||
+      !next_step ||
+      !responsable ||
+      !suivi_par ||
+      !idCategorie
+    ) {
+      return res.status(201).json("Veuillez renseigner les champs");
     }
     const id = generateString(7);
-    ModelProjet.create({ designation, description, next_step, id })
+    ModelProjet.create({
+      designation,
+      responsable,
+      email,
+      adresse,
+      contact,
+      idCategorie,
+      suivi_par,
+      description,
+      next_step,
+      id,
+    })
       .then((result) => {
         return res.status(200).json(result);
       })
       .catch(function (error) {
-        return res.status(404).json("" + error.message);
+        return res.status(201).json("" + error.message);
       });
   } catch (error) {
-    return res.status(404).json("" + error.message);
+    return res.status(201).json("" + error.message);
   }
 };
 const ReadProjet = async (req, res) => {
   try {
-    const { id } = req.params;
-    let match = id === "all" ? { $match: {} } : { $match: { id } };
+    const { data } = req.body;
+    let match = data === "all" ? { $match: {} } : { $match: data };
     let match1 = req.recherche ? { $match: { id: req.recherche } } : match;
-
     ModelProjet.aggregate([
       match1,
       {

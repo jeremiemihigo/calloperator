@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Paper,
   Table,
   TableBody,
   TableCell,
@@ -13,10 +14,8 @@ import moment from "moment";
 import React from "react";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
-import DashboardCard from "src/components/shared/DashboardCard";
-import Popup from "src/static/Popup";
-import AddAction from "../AddAction";
-import "../projet.style.css";
+import AddAction from "./AddAction";
+import "./detail.style.css";
 
 const DetailsProjet = () => {
   const location = useLocation();
@@ -28,160 +27,182 @@ const DetailsProjet = () => {
   const returnStep = (id) => {
     return _.filter(steps, { id })[0]?.title;
   };
-  const projets = useSelector((state) => state.projet.projet);
   const [data, setData] = React.useState();
 
   React.useEffect(() => {
     if (state) {
-      setData(_.filter(projets, { id: state.id })[0]);
+      setData(state);
     } else {
       navigation("/projets");
     }
-  }, [state, projets]);
+  }, [state]);
 
   return (
     <>
-      <DashboardCard
-        title={data && data?.designation}
-        subtitle={data && data?.description}
-        action={
-          <Button
-            onClick={() => setOpen(true)}
-            color="primary"
-            variant="contained"
+      <Paper className="papier_projet" elevation={3}>
+        <Typography component="p" className="titre_projet">
+          {data && data?.designation}
+        </Typography>
+        <Typography component="p" className="description_projet">
+          {data && data?.description}
+        </Typography>
+        <Typography component="p" className="autres_projet">
+          <span>Responsable</span> : {data?.responsable}
+        </Typography>
+        <Typography component="p" className="autres_projet">
+          <span>Contact : </span> {data?.contact}
+        </Typography>
+        <Typography component="p" className="autres_projet">
+          <span>Email : </span>
+          {data?.email}
+        </Typography>
+        <Typography component="p" className="autres_projet">
+          <span>Adresse : </span>
+          {data?.adresse}
+        </Typography>
+        <Typography component="p" className="autres_projet">
+          <span>En charge : </span>
+          {data?.suivi_par}
+        </Typography>
+        <Button
+          onClick={() => setOpen(true)}
+          color="primary"
+          variant="contained"
+        >
+          Event
+        </Button>
+      </Paper>
+      <Box sx={{ overflow: "auto", width: { xs: "280px", sm: "auto" } }}>
+        {data &&
+        steps &&
+        steps.length > 0 &&
+        data.actions &&
+        data.actions.length > 0 ? (
+          <Table
+            aria-label="simple table"
+            sx={{
+              whiteSpace: "nowrap",
+              mt: 2,
+            }}
           >
-            Event
-          </Button>
-        }
-      >
-        <Box sx={{ overflow: "auto", width: { xs: "280px", sm: "auto" } }}>
-          {data &&
-            steps &&
-            steps.length > 0 &&
-            data.actions &&
-            data.actions.length > 0 && (
-              <Table
-                aria-label="simple table"
-                sx={{
-                  whiteSpace: "nowrap",
-                  mt: 2,
-                }}
-              >
-                <TableHead>
-                  <TableRow>
-                    <TableCell>
-                      <Typography variant="subtitle2" fontWeight={600}>
-                        Saved By
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle2" fontWeight={600}>
-                        Actions effectuées
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle2" fontWeight={600}>
-                        Last step
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle2" fontWeight={600}>
-                        Next step
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle2" fontWeight={600}>
-                        Deedline
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {data &&
-                    data.actions.length > 0 &&
-                    data.actions.map((action, key) => {
-                      return (
-                        <TableRow key={action._id}>
-                          <TableCell>
-                            <Box
+            <TableHead>
+              <TableRow>
+                <TableCell>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    Saved By
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    Actions effectuées
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    Last step
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    Next step
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    Deedline
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {data &&
+                data.actions.length > 0 &&
+                data.actions.map((action, key) => {
+                  return (
+                    <TableRow key={action._id}>
+                      <TableCell>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Box>
+                            <Typography variant="subtitle2" fontWeight={600}>
+                              {action.savedBy}
+                            </Typography>
+                            <Typography
+                              color="textSecondary"
                               sx={{
-                                display: "flex",
-                                alignItems: "center",
+                                fontSize: "13px",
                               }}
                             >
-                              <Box>
-                                <Typography
-                                  variant="subtitle2"
-                                  fontWeight={600}
-                                >
-                                  {action.savedBy}
-                                </Typography>
-                                <Typography
-                                  color="textSecondary"
-                                  sx={{
-                                    fontSize: "13px",
-                                  }}
-                                >
-                                  {moment(action.dateSave).fromNow()}
-                                </Typography>
-                              </Box>
-                            </Box>
-                          </TableCell>
-                          <TableCell>
-                            <Typography
-                              color="textSecondary"
-                              variant="subtitle2"
-                              fontWeight={400}
-                            >
-                              {action.action}
+                              {moment(action.dateSave).fromNow()}
                             </Typography>
-                          </TableCell>
-                          <TableCell>
-                            <Typography
-                              color="textSecondary"
-                              variant="subtitle2"
-                              fontWeight={400}
-                            >
-                              {returnStep(action.statut_actuel)}
-                            </Typography>
-                          </TableCell>
-                          <TableCell>
-                            <Typography
-                              color="textSecondary"
-                              variant="subtitle2"
-                              fontWeight={400}
-                            >
-                              {returnStep(action.next_step)}
-                            </Typography>
-                          </TableCell>
-                          <TableCell>
-                            <Typography
-                              color="textSecondary"
-                              variant="subtitle2"
-                              fontWeight={400}
-                              sx={{
-                                color:
-                                  action.deedline === "IN SLA"
-                                    ? "green"
-                                    : "red",
-                              }}
-                            >
-                              {action.deedline ? action.deedline : "Pending"}
-                            </Typography>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                </TableBody>
-              </Table>
-            )}
-        </Box>
-      </DashboardCard>
-      {state && (
-        <Popup open={open} setOpen={setOpen} title="Add an action">
-          <AddAction projetSelect={state} />
-        </Popup>
-      )}
+                          </Box>
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        <Typography
+                          color="textSecondary"
+                          variant="subtitle2"
+                          fontWeight={400}
+                        >
+                          {action.action}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography
+                          color="textSecondary"
+                          variant="subtitle2"
+                          fontWeight={400}
+                        >
+                          {returnStep(action.statut_actuel)}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography
+                          color="textSecondary"
+                          variant="subtitle2"
+                          fontWeight={400}
+                        >
+                          {returnStep(action.next_step)}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography
+                          color="textSecondary"
+                          variant="subtitle2"
+                          fontWeight={400}
+                          sx={{
+                            color:
+                              action.deedline === "IN SLA" ? "green" : "red",
+                          }}
+                        >
+                          {action.deedline ? action.deedline : "Pending"}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+            </TableBody>
+          </Table>
+        ) : (
+          <p
+            style={{
+              color: "red",
+              textAlign: "center",
+              fontWeight: "bolder",
+            }}
+          >
+            Aucune action trouvée
+          </p>
+        )}
+      </Box>
+
+      <Paper sx={{ padding: "10px" }}>
+        <AddAction data={data} setData={setData} />
+      </Paper>
     </>
   );
 };

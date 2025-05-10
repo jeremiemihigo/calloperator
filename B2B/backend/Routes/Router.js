@@ -25,6 +25,11 @@ const {
   EditCommentaire,
   ChangeStatusProspect,
 } = require("../Controllers/Statut");
+const {
+  AddCategorisation,
+  ReadCategorisation,
+  EditCategorisation,
+} = require("../Controllers/Categorisation");
 const router = express.Router();
 
 router.post("/etape", protect, AddEtape);
@@ -40,7 +45,7 @@ router.post("/addUser", protect, AddUser);
 router.post("/addaction", protect, AddAction, ReadProjet);
 router.put("/editaction", protect, EditAction);
 router.post("/addprojet", protect, AddProjet);
-router.get("/readProjet/:id", protect, ReadProjet);
+router.post("/readProjet", protect, ReadProjet);
 
 //Prospect
 router.post("/addprospect", protect, AddProspect);
@@ -57,4 +62,9 @@ router.post(
   ReadProspect
 );
 router.put("/editstatus", protect, EditCommentaire);
+
+//Categorisation
+router.post("/addCategorisation", protect, AddCategorisation);
+router.get("/readCategorisation", protect, ReadCategorisation);
+router.put("/editCategorisation", protect, EditCategorisation);
 module.exports = router;

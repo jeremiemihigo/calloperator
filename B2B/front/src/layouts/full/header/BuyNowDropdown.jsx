@@ -106,7 +106,7 @@ export default function BuyNowDropdown() {
         target="_blank"
         sx={{ borderRadius: "7px" }}
       >
-        Other options
+        Options
       </Button>
       <StyledMenu
         id="demo-customized-menu"

@@ -11,10 +11,10 @@ function Commentaires({ data, type }) {
   const prospect = useSelector((state) => state.prospect.prospect);
   React.useEffect(() => {
     if (type === "projet" && projet) {
-      setDonner(projet.filter((x) => x.id === data?.id)[0].commentaire);
+      setDonner(projet.filter((x) => x.id === data?.id)[0].commentaire || []);
     }
     if (type === "prospect" && prospect) {
-      setDonner(prospect.filter((x) => x.id === data?.id)[0].commentaire);
+      setDonner(prospect.filter((x) => x.id === data?.id)[0].commentaire || []);
     }
   }, [projet, prospect, data, type]);
 
