@@ -1,0 +1,9 @@
+.ajouter {
+  background-color: rgb(0, 169, 254);
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+  color: white;
+  font-weight: bolder;
+  cursor: pointer;
+}

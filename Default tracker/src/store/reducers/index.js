@@ -8,7 +8,6 @@ import menu from './menu';
 
 import agent from 'Redux/agent';
 import feedback from 'Redux/feedback';
-import feedportovm from 'Redux/feedbackvmportof';
 import mesfeedback from 'Redux/mesfeedback';
 import parametre from 'Redux/parametre';
 import role from 'Redux/Role';
@@ -25,8 +24,7 @@ const reducers = combineReducers({
   parametre,
   role,
   zone,
-  mesfeedback,
-  feedportovm
+  mesfeedback
 });
 
 export default reducers;

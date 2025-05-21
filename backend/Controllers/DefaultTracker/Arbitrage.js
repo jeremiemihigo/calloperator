@@ -78,6 +78,7 @@ const ReadArbitrage = async (req, res) => {
 
         // 2. Génération du filtre
         function (role, done) {
+          console.log(role);
           let idRoles = role.feedback.map((x) => x.idFeedback);
 
           let baseFilter = {
@@ -174,14 +175,7 @@ const ReadArbitrage = async (req, res) => {
                 },
               },
             },
-            {
-              $lookup: {
-                from: "feedbacks",
-                localField: "derniereappel.sioui_texte",
-                foreignField: "id",
-                as: "feedbackinfo",
-              },
-            },
+
             {
               $addFields: {
                 id: "$_id",
@@ -229,6 +223,7 @@ const ReadArbitrage = async (req, res) => {
                     matchappelvisite: true,
                     visite: { $exists: true },
                     appel: { $exists: true },
+                    feedback: { $exists: false },
                   },
                   filter,
                 ],
@@ -246,7 +241,6 @@ const ReadArbitrage = async (req, res) => {
                 shop: 1,
                 nomclient: 1,
                 currentfeedback: 1,
-                feedbackinfo: 1,
                 current_incharge: 1,
                 changeto: 1,
                 par: 1,
@@ -255,13 +249,15 @@ const ReadArbitrage = async (req, res) => {
               },
             },
           ])
-            .then((result) => done(null, result))
+            .then((result) => {
+              console.log(result);
+              done(null, result);
+            })
             .catch((err) => done(err));
         },
       ],
       function (err, result) {
         if (err) {
-          console.error(err);
           return res
             .status(500)
             .json({ error: "Erreur lors de l'exécution de la requête." });

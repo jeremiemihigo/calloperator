@@ -5,7 +5,6 @@ import MainLayout from "layout/MainLayout";
 import Technical from "pages/Rapport/Technical";
 const AppelDsh = Loadable(lazy(() => import("pages/Issue/Appel")));
 //const Appel = Loadable(lazy(() => import('pages/Issue/Appel/Dashboard/SuperUser')));
-const Plainte = Loadable(lazy(() => import("pages/Issue/Plainte")));
 const RapportVisite = Loadable(
   lazy(() => import("pages/Rapport/VisiteMenage"))
 );
@@ -36,10 +35,6 @@ const MainRoutes = {
     {
       path: "/call",
       element: <AppelDsh />,
-    },
-    {
-      path: "/plainte",
-      element: <Plainte />,
     },
     {
       path: "/r_visit",

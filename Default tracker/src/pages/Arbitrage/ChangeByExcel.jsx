@@ -48,8 +48,8 @@ function UploadClient() {
               if (json.filter((x) => x.codeclient === state[i].codeclient).length > 0) {
                 table.push({
                   current_status: state[i].current_status,
-                  changeto: state[i].changeto,
-                  submitedBy: state[i].submitedBy,
+                  changeto: state[i].changeto.length === 0 ? state[i].appel : state[i].changeto,
+                  submitedBy: state[i].changeto.length === 0 ? 'Automatique' : state[i].submitedBy,
                   id: state[i].id,
                   commentaire: json.filter((x) => x.codeclient === state[i].codeclient)[0]?.commentaire,
                   codeclient: state[i].codeclient,

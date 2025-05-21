@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 // material-ui
 import {
   AccessTime,
-  BugReport,
   Message,
   Settings,
   WorkHistory,
@@ -36,10 +35,6 @@ const Setting_Call = () => {
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
 
-    if (index === 10) {
-      itemHandler("Plainte");
-      navigation("/plainte", { replace: true });
-    }
     if (index === 11) {
       itemHandler("Delai");
       navigation("/delai");
@@ -56,10 +51,6 @@ const Setting_Call = () => {
       itemHandler("Parameter Portofolio");
       navigation("/p_parametre", { replace: true });
     }
-    if (index === 15) {
-      itemHandler("Feedback");
-      navigation("/feedback", { replace: true });
-    }
   };
   const userConenct = useSelector((state) => state.user?.user);
 
@@ -74,17 +65,6 @@ const Setting_Call = () => {
         },
       }}
     >
-      {userConenct && userConenct.fonction === "superUser" && (
-        <ListItemButton
-          selected={selectedIndex === 10}
-          onClick={(event) => handleListItemClick(event, 10)}
-        >
-          <ListItemIcon>
-            <BugReport fontSize="small" />
-          </ListItemIcon>
-          <ListItemText primary="Complaints" />
-        </ListItemButton>
-      )}
       {userConenct && userConenct.fonction === "superUser" && (
         <ListItemButton
           selected={selectedIndex === 11}
@@ -129,17 +109,7 @@ const Setting_Call = () => {
           <ListItemText primary="Parameter Portofolio" />
         </ListItemButton>
       )}
-      {userConenct && userConenct.fonction === "superUser" && (
-        <ListItemButton
-          selected={selectedIndex === 15}
-          onClick={(event) => handleListItemClick(event, 15)}
-        >
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          <ListItemText primary="Feedback" />
-        </ListItemButton>
-      )}
+
       {/* <ListItemButton selected={selectedIndex === 14} onClick={(event) => handleListItemClick(event, 14)}>
         <ListItemIcon>
           <Storage fontSize="small" />

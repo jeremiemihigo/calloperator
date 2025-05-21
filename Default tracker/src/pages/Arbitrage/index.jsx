@@ -35,7 +35,6 @@ function Index() {
     try {
       setLoading(true);
       const response = await axios.get(lien_dt + '/arbitrage', config);
-      console.log(response);
       if (response.data === 'token expired') {
         logout();
       }
@@ -54,10 +53,10 @@ function Index() {
   React.useEffect(() => {
     loadingData();
   }, []);
-  const feedporto = useSelector((state) => state.feedportovm.feedback);
+  const feedporto = useSelector((state) => state.feedback.feedback);
   const returnFeedback = (id) => {
-    if (_.filter(feedporto, { id }).length > 0) {
-      return _.filter(feedporto, { id })[0].title;
+    if (_.filter(feedporto, { idFeedback: id }).length > 0) {
+      return _.filter(feedporto, { idFeedback: id })[0].title;
     } else {
       return id;
     }
@@ -217,7 +216,7 @@ function Index() {
       </Paper>
 
       <Popup open={open} setOpen={setOpen} title="Form">
-        <Formulaire client={dataedit} />
+        <Formulaire client={dataedit} data={data} setData={setData} />
       </Popup>
     </>
   );

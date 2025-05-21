@@ -4,7 +4,6 @@ const { generateString } = require("../../Static/Static_Function");
 const AddRoleDT = async (req, res) => {
   try {
     const { title, filterBy, type } = req.body;
-
     if (!title || !filterBy) {
       return res.status(201).json("Veuillez renseigner les champs");
     }

@@ -41,7 +41,7 @@ function SaveComponent({ donner }) {
         type === "Reachable" &&
         (fonctionne === "" ||
           (fonctionne === "OUI" &&
-            ((toutvabien?.id === "autre" && sioui.texte === "") ||
+            ((toutvabien?.idFeedback === "autre" && sioui.texte === "") ||
               toutvabien === "" ||
               sioui.date === "")) ||
           (fonctionne === "NON" && (sinon.texte === "" || sinon.date === "")))
@@ -51,7 +51,9 @@ function SaveComponent({ donner }) {
       } else {
         let resultat = {
           sioui_texte:
-            toutvabien?.id === "autre" ? sioui.texte : toutvabien?.id,
+            toutvabien?.idFeedback === "autre"
+              ? sioui.texte
+              : toutvabien?.idFeedback,
           sioui_date: sioui.date,
           sinon_date: sinon.date,
           sinon_texte: sinon.texte,

@@ -4,7 +4,7 @@ import SimpleBackdrop from 'components/Backdrop';
 import React from 'react';
 import { config, lien_dt } from 'static/Lien';
 
-function Formulaire({ client }) {
+function Formulaire({ client, data, setData }) {
   const [feedback, setFeedback] = React.useState('');
   const [message, setMessage] = React.useState('');
   const [sending, setSending] = React.useState(false);
@@ -16,14 +16,15 @@ function Formulaire({ client }) {
         {
           id: client.id,
           current_status: client.currentfeedback,
-          changeto: client.changeto,
-          submitedBy: client.submitedBy,
+          changeto: client.changeto.length === 0 ? client.appel[0] : client.changeto[0],
+          submitedBy: client.changeto.length === 0 ? 'Automatique' : client.submitedBy,
           commentaire: feedback,
           feedback: statut
         },
         config
       );
       if (response.status === 200) {
+        setData(data.filter((x) => x.id !== client.id));
         setMessage('Done');
         setSending(false);
         setFeedback('');

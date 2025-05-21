@@ -11,7 +11,6 @@ const {
 const {
   Appel,
   AppelToday,
-
   UpdateAppel,
   Message,
   InfoClient,

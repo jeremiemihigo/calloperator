@@ -21,6 +21,8 @@ import './mesclient.style.css';
 
 function Index() {
   const zone = useSelector((state) => state.zone.zone);
+  const allfeedback = useSelector((state) => state.feedback.feedback);
+
   const [dateServer, setDateServer] = React.useState();
   const [texte, setTexte] = React.useState('');
   const [zoneSelect, setZoneSelect] = React.useState('');
@@ -58,7 +60,6 @@ function Index() {
         data['tfeedback.idRole'] = departement;
       }
       const response = await axios.post(lien_dt + '/lienclient', { data, defaultv, taille: { $lte: 0 } }, config);
-      console.log(response);
       if (response.status === 200) {
         setClient(response.data.client);
         setDateServer(response.data.dateServer);
@@ -86,8 +87,13 @@ function Index() {
       return 'No_people';
     }
   };
+  const returnFeedback = (id) => {
+    if (allfeedback && allfeedback.length > 0) {
+      return allfeedback.filter((x) => x.idFeedback === id)[0]?.title;
+    }
+  };
   React.useEffect(() => {
-    if (client && client.length > 0) {
+    if (client && client.length > 0 && allfeedback && allfeedback.length > 0) {
       const datae = client?.map(function (x, id) {
         return {
           id,
@@ -101,8 +107,8 @@ function Index() {
           shop: x.shop,
           action: x.action,
           currentFeedback: x.tfeedback?.title,
-          feedback_call: x?.derniereappel?.sioui_texte || 'no_calls',
-          last_vm: x?.derniereVisite ? x.derniereVisite.demande.raison : 'no_visits',
+          feedback_call: returnFeedback(x?.derniereappel?.sioui_texte) || 'no_calls',
+          last_vm: x?.derniereVisite ? returnFeedback(x.derniereVisite.demande.raison) : 'no_visits',
           visited_by: willBeVisitedBy(x.objectif),
           sla: x.tfeedback.delai * 1440,
           fullDate: x.fullDate,
@@ -119,7 +125,7 @@ function Index() {
       setData([]);
       setLoading(false);
     }
-  }, [client]);
+  }, [client, allfeedback]);
 
   const [openAgent, setOpenAgent] = React.useState(false);
   const [openvisite, setOpenVisite] = React.useState(false);

@@ -6,12 +6,6 @@ const {
 } = require("../Controllers/DefaultTracker/Role");
 const { protect } = require("../MiddleWare/protect");
 const {
-  AddFeedback,
-  ReadFeedback,
-  Editfeedback,
-  MesFeedback,
-} = require("../Controllers/DefaultTracker/Feedback");
-const {
   AddClientDT,
   ChangeStatus,
   ChangeByFile,
@@ -62,9 +56,6 @@ const router = express.Router();
 router.post("/role", protect, AddRoleDT);
 router.get("/role", protect, ReadRole);
 router.put("/editrole", protect, EditRole);
-router.post("/feedback", protect, AddFeedback);
-router.get("/feedback", protect, ReadFeedback);
-router.put("/editfeedback", protect, Editfeedback);
 
 //Clients
 router.post("/upload_customer", protect, AddClientDT);
@@ -102,9 +93,6 @@ router.get("/graphique_taux", protect, GraphiqueClient, TauxValidation);
 router.post("/arbitrage", protect, Arbitrage);
 router.get("/arbitrage", protect, ReadArbitrage);
 router.post("/arbitrage_file", protect, Arbitrage_File);
-
-//Feedback
-router.get("/mesfeedback", protect, MesFeedback);
 
 //Decision
 router.post("/adddecision", protect, AddDecision);
