@@ -7,12 +7,14 @@ const {
   ReadAllUser,
   readUserConnect,
   AddUser,
+  DeleteUser,
 } = require("../Controllers/Utilisateurs");
 const {
   AddAction,
   EditAction,
   AddProjet,
   ReadProjet,
+  ReadDepense,
 } = require("../Controllers/Action");
 const {
   AddProspect,
@@ -35,11 +37,11 @@ const router = express.Router();
 router.post("/etape", protect, AddEtape);
 router.get("/alletape", protect, ReadAllEtape);
 router.post("/login", LoginUser);
-router.post;
 router.post("/resetPassword", protect, ResetPassword);
 router.get("/readAllUser", protect, ReadAllUser);
 router.get("/readUserConnect", readUserConnect);
-router.post("/addUser", protect, AddUser);
+router.post("/addUser", AddUser);
+router.post("/deleteUser", DeleteUser);
 
 // AddAction, EditAction, AddProjet, ReadProjet
 router.post("/addaction", protect, AddAction, ReadProjet);
@@ -67,4 +69,7 @@ router.put("/editstatus", protect, EditCommentaire);
 router.post("/addCategorisation", protect, AddCategorisation);
 router.get("/readCategorisation", protect, ReadCategorisation);
 router.put("/editCategorisation", protect, EditCategorisation);
+
+//Depense
+router.get("/readDepense/:concerne", protect, ReadDepense);
 module.exports = router;

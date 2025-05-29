@@ -1,4 +1,5 @@
 export const lien = "http://localhost:4000/bboxx/b2b";
+//export const lien = "https://backendb2b.bboxxvm.com/bboxx/b2b";
 export const allpermission = [
   { id: 1, title: "Enregistrement des nouveaux projets", value: "01" },
   { id: 2, title: "Enregistrement des nouveaux Prospects", value: "02" },

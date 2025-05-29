@@ -21,6 +21,8 @@ const Delai = Loadable(lazy(() => import("pages/Delai")));
 const Communication = Loadable(lazy(() => import("pages/Communication")));
 const Search_history = Loadable(lazy(() => import("pages/Search_history")));
 const Approbation = Loadable(lazy(() => import("pages/Approbation")));
+const Solde = Loadable(lazy(() => import("pages/Solde")));
+const ImageImport = Loadable(lazy(() => import("pages/ImageProfile")));
 
 // const Actions = Loadable(lazy(() => import('pages/Actions')));
 
@@ -82,10 +84,17 @@ const MainRoutes = {
       path: "/search_history",
       element: <Search_history />,
     },
-
     {
       path: "/approbation",
       element: <Approbation />,
+    },
+    {
+      path: "/solde",
+      element: <Solde />,
+    },
+    {
+      path: "/image_profile",
+      element: <ImageImport />,
     },
   ],
 };

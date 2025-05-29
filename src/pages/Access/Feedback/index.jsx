@@ -29,7 +29,7 @@ function Feedback() {
     setOpen(true);
   };
   const columns = [
-    { field: "id", headerName: "ID", width: 20, editable: false },
+    { field: "idFeedback", headerName: "ID", width: 20, editable: false },
     { field: "title", headerName: "Feedback", width: 400, editable: false },
 
     {

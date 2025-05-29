@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
-import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
-import TextField from '@mui/material/TextField';
-import PropType from 'prop-types';
+import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
+import TextField from "@mui/material/TextField";
+import PropType from "prop-types";
 
 const filter = createFilterOptions();
 
@@ -10,14 +10,14 @@ function AutoComplement({ value, setValue, options, title, propr }) {
     <Autocomplete
       value={value}
       onChange={(event, newValue) => {
-        if (typeof newValue === 'string') {
+        if (typeof newValue === "string") {
           setValue({
-            title: newValue
+            title: newValue,
           });
         } else if (newValue && newValue.inputValue) {
           // Create a new value from the user input
           setValue({
-            title: newValue.inputValue
+            title: newValue.inputValue,
           });
         } else {
           setValue(newValue);
@@ -37,7 +37,7 @@ function AutoComplement({ value, setValue, options, title, propr }) {
       options={options}
       getOptionLabel={(option) => {
         // Value selected with enter, right from the input
-        if (typeof option === 'string') {
+        if (typeof option === "string") {
           return option;
         }
         // Add "xxx" option created dynamically
@@ -45,16 +45,18 @@ function AutoComplement({ value, setValue, options, title, propr }) {
           return option.inputValue;
         }
         // Regular option
-        return option['' + propr];
+        return option["" + propr];
       }}
       renderOption={(props, option) => (
         <li key={option} {...props}>
-          {option['' + propr]}
+          {option["" + propr]}
         </li>
       )}
-      sx={{ width: '100%' }}
+      sx={{ width: "100%" }}
       freeSolo
-      renderInput={(params) => <TextField {...params} label={title || 'Titre'} />}
+      renderInput={(params) => (
+        <TextField {...params} label={title || "Titre"} />
+      )}
     />
   );
 }
@@ -63,6 +65,6 @@ AutoComplement.propType = {
   setValue: PropType.func,
   options: PropType.array,
   title: PropType.string,
-  propr: PropType.string
+  propr: PropType.string,
 };
 export default AutoComplement;

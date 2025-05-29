@@ -23,6 +23,7 @@ import { useTheme } from "@mui/material/styles";
 import userImage from "assets/images/users/user.svg";
 import Transitions from "components/@extended/Transitions";
 import MainCard from "components/MainCard";
+import { Link } from "react-router-dom";
 import ProfileTab from "./ProfileTab";
 import Setting_Call from "./Setting_Call";
 // assets
@@ -137,11 +138,15 @@ const Profile = () => {
         onClick={handleToggle}
       >
         <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
-          <Avatar
-            alt="profile user"
-            src={userImage}
-            sx={{ width: 32, height: 32 }}
-          />
+          {userConnect?.user && (
+            <Avatar
+              alt="profile user"
+              src={userConnect.user.filename || userImage}
+              component={Link}
+              to="/image_profile"
+              sx={{ width: 32, height: 32 }}
+            />
+          )}
           <Typography variant="subtitle1">
             {returnName(userConnect?.user?.nom)}
           </Typography>
@@ -193,14 +198,18 @@ const Profile = () => {
                             spacing={1.25}
                             alignItems="center"
                           >
-                            <Avatar
-                              alt="profile user"
-                              src={userImage}
-                              sx={{ width: 32, height: 32 }}
-                            />
+                            {userConnect?.user && (
+                              <Avatar
+                                alt="profile user"
+                                component={Link}
+                                to="/image_profile"
+                                src={userConnect.user.filename || userImage}
+                                sx={{ width: 32, height: 32 }}
+                              />
+                            )}
                             <Stack>
                               <Typography variant="h6">
-                                BBOXX_Support team
+                                Call center support
                               </Typography>
                               <Typography variant="body2" color="textSecondary">
                                 {retourFonction(userConnect?.user.fonction)}

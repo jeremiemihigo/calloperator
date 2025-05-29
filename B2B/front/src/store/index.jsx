@@ -19,8 +19,8 @@ const { dispatch } = store;
 
 dispatch(ReadUser());
 dispatch(Readusers());
-dispatch(Readsteps());
 dispatch(Readprospects());
 dispatch(Readcategories());
+dispatch(Readsteps());
 
 export { dispatch, store };

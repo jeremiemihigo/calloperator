@@ -110,7 +110,7 @@ function Index() {
       width: 150,
       editable: false,
       renderCell: (p) => {
-        return <Dot texte={returnFeedback(p.row.appel)} />;
+        return <Dot texte={p.row.appel ? returnFeedback(p.row.appel) : 'no_calls'} />;
       }
     },
     {
@@ -119,7 +119,7 @@ function Index() {
       width: 150,
       editable: false,
       renderCell: (p) => {
-        return <Dot texte={returnFeedback(p.row.visite)} />;
+        return <Dot texte={p.row.visite ? returnFeedback(p.row.visite) : 'no_visits'} />;
       }
     },
 

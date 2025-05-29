@@ -7,20 +7,15 @@ const initialState = {
   readUser: "",
   readUserError: null,
 };
-
 // Async thunk to read user data
 export const ReadUser = createAsyncThunk(
   "user/ReadUser",
   async (_id, { rejectWithValue }) => {
     try {
       const response = await axios.get(`${lien}/readUserConnect`, config);
+
       return response.data;
     } catch (error) {
-      if (error.response.data === "jwt malformed") {
-        // const navigation = useNavigate();
-        localStorage.removeItem("auth");
-        // navigation("/", { replace: true });
-      }
       return rejectWithValue(error.response?.data);
     }
   }

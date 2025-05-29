@@ -1,4 +1,3 @@
-import { Grid } from "@mui/material";
 import ConfirmDialog from "Control/ControlDialog";
 import React from "react";
 import "../style.css";
@@ -9,73 +8,70 @@ import PlainteShop from "./PlainteShop";
 import Support from "./Support";
 import SychroTeam from "./SynchroTeam";
 
-function Role() {
-  const [selected, setSelected] = React.useState("");
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Accordion from "@mui/material/Accordion";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import Typography from "@mui/material/Typography";
+
+export default function ControlledAccordions() {
+  const [expanded, setExpanded] = React.useState(false);
+
+  const handleChange = (panel) => (event, isExpanded) => {
+    setExpanded(isExpanded ? panel : false);
+  };
 
   const [confirmDialog, setConfirmDialog] = React.useState({
     isOpen: false,
     title: "",
     subTitle: "",
   });
-
   const table = [
-    { id: "31660", title: "SUPPORT TEAM (reponse)" },
-    { id: "31661", title: "ENREGISTREMENT DES PLAINTES (shop)" },
-    { id: "31663", title: "ENREGISTREMENT DES PLAINTES (call center)" },
-    { id: "31662", title: "BACK OFFICE (plainte)" },
-    { id: "31664", title: "SYNCHRO TEAM" },
-    { id: "31665", title: "CONFIRMATION DES CAS VISITES MENAGES" },
+    { id: "31660", title: "Support team (reponse)", composant: <Support /> },
+    {
+      id: "31661",
+      title: "Enregistrement des plaintes (shop)",
+      composant: <PlainteShop />,
+    },
+    {
+      id: "31663",
+      title: "Enregistrement des plaintes (call center)",
+      composant: <PlainteCallCenter />,
+    },
+    { id: "31662", title: "Backoffice", composant: <BackOffice /> },
+    { id: "31664", title: "Synchro team", composant: <SychroTeam /> },
+    {
+      id: "31665",
+      title: "Confirmation des cas visites ménages",
+      composant: <ConfirmationCas />,
+    },
   ];
   return (
     <div>
-      <Grid container>
-        <Grid item lg={4}>
-          <div style={{ marginTop: "10px" }}>
-            {table.map((index) => {
-              return (
-                <Grid
-                  sx={{ marginBottom: "10px" }}
-                  key={index.id}
-                  onClick={() => setSelected(index.id)}
-                  className={selected === index.id ? "selected" : "notSelected"}
-                >
-                  <p style={{ padding: "0px", margin: "0px" }}>{index.title}</p>
-                </Grid>
-              );
-            })}
-          </div>
-        </Grid>
-        {selected === "31661" && (
-          <Grid item lg={8}>
-            <PlainteShop />
-          </Grid>
-        )}
-        {selected === "31662" && (
-          <Grid item lg={8}>
-            <BackOffice />
-          </Grid>
-        )}
-        {selected === "31663" && (
-          <Grid item lg={8}>
-            <PlainteCallCenter />
-          </Grid>
-        )}
-        {selected === "31664" && (
-          <Grid item lg={8}>
-            <SychroTeam />
-          </Grid>
-        )}
-        {selected === "31660" && (
-          <Grid item lg={8}>
-            <Support />
-          </Grid>
-        )}
-        {selected === "31665" && (
-          <Grid item lg={8}>
-            <ConfirmationCas />
-          </Grid>
-        )}
-      </Grid>
+      {table.map((index) => {
+        return (
+          <Accordion
+            key={index.id}
+            expanded={expanded === index.id}
+            onChange={handleChange(index.id)}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1bh-content"
+              id="panel1bh-header"
+            >
+              <Typography
+                component="span"
+                sx={{ width: "100%", flexShrink: 0 }}
+              >
+                {index.title}
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>{index.composant}</AccordionDetails>
+          </Accordion>
+        );
+      })}
+
       <ConfirmDialog
         confirmDialog={confirmDialog}
         setConfirmDialog={setConfirmDialog}
@@ -83,5 +79,3 @@ function Role() {
     </div>
   );
 }
-
-export default Role;

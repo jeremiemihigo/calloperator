@@ -7,16 +7,26 @@ import DashboardCard from "src/components/shared/DashboardCard";
 
 function Commentaires({ data, type }) {
   const [donner, setDonner] = React.useState([]);
-  const projet = useSelector((state) => state.projet.projet);
   const prospect = useSelector((state) => state.prospect.prospect);
+
+  const loading = async () => {
+    try {
+      if (type === "projet") {
+        setDonner(data.commentaire || []);
+      }
+      if (type === "prospect" && prospect) {
+        setDonner(
+          prospect.filter((x) => x.id === data?.id)[0].commentaire || []
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   React.useEffect(() => {
-    if (type === "projet" && projet) {
-      setDonner(projet.filter((x) => x.id === data?.id)[0].commentaire || []);
-    }
-    if (type === "prospect" && prospect) {
-      setDonner(prospect.filter((x) => x.id === data?.id)[0].commentaire || []);
-    }
-  }, [projet, prospect, data, type]);
+    loading();
+  }, [prospect, data, type]);
 
   const bottomRef = useRef(null);
 
@@ -39,7 +49,7 @@ function Commentaires({ data, type }) {
 
   return (
     <div className="div_commentaire">
-      {data && (
+      {donner && (
         <DashboardCard title={returnTitle()} subtitle={data?.description}>
           {donner.map((index) => {
             return (

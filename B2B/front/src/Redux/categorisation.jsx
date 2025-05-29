@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { useNavigate } from "react-router";
 import { config, lien } from "../static/Lien";
 const initialState = {
   categorie: undefined,
@@ -13,11 +14,17 @@ const initialState = {
 };
 
 // Async thunk to read categorie data
+
 export const Readcategories = createAsyncThunk(
   "categorie/Readcategories",
   async (_id, { rejectWithValue }) => {
     try {
       const response = await axios.get(`${lien}/readCategorisation`, config);
+      if (response.data === "token_expired") {
+        const navigate = useNavigate();
+        localStorage.removeItem("auth");
+        navigate("/auth/login");
+      }
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data);

@@ -78,6 +78,10 @@ app.use("/issue", require("./Routes/Issue"));
 app.use("/dt", require("./Routes/DefaultTracker"));
 app.use("/bboxx/image", express.static(path.resolve(__dirname, "Images")));
 app.use("/bboxx/file", express.static(path.resolve(__dirname, "Fichiers")));
+app.use(
+  "/bboxx/image/admin",
+  express.static(path.resolve(__dirname, "ImageAdmin"))
+);
 app.use("/bboxx/dashboard", require("./Routes/dash_dt"));
 app.use("/bboxx/portofolio", require("./Routes/Portofolio"));
 

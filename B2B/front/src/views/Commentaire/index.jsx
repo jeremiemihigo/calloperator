@@ -1,13 +1,12 @@
 import { TextField } from "@mui/material";
 import { IconSend } from "@tabler/icons-react";
+import axios from "axios";
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
-import { AddCommentaire } from "../../Redux/projet";
 import { changeStatusProspect } from "../../Redux/prospect";
-import { allstatus } from "../../static/Lien";
+import { allstatus, config, lien } from "../../static/Lien";
 import Selected from "../../static/Select";
-import DirectionSnackbar from "../../Static/SnackBar";
 import Commentaires from "./Commentaires";
 import "./style.css";
 
@@ -28,19 +27,24 @@ function CommentaireIndex() {
 
   const [commentaire, setCommentaire] = React.useState("");
   const dispatch = useDispatch();
-  const projet = useSelector((state) => state.projet);
-  const sendData = (event) => {
+  const sendData = async (event) => {
     event.preventDefault();
     try {
       if (commentaire !== "" && state.type === "projet") {
-        dispatch(
-          AddCommentaire({
+        const response = await axios.post(
+          `${lien}/changestatus`,
+          {
             statut,
             commentaire,
             concerne: data?.id,
-          })
+          },
+          config
         );
-        setCommentaire("");
+        if (response.status === 200) {
+          setData(response.data);
+          setStatut(response.data.statut);
+          setCommentaire("");
+        }
       }
       if (commentaire !== "" && state.type === "prospect") {
         dispatch(
@@ -54,9 +58,6 @@ function CommentaireIndex() {
   };
   return (
     <div className="chat-container">
-      {projet.comment === "rejected" && (
-        <DirectionSnackbar message={projet.commentError} />
-      )}
       {data && (
         <div className="messages">
           <div>

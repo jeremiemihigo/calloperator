@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Paper,
   Table,
   TableBody,
@@ -14,7 +13,7 @@ import moment from "moment";
 import React from "react";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
-import AddAction from "./AddAction";
+import AddActionForm from "./AddAction.jsx";
 import "./detail.style.css";
 
 const DetailsProjet = () => {
@@ -22,7 +21,6 @@ const DetailsProjet = () => {
   const { state } = location;
   const navigation = useNavigate();
 
-  const [open, setOpen] = React.useState(false);
   const steps = useSelector((state) => state.steps.step);
   const returnStep = (id) => {
     return _.filter(steps, { id })[0]?.title;
@@ -46,9 +44,11 @@ const DetailsProjet = () => {
         <Typography component="p" className="description_projet">
           {data && data?.description}
         </Typography>
-        <Typography component="p" className="autres_projet">
-          <span>Responsable</span> : {data?.responsable}
-        </Typography>
+        {data?.responsable && (
+          <Typography component="p" className="autres_projet">
+            <span>Responsable</span> : {data?.responsable}
+          </Typography>
+        )}
         <Typography component="p" className="autres_projet">
           <span>Contact : </span> {data?.contact}
         </Typography>
@@ -64,13 +64,6 @@ const DetailsProjet = () => {
           <span>En charge : </span>
           {data?.suivi_par}
         </Typography>
-        <Button
-          onClick={() => setOpen(true)}
-          color="primary"
-          variant="contained"
-        >
-          Event
-        </Button>
       </Paper>
       <Box sx={{ overflow: "auto", width: { xs: "280px", sm: "auto" } }}>
         {data &&
@@ -201,7 +194,7 @@ const DetailsProjet = () => {
       </Box>
 
       <Paper sx={{ padding: "10px" }}>
-        <AddAction data={data} setData={setData} />
+        <AddActionForm data={data} setData={setData} />
       </Paper>
     </>
   );

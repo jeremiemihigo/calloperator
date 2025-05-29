@@ -1,6 +1,7 @@
 import { Button, TextField } from "@mui/material";
 import { Grid } from "@mui/system";
 import axios from "axios";
+import _ from "lodash";
 import React from "react";
 import { useSelector } from "react-redux";
 import AutoComplement from "../../../static/AutoComplement";
@@ -12,6 +13,21 @@ function AddActionForm({ data, setData }) {
   const steps = useSelector((state) =>
     state.steps.step.filter((x) => x.concerne === "projet")
   );
+  const [cout, setCout] = React.useState({
+    depense: "",
+    cout: "",
+  });
+  const [allcout, setAllcout] = React.useState([]);
+
+  const onchangecout = (event) => {
+    try {
+      const { name, value } = event.target;
+      setCout({ ...cout, [name]: value });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const [stepSelect, setStepSelect] = React.useState("");
   const [action, setAction] = React.useState("");
   const [message, setMessage] = React.useState("");
@@ -27,6 +43,7 @@ function AddActionForm({ data, setData }) {
           concerne: data?.id,
           next_step: stepSelect?.id,
           statut_actuel: data?.next_step,
+          cout: allcout,
         },
         config
       );
@@ -80,9 +97,9 @@ function AddActionForm({ data, setData }) {
             <TextField
               name="depense"
               label="Ajoutez une dépense effectuée"
+              value={cout.depense}
               variant="outlined"
-              value={action}
-              onChange={(event) => setAction(event.target.value)}
+              onChange={(event) => onchangecout(event)}
               fullWidth
               multiline
               sx={{
@@ -96,9 +113,9 @@ function AddActionForm({ data, setData }) {
             <TextField
               name="cout"
               label="Coût"
+              value={cout.cout}
               variant="outlined"
-              value={action}
-              onChange={(event) => setAction(event.target.value)}
+              onChange={(event) => onchangecout(event)}
               fullWidth
               multiline
               sx={{
@@ -112,6 +129,10 @@ function AddActionForm({ data, setData }) {
             <Button
               variant="contained"
               color="primary"
+              onClick={() => {
+                setAllcout([...allcout, { id: allcout.length + 1, ...cout }]);
+                setCout({ depense: "", cout: "" });
+              }}
               fullWidth
               sx={{ mt: 2 }}
             >
@@ -119,6 +140,49 @@ function AddActionForm({ data, setData }) {
             </Button>
           </Grid>
         </Grid>
+        <div className="tableau_detail">
+          <table>
+            <thead>
+              <tr>
+                <td>#</td>
+                <td>Dépense</td>
+                <td>Coût</td>
+                <td>Option</td>
+              </tr>
+            </thead>
+            <tbody>
+              {allcout.map((index, key) => {
+                return (
+                  <tr key={key}>
+                    <td>{index.id}</td>
+                    <td>{index.depense}</td>
+                    <td>{index.cout}</td>
+                    <td
+                      className="delete"
+                      onClick={() =>
+                        setAllcout(allcout.filter((x) => x.id !== index.id))
+                      }
+                    >
+                      Delete
+                    </td>
+                  </tr>
+                );
+              })}
+              <tr>
+                <td colSpan="2">Total</td>
+                <td colSpan="2">
+                  {_.reduce(
+                    allcout,
+                    function (next, curr) {
+                      return next + parseFloat(curr.cout);
+                    },
+                    0
+                  )}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </Grid>
     </Grid>
   );

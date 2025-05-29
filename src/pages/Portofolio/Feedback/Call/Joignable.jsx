@@ -141,7 +141,7 @@ function Joignable() {
                 propr="title"
               />
               <div style={{ marginTop: "10px" }}>
-                {toutvabien?.id === "autre" && (
+                {toutvabien?.idFeedback === "autre" && (
                   <TextField
                     onChange={(event) =>
                       setSiOui({

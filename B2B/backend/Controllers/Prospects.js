@@ -3,7 +3,16 @@ const { generateString } = require("../static/fonction");
 
 const AddProspect = async (req, res) => {
   try {
-    const { name, projet, description, next_step } = req.body;
+    const {
+      name,
+      projet,
+      contact,
+      suivi_par,
+      adresse,
+      email,
+      description,
+      next_step,
+    } = req.body;
     if (!name || !description || !next_step) {
       return res.status(404).json("Veuillez renseigner les champs obligatoire");
     }
@@ -15,6 +24,10 @@ const AddProspect = async (req, res) => {
       description,
       next_step,
       savedBy: req.user.name,
+      contact,
+      suivi_par,
+      adresse,
+      email,
     })
       .then((result) => {
         return res.status(200).json(result);

@@ -23,7 +23,7 @@ function ListeProspect({ donner }) {
     navigation("/commentaire", { state: { data: prospect, type: "prospect" } });
   };
   const lastComment = (index) => {
-    if (index.commentaire.length > 0) {
+    if (index.commentaire && index?.commentaire.length > 0) {
       return (
         <Typography
           style={{
@@ -55,6 +55,11 @@ function ListeProspect({ donner }) {
     }
   };
   const [statut, setStatut] = React.useState("");
+
+  const clickProjet = (projet) => {
+    navigation("/detail_projet", { state: projet });
+  };
+
   return (
     <div>
       <Grid container>
@@ -99,12 +104,24 @@ function ListeProspect({ donner }) {
                 className={returnclasse(index.statut)}
               >
                 <Grid item size={{ lg: 10 }} className="projetname">
-                  <Typography className="titreprojet">
-                    {index.id} #<span>{index.name}</span>
+                  <Typography className="titreprojet" component="p">
+                    {index.id} #
+                    <Typography
+                      component="span"
+                      onClick={() => clickProjet(index)}
+                    >
+                      {index.name}
+                    </Typography>
                   </Typography>
                   <Typography className="description">
                     {index.description}
                   </Typography>
+                  {index.projet.length > 0 && (
+                    <Typography className="next_step" noWrap>
+                      <span style={{ fontWeight: "bolder" }}>Projet</span> :{" "}
+                      {index.projet[0].designation}
+                    </Typography>
+                  )}
                   <Typography className="next_step" noWrap>
                     <span style={{ fontWeight: "bolder" }}>Next_step</span> :{" "}
                     {returnStep(index.next_step)}
@@ -132,7 +149,7 @@ function ListeProspect({ donner }) {
                     Last Update {moment(index.updatedAt).fromNow()}
                   </Typography>
                   <Typography component="p" className="next_step" noWrap>
-                    <p>{index.statut}</p>
+                    {index.statut}
                   </Typography>
                 </Grid>
               </Grid>

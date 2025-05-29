@@ -12,7 +12,7 @@ import React from 'react';
 // assets
 import { LogoutOutlined } from '@ant-design/icons';
 import { CreateContexteGlobal } from 'GlobalContext';
-import avatar1 from 'assets/images/users/avatar-1.png';
+import avatar1 from 'assets/images/users/profile.png';
 import { useSelector } from 'react-redux';
 
 // tab panel wrapper
@@ -67,10 +67,12 @@ const Profile = () => {
         aria-haspopup="true"
         onClick={handleToggle}
       >
-        <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
-          <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
-          <Typography variant="subtitle1">{user && user.nom}</Typography>
-        </Stack>
+        {user && (
+          <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
+            <Avatar alt="profile user" src={user.filename || avatar1} sx={{ width: 32, height: 32 }} />
+            <Typography variant="subtitle1">{user.nom}</Typography>
+          </Stack>
+        )}
       </ButtonBase>
       <Popper
         placement="bottom-end"
@@ -109,12 +111,14 @@ const Profile = () => {
                     <CardContent sx={{ px: 2.5, pt: 3 }}>
                       <Grid onClick={handleLogout} container sx={{ cursor: 'pointer' }} justifyContent="space-between" alignItems="center">
                         <Grid item>
-                          <Stack direction="row" spacing={1.25} alignItems="center">
-                            <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
-                            <Stack>
-                              <Typography variant="h6">Déconnection</Typography>
+                          {user && (
+                            <Stack direction="row" spacing={1.25} alignItems="center">
+                              <Avatar alt="profile user" src={user.filename || avatar1} sx={{ width: 50, height: 50 }} />
+                              <Stack>
+                                <Typography variant="h6">Déconnection</Typography>
+                              </Stack>
                             </Stack>
-                          </Stack>
+                          )}
                         </Grid>
                         <Grid item>
                           <IconButton size="large" color="secondary">

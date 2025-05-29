@@ -32,8 +32,8 @@ const other = {
       icon: BgColorsOutlined
     },
     {
-      id: 'Performance of agents',
-      title: 'Performance of agents',
+      id: 'Communications',
+      title: 'Communications',
       type: 'item',
       url: '/performance',
       icon: LineChartOutlined

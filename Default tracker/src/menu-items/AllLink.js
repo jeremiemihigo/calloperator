@@ -63,8 +63,8 @@ const utilities = {
       icon: NodeCollapseOutlined
     },
     {
-      id: 'Performance of agents',
-      title: 'Performance of agents',
+      id: 'Communications',
+      title: 'Communications',
       type: 'item',
       url: '/performance',
       icon: LineChartOutlined

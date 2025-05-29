@@ -8,9 +8,15 @@ import DirectionSnackbar from "../../Static/SnackBar";
 import { ContexteProjet } from "./Context";
 
 function FormProjet() {
-  const step = useSelector((state) =>
-    state.steps.step.filter((x) => x.concerne === "projet")
-  );
+  const [step, setStep] = React.useState();
+  const allstep = useSelector((state) => state.steps?.step);
+
+  React.useEffect(() => {
+    if (allstep && allstep !== "token_expired") {
+      setStep(allstep.filter((x) => x.concerne === "projet"));
+    }
+  }, [allstep]);
+
   const { state, projetListe, setProjetListe } =
     React.useContext(ContexteProjet);
   const [stepselect, setStepSelect] = React.useState("");

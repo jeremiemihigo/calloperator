@@ -9,6 +9,10 @@
 .projetname .titreprojet {
   font-weight: bolder;
   font-size: 1rem;
+  padding-right: 20px;
+}
+.projetname {
+  padding-right: 20px;
 }
 .display {
   display: flex;
@@ -46,4 +50,18 @@
 }
 .titreprojet > span {
   cursor: pointer;
+}
+.prix_total {
+  background-color: rgb(0, 169, 254);
+  padding: 10px;
+  width: 100%;
+  text-align: center;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.prix_total > p {
+  padding: 0;
+  margin: 0;
+  font-size: 15px;
+  font-weight: bolder;
 }

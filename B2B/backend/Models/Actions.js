@@ -3,6 +3,7 @@ const ModelProjet = require("./Projet");
 
 const schema = new mongoose.Schema({
   action: { type: String, required: true },
+  id: { type: String, required: true },
   concerne: { type: String, required: true },
   dateSave: { type: Date, required: true },
   next_step: { type: String, required: true },

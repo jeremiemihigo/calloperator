@@ -7,13 +7,16 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import React from "react";
-
 import axios from "axios";
+import Pusher from "pusher-js";
+import React from "react";
 import CustomTextField from "../../../components/forms/theme-elements/CustomTextField";
 import { lien } from "../../../Static/Lien";
 
-const AuthLogin = ({ title, subtitle, subtext }) => {
+const AuthLogin = () => {
+  var pusher = new Pusher("cd39021e8a157783f594", {
+    cluster: "ap2",
+  });
   const [initiale, setInitiale] = React.useState();
   const onchange = (event) => {
     const { name, value } = event.target;
@@ -27,8 +30,21 @@ const AuthLogin = ({ title, subtitle, subtext }) => {
     try {
       const response = await axios.post(lien + "/login", initiale);
       if (response.status === 200) {
+        pusher.connection.bind("connected", () => {
+          const socketId = pusher.connection.socket_id;
+          console.log(socketId);
+          // Envoie-le à ton backend pour l’associer à ton utilisateur
+          fetch("/api/register-socket", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userId: "USER_ID_HERE",
+              socketId: socketId,
+            }),
+          });
+        });
         localStorage.setItem("auth", response.data);
-        window.location.replace("/projets");
+        //window.location.replace("/projets");
       } else {
         setMessage(response.data);
       }

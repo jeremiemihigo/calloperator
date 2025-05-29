@@ -1,5 +1,4 @@
-import { Add } from "@mui/icons-material";
-import { Fab, Tooltip } from "@mui/material";
+import { Typography } from "@mui/material";
 import ConfirmDialog from "Control/ControlDialog";
 import { isArray } from "lodash";
 import React from "react";
@@ -23,11 +22,12 @@ function Index() {
 
   return (
     <div>
-      <Tooltip title="Renseigner un agent">
-        <Fab size="small" color="primary" onClick={() => setOpen(true)}>
-          <Add fontSize="small" />
-        </Fab>
-      </Tooltip>
+      <Typography
+        sx={{ color: "blue", marginBottom: "10px", cursor: "pointer" }}
+        onClick={() => setOpen(true)}
+      >
+        Ajoutez
+      </Typography>
       <div>
         <table>
           <thead>

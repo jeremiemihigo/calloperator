@@ -1,4 +1,4 @@
-import { Button, TextField, Typography } from "@mui/material";
+import { Badge, Button, Typography } from "@mui/material";
 import { Grid } from "@mui/system";
 import { IconMessage } from "@tabler/icons-react";
 import _ from "lodash";
@@ -11,27 +11,38 @@ import Popup from "src/static/Popup";
 import { allstatus } from "../../static/Lien";
 import Loading from "../../static/Loading";
 import Selected from "../../static/Select";
+import FormProspect from "../Prospect/AddProspect";
 import { ContexteProjet } from "./Context";
 import FormProjet from "./FormProjet";
+import ListeCout from "./ListeCout";
 import "./projet.style.css";
 
 const RecentTransactions = () => {
   const { projetListe, state } = React.useContext(ContexteProjet);
   const [openform, setOpenForm] = React.useState(false);
-  const step = useSelector((state) =>
-    state.steps.step.filter((x) => x.concerne === "projet")
-  );
+  const navigation = useNavigate();
+
+  const [step, setStep] = React.useState();
+  const allstep = useSelector((state) => state.steps?.step);
+
+  React.useEffect(() => {
+    if (allstep && allstep !== "token_expired") {
+      setStep(allstep.filter((x) => x.concerne === "projet"));
+    }
+    if (allstep && allstep === "token_expired") {
+      navigation("/auth/login");
+    }
+  }, [allstep]);
+
   const returnStep = (id) => {
     return _.filter(step, { id })[0].title;
   };
 
-  const navigation = useNavigate();
   const clickProjet = (projet) => {
     navigation("/detail_projet", { state: projet });
   };
   const clickCommentaire = (projet, event) => {
     event.preventDefault();
-
     navigation("/commentaire", { state: { data: projet, type: "projet" } });
   };
   const clickProspect = (projet, event) => {
@@ -50,7 +61,7 @@ const RecentTransactions = () => {
       return "abandonner";
     }
   };
-  const [statut, setStatut] = React.useState("");
+  const [statut, setStatut] = React.useState("all");
   const lastComment = (index) => {
     if (index?.commentaire && index?.commentaire.length > 0) {
       return (
@@ -72,6 +83,41 @@ const RecentTransactions = () => {
       );
     }
   };
+  const returnMontant = (index) => {
+    return _.reduce(
+      index,
+      function (curr, next) {
+        return curr + next.cout;
+      },
+      0
+    );
+  };
+  const [opencout, setOpencout] = React.useState(false);
+  const [datacout, setDataCout] = React.useState();
+
+  const [openadd, setOpenAdd] = React.useState(false);
+  const functionAddone = (donn) => {
+    setDataCout(donn);
+    setOpenAdd(true);
+  };
+
+  const [filterFn, setFilterFn] = React.useState({
+    fn: (items) => {
+      return items;
+    },
+  });
+
+  React.useEffect(() => {
+    setFilterFn({
+      fn: (items) => {
+        if (statut === "all") {
+          return items;
+        } else {
+          return items.filter((x) => x.statut === statut);
+        }
+      },
+    });
+  }, [statut]);
 
   return (
     <>
@@ -95,20 +141,6 @@ const RecentTransactions = () => {
         >
           <>
             <Grid container>
-              <Grid item size={{ lg: 6 }} className="display_">
-                <TextField
-                  name="id"
-                  label="ID Projet"
-                  id="id"
-                  variant="outlined"
-                  fullWidth
-                  sx={{
-                    mt: 2,
-                    mb: 2,
-                    minWidth: "20rem",
-                  }}
-                />
-              </Grid>
               <Grid
                 item
                 size={{ lg: 3 }}
@@ -117,7 +149,7 @@ const RecentTransactions = () => {
               >
                 <Selected
                   label="Statut"
-                  data={[...allstatus, { id: 4, title: "Tous", value: "all" }]}
+                  data={[{ id: 6, title: "Tous", value: "all" }, ...allstatus]}
                   value={statut}
                   setValue={setStatut}
                 />
@@ -127,7 +159,7 @@ const RecentTransactions = () => {
               step &&
               step.length > 0 &&
               projetListe.length > 0 &&
-              projetListe.map((index) => {
+              filterFn.fn(projetListe).map((index) => {
                 return (
                   <Grid
                     container
@@ -153,6 +185,7 @@ const RecentTransactions = () => {
                           index?.prospects.length > 0 &&
                           clickProspect(index?.prospects, event)
                         }
+                        component="p"
                         style={{
                           fontSize: "12px",
                           textDecoration: "underline",
@@ -163,6 +196,13 @@ const RecentTransactions = () => {
                         {index?.prospects?.length > 1
                           ? "prospects"
                           : " prospect"}
+                        <Typography
+                          onClick={() => functionAddone(index.id)}
+                          component="span"
+                          sx={{ marginLeft: "20px" }}
+                        >
+                          Add Prospect
+                        </Typography>
                       </Typography>
                       {lastComment(index)}
 
@@ -177,17 +217,35 @@ const RecentTransactions = () => {
                     </Grid>
                     <Grid item size={{ lg: 2 }} className="display">
                       <div style={{ cursor: "pointer" }}>
-                        <IconMessage
-                          onClick={(event) => clickCommentaire(index, event)}
-                          fontSize="small"
-                        />
+                        <Badge
+                          badgeContent={
+                            index?.commentaire ? index?.commentaire.length : 0
+                          }
+                          color="primary"
+                        >
+                          <IconMessage
+                            onClick={(event) => clickCommentaire(index, event)}
+                            fontSize="small"
+                          />
+                        </Badge>
                       </div>
                       <Typography component="p" className="next_step" noWrap>
                         Last Update {moment(index.updatedAt).fromNow()}
                       </Typography>
                       <Typography component="p" className="next_step" noWrap>
-                        <p>{index.statut}</p>
+                        {index.statut}
                       </Typography>
+                      <Grid
+                        className="prix_total"
+                        onClick={() => {
+                          setDataCout(index);
+                          setOpencout(true);
+                        }}
+                      >
+                        <Typography component="p" className="cout" noWrap>
+                          ${returnMontant(index.cout)}
+                        </Typography>
+                      </Grid>
                     </Grid>
                   </Grid>
                 );
@@ -199,6 +257,20 @@ const RecentTransactions = () => {
       <Popup open={openform} setOpen={setOpenForm} title="Project">
         <FormProjet />
       </Popup>
+      {datacout && (
+        <Popup
+          open={opencout}
+          setOpen={setOpencout}
+          title={datacout?.designation}
+        >
+          <ListeCout concerne={datacout.id} />
+        </Popup>
+      )}
+      {datacout && (
+        <Popup open={openadd} setOpen={setOpenAdd} title="Ajoutez un prospect">
+          <FormProspect projetSelect={datacout} />
+        </Popup>
+      )}
     </>
   );
 };

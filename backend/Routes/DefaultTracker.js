@@ -21,7 +21,6 @@ const {
   Graphique,
   GraphiqueClient,
   TauxValidation,
-  PerformanceDash,
   StatusDashboard,
 } = require("../Controllers/DefaultTracker/Dashboard");
 const {
@@ -51,6 +50,7 @@ const {
   ChangeDecisionByFile,
   SubmitDecisionByFile,
 } = require("../Controllers/DefaultTracker/Decision");
+const { SendMessage } = require("../Controllers/DefaultTracker/Performance");
 const router = express.Router();
 
 router.post("/role", protect, AddRoleDT);
@@ -82,10 +82,12 @@ router.post("/oneaction", protect, AddOneAction);
 router.post("/change_action_excel", protect, SubmitedByExcel);
 router.post("/valideraction", protect, ValiderAction);
 
+//Performance
+router.post("/sendmessage", protect, SendMessage);
+
 router.post("/changeactionbyfile", protect, ChangeActionByFile);
 router.get("/statusDashboard", StatusDashboard);
 router.get("/actionAgent", protectTech, ActionAgent);
-router.post("/performance_agent", protect, PerformanceDash);
 router.get("/graphique", protect, GraphiqueClient, Graphique);
 router.get("/graphique_taux", protect, GraphiqueClient, TauxValidation);
 

@@ -6,6 +6,10 @@
   margin-bottom: 20px;
   cursor: pointer;
 }
+.actif {
+  background-color: rgb(0, 169, 254);
+  border: none !important;
+}
 .title_categorie > p,
 .item_categorie > p {
   padding: 0;

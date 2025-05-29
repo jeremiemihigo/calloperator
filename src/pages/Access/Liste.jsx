@@ -1,45 +1,54 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
-import { DataGrid } from '@mui/x-data-grid';
-import DirectionSnackbar from 'Control/SnackBar';
-import { Button } from 'antd';
-import axios from 'axios';
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { config, lien } from 'static/Lien';
-import Popup from 'static/Popup';
-import AgentAdmin from './AgentAdmin';
+import { DataGrid } from "@mui/x-data-grid";
+import DirectionSnackbar from "Control/SnackBar";
+import { Button } from "antd";
+import axios from "axios";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { config, lien } from "static/Lien";
+import Popup from "static/Popup";
+import AgentAdmin from "./AgentAdmin";
 
-import { Delete, Edit, ResetTvOutlined } from '@mui/icons-material';
-import { Fab, Tooltip } from '@mui/material';
-import Dot from 'components/@extended/Dot';
-import { returnRole } from 'utils/Lien';
-import UpdateAgentAdmin from './UpdateAgentAdmin';
+import { Delete, Edit, ResetTvOutlined } from "@mui/icons-material";
+import { Avatar, Box, Fab, Tooltip, useTheme } from "@mui/material";
+import Dot from "components/@extended/Dot";
+import { returnRole } from "utils/Lien";
+import UpdateAgentAdmin from "./UpdateAgentAdmin";
 
 function AgentListeAdmin() {
+  const theme = useTheme();
   const userAdmin = useSelector((state) => state.agentAdmin?.agentAdmin);
   const [agentEdit, setAgentEdit] = React.useState();
   const [openEdit, setOpenEdit] = React.useState(false);
   const role = useSelector((state) => state.role.role);
   const [open, setOpen] = useState(false);
   const [openForm, setOpenForm] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
   const bloquerAgent = async (agent) => {
-    const response = await axios.put(lien + '/bloquerAgentAdmin', { id: agent._id, value: !agent.active }, config);
+    const response = await axios.put(
+      lien + "/bloquerAgentAdmin",
+      { id: agent._id, value: !agent.active },
+      config
+    );
     if (response.status === 200) {
-      window.location.replace('/access');
+      window.location.replace("/access");
     } else {
-      setMessage('' + response.data);
+      setMessage("" + response.data);
       setOpen(true);
     }
   };
   const resetPassword = async (agent) => {
-    const response = await axios.post(lien + '/resetAdmin', { id: agent._id }, config);
+    const response = await axios.post(
+      lien + "/resetAdmin",
+      { id: agent._id },
+      config
+    );
     if (response.status === 200) {
-      window.location.replace('/access');
+      window.location.replace("/access");
     } else {
-      setMessage('' + response.data);
+      setMessage("" + response.data);
       setOpen(true);
     }
   };
@@ -50,74 +59,144 @@ function AgentListeAdmin() {
 
   const columns = [
     {
-      field: 'codeAgent',
-      headerName: 'Code',
+      field: "avatar",
+      headerName: "#",
+      width: 70,
+      editable: false,
+      renderCell: (p) => {
+        return (
+          <Avatar alt={p.row.nom} src={p.row.filename || "/profile.png"} />
+        );
+      },
+    },
+    {
+      field: "codeAgent",
+      headerName: "Code",
       width: 120,
-      editable: false
+      editable: false,
     },
     {
-      field: 'nom',
-      headerName: 'NOMS',
+      field: "nom",
+      headerName: "NOMS",
       width: 200,
-      editable: false
+      editable: false,
     },
     {
-      field: 'fonction',
-      headerName: 'Fonction',
+      field: "fonction",
+      headerName: "Fonction",
       width: 150,
-      editable: false
+      editable: false,
+      renderCell: (p) => {
+        return (
+          <>{p.row.fonction === "co" ? "Call operator" : p.row.fonction}</>
+        );
+      },
     },
 
     {
-      field: 'first',
-      headerName: 'Log',
+      field: "first",
+      headerName: "Log",
       width: 50,
       editable: false,
       renderCell: (params) => {
-        return params.row.first ? <Dot color="error" /> : <Dot color="success" />;
-      }
+        return params.row.first ? (
+          <Dot color="error" />
+        ) : (
+          <Dot color="success" />
+        );
+      },
     },
     {
-      field: 'role',
-      headerName: 'Role',
+      field: "active",
+      headerName: "Status",
+      width: 70,
+      editable: false,
+      renderCell: (p) => {
+        return (
+          <>
+            {p.row.active ? (
+              <Box
+                sx={{
+                  bgcolor: theme.palette.success.main,
+                  width: "100%",
+                  borderRadius: "5px",
+                  textAlign: "center",
+                }}
+              >
+                Actif
+              </Box>
+            ) : (
+              <Box
+                sx={{
+                  bgcolor: theme.palette.warning.main,
+                  width: "100%",
+                  borderRadius: "5px",
+                  textAlign: "center",
+                }}
+              >
+                Inactif
+              </Box>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      field: "role",
+      headerName: "Role",
       width: 150,
       editable: false,
       renderCell: (params) => {
         return returnRole(role, params.row.role);
-      }
+      },
     },
     {
-      field: 'reset',
-      headerName: 'Reset',
+      field: "reset",
+      headerName: "Reset",
       width: 200,
       editable: false,
       renderCell: (params) => {
         return (
           <>
             <Tooltip title="Reset password">
-              <Fab color="primary" size="small" onClick={() => resetPassword(params.row)}>
+              <Fab
+                color="primary"
+                size="small"
+                onClick={() => resetPassword(params.row)}
+              >
                 <ResetTvOutlined fontSize="small" />
               </Fab>
             </Tooltip>
             <Tooltip title="Edit">
-              <Fab onClick={() => clickEdit(params.row)} color="info" size="small" sx={{ margin: '0px 10px' }}>
+              <Fab
+                onClick={() => clickEdit(params.row)}
+                color="info"
+                size="small"
+                sx={{ margin: "0px 10px" }}
+              >
                 <Edit fontSize="small" />
               </Fab>
             </Tooltip>
-            <Tooltip title={params.row.active ? 'Blocked' : 'Unblocked'}>
-              <Fab color="warning" size="small" onClick={() => bloquerAgent(params.row)}>
+            <Tooltip title={params.row.active ? "Blocked" : "Unblocked"}>
+              <Fab
+                color="warning"
+                size="small"
+                onClick={() => bloquerAgent(params.row)}
+              >
                 <Delete fontSize="small" />
               </Fab>
             </Tooltip>
           </>
         );
-      }
-    }
+      },
+    },
   ];
 
   return (
-    <div style={{ padding: '5px' }}>
-      {open && message !== '' && <DirectionSnackbar open={open} setOpen={setOpen} message={message} />}
+    <div style={{ padding: "5px" }}>
+      {open && message !== "" && (
+        <DirectionSnackbar open={open} setOpen={setOpen} message={message} />
+      )}
       <Button type="primary" onClick={() => setOpenForm(true)}>
         Ajoutez un agent
       </Button>
@@ -129,11 +208,11 @@ function AgentListeAdmin() {
             initialState={{
               pagination: {
                 paginationModel: {
-                  pageSize: 7
-                }
-              }
+                  pageSize: 50,
+                },
+              },
             }}
-            pageSizeOptions={[7]}
+            pageSizeOptions={[50]}
           />
         )}
       </div>
@@ -141,7 +220,11 @@ function AgentListeAdmin() {
         <AgentAdmin />
       </Popup>
       {agentEdit && (
-        <Popup open={openEdit} setOpen={setOpenEdit} title={`Modification de l'agent ${agentEdit?.nom}`}>
+        <Popup
+          open={openEdit}
+          setOpen={setOpenEdit}
+          title={`Modification de l'agent ${agentEdit?.nom}`}
+        >
           <UpdateAgentAdmin agent={agentEdit} />
         </Popup>
       )}

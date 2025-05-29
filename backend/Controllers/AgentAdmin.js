@@ -61,7 +61,7 @@ const AddAdminAgent = async (req, res) => {
 //Corbeille done
 const ReadAgentAdmin = async (req, res) => {
   try {
-    ModelAgentAdmin.find({ active: true })
+    ModelAgentAdmin.find({})
       .lean()
       .then((agents) => {
         if (agents.length > 0) {

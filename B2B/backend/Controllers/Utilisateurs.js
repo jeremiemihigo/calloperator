@@ -20,6 +20,15 @@ const AddUser = async (req, res) => {
     return res.status(404).json(error.message);
   }
 };
+const DeleteUser = async (req, res) => {
+  try {
+    ModelUtilisateur.findOneAndDelete({ username: req.body.username }).then(
+      (result) => {
+        return res.status(200).json(result);
+      }
+    );
+  } catch (error) {}
+};
 const ReadAllUser = async (req, res) => {
   try {
     ModelUtilisateur.find({}, { password: 0 })
@@ -122,6 +131,7 @@ const sendToken = (user, statusCode, res) => {
 module.exports = {
   AddUser,
   readUserConnect,
+  DeleteUser,
   LoginUser,
   ResetPassword,
   ReadAllUser,

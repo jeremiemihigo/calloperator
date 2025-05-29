@@ -12,7 +12,7 @@ import "./categorie.style.css";
 function CategorieIndex() {
   const [open, setOpen] = React.useState(false);
   const categorie = useSelector((state) => state.categorie.categorie);
-  const { setProjetListe, setState } = React.useContext(ContexteProjet);
+  const { setProjetListe, setState, state } = React.useContext(ContexteProjet);
 
   const loadingProjet = async (index) => {
     try {
@@ -33,33 +33,38 @@ function CategorieIndex() {
   };
 
   return (
-    <>
+    <div>
       <Grid className="title_categorie" onClick={() => setOpen(true)}>
         <Typography component="p" noWrap>
           Ajouter une catégorie
         </Typography>
       </Grid>
-      {categorie &&
-        categorie.length > 0 &&
-        categorie.map((index) => {
-          return (
-            <Grid
-              onClick={() => loadingProjet(index)}
-              className="item_categorie"
-              key={index._id}
-            >
-              <Tooltip title={index.title}>
-                <Typography component="p" noWrap>
-                  {index.title}
-                </Typography>
-              </Tooltip>
-            </Grid>
-          );
-        })}
+      <Grid>
+        {categorie &&
+          categorie.length > 0 &&
+          categorie.map((index) => {
+            return (
+              <Grid
+                onClick={() => loadingProjet(index)}
+                className={`${
+                  state?.titre._id === index._id
+                    ? "actif item_categorie"
+                    : "item_categorie"
+                }`}
+                key={index._id}
+              >
+                <Tooltip title={index.title}>
+                  <Typography component="p">{index.title}</Typography>
+                </Tooltip>
+              </Grid>
+            );
+          })}
+      </Grid>
+
       <Popup open={open} setOpen={setOpen} title="Ajouter une catégorie">
         <Ajouter />
       </Popup>
-    </>
+    </div>
   );
 }
 
