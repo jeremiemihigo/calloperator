@@ -12,13 +12,10 @@ const ContexteGlobal = (props) => {
       setRecentSelect(data);
     }
   };
-  const [lastImages, setLatImages] = React.useState();
-  const changeImages = (data) => {
-    setLatImages(data);
-  };
+
   return (
     <CreateContexteDemande.Provider
-      value={{ changeRecent, changeImages, lastImages, recentAnswerSelect }}
+      value={{ changeRecent, recentAnswerSelect }}
     >
       {props.children}
     </CreateContexteDemande.Provider>

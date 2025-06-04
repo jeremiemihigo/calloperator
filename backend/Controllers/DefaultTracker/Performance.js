@@ -23,7 +23,6 @@ const SendMessage = async (req, res) => {
         },
         function (mention, message, done) {
           const returnValue = (agent, text) => {
-            console.log(text);
             if (mention.includes(text)) {
               return agent["" + text];
             } else {

@@ -271,7 +271,7 @@ const AddClientDT = async (req, res) => {
 const ChangeStatus = async (req, res, next) => {
   try {
     const { nom } = req.user;
-    const { id, lastFeedback, nextFeedback, commentaire } = req.body;
+    const { id, lastFeedback, nextFeedback } = req.body;
 
     if (!id || !lastFeedback || !nextFeedback) {
       return res.status(404).json("Veuillez renseigner les champs");
@@ -431,7 +431,6 @@ const ReadFilterClient = async (req, res) => {
               : [...searchData, { $match: filtre }, ...searchData2]
           )
             .then((result) => {
-              console.log(result);
               done(null, result);
             })
             .catch(function (err) {

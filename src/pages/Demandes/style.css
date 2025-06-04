@@ -221,6 +221,7 @@ a {
 }
 .reponsestatic {
   position: fixed;
+  padding: 4px;
 }
 .beforestatic {
   background-color: red !important;

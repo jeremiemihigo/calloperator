@@ -1,14 +1,11 @@
 import { Autocomplete, Button, TextField } from "@mui/material";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import AutoComplement from "src/static/AutoComplement";
 import DirectionSnackbar from "src/Static/SnackBar";
 import { Addprospect } from "../../Redux/prospect";
 
 function FormProspect({ projetSelect }) {
-  const step = useSelector((state) => state.steps.step);
   const prospect = useSelector((state) => state.prospect);
-  const [stepselect, setStepSelect] = React.useState("");
   const alluser = useSelector((state) => state.alluser.user);
   const [suivi_par, setSuivipar] = React.useState([]);
   //designation, description, next_step
@@ -19,8 +16,18 @@ function FormProspect({ projetSelect }) {
     email: "",
     adresse: "",
     contact: "",
+    nextstep: "",
+    deedline: "",
   });
-  const { description, contact, adresse, email, designation } = initiale;
+  const {
+    description,
+    contact,
+    nextstep,
+    deedline,
+    adresse,
+    email,
+    designation,
+  } = initiale;
   const onchange = (event) => {
     const { name, value } = event.target;
     setInitiale({
@@ -38,6 +45,8 @@ function FormProspect({ projetSelect }) {
           description,
           projet: projetSelect ? projetSelect : "",
           next_step: stepselect?.id,
+          nextstep,
+          deedline,
           contact,
           adresse,
           email,
@@ -151,15 +160,31 @@ function FormProspect({ projetSelect }) {
           />
         </div>
       )}
-      {step && (
-        <AutoComplement
-          value={stepselect}
-          setValue={setStepSelect}
-          options={step.filter((x) => x.concerne === "prospect")}
-          title="Next step"
-          propr="title"
-        />
-      )}
+      <TextField
+        name="nextstep"
+        label="Next step"
+        value={nextstep}
+        onChange={(event) => onchange(event)}
+        variant="outlined"
+        fullWidth
+        multiline
+        sx={{
+          mb: 1,
+        }}
+      />
+      <TextField
+        name="deedline"
+        label="Deedline"
+        value={deedline}
+        onChange={(event) => onchange(event)}
+        variant="outlined"
+        fullWidth
+        multiline
+        sx={{
+          mb: 1,
+        }}
+      />
+
       <Button
         onClick={(event) => sendData(event)}
         variant="contained"

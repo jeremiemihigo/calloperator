@@ -25,6 +25,7 @@ const UserSchema = new mongoose.Schema(
     telephone: { type: String, required: false },
     active: { type: Boolean, required: true, default: true },
     id: { type: String, required: true, unique: true },
+    filename: { type: String, required: false },
     first: { type: Boolean, required: true, default: true },
     servey: { type: [String], required: false },
   },

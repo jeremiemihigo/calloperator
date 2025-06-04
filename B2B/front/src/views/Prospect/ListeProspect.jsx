@@ -1,10 +1,8 @@
 import { Box, TextField, Typography } from "@mui/material";
 import { Grid } from "@mui/system";
 import { IconMessage } from "@tabler/icons-react";
-import _ from "lodash";
 import moment from "moment";
 import React from "react";
-import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
 import { allstatus } from "../../static/Lien";
 import Selected from "../../static/Select";
@@ -13,10 +11,6 @@ import "../Projet/projet.style.css";
 function ListeProspect({ donner }) {
   const location = useLocation();
   const data = location?.state ? location.state : donner;
-  const steps = useSelector((state) => state.steps.step);
-  const returnStep = (id) => {
-    return _.filter(steps, { id })[0]?.title;
-  };
   const navigation = useNavigate();
   const clickCommentaire = (prospect, event) => {
     event.preventDefault();
@@ -93,8 +87,6 @@ function ListeProspect({ donner }) {
       </Grid>
       <Box sx={{ overflow: "auto", width: { xs: "280px", sm: "auto" } }}>
         {data &&
-          steps &&
-          steps.length > 0 &&
           data.length > 0 &&
           data.map((index) => {
             return (
@@ -124,7 +116,7 @@ function ListeProspect({ donner }) {
                   )}
                   <Typography className="next_step" noWrap>
                     <span style={{ fontWeight: "bolder" }}>Next_step</span> :{" "}
-                    {returnStep(index.next_step)}
+                    {index.next_step}
                   </Typography>
 
                   {lastComment(index)}

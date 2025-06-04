@@ -11,13 +11,21 @@ const schema = new mongoose.Schema(
     email: { type: String, required: false },
     adresse: { type: String, required: false },
     contact: { type: String, required: false },
+    deedline: { type: Date, required: false },
     suivi_par: { type: [String], required: true },
 
     idCategorie: { type: String, required: true },
     statut: {
       type: String,
       required: true,
-      enum: ["En cours", "abandonner", "En retard"],
+      enum: [
+        "En cours",
+        "abandonner",
+        "En attente",
+        "En retard",
+        "En pause",
+        "clorurer",
+      ],
       default: "En cours",
     },
   },

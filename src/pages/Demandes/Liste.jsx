@@ -96,12 +96,11 @@ function DemandeListe() {
     }
   }, [postId]);
   const [regionSelect, setRegionSelect] = React.useState("");
-  const { changeRecent, changeImages } = useContext(CreateContexteDemande);
+  const { changeRecent } = useContext(CreateContexteDemande);
 
   const onselect = (items) => {
     changeRecent();
     setDemande(items);
-    changeImages();
     setResetData(items._id);
   };
 

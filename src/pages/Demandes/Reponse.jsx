@@ -2,9 +2,8 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable react/prop-types */
 import { Delete, Edit } from "@mui/icons-material";
-import { Card, Grid, Tooltip, Typography } from "@mui/material";
+import { Card, Paper, Tooltip, Typography } from "@mui/material";
 import { Image, Space, message } from "antd";
-import axios from "axios";
 import BasicTabs from "Control/Tabs";
 import { CreateContexteGlobal } from "GlobalContext";
 import _ from "lodash";
@@ -12,7 +11,7 @@ import moment from "moment";
 import WhyToDelete from "pages/Reponse/WhyToDelete";
 import React, { useContext } from "react";
 import { useSelector } from "react-redux";
-import { lien, lien_image } from "static/Lien";
+import { lien_image } from "static/Lien";
 import Popup from "static/Popup";
 import Chat from "./Chat";
 import { CreateContexteDemande } from "./ContextDemande";
@@ -24,7 +23,7 @@ import UpdateForm from "./Updateform";
 function ReponseAdmin(props) {
   const { update } = props;
   const { demande, reponseNow } = useContext(CreateContexteGlobal);
-  const { changeRecent, lastImages, recentAnswerSelect } = useContext(
+  const { changeRecent, recentAnswerSelect } = useContext(
     CreateContexteDemande
   );
   const titres = [
@@ -51,23 +50,11 @@ function ReponseAdmin(props) {
       duration: 2,
     });
   };
-  const [feedback, setFeedback] = React.useState();
-  const loadingFeedback = async () => {
-    try {
-      const response = await axios.get(lien + "/readfeedback/all");
-      if (response.status === 200) {
-        setFeedback(response.data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  React.useEffect(() => {
-    loadingFeedback();
-  }, []);
+  const feedback = useSelector((state) => state.feedback.feedback);
+
   const returnFeedback = (id) => {
-    if (_.filter(feedback, { id }).length > 0) {
-      return _.filter(feedback, { id })[0].title;
+    if (_.filter(feedback, { idFeedback: id }).length > 0) {
+      return _.filter(feedback, { idFeedback: id })[0].title;
     } else {
       return id;
     }
@@ -143,67 +130,37 @@ function ReponseAdmin(props) {
       <div>
         <div>
           <div className="reponsestatic">
-            {(demande || update) && (
-              <>
-                <Space size={12}>
-                  <Image
-                    width={200}
-                    height={200}
-                    src={`${lien_image}/${
-                      update ? update.demande.file : demande.file
-                    }`}
-                    placeholder={
-                      <Image
-                        preview={false}
-                        src={`${lien_image}/${
-                          update ? update.demande.file : demande.file
-                        }`}
-                        width={200}
-                      />
-                    }
-                  />
-                </Space>
+            <Paper elevation={1}>
+              {feedback && (demande || update) && (
+                <>
+                  <Space size={12}>
+                    <Image
+                      width={200}
+                      height={200}
+                      src={`${lien_image}/${
+                        update ? update.demande.file : demande.file
+                      }`}
+                      placeholder={
+                        <Image
+                          preview={false}
+                          src={`${lien_image}/${
+                            update ? update.demande.file : demande.file
+                          }`}
+                          width={200}
+                        />
+                      }
+                    />
+                  </Space>
 
-                {demande && !update && feedback && (
-                  <AfficherJsx demandes={demande} />
-                )}
-                {update && feedback && (
-                  <AfficherJsx demandes={update.demande} />
-                )}
-                <p style={{ textAlign: "center", fontWeight: "bolder" }}>
-                  {lastImages && lastImages.length + " Recente(s) image(s)"}{" "}
-                </p>
-                <Grid container sx={{ marginTop: "10px" }}>
-                  {lastImages &&
-                    lastImages.length > 0 &&
-                    lastImages.map((index) => {
-                      return (
-                        <Grid
-                          sx={{ paddingRight: "5px" }}
-                          item
-                          lg={3}
-                          key={index._id}
-                        >
-                          <Space>
-                            <Image
-                              height={50}
-                              width={50}
-                              src={`${lien_image}/${index?.demande?.file}`}
-                              placeholder={
-                                <Image
-                                  preview={false}
-                                  src={`${lien_image}/${index?.demande?.file}`}
-                                  width={200}
-                                />
-                              }
-                            />
-                          </Space>{" "}
-                        </Grid>
-                      );
-                    })}
-                </Grid>
-              </>
-            )}
+                  {demande && !update && feedback && (
+                    <AfficherJsx demandes={demande} />
+                  )}
+                  {update && feedback && (
+                    <AfficherJsx demandes={update.demande} />
+                  )}
+                </>
+              )}
+            </Paper>
           </div>
         </div>
         {!demande && reponseNow && reponseNow.length > 0 && (
@@ -288,12 +245,17 @@ function ReponseAdmin(props) {
         )}
       </div>
       <div>
-        <div className="reponsestatic" style={{ paddingRight: "10px" }}>
-          {recentAnswerSelect ? (
-            <UpdateForm update={recentAnswerSelect} show={true} />
-          ) : (
-            <BasicTabs titres={titres} components={components} />
-          )}
+        <div
+          className="reponsestatic"
+          style={{ paddingRight: "10px", padding: "4px" }}
+        >
+          <Paper elevation={1}>
+            {recentAnswerSelect ? (
+              <UpdateForm update={recentAnswerSelect} show={true} />
+            ) : (
+              <BasicTabs titres={titres} components={components} />
+            )}
+          </Paper>
         </div>
       </div>
       {datadelete && (

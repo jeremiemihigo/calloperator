@@ -1,25 +1,15 @@
 import { Autocomplete, Button, TextField } from "@mui/material";
+import { Grid } from "@mui/system";
 import axios from "axios";
 import React from "react";
 import { useSelector } from "react-redux";
-import AutoComplement from "../../static/AutoComplement";
 import { config, lien } from "../../static/Lien";
 import DirectionSnackbar from "../../Static/SnackBar";
 import { ContexteProjet } from "./Context";
 
 function FormProjet() {
-  const [step, setStep] = React.useState();
-  const allstep = useSelector((state) => state.steps?.step);
-
-  React.useEffect(() => {
-    if (allstep && allstep !== "token_expired") {
-      setStep(allstep.filter((x) => x.concerne === "projet"));
-    }
-  }, [allstep]);
-
   const { state, projetListe, setProjetListe } =
     React.useContext(ContexteProjet);
-  const [stepselect, setStepSelect] = React.useState("");
   const [suivi_par, setSuivipar] = React.useState([]);
   const alluser = useSelector((state) => state.alluser.user);
   //designation, description, next_step
@@ -30,9 +20,19 @@ function FormProjet() {
     email: "",
     adresse: "",
     contact: "",
+    nextstep: "",
+    deedline: "",
   });
-  const { description, contact, designation, adresse, email, responsable } =
-    initiale;
+  const {
+    description,
+    deedline,
+    contact,
+    nextstep,
+    designation,
+    adresse,
+    email,
+    responsable,
+  } = initiale;
   const onchange = (event) => {
     const { name, value } = event.target;
     setInitiale({
@@ -51,9 +51,10 @@ function FormProjet() {
         {
           designation,
           description,
-          next_step: stepselect?.id,
+          next_step: nextstep,
           contact,
           adresse,
+          deedline,
           email,
           responsable,
           idCategorie: state?.titre.id,
@@ -72,9 +73,9 @@ function FormProjet() {
           email: "",
           adresse: "",
           contact: "",
+          nextstep: "",
         });
         setSuivipar([]);
-        setStepSelect("");
         setSend({ label: false, message: "Projet enregistré" });
       } else {
         setSend({ label: false, message: "" + response.data });
@@ -87,127 +88,149 @@ function FormProjet() {
   return (
     <div>
       {send.message && <DirectionSnackbar message={send.message} />}
-
-      <TextField
-        name="designation"
-        onChange={(event) => onchange(event)}
-        value={designation}
-        label="Project name *"
-        variant="outlined"
-        fullWidth
-        multiline
-        sx={{
-          mb: 1,
-        }}
-      />
-      <TextField
-        name="description"
-        label="Description *"
-        value={description}
-        onChange={(event) => onchange(event)}
-        variant="outlined"
-        fullWidth
-        multiline
-        sx={{
-          mb: 1,
-        }}
-      />
-      <TextField
-        name="responsable"
-        label="Responsable *"
-        value={responsable}
-        onChange={(event) => onchange(event)}
-        variant="outlined"
-        fullWidth
-        sx={{
-          mb: 1,
-        }}
-      />
-      <TextField
-        name="email"
-        label="Email"
-        type="email"
-        value={email}
-        onChange={(event) => onchange(event)}
-        variant="outlined"
-        fullWidth
-        sx={{
-          mb: 1,
-        }}
-      />
-      <TextField
-        name="contact"
-        label="Contact"
-        value={contact}
-        onChange={(event) => onchange(event)}
-        variant="outlined"
-        fullWidth
-        sx={{
-          mb: 1,
-        }}
-      />
-      <TextField
-        name="adresse"
-        label="Adresse"
-        value={adresse}
-        onChange={(event) => onchange(event)}
-        variant="outlined"
-        fullWidth
-        multiline
-        sx={{
-          mb: 1,
-        }}
-      />
-      {alluser && (
-        <div style={{ margin: "10px 0px" }}>
-          <Autocomplete
-            multiple
-            value={suivi_par}
-            id="tags-outlined"
-            onChange={(event, newValue) => {
-              if (typeof newValue === "string") {
-                setSuivipar({
-                  title: newValue,
-                });
-              } else if (newValue && newValue.inputValue) {
-                // Create a new value from the user input
-                setSuivipar({
-                  title: newValue.inputValue,
-                });
-              } else {
-                setSuivipar(newValue);
-              }
+      <Grid container>
+        <Grid size={{ lg: 6 }} sx={{ padding: "5px" }}>
+          <TextField
+            name="designation"
+            onChange={(event) => onchange(event)}
+            value={designation}
+            label="Project name *"
+            variant="outlined"
+            fullWidth
+            multiline
+            sx={{
+              mb: 1,
             }}
-            options={alluser}
-            getOptionLabel={(option) => option.name}
-            filterSelectedOptions
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Personne en charge au sein de Bboxx *"
-                placeholder="Personne en charge au sein de Bboxx *"
-              />
-            )}
           />
-        </div>
-      )}
-      <AutoComplement
-        value={stepselect}
-        setValue={setStepSelect}
-        options={step}
-        title="Next step *"
-        propr="title"
-      />
-      <Button
-        onClick={(event) => sendData(event)}
-        variant="contained"
-        color="primary"
-        fullWidth
-        disabled={send.label}
-        sx={{ mt: 1 }}
-      >
-        Enregistrer
-      </Button>
+          <TextField
+            name="description"
+            label="Description *"
+            value={description}
+            onChange={(event) => onchange(event)}
+            variant="outlined"
+            fullWidth
+            multiline
+            sx={{
+              mb: 1,
+            }}
+          />
+          <TextField
+            name="responsable"
+            label="Responsable *"
+            value={responsable}
+            onChange={(event) => onchange(event)}
+            variant="outlined"
+            fullWidth
+            sx={{
+              mb: 1,
+            }}
+          />
+          <TextField
+            name="email"
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(event) => onchange(event)}
+            variant="outlined"
+            fullWidth
+            sx={{
+              mb: 1,
+            }}
+          />
+          <TextField
+            name="contact"
+            label="Contact"
+            value={contact}
+            onChange={(event) => onchange(event)}
+            variant="outlined"
+            fullWidth
+            sx={{
+              mb: 1,
+            }}
+          />
+        </Grid>
+        <Grid size={{ lg: 6 }} sx={{ padding: "5px" }}>
+          <TextField
+            name="adresse"
+            label="Adresse"
+            value={adresse}
+            onChange={(event) => onchange(event)}
+            variant="outlined"
+            fullWidth
+            multiline
+            sx={{
+              mb: 1,
+            }}
+          />
+          {alluser && (
+            <div style={{ margin: "10px 0px" }}>
+              <Autocomplete
+                multiple
+                value={suivi_par}
+                id="tags-outlined"
+                onChange={(event, newValue) => {
+                  if (typeof newValue === "string") {
+                    setSuivipar({
+                      title: newValue,
+                    });
+                  } else if (newValue && newValue.inputValue) {
+                    // Create a new value from the user input
+                    setSuivipar({
+                      title: newValue.inputValue,
+                    });
+                  } else {
+                    setSuivipar(newValue);
+                  }
+                }}
+                options={alluser}
+                getOptionLabel={(option) => option.name}
+                filterSelectedOptions
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Personne en charge au sein de Bboxx *"
+                    placeholder="Personne en charge au sein de Bboxx *"
+                  />
+                )}
+              />
+            </div>
+          )}
+          <TextField
+            name="nextstep"
+            label="Next step *"
+            value={nextstep}
+            onChange={(event) => onchange(event)}
+            variant="outlined"
+            fullWidth
+            sx={{
+              mb: 1,
+            }}
+          />
+          <TextField
+            name="deedline"
+            label="Deedline *"
+            value={deedline}
+            onChange={(event) => onchange(event)}
+            variant="outlined"
+            type="date"
+            fullWidth
+            sx={{
+              mb: 1,
+            }}
+          />
+
+          <Button
+            onClick={(event) => sendData(event)}
+            variant="contained"
+            color="primary"
+            fullWidth
+            disabled={send.label}
+            sx={{ mt: 1 }}
+          >
+            Enregistrer
+          </Button>
+        </Grid>
+      </Grid>
     </div>
   );
 }

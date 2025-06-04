@@ -1,6 +1,5 @@
 import { Block, Edit, RestartAlt } from "@mui/icons-material";
 import {
-  Avatar,
   Button,
   CircularProgress,
   Fab,
@@ -11,6 +10,7 @@ import {
 import { DataGrid } from "@mui/x-data-grid";
 import DirectionSnackbar from "Control/SnackBar";
 import { BloquerAgent, Reinitialiser } from "Redux/Agent";
+import { Image } from "antd";
 import Dot from "components/@extended/Dot";
 import React, { memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -51,7 +51,21 @@ function AgentListe() {
       width: 50,
       editable: false,
       renderCell: (p) => {
-        return <Avatar alt={p.row.nom} src="/profile.png" />;
+        return (
+          <Image
+            width={60}
+            height={35}
+            style={{ borderRadius: "50%" }}
+            src={p.row.filename || "/profile.png"}
+            placeholder={
+              <Image
+                preview={true}
+                src={p.row.filename || "/profile.png"}
+                // width={200}
+              />
+            }
+          />
+        );
       },
     },
     {

@@ -9,7 +9,14 @@ const schema = new mongoose.Schema({
   next_step: { type: String, required: true },
   statut_actuel: { type: String, required: true },
   savedBy: { type: String, required: true },
-  deedline: { type: String, required: false, enum: ["IN SLA", "OUT SLA"] },
+  deedline: { type: Date, required: true },
+  commentaire: { type: String, required: false },
+  type: {
+    type: String,
+    required: true,
+    enum: ["OPEN", "CLOSE"],
+    default: "OPEN",
+  },
 });
 schema.post("save", function (docs, next) {
   try {

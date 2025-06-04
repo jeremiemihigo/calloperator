@@ -148,8 +148,8 @@ function AddAgent({ data }) {
       {errorAlert && (
         <DirectionSnackbar message={errorAlert} open={open} setOpen={setOpen} />
       )}
-      <div className="mb-3">
-        <Grid sx={{ marginTop: "10px" }}>
+      <div>
+        <Grid sx={{ marginTop: "10px", marginBottom: "10px" }}>
           <AutoComplement
             value={fonction}
             setValue={setFonction}

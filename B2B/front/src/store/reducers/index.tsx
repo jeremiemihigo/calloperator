@@ -7,9 +7,9 @@ import { combineReducers } from "redux";
 // import communiquer from "../../Redux/Documentation";
 import alluser from "../../Redux/AllUser";
 import user from "../../Redux/Utilisateur";
+import action from "../../Redux/action";
 import categorie from "../../Redux/categorisation";
 import prospect from "../../Redux/prospect";
-import steps from "../../Redux/step";
 
 // ==============================|| COMBINE REDUCERS ||============================== //
 
@@ -18,7 +18,7 @@ const reducers = combineReducers({
   categorie,
   alluser,
   prospect,
-  steps,
+  action,
 });
 
 export default reducers;

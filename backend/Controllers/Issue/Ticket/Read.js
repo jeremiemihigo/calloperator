@@ -7,6 +7,7 @@ const ReadTech = async (req, res) => {
     const { codeAgent } = req.user;
     modelPlainte
       .find({ "technicien.codeTech": codeAgent, open: true })
+      .lean()
       .then((result) => {
         if (result) {
           return res.status(200).json(result.reverse());

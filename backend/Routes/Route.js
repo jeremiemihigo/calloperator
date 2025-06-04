@@ -8,6 +8,7 @@ const {
   ReadAgent,
   BloquerAgent,
   UpdateAgent,
+  UpdateFileAgent,
 } = require("../Controllers/Agent");
 const {
   login,
@@ -126,6 +127,7 @@ router.put("/userAdmin", UpdatePasswordAdmin);
 
 // router.delete("/deleteReclamation/:id", DeleteReclamation);
 router.put("/agent", UpdateAgent, ReadAgent);
+router.put("/updateFileAgent", protectTech, UpdateFileAgent);
 
 //Mobiles
 // router.get("/demandeReponse/:id", ToutesDemandeAgent);

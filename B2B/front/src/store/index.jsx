@@ -5,10 +5,10 @@ import { configureStore } from "@reduxjs/toolkit";
 // ==============================|| REDUX TOOLKIT - MAIN STORE ||============================== //
 // import { Readaction } from "../Redux/actions";
 // import { ReadCommuniquer } from "../Redux/Documentation";
+import { Readaction } from "../Redux/action";
 import { Readusers } from "../Redux/AllUser";
 import { Readcategories } from "../Redux/categorisation";
 import { Readprospects } from "../Redux/prospect";
-import { Readsteps } from "../Redux/step";
 import { ReadUser } from "../Redux/Utilisateur";
 import reducers from "./reducers";
 const store = configureStore({
@@ -21,6 +21,6 @@ dispatch(ReadUser());
 dispatch(Readusers());
 dispatch(Readprospects());
 dispatch(Readcategories());
-dispatch(Readsteps());
+dispatch(Readaction());
 
 export { dispatch, store };

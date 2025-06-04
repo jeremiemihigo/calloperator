@@ -1,19 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
+import { Delete, Edit, ResetTvOutlined } from "@mui/icons-material";
+import { Box, Fab, Tooltip, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import DirectionSnackbar from "Control/SnackBar";
-import { Button } from "antd";
+import { Button, Image } from "antd";
 import axios from "axios";
+import Dot from "components/@extended/Dot";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { config, lien } from "static/Lien";
 import Popup from "static/Popup";
-import AgentAdmin from "./AgentAdmin";
-
-import { Delete, Edit, ResetTvOutlined } from "@mui/icons-material";
-import { Avatar, Box, Fab, Tooltip, useTheme } from "@mui/material";
-import Dot from "components/@extended/Dot";
 import { returnRole } from "utils/Lien";
+import AgentAdmin from "./AgentAdmin";
 import UpdateAgentAdmin from "./UpdateAgentAdmin";
 
 function AgentListeAdmin() {
@@ -65,7 +64,19 @@ function AgentListeAdmin() {
       editable: false,
       renderCell: (p) => {
         return (
-          <Avatar alt={p.row.nom} src={p.row.filename || "/profile.png"} />
+          <Image
+            width={40}
+            height={35}
+            style={{ borderRadius: "50%" }}
+            src={p.row.filename || "/profile.png"}
+            placeholder={
+              <Image
+                preview={true}
+                src={p.row.filename || "/profile.png"}
+                // width={200}
+              />
+            }
+          />
         );
       },
     },

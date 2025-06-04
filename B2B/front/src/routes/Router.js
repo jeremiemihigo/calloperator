@@ -1,4 +1,4 @@
-import React, { lazy } from "react";
+import { lazy } from "react";
 import { createBrowserRouter, Navigate } from "react-router";
 
 /* ***Layouts**** */
@@ -14,6 +14,7 @@ const Steps = lazy(() => import("../views/Steps"));
 const Projet = lazy(() => import("../views/Projet"));
 const Prospect = lazy(() => import("../views/Prospect"));
 const DetailProjet = lazy(() => import("../views/Projet/Detail"));
+const Action_en_cours = lazy(() => import("../views/Projet/ActionEncours"));
 const Commentaire = lazy(() => import("../views/Commentaire"));
 
 const Router = [
@@ -25,6 +26,7 @@ const Router = [
       { path: "/utilisateurs", exact: true, element: <Utilisateur /> },
       { path: "/steps", exact: true, element: <Steps /> },
       { path: "/projets", exact: true, element: <Projet /> },
+      { path: "/action_en_cours", exact: true, element: <Action_en_cours /> },
       { path: "/prospects", exact: true, element: <Prospect /> },
       { path: "/detail_projet", exact: true, element: <DetailProjet /> },
       { path: "/commentaire", exact: true, element: <Commentaire /> },

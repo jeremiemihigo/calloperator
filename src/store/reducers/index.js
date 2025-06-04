@@ -8,6 +8,7 @@ import communication from "Redux/Communication";
 import parametre from "Redux/Parametre";
 import plainte from "Redux/Plainte";
 import itemPlainte from "Redux/PlainteItem";
+import feedback from "Redux/Raison";
 import reponse from "Redux/Reponses";
 import shop from "Redux/Shop";
 import zone from "Redux/Zone";
@@ -25,6 +26,7 @@ const reducers = combineReducers({
   zone,
   communication,
   delai,
+  feedback,
   plainte,
   agentAdmin,
   user,

@@ -12,9 +12,11 @@ const {
 const {
   AddAction,
   EditAction,
+  CloseAction,
   AddProjet,
   ReadProjet,
   ReadDepense,
+  ReadOpenAction,
 } = require("../Controllers/Action");
 const {
   AddProspect,
@@ -48,6 +50,8 @@ router.post("/addaction", protect, AddAction, ReadProjet);
 router.put("/editaction", protect, EditAction);
 router.post("/addprojet", protect, AddProjet);
 router.post("/readProjet", protect, ReadProjet);
+router.post("/closeaction", protect, CloseAction, ReadProjet);
+router.get("/readOpenAction", protect, ReadOpenAction);
 
 //Prospect
 router.post("/addprospect", protect, AddProspect);

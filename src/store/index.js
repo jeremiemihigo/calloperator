@@ -8,6 +8,7 @@ import { Readcommunication } from "Redux/Communication";
 import { ReadParametre } from "Redux/Parametre";
 import { ReadPlainte } from "Redux/Plainte";
 import { ReadplainteItem } from "Redux/PlainteItem";
+import { ReadRaison } from "Redux/Raison";
 import { ReadReponse } from "Redux/Reponses";
 import { ReadShop } from "Redux/Shop";
 import { ReadAllZone } from "Redux/Zone";
@@ -36,5 +37,6 @@ dispatch(ReadplainteItem());
 dispatch(Readcommunication());
 dispatch(ReadParametre());
 dispatch(Readrole());
+dispatch(ReadRaison());
 
 export { dispatch, store };

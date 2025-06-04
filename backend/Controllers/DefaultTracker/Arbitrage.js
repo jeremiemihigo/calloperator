@@ -53,6 +53,7 @@ const Arbitrage = async (req, res) => {
     console.log(error);
   }
 };
+
 const ReadArbitrage = async (req, res) => {
   try {
     const month = moment(new Date()).format("MM-YYYY");
@@ -78,7 +79,6 @@ const ReadArbitrage = async (req, res) => {
 
         // 2. Génération du filtre
         function (role, done) {
-          console.log(role);
           let idRoles = role.feedback.map((x) => x.idFeedback);
 
           let baseFilter = {
@@ -251,7 +251,6 @@ const ReadArbitrage = async (req, res) => {
             },
           ])
             .then((result) => {
-              console.log(result);
               done(null, result);
             })
             .catch((err) => done(err));
@@ -267,8 +266,203 @@ const ReadArbitrage = async (req, res) => {
       }
     );
   } catch (error) {
-    console.error(error);
     return res.status(500).json({ error: "Erreur serveur inattendue." });
+  }
+};
+const PostArbitrage_Automatique = async (req, res, next) => {
+  try {
+    const month = moment(new Date()).format("MM-YYYY");
+    asyncLab.waterfall(
+      [
+        function (done) {
+          ModelClient.aggregate([
+            { $match: { month, actif: true } },
+
+            {
+              $lookup: {
+                from: "tfeedbacks",
+                localField: "currentFeedback",
+                foreignField: "idFeedback",
+                as: "currentfeedback",
+              },
+            },
+            {
+              $lookup: {
+                from: "tfeedbacks",
+                localField: "changeto",
+                foreignField: "idFeedback",
+                as: "fchangeto",
+              },
+            },
+            { $unwind: "$currentfeedback" },
+            {
+              $lookup: {
+                from: "roles",
+                localField: "currentfeedback.idRole",
+                foreignField: "idRole",
+                as: "fcurrent_incharge",
+              },
+            },
+            {
+              $lookup: {
+                from: "rapports",
+                localField: "codeclient",
+                foreignField: "codeclient",
+                as: "visites",
+              },
+            },
+            {
+              $lookup: {
+                from: "pfeedback_calls",
+                let: { codeclient: "$codeclient" },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: {
+                        $and: [
+                          { $eq: ["$codeclient", "$$codeclient"] },
+                          { $eq: ["$type", "Reachable"] },
+                        ],
+                      },
+                    },
+                  },
+                ],
+                as: "appelles",
+              },
+            },
+            {
+              $addFields: {
+                derniereVisite: {
+                  $arrayElemAt: [{ $reverseArray: "$visites" }, 0],
+                },
+                derniereappel: {
+                  $arrayElemAt: [{ $reverseArray: "$appelles" }, 0],
+                },
+              },
+            },
+
+            {
+              $addFields: {
+                id: "$_id",
+                codeclient: "$codeclient",
+                visite: "$derniereVisite.demande.raison",
+                appel: "$derniereappel.sioui_texte",
+                matchappelvisite: {
+                  $cond: {
+                    if: {
+                      $and: [
+                        {
+                          $ne: ["$derniereVisite", null],
+                        },
+                        {
+                          $ne: ["$derniereappel", null],
+                        },
+                        {
+                          $eq: [
+                            "$derniereVisite.demande.raison",
+                            "$derniereappel.sioui_texte",
+                          ],
+                        },
+                      ],
+                    },
+                    then: true,
+                    else: false,
+                  },
+                },
+                shop: "$shop",
+                nomclient: "$nomclient",
+                currentTitle: "$currentfeedback.title",
+                currentfeedback: "$currentfeedback.idFeedback",
+                current_incharge: "$fcurrent_incharge",
+                firstchangeto: "$changeto",
+                changeto: "$fchangeto.idFeedback",
+                changetotitle: "$fchangeto.title",
+                par: "$par",
+                submitedBy: "$submitedBy",
+                feedback: "$feedback",
+              },
+            },
+            {
+              $match: {
+                matchappelvisite: true,
+                visite: { $exists: true },
+                appel: { $exists: true },
+                firstchangeto: { $exists: false },
+              },
+            },
+            {
+              $project: {
+                id: 1,
+                codeclient: 1,
+                currentTitle: 1,
+                matchappelvisite: 1,
+                changetotitle: 1,
+                visite: 1,
+                appel: 1,
+                shop: 1,
+                nomclient: 1,
+                currentfeedback: 1,
+                current_incharge: 1,
+                changeto: 1,
+                par: 1,
+                submitedBy: 1,
+                feedback: "Pending",
+              },
+            },
+          ])
+            .then((result) => {
+              done(null, result);
+            })
+            .catch((err) => console.log(err));
+        },
+        function (result, done) {
+          console.log(result);
+          if (result.length > 0) {
+            let donner = {
+              id: result[0].id,
+              current_status: result[0].currentfeedback,
+              changeto: result[0].visite,
+            };
+            ModelClient.findByIdAndUpdate(
+              donner.id,
+              {
+                $set: {
+                  feedback: "Approved",
+                  currentFeedback: donner.changeto,
+                },
+                $push: {
+                  Hist_Arbitrage: {
+                    current_status: donner.current_status,
+                    changeto: donner.changeto,
+                    submitedBy: "System",
+                    checkedBy: "System",
+                    commentaire: "Submited by system",
+                    feedback: "Approved",
+                  },
+                },
+              },
+              { new: true }
+            )
+              .then((result) => {
+                done(done, true);
+              })
+              .catch(function (error) {
+                console.log(error);
+              });
+          } else {
+            done(true);
+          }
+        },
+      ],
+      function (err, result) {
+        if (err) {
+          return next();
+        }
+        next();
+      }
+    );
+  } catch (error) {
+    console.log(error);
   }
 };
 
@@ -311,4 +505,9 @@ const Arbitrage_File = async (req, res) => {
     console.log(error);
   }
 };
-module.exports = { Arbitrage, ReadArbitrage, Arbitrage_File };
+module.exports = {
+  Arbitrage,
+  PostArbitrage_Automatique,
+  ReadArbitrage,
+  Arbitrage_File,
+};

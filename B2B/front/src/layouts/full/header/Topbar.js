@@ -1,6 +1,14 @@
-import { AppBar, Box, Button, Stack, Toolbar, styled } from "@mui/material";
+import {
+  AppBar,
+  Badge,
+  Box,
+  Button,
+  Stack,
+  Toolbar,
+  styled,
+} from "@mui/material";
 import { IconGift, IconLifebuoy } from "@tabler/icons-react";
-import React from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router";
 import adminmartLogo from "../../../assets/images/logos/bboxx.png";
 import BuyNowDropdown from "./BuyNowDropdown";
@@ -35,6 +43,7 @@ const Topbar = (props) => {
       marginRight: "4px",
     },
   }));
+  const action = useSelector((state) => state.action.action);
 
   return (
     <AppBarStyled position="sticky" color="default">
@@ -75,6 +84,18 @@ const Topbar = (props) => {
                 Prospects
               </GhostButton>
             </Link>
+            {action && action.length > 0 && (
+              <Link to="/action_en_cours">
+                <GhostButton
+                  startIcon={<IconGift size={18} />}
+                  variant="contained"
+                >
+                  <Badge badgeContent={action.length || 0} color="primary">
+                    <span>Actions en cours</span>
+                  </Badge>
+                </GhostButton>
+              </Link>
+            )}
           </Stack>
         </Stack>
         <Box flexGrow={1} />

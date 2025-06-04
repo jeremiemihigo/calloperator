@@ -21,19 +21,19 @@ connectDB();
 const server = http.createServer(app);
 
 // Initialisation de Socket.io avec CORS activé
-const Pusher = require("pusher");
+//const Pusher = require("pusher");
 
-const pusher = new Pusher({
-  appId: process.env.app_id,
-  key: process.env.key,
-  secret: process.env.secret,
-  cluster: process.env.cluster,
-  useTLS: true,
-});
+// const pusher = new Pusher({
+//   appId: process.env.app_id,
+//   key: process.env.key,
+//   secret: process.env.secret,
+//   cluster: process.env.cluster,
+//   useTLS: true,
+// });
 
-pusher.trigger("my-channel", "my-event", {
-  message: "hello world",
-});
+// pusher.trigger("my-channel", "my-event", {
+//   message: "hello world",
+// });
 // Routes
 app.post("/api/register-socket", async (req, res) => {
   const { userId, socketId } = req.body;

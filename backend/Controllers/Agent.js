@@ -22,7 +22,7 @@ const AddAgent = async (req, res, next) => {
               }
             })
             .catch(function (err) {
-              return res.status(400).json("Erreur "+err.message);
+              return res.status(400).json("Erreur " + err.message);
             });
         },
         function (agent, done) {
@@ -62,7 +62,7 @@ const AddAgent = async (req, res, next) => {
       }
     );
   } catch (error) {
-    return res.status(400).json("Erreur "+error.message);
+    return res.status(400).json("Erreur " + error.message);
   }
 };
 const ReadAgent = async (req, res) => {
@@ -178,4 +178,47 @@ const UpdateAgent = async (req, res, next) => {
     console.log(error);
   }
 };
-module.exports = { AddAgent, ReadAgent, BloquerAgent, UpdateAgent };
+const UpdateFileAgent = async (req, res) => {
+  try {
+    const { id, filename } = req.body;
+
+    asyncLab.waterfall(
+      [
+        function (done) {
+          modelAgent
+            .findByIdAndUpdate(
+              id,
+              {
+                $set: {
+                  filename,
+                },
+              },
+              { new: true }
+            )
+            .then((response) => {
+              done(response);
+            })
+            .catch(function (err) {
+              console.log(err);
+              return res.status(400).json("Error");
+            });
+        },
+      ],
+      function (result) {
+        if (result) {
+          return res.status(200).json(true);
+        }
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+module.exports = {
+  AddAgent,
+  UpdateFileAgent,
+  ReadAgent,
+  BloquerAgent,
+  UpdateAgent,
+};

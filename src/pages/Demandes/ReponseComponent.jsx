@@ -23,11 +23,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { postReponse } from "Redux/Reponses";
 import { config, lien } from "static/Lien";
 import Selected from "static/Select";
-import { CreateContexteDemande } from "./ContextDemande";
 
 function ReponsesComponent({ update }) {
   const regions = useSelector((state) => state.zone.zone);
-  const { changeImages } = React.useContext(CreateContexteDemande);
   const dispatch = useDispatch();
   const [valueRegionSelect, setValueRegionSelect] = React.useState("");
   const [valueShopSelect, setValueShopSelect] = React.useState("");
@@ -279,8 +277,7 @@ function ReponsesComponent({ update }) {
           setFeching(true);
           const response = await axios.get(`${lien}/customer/${clients}`);
           if (response.status === 200) {
-            const { visites, info } = response.data;
-            changeImages(visites);
+            const { info } = response.data;
             setInitial({
               ...intial,
               codeCu: info.customer_cu,

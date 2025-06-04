@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Grid, Paper } from "@mui/material";
 import React from "react";
 import "./chat.css";
 import ContextDemande from "./ContextDemande";
@@ -9,8 +9,10 @@ function Demandes() {
   return (
     <ContextDemande>
       <Grid container>
-        <Grid item xs={12} md={5} lg={4} sm={5}>
-          <Liste />
+        <Grid item xs={12} md={5} lg={4} sm={5} sx={{ padding: "4px" }}>
+          <Paper elevation={1}>
+            <Liste />
+          </Paper>
         </Grid>
         <Grid item xs={12} md={7} lg={8} sm={7} sx={{ paddingLeft: "30px" }}>
           <ReponseAdmin />

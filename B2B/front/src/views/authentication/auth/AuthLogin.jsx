@@ -44,7 +44,7 @@ const AuthLogin = () => {
           });
         });
         localStorage.setItem("auth", response.data);
-        //window.location.replace("/projets");
+        window.location.replace("/projets");
       } else {
         setMessage(response.data);
       }
