@@ -1,18 +1,22 @@
-import { Tooltip, Typography } from "@mui/material";
+import { Delete, Edit } from "@mui/icons-material";
+import { Paper, Tooltip, Typography } from "@mui/material";
 import { Grid } from "@mui/system";
 import axios from "axios";
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { DeleteCategorie } from "src/Redux/categorisation";
+import { config, lien } from "src/static/Lien";
 import Popup from "src/static/Popup";
-import { config, lien } from "../../../static/Lien";
+import DirectionSnackbar from "src/static/SnackBar";
 import { ContexteProjet } from "../Context";
 import Ajouter from "./Ajouter";
 import "./categorie.style.css";
 
 function CategorieIndex() {
   const [open, setOpen] = React.useState(false);
-  const categorie = useSelector((state) => state.categorie.categorie);
+  const categorie = useSelector((state) => state.categorie);
   const { setProjetListe, setState, state } = React.useContext(ContexteProjet);
+  const [datachange, setDataChange] = React.useState();
 
   const loadingProjet = async (index) => {
     try {
@@ -31,30 +35,69 @@ function CategorieIndex() {
       console.log(error);
     }
   };
+  const dispatch = useDispatch();
+  const deletecategorie = (id) => {
+    try {
+      dispatch(DeleteCategorie({ id }));
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
-    <div>
-      <Grid className="title_categorie" onClick={() => setOpen(true)}>
+    <Paper sx={{ height: "100%", padding: "5px" }}>
+      {categorie.deletecategorie === "rejected" && (
+        <DirectionSnackbar message={categorie.deletecategorieError} />
+      )}
+      <Grid
+        className="title_categorie"
+        onClick={() => {
+          setDataChange();
+          setOpen(true);
+        }}
+      >
         <Typography component="p" noWrap>
-          Ajouter une catégorie
+          Nouveau repertoire
         </Typography>
       </Grid>
       <Grid>
         {categorie &&
-          categorie.length > 0 &&
-          categorie.map((index) => {
+          categorie?.categorie.length > 0 &&
+          categorie?.categorie.map((index) => {
             return (
               <Grid
-                onClick={() => loadingProjet(index)}
-                className={`${
-                  state?.titre._id === index._id
-                    ? "actif item_categorie"
-                    : "item_categorie"
-                }`}
                 key={index._id}
+                className={`item_categorie ${
+                  state?.titre._id === index._id && "actif"
+                }`}
               >
                 <Tooltip title={index.title}>
-                  <Typography component="p">{index.title}</Typography>
+                  <Grid
+                    className={`folder ${
+                      state?.titre._id === index._id && "actif"
+                    }`}
+                    onClick={() => loadingProjet(index)}
+                  >
+                    <div className="content">
+                      <img src="/folder.png" width={30} height={30} />
+                      <Typography noWrap component="p">
+                        {index.title}
+                      </Typography>
+                    </div>
+                    <div className="options">
+                      <Edit
+                        fontSize="small"
+                        onClick={() => {
+                          setDataChange(index);
+                          setOpen(true);
+                        }}
+                      />
+                      <Delete
+                        fontSize="small"
+                        onClick={() => deletecategorie(index.id)}
+                      />
+                    </div>
+                  </Grid>
                 </Tooltip>
               </Grid>
             );
@@ -64,7 +107,12 @@ function CategorieIndex() {
       <Popup open={open} setOpen={setOpen} title="Ajouter une catégorie">
         <Ajouter />
       </Popup>
-    </div>
+      {datachange && (
+        <Popup open={open} setOpen={setOpen} title="Modifier une catégorie">
+          <Ajouter data={datachange} />
+        </Popup>
+      )}
+    </Paper>
   );
 }
 

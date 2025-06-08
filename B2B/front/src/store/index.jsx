@@ -8,6 +8,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { Readaction } from "../Redux/action";
 import { Readusers } from "../Redux/AllUser";
 import { Readcategories } from "../Redux/categorisation";
+import { Readcommentaire } from "../Redux/commentaire";
 import { Readprospects } from "../Redux/prospect";
 import { ReadUser } from "../Redux/Utilisateur";
 import reducers from "./reducers";
@@ -22,5 +23,6 @@ dispatch(Readusers());
 dispatch(Readprospects());
 dispatch(Readcategories());
 dispatch(Readaction());
+dispatch(Readcommentaire());
 
 export { dispatch, store };

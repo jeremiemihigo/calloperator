@@ -57,7 +57,6 @@ const Arbitrage = async (req, res) => {
 const ReadArbitrage = async (req, res) => {
   try {
     const month = moment(new Date()).format("MM-YYYY");
-
     asyncLab.waterfall(
       [
         // 1. Récupération du rôle
@@ -416,39 +415,44 @@ const PostArbitrage_Automatique = async (req, res, next) => {
             .catch((err) => console.log(err));
         },
         function (result, done) {
-          console.log(result);
           if (result.length > 0) {
-            let donner = {
-              id: result[0].id,
-              current_status: result[0].currentfeedback,
-              changeto: result[0].visite,
-            };
-            ModelClient.findByIdAndUpdate(
-              donner.id,
-              {
-                $set: {
-                  feedback: "Approved",
-                  currentFeedback: donner.changeto,
-                },
-                $push: {
-                  Hist_Arbitrage: {
-                    current_status: donner.current_status,
-                    changeto: donner.changeto,
-                    submitedBy: "System",
-                    checkedBy: "System",
-                    commentaire: "Submited by system",
-                    feedback: "Approved",
+            async function updateClientsWithBulk() {
+              const bulkoperation = result.map((client) => ({
+                updateOne: {
+                  filter: {
+                    codeclient: client.codeclient,
+                    month,
+                    actif: true,
                   },
+                  update: {
+                    $set: {
+                      feedback: "Approved",
+                      currentFeedback: client.visite,
+                      changeto: client.visite,
+                      submitedBy: "System",
+                    },
+                    $push: {
+                      Hist_Arbitrage: {
+                        current_status: client.currentfeedback,
+                        changeto: client.visite,
+                        submitedBy: "System",
+                        checkedBy: "System",
+                        commentaire: "Submited by system",
+                        feedback: "Approved",
+                      },
+                    },
+                  },
+                  upsert: true,
+                  returnDocument: "after",
                 },
-              },
-              { new: true }
-            )
-              .then((result) => {
-                done(done, true);
-              })
-              .catch(function (error) {
-                console.log(error);
-              });
+              }));
+              try {
+                const result = await ModelClient.bulkWrite(bulkoperation);
+                console.log(result);
+              } catch (error) {}
+            }
+            updateClientsWithBulk();
+            done(true);
           } else {
             done(true);
           }

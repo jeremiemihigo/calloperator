@@ -1,12 +1,18 @@
-import { SearchOutlined } from '@ant-design/icons';
-import { FormControl, Grid, InputAdornment, OutlinedInput, Paper } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
-import axios from 'axios';
-import moment from 'moment';
-import React from 'react';
-import ExcelButton from 'static/ExcelButton';
-import { config, lien } from 'static/Lien';
-import './search.style.css';
+import { SearchOutlined } from "@ant-design/icons";
+import {
+  FormControl,
+  Grid,
+  InputAdornment,
+  OutlinedInput,
+  Paper,
+} from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
+import axios from "axios";
+import moment from "moment";
+import React from "react";
+import ExcelButton from "static/ExcelButton";
+import { config, lien } from "static/Lien";
+import "./search.style.css";
 
 function Index() {
   const [data, setData] = React.useState();
@@ -14,7 +20,7 @@ function Index() {
   const loading = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(lien + '/get_corbeille', config);
+      const response = await axios.get(lien + "/get_corbeille", config);
       if (response.status === 200) {
         setData(response.data);
         setLoading(false);
@@ -30,59 +36,63 @@ function Index() {
     const date = new Date(d);
     // const new_hours = date.getHours() + nombre;
     // date.setHours(new_hours);
-    return `${date.getHours()}h${date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()}`;
+    return `${date.getHours()}h${
+      date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes()
+    }`;
   };
 
   const [filterFn, setFilterFn] = React.useState({
     fn: (items) => {
       return items;
-    }
+    },
   });
   const handleChanges = (e) => {
     let target = e.target.value;
 
     setFilterFn({
       fn: (items) => {
-        if (target === '') {
+        if (target === "") {
           return items;
         } else {
-          return items.filter((x) => x.name.toUpperCase().includes(target.toUpperCase()));
+          return items.filter((x) =>
+            x.name.toUpperCase().includes(target.toUpperCase())
+          );
         }
-      }
+      },
     });
   };
 
   const columns = [
     {
-      field: 'name',
-      headerName: 'Name',
+      field: "name",
+      headerName: "Name",
       width: 200,
-      editable: false
+      editable: false,
     },
     {
-      field: 'createdAt',
-      headerName: 'Date',
+      field: "createdAt",
+      headerName: "Date",
       width: 100,
       editable: false,
       renderCell: (params) => {
-        return moment(params.row.createdAt).format('DD-MM-YYYY');
-      }
+        return moment(params.row.createdAt).format("DD-MM-YYYY");
+      },
     },
     {
-      field: 'heure',
-      headerName: 'Time',
+      field: "heure",
+      headerName: "Time",
       width: 100,
       editable: false,
       renderCell: (params) => {
         return increment_hours(params.row?.createdAt);
-      }
+      },
     },
     {
-      field: 'texte',
-      headerName: 'what_he_did',
+      field: "texte",
+      headerName: "what_he_did",
       width: 600,
-      editable: false
-    }
+      editable: false,
+    },
   ];
 
   function getRowId(row) {
@@ -91,12 +101,12 @@ function Index() {
 
   return (
     <>
-      {load && <p style={{ textAlign: 'center', color: 'blue' }}>Loading...</p>}
-      <Paper elevation={1} style={{ marginBottom: '10px', padding: '5px' }}>
+      {load && <p style={{ textAlign: "center", color: "blue" }}>Loading...</p>}
+      <Paper elevation={1} style={{ marginBottom: "10px", padding: "5px" }}>
         <Grid container>
           <Grid item lg={6}>
-            {' '}
-            <FormControl sx={{ width: '100%' }}>
+            {" "}
+            <FormControl sx={{ width: "100%" }}>
               <OutlinedInput
                 size="small"
                 id="header-search"
@@ -107,20 +117,26 @@ function Index() {
                 }
                 aria-describedby="header-search-text"
                 inputProps={{
-                  'aria-label': 'weight'
+                  "aria-label": "weight",
                 }}
                 onChange={(e) => handleChanges(e)}
                 placeholder="Search name"
               />
             </FormControl>
           </Grid>
-          <Grid item lg={2} sx={{ paddingLeft: '5px' }}>
-            {data && <ExcelButton data={data} title="Excel" fileName="Search_history.xlsx" />}
+          <Grid item lg={2} sx={{ paddingLeft: "5px" }}>
+            {data && (
+              <ExcelButton
+                data={data}
+                title="Excel"
+                fileName="Search_history.xlsx"
+              />
+            )}
           </Grid>
         </Grid>
       </Paper>
       <Grid container>
-        <div className="col-lg-12">
+        <Paper elevation={2}>
           {data && data.length > 0 && (
             <DataGrid
               rows={filterFn.fn(data)}
@@ -128,9 +144,9 @@ function Index() {
               initialState={{
                 pagination: {
                   paginationModel: {
-                    pageSize: 50
-                  }
-                }
+                    pageSize: 50,
+                  },
+                },
               }}
               getRowId={getRowId}
               pageSizeOptions={[50]}
@@ -138,7 +154,7 @@ function Index() {
               disableRowSelectionOnClick
             />
           )}
-        </div>
+        </Paper>
       </Grid>
     </>
   );

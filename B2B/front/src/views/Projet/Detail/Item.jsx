@@ -8,6 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import moment from "moment";
+import { lien_file } from "../../../static/Lien";
 import "./detail.style.css";
 
 function Item({ data, onclick }) {
@@ -21,10 +22,8 @@ function Item({ data, onclick }) {
     >
       <TableHead>
         <TableRow>
-          <TableCell>
-            <Typography variant="subtitle2" fontWeight={600}>
-              Saved By
-            </Typography>
+          <TableCell sx={{ width: "10%" }}>
+            <Typography variant="subtitle2" fontWeight={600}></Typography>
           </TableCell>
           <TableCell>
             <Typography variant="subtitle2" fontWeight={600}>
@@ -71,7 +70,7 @@ function Item({ data, onclick }) {
                 >
                   <Box>
                     <Typography variant="subtitle2" fontWeight={600}>
-                      {action.savedBy}
+                      Saved by {action.savedBy}
                     </Typography>
                     <Typography
                       color="textSecondary"
@@ -79,7 +78,31 @@ function Item({ data, onclick }) {
                         fontSize: "13px",
                       }}
                     >
-                      {moment(action.dateSave).fromNow()}
+                      {moment(action.dateSave).format("dddd DD-MM-YYYY")}
+                    </Typography>
+                    <Typography
+                      color="textSecondary"
+                      sx={{
+                        fontSize: "13px",
+                      }}
+                    >
+                      {action.filename &&
+                        action.filename.length > 0 &&
+                        action.filename.map((index) => {
+                          return (
+                            <div key={index._id}>
+                              <a
+                                rel="noreferrer"
+                                target="_blank"
+                                className="pfilename"
+                                href={`${lien_file}/${index.namedb}`}
+                                download={index.originalname}
+                              >
+                                <span> {index.originalname}</span>
+                              </a>
+                            </div>
+                          );
+                        })}
                     </Typography>
                   </Box>
                 </Box>
@@ -138,7 +161,15 @@ function Item({ data, onclick }) {
                   variant="subtitle2"
                   fontWeight={400}
                 >
-                  {moment(action.deedline).format("ddd DD-MM-YYYY")}
+                  {action?.type === "CLOSE" ? (
+                    <span
+                      className={action.sla === "IN SLA" ? "insla" : "outsla"}
+                    >
+                      {action.sla}
+                    </span>
+                  ) : (
+                    moment(action.deedline).format("ddd DD-MM-YYYY")
+                  )}
                 </Typography>
               </TableCell>
             </TableRow>

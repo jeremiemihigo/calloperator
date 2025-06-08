@@ -1,13 +1,13 @@
 // import { useState } from 'react'
 // import reactLogo from './assets/react.svg'
 // import viteLogo from '/vite.svg'
-import './App.css'
+import "./App.css";
 
-import { CssBaseline, ThemeProvider } from '@mui/material';
+import { CssBaseline, ThemeProvider } from "@mui/material";
 
+import { RouterProvider } from "react-router";
+import router from "./routes/Router.js";
 import { baselightTheme } from "./theme/DefaultColors";
-import { RouterProvider } from 'react-router';
-import router from "./routes/Router.js"
 
 function App() {
   const theme = baselightTheme;
@@ -20,4 +20,4 @@ function App() {
   );
 }
 
-export default App
+export default App;

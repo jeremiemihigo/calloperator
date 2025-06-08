@@ -15,7 +15,7 @@ const Rapport = Loadable(lazy(() => import('pages/Rapport')));
 const DetailClient = Loadable(lazy(() => import('pages/detailClient')));
 const Historique = Loadable(lazy(() => import('pages/Historique')));
 const Customer = Loadable(lazy(() => import('pages/mesClients/StatusDash/ShowCustomer')));
-const Performance = Loadable(lazy(() => import('pages/Performance')));
+//const Performance = Loadable(lazy(() => import('pages/Performance')));
 const Arbitrage = Loadable(lazy(() => import('pages/Arbitrage')));
 const Action = Loadable(lazy(() => import('pages/Validation')));
 const Decision = Loadable(lazy(() => import('pages/Decision')));
@@ -72,10 +72,7 @@ const AdminRoute = {
       path: '/customers',
       element: <Customer />
     },
-    {
-      path: '/performance',
-      element: <Performance />
-    },
+
     {
       path: '/arbitrage',
       element: <Arbitrage />

@@ -10,10 +10,10 @@ const Dashboard = () => {
     <PageContainer title="Dashboard" description="this is Dashboard">
       <Box>
         <Grid container spacing={3}>
-          <Grid item size={{ xs: 12, lg: 2 }} sx={{ position: "relative" }}>
+          <Grid item size={{ xs: 12, lg: 3 }} sx={{ position: "relative" }}>
             <Categorisation />
           </Grid>
-          <Grid item size={{ xs: 12, lg: 10 }}>
+          <Grid item size={{ xs: 12, lg: 9 }}>
             <ListeProjet />
           </Grid>
         </Grid>

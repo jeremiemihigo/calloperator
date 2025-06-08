@@ -18,6 +18,7 @@ const ChangeStatus = async (req, res, next) => {
             doby: name,
             concerne,
             id: new Date().getTime(),
+            vu: req.user.username,
           })
             .then((result) => {
               if (result) {

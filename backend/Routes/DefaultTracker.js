@@ -42,6 +42,7 @@ const {
   ReadArbitrage,
   Arbitrage,
   Arbitrage_File,
+  PostArbitrage_Automatique,
 } = require("../Controllers/DefaultTracker/Arbitrage");
 const {
   AddDecision,
@@ -56,10 +57,14 @@ const router = express.Router();
 router.post("/role", protect, AddRoleDT);
 router.get("/role", protect, ReadRole);
 router.put("/editrole", protect, EditRole);
-
 //Clients
 router.post("/upload_customer", protect, AddClientDT);
-router.post("/lienclient", protect, ReadFilterClient);
+router.post(
+  "/lienclient",
+  protect,
+  PostArbitrage_Automatique,
+  ReadFilterClient
+);
 router.post("/validation", protect, Validation);
 router.post("/readCertainClient", protect, ReadCertainClient);
 router.post("/changefeedback", protect, ChangeStatus, ReadClientAfterChange);

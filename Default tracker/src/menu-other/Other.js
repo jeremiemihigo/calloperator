@@ -31,13 +31,7 @@ const other = {
       url: '/historique',
       icon: BgColorsOutlined
     },
-    {
-      id: 'Communications',
-      title: 'Communications',
-      type: 'item',
-      url: '/performance',
-      icon: LineChartOutlined
-    },
+   
     {
       id: 'Arbitrage',
       title: 'Arbitrage',

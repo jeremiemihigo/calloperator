@@ -1,0 +1,14 @@
+.footer_ {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.title {
+  font-weight: bolder;
+}
+.commentaire_ {
+  padding: 10px;
+}
+.footer_ > p {
+  width: 50%;
+}

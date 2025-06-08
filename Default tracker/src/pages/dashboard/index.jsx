@@ -1,12 +1,10 @@
-import { BarChartOutlined, HomeOutlined, InteractionOutlined, NodeCollapseOutlined, UserOutlined } from '@ant-design/icons';
+import { HomeOutlined, InteractionOutlined, NodeCollapseOutlined, UserOutlined } from '@ant-design/icons';
 import { Grid, Paper } from '@mui/material';
 import React from 'react';
 import Action from './Action';
-import Arbitrage from './Arbitrage';
 import Decision from './Decision';
 import HomePage from './Home';
 import MyCustomer from './MyCustomer';
-import Performance from './Performance';
 import './table.css';
 
 // Enregistrement des composants nécessaires pour Chart.js
@@ -34,26 +32,12 @@ const LineChart = () => {
           <NodeCollapseOutlined />
           <p>Decisions</p>
         </Paper>
-
-        <Paper
-          className={`${select === 2 ? 'active option' : 'option'}`}
-          // onClick={() => setSelect(2)}
-        >
-          <BarChartOutlined />
-          <p>Arbitration</p>
-        </Paper>
-        <Paper className={`${select === 5 ? 'active option' : 'option'}`} onClick={() => setSelect(5)}>
-          <BarChartOutlined />
-          <p>Performance</p>
-        </Paper>
       </Grid>
       <Grid item lg={11} className="content">
         {select === 0 && <HomePage />}
         {select === 1 && <MyCustomer />}
-        {select === 2 && <Arbitrage />}
         {select === 3 && <Action />}
         {select === 4 && <Decision />}
-        {select === 5 && <Performance />}
       </Grid>
     </Grid>
   );

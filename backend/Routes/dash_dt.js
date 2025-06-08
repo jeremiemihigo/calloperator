@@ -8,9 +8,7 @@ const {
 const { GraphiqueAction } = require("../Controllers/DefaultTracker/Action");
 const { GraphiqueDecision } = require("../Controllers/DefaultTracker/Decision");
 const { protectTech } = require("../MiddleWare/protectTech");
-const {
-  ReadMessageAgent,
-} = require("../Controllers/DefaultTracker/Performance");
+const { ReadMessageAgent } = require("../Controllers/Communication/Message");
 const router = express.Router();
 
 router.get("/attente_department", protect, ClientAttente);

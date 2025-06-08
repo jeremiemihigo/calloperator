@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const http = require("http");
 require("dotenv").config();
+const path = require("path");
 
 // Initialisation d'Express
 const app = express();
@@ -16,6 +17,7 @@ app.use(express.urlencoded({ limit: "50mb" }));
 
 // Connexion à la base de données
 const connectDB = require("./Config/Connection");
+const { sendMessage } = require("./Controllers/TestPusher");
 connectDB();
 // Création du serveur HTTP
 const server = http.createServer(app);
@@ -35,16 +37,13 @@ const server = http.createServer(app);
 //   message: "hello world",
 // });
 // Routes
-app.post("/api/register-socket", async (req, res) => {
-  const { userId, socketId } = req.body;
-  console.log(userId, socketId);
-
-  // Associe le socketId à l’utilisateur en base ou en mémoire
-  // await saveUserSocket(userId, socketId);
-
-  res.sendStatus(200);
-});
+app.post("/sendMessage", sendMessage);
 app.use("/bboxx/b2b", require("./Routes/Router"));
+app.use(
+  "/bboxx/b2b/file",
+  express.static(path.resolve(__dirname, "Documents"))
+);
+//bboxx/b2b/file
 app.get("/", (req, res) => {
   return res.status(200).json(process.env.MONGODB_URL);
 });

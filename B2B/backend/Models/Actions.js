@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 const ModelProjet = require("./Projet");
 
+const filename = new mongoose.Schema({
+  originalname: { type: String, required: true },
+  namedb: { type: String, required: true },
+});
 const schema = new mongoose.Schema({
   action: { type: String, required: true },
   id: { type: String, required: true },
@@ -11,6 +15,8 @@ const schema = new mongoose.Schema({
   savedBy: { type: String, required: true },
   deedline: { type: Date, required: true },
   commentaire: { type: String, required: false },
+  sla: { type: String, required: false, enum: ["IN SLA", "OUT SLA"] },
+  filename: { type: [filename], required: false },
   type: {
     type: String,
     required: true,

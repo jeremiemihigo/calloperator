@@ -142,7 +142,6 @@ const demande = async (req, res) => {
     return res.status(201).json("Erreur");
   }
 };
-
 const ToutesDemande = async (req, res) => {
   var periode = moment(new Date()).format("MM-YYYY");
   try {
@@ -369,6 +368,7 @@ const ToutesDemandeAttente = async (req, res) => {
                   as: "conversation",
                 },
               },
+              { $sort: { updatedAt: 1 } },
               { $limit: parseInt(limit) === 100 ? 100 : 2000 },
             ])
             .then((response) => {

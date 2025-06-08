@@ -62,13 +62,7 @@ const utilities = {
       url: '/decision',
       icon: NodeCollapseOutlined
     },
-    {
-      id: 'Communications',
-      title: 'Communications',
-      type: 'item',
-      url: '/performance',
-      icon: LineChartOutlined
-    },
+    
     {
       id: 'Status configuration',
       title: 'Status configuration',

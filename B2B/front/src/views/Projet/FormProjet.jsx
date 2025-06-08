@@ -1,13 +1,14 @@
+import { Edit, Save } from "@mui/icons-material";
 import { Autocomplete, Button, TextField } from "@mui/material";
 import { Grid } from "@mui/system";
 import axios from "axios";
 import React from "react";
 import { useSelector } from "react-redux";
-import { config, lien } from "../../static/Lien";
-import DirectionSnackbar from "../../Static/SnackBar";
+import { config, lien } from "src/static/Lien";
+import DirectionSnackbar from "src/Static/SnackBar";
 import { ContexteProjet } from "./Context";
 
-function FormProjet() {
+function FormProjet({ dataedit }) {
   const { state, projetListe, setProjetListe } =
     React.useContext(ContexteProjet);
   const [suivi_par, setSuivipar] = React.useState([]);
@@ -84,7 +85,55 @@ function FormProjet() {
       setSend({ label: false, message: "" + error.message });
     }
   };
+  React.useEffect(() => {
+    if (dataedit) {
+      setInitiale({ ...dataedit, nextstep: dataedit.next_step });
+    }
+  }, [dataedit]);
   // suivi_par,
+
+  const EditProjet = async (event) => {
+    event.preventDefault();
+    setSend({ label: true, message: "" });
+    try {
+      const response = await axios.post(
+        `${lien}/editprojet`,
+        {
+          id: dataedit._id,
+          data: {
+            designation,
+            description,
+            next_step: nextstep,
+            contact,
+            adresse,
+            deedline,
+            email,
+            responsable,
+            idCategorie: dataedit?.idCategorie,
+            suivi_par:
+              suivi_par.length > 0
+                ? suivi_par.map((index) => {
+                    return index.name;
+                  })
+                : dataedit.suivi_par,
+          },
+        },
+        config
+      );
+      if (response.status === 200) {
+        setProjetListe(
+          projetListe.map((x) =>
+            x.id === response.data.id ? response.data : x
+          )
+        );
+        setSend({ label: false, message: "Modification effectuée" });
+      } else {
+        setSend({ label: false, message: response.data });
+      }
+    } catch (error) {
+      setSend({ label: false, message: error.message });
+    }
+  };
   return (
     <div>
       {send.message && <DirectionSnackbar message={send.message} />}
@@ -220,14 +269,21 @@ function FormProjet() {
           />
 
           <Button
-            onClick={(event) => sendData(event)}
+            onClick={
+              dataedit
+                ? (event) => EditProjet(event)
+                : (event) => sendData(event)
+            }
             variant="contained"
-            color="primary"
+            color={dataedit ? "warning" : "primary"}
             fullWidth
             disabled={send.label}
             sx={{ mt: 1 }}
           >
-            Enregistrer
+            {dataedit ? <Edit fontSize="small" /> : <Save fontSize="small" />}{" "}
+            <span style={{ marginLeft: "10px" }}>
+              {dataedit ? "Edit" : "Enregistrer"}
+            </span>
           </Button>
         </Grid>
       </Grid>

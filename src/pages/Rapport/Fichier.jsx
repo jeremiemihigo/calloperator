@@ -27,6 +27,14 @@ function Rapport() {
   const [donnerFound, setDonnerFound] = React.useState([]);
   const [samplejson2, setSample] = React.useState();
   const [nomFile, setNomFile] = React.useState("");
+  const feedbacks = useSelector((state) => state.feedback.feedback);
+  const returnFeedback = (id) => {
+    if (_.filter(feedbacks, { idFeedback: id }).length > 0) {
+      return _.filter(feedbacks, { idFeedback: id })[0].title;
+    } else {
+      return id;
+    }
+  };
 
   const select = [
     { id: 1, title: "Shop", value: "idShop" },
@@ -167,7 +175,7 @@ function Rapport() {
                   response.data[i].demande?.statut === "allumer"
                     ? "allumé"
                     : "eteint",
-                RAISON: response.data[i]?.raison,
+                RAISON: returnFeedback(response.data[i]?.raison),
                 Item_Swap: response.data[i].demande?.itemswap,
                 COMMUNE: response.data[i].demande?.commune,
                 QUARTIER: response.data[i].demande?.sector,
@@ -196,7 +204,12 @@ function Rapport() {
   return (
     <Paper sx={{ padding: "5px" }} elevation={3}>
       {message && <DirectionSnackbar message={message} />}
-      {shop && shop.length > 0 && zone && zone.length > 0 ? (
+      {shop &&
+      shop.length > 0 &&
+      feedbacks &&
+      feedbacks.length > 0 &&
+      zone &&
+      zone.length > 0 ? (
         <>
           <div>
             <Grid container>
@@ -286,7 +299,7 @@ function Rapport() {
             <Grid container>
               <Grid item lg={5} sm={5} xs={12}>
                 <Plaintes
-                  data={donnerFound}
+                  data={samplejson2}
                   loadings={searchData}
                   dates={dates}
                 />

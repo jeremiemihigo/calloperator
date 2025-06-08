@@ -1,15 +1,20 @@
+import { Delete, Edit } from "@mui/icons-material";
 import { Badge, Button, Paper, Typography } from "@mui/material";
 import { Grid } from "@mui/system";
+import { IconMessage } from "@tabler/icons-react";
+import axios from "axios";
 import _ from "lodash";
 import moment from "moment";
 import React from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import DashboardCard from "src/components/shared/DashboardCard";
+import { allstatus, config, lien } from "src/static/Lien";
+import Loading from "src/static/Loading";
 import Popup from "src/static/Popup";
-import { allstatus } from "../../static/Lien";
-import Loading from "../../static/Loading";
-import CountdownTimer from "../../static/Rebour";
-import Selected from "../../static/Select";
+import CountdownTimer from "src/static/Rebour";
+import Selected from "src/static/Select";
+import DirectionSnackbar from "src/Static/SnackBar";
 import FormProspect from "../Prospect/AddProspect";
 import { ContexteProjet } from "./Context";
 import FormProjet from "./FormProjet";
@@ -17,8 +22,10 @@ import ListeCout from "./ListeCout";
 import "./projet.style.css";
 
 const RecentTransactions = () => {
-  const { projetListe, state } = React.useContext(ContexteProjet);
+  const { projetListe, setProjetListe, state } =
+    React.useContext(ContexteProjet);
   const [openform, setOpenForm] = React.useState(false);
+  const [dataedit, setDataEdit] = React.useState();
   const navigation = useNavigate();
 
   const clickProjet = (projet) => {
@@ -32,17 +39,7 @@ const RecentTransactions = () => {
     event.preventDefault();
     navigation("/prospects", { state: projet });
   };
-  const returnclasse = (stat) => {
-    if (stat === "En cours") {
-      return "encours";
-    }
-    if (stat === "En pause") {
-      return "pause";
-    }
-    if (stat === "Abandonner") {
-      return "abandonner";
-    }
-  };
+
   const [statut, setStatut] = React.useState("all");
   const lastComment = (index) => {
     if (index?.commentaire && index?.commentaire.length > 0) {
@@ -100,9 +97,34 @@ const RecentTransactions = () => {
       },
     });
   }, [statut]);
+  const user = useSelector((state) => state.user.user);
+  const returnVue = (comment) => {
+    let nombre = 0;
+    for (let i = 0; i < comment.length; i++) {
+      if (!comment[i]?.vu?.includes(user.username)) {
+        nombre = nombre + 1;
+      }
+    }
+    return nombre;
+  };
+  const [message, setMessage] = React.useState("");
+  const deleteprojet = async (id) => {
+    try {
+      setMessage("");
+      const response = await axios.post(`${lien}/deleteProjet`, { id }, config);
+      if (response.status === 200) {
+        setProjetListe(projetListe.filter((x) => x.id !== response.data));
+      } else {
+        setMessage(response.data);
+      }
+    } catch (error) {
+      setMessage(error.message);
+    }
+  };
 
   return (
     <>
+      {message && <DirectionSnackbar message={message} />}
       {state.etat ? (
         <Loading />
       ) : (
@@ -112,7 +134,10 @@ const RecentTransactions = () => {
           action={
             <>
               <Button
-                onClick={() => setOpenForm(true)}
+                onClick={() => {
+                  setDataEdit();
+                  setOpenForm(true);
+                }}
                 color="primary"
                 variant="contained"
               >
@@ -151,12 +176,29 @@ const RecentTransactions = () => {
             >
               <Grid container>
                 <Grid item size={{ lg: 10 }} className="projetname">
-                  <Typography className="titreprojet">
-                    {index.id} #
-                    <span onClick={() => clickProjet(index)}>
+                  <div className="divtitleprojet">
+                    <Typography
+                      onClick={() => clickProjet(index)}
+                      className="titreprojet"
+                      noWrap
+                    >
                       {index.designation}
-                    </span>
-                  </Typography>
+                    </Typography>
+                    <div className="icon">
+                      <Delete
+                        onClick={() => deleteprojet(index.id)}
+                        fontSize="small"
+                      />
+                      <Edit
+                        onClick={() => {
+                          setDataEdit(index);
+                          setOpenForm(true);
+                        }}
+                        fontSize="small"
+                      />
+                    </div>
+                  </div>
+
                   <Typography className="description">
                     {index.description}
                   </Typography>
@@ -197,16 +239,22 @@ const RecentTransactions = () => {
 
                     <Badge
                       badgeContent={
-                        index?.commentaire ? index?.commentaire.length : 0
+                        index?.commentaire ? returnVue(index?.commentaire) : 0
                       }
                       color="primary"
                     >
                       <Typography
                         onClick={(event) => clickCommentaire(index, event)}
-                        sx={{ marginLeft: "20px", cursor: "pointer" }}
+                        sx={{
+                          marginLeft: "20px",
+                          display: "flex",
+                          alignItems: "center",
+                          cursor: "pointer",
+                        }}
                         component="span"
                       >
-                        Comment
+                        <IconMessage fontSize="small" />{" "}
+                        <span style={{ marginLeft: "5px" }}>Comment</span>
                       </Typography>
                     </Badge>
                   </Typography>
@@ -247,6 +295,11 @@ const RecentTransactions = () => {
       <Popup open={openform} setOpen={setOpenForm} title="Project">
         <FormProjet />
       </Popup>
+      {dataedit && (
+        <Popup open={openform} setOpen={setOpenForm} title="Project">
+          <FormProjet dataedit={dataedit} />
+        </Popup>
+      )}
       {datacout && (
         <Popup
           open={opencout}

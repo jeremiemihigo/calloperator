@@ -13,7 +13,6 @@ export const ReadUser = createAsyncThunk(
   async (_id, { rejectWithValue }) => {
     try {
       const response = await axios.get(`${lien}/readUserConnect`, config);
-
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data);

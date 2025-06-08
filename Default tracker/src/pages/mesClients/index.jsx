@@ -80,17 +80,16 @@ function Index() {
     navigation('/customer_information', { state: row.codeclient });
   };
 
-  const willBeVisitedBy = (objectif) => {
-    if (objectif.length > 0) {
-      return objectif[0].codeAgent;
-    } else {
-      return 'No_people';
-    }
-  };
+  
   const returnFeedback = (id) => {
     if (allfeedback && allfeedback.length > 0) {
-      return allfeedback.filter((x) => x.idFeedback === id)[0]?.title;
+      if (allfeedback.filter((x) => x.idFeedback === id).length > 0) {
+        return allfeedback.filter((x) => x.idFeedback === id)[0]?.title;
+      } else {
+        return 'no_visits';
+      }
     }
+    // return 'no_visits';
   };
   React.useEffect(() => {
     if (client && client.length > 0 && allfeedback && allfeedback.length > 0) {
@@ -106,10 +105,10 @@ function Index() {
           region: x.region,
           shop: x.shop,
           action: x.action,
+          submitedBy: x.submitedBy,
           currentFeedback: x.tfeedback?.title,
           feedback_call: returnFeedback(x?.derniereappel?.sioui_texte) || 'no_calls',
           last_vm: x?.derniereVisite ? returnFeedback(x.derniereVisite.demande.raison) : 'no_visits',
-          visited_by: willBeVisitedBy(x.objectif),
           sla: x.tfeedback.delai * 1440,
           fullDate: x.fullDate,
           statut_decision: x.statut_decision,
@@ -245,15 +244,6 @@ function Index() {
     },
 
     {
-      field: 'visitedBy',
-      headerName: 'Visited_by',
-      width: 100,
-      editable: false,
-      renderCell: (p) => {
-        return <Dot onClick={() => editOne('agent', p.row)} texte={p.row.visited_by} />;
-      }
-    },
-    {
       field: 'last_vm',
       headerName: 'Last Feedback_VM',
       width: 280,
@@ -307,6 +297,12 @@ function Index() {
       renderCell: (p) => {
         return <>{p.row.incharge.join(';')}</>;
       }
+    },
+    {
+      field: 'submitedBy',
+      headerName: 'submited By',
+      width: 100,
+      editable: false
     },
     {
       field: 'dateClose',
@@ -397,7 +393,7 @@ function Index() {
 
         {loading && <Chargement />}
 
-        {!loading && data && data.length > 0 && (
+        {!loading && allfeedback && allfeedback.length > 0 && data && data.length > 0 && (
           <div>
             <DataGrid
               rows={data}

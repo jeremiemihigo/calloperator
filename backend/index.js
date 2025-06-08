@@ -18,9 +18,6 @@ app.use(express.urlencoded({ limit: "50mb" }));
 
 // Connexion à la base de données
 const connectDB = require("./config/Connection");
-const {
-  PostArbitrage_Automatique,
-} = require("./Controllers/DefaultTracker/Arbitrage");
 connectDB();
 
 // Création du serveur HTTP
@@ -75,7 +72,6 @@ app.use((req, res, next) => {
   req.users = onlineuser;
   next();
 });
-app.use(PostArbitrage_Automatique);
 // Routes
 app.use("/bboxx/support", require("./Routes/Route"));
 app.use("/issue", require("./Routes/Issue"));

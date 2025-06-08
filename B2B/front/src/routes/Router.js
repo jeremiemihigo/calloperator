@@ -10,7 +10,6 @@ const Error = lazy(() => import("../views/authentication/Error"));
 const Login = lazy(() => import("../views/authentication/Login"));
 
 const Utilisateur = lazy(() => import("../views/Utilisateur"));
-const Steps = lazy(() => import("../views/Steps"));
 const Projet = lazy(() => import("../views/Projet"));
 const Prospect = lazy(() => import("../views/Prospect"));
 const DetailProjet = lazy(() => import("../views/Projet/Detail"));
@@ -24,7 +23,6 @@ const Router = [
     children: [
       { path: "/", element: <Navigate to="/projets" /> },
       { path: "/utilisateurs", exact: true, element: <Utilisateur /> },
-      { path: "/steps", exact: true, element: <Steps /> },
       { path: "/projets", exact: true, element: <Projet /> },
       { path: "/action_en_cours", exact: true, element: <Action_en_cours /> },
       { path: "/prospects", exact: true, element: <Prospect /> },

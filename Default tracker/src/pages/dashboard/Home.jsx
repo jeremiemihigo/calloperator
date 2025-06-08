@@ -1,11 +1,10 @@
-import { Paper } from '@mui/material';
+import { Grid, Paper } from '@mui/material';
 import axios from 'axios';
 import { CategoryScale, Chart as ChartJS, Legend, LinearScale, LineElement, PointElement, Title, Tooltip } from 'chart.js';
 import LoaderGif from 'components/LoaderGif';
 import React from 'react';
 import { Line } from 'react-chartjs-2';
 import { config, lien_dt } from 'static/Lien';
-import { Grid } from '../../../node_modules/@mui/material/index';
 import PercentValidation from './PercentValidation';
 import './table.css';
 
@@ -18,6 +17,7 @@ const HomePage = () => {
   const loading = async () => {
     try {
       const response = await axios.get(lien_dt + '/graphique', config);
+
       if (response.status === 200) {
         setData({
           labels: response.data.table,

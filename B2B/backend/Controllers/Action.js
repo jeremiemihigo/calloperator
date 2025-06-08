@@ -2,29 +2,40 @@ const ModelAction = require("../Models/Actions");
 const ModelProjet = require("../Models/Projet");
 const moment = require("moment");
 const ModelCout = require("../Models/Cout");
-const { generateString, differenceDays } = require("../static/fonction");
+const { generateString } = require("../static/fonction");
 const asyncLab = require("async");
 
 const AddAction = async (req, res, next) => {
   try {
+    let filenames =
+      req.files &&
+      req.files.length > 0 &&
+      req.files.map((doc) => {
+        return {
+          originalname: doc.originalname,
+          namedb: doc.filename,
+        };
+      });
     const {
       action,
       concerne,
       commentaire,
       deedline,
-      cout,
       next_step,
+      cout,
       statut_actuel,
     } = req.body;
     const idAction = new Date().getTime();
-    const couts = cout.map((index) => {
-      return {
-        ...index,
-        savedby: req.user.name,
-        concerne,
-        idAction,
-      };
-    });
+    const couts = cout
+      ? JSON.parse(cout).map((index) => {
+          return {
+            ...index,
+            savedby: req.user.name,
+            concerne,
+            idAction,
+          };
+        })
+      : [];
 
     const today = moment(new Date()).format("YYYY-MM-DD");
     if (!action || !concerne || !next_step || !statut_actuel || !deedline) {
@@ -43,6 +54,7 @@ const AddAction = async (req, res, next) => {
             statut_actuel,
             dateSave: today,
             commentaire,
+            filename: filenames,
             deedline,
           })
             .then((result) => {
@@ -59,7 +71,6 @@ const AddAction = async (req, res, next) => {
                 done(reponse);
               })
               .catch(function (err) {
-                console.log(err);
                 done(result);
               });
           } else {
@@ -201,7 +212,6 @@ const ReadProjet = async (req, res) => {
 const ReadDepense = async (req, res) => {
   try {
     const { concerne } = req.params;
-    console.log(concerne);
     ModelCout.aggregate([
       { $match: { concerne } },
       {
@@ -223,19 +233,30 @@ const ReadDepense = async (req, res) => {
 const CloseAction = async (req, res, next) => {
   try {
     const { id } = req.body;
-    ModelAction.findByIdAndUpdate(
-      id,
-      { $set: { type: "CLOSE" } },
-      { new: true }
-    )
-      .then((result) => {
-        console.log(result);
-        req.recherche = result.concerne;
-        next();
-      })
-      .catch(function (error) {
-        return res.status(201).json(error);
-      });
+    asyncLab.waterfall([
+      function (done) {
+        ModelAction.findById(id)
+          .lean()
+          .then((action) => {
+            done(null, action);
+          });
+      },
+      function (action, done) {
+        let sla = new Date(action.deedline).getTime() - new Date().getTime();
+        ModelAction.findByIdAndUpdate(
+          id,
+          { $set: { type: "CLOSE", sla: sla > 0 ? "IN SLA" : "OUT SLA" } },
+          { new: true }
+        )
+          .then((result) => {
+            req.recherche = result.concerne;
+            next();
+          })
+          .catch(function (error) {
+            return res.status(201).json(error);
+          });
+      },
+    ]);
   } catch (error) {}
 };
 const ReadOpenAction = async (req, res) => {
@@ -269,12 +290,72 @@ const ReadOpenAction = async (req, res) => {
     console.log(error);
   }
 };
+const DeleteProjet = async (req, res) => {
+  try {
+    const { id } = req.body;
+    const returnMessage = (a) => {
+      if (a === 1) {
+        return "Une action est attachée à ce projet";
+      } else {
+        return `${a} actions sont attachées à ce projet`;
+      }
+    };
+    asyncLab.waterfall(
+      [
+        function (done) {
+          ModelAction.find({ concerne: id })
+            .lean()
+            .then((action) => {
+              if (action.length > 0) {
+                return res.status(201).json(returnMessage(action.length));
+              } else {
+                done(null, true);
+              }
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+        },
+        function (r, done) {
+          ModelProjet.findOneAndDelete({ id })
+            .then((result) => {
+              done(result);
+            })
+            .catch(function (error) {
+              return res.status(201).json(error.message);
+            });
+        },
+      ],
+      function (result) {
+        return res.status(200).json(id);
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+const EditProjet = async (req, res) => {
+  try {
+    const { id, data } = req.body;
+    ModelProjet.findByIdAndUpdate(id, { $set: data }, { new: true })
+      .then((result) => {
+        return res.status(200).json(result);
+      })
+      .catch(function (error) {
+        return res.status(201).json(error.message);
+      });
+  } catch (error) {
+    return res.status(201).json(error.message);
+  }
+};
 module.exports = {
   AddAction,
+  EditProjet,
   CloseAction,
   ReadDepense,
   EditAction,
   AddProjet,
   ReadProjet,
   ReadOpenAction,
+  DeleteProjet,
 };

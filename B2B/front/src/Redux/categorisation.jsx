@@ -11,6 +11,8 @@ const initialState = {
   savecategorieError: null,
   editcategorie: "",
   editcategorieError: null,
+  deletecategorie: "",
+  deletecategorieError: null,
 };
 
 // Async thunk to read categorie data
@@ -61,6 +63,21 @@ export const ModifierCategorie = createAsyncThunk(
     }
   }
 );
+export const DeleteCategorie = createAsyncThunk(
+  "categorie/DeleteCategorie",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        `${lien}/deleteCategorisation`,
+        data,
+        config
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data);
+    }
+  }
+);
 
 // Create a slice of the store for categorie
 const categorieSlice = createSlice({
@@ -76,6 +93,8 @@ const categorieSlice = createSlice({
         state.savecategorieError = null;
         state.editcategorie = "";
         state.editcategorieError = null;
+        state.deletecategorie = "";
+        state.deletecategorieError = null;
       })
       .addCase(Readcategories.fulfilled, (state, action) => {
         state.categorie = action.payload;
@@ -85,6 +104,8 @@ const categorieSlice = createSlice({
         state.savecategorieError = null;
         state.editcategorie = "";
         state.editcategorieError = null;
+        state.deletecategorie = "";
+        state.deletecategorieError = null;
       })
       .addCase(Readcategories.rejected, (state, action) => {
         state.readcategorie = "rejected";
@@ -93,6 +114,8 @@ const categorieSlice = createSlice({
         state.savecategorieError = null;
         state.editcategorie = "";
         state.editcategorieError = null;
+        state.deletecategorie = "";
+        state.deletecategorieError = null;
       })
       .addCase(Addcategorie.pending, (state) => {
         state.readcategorie = "";
@@ -101,6 +124,8 @@ const categorieSlice = createSlice({
         state.savecategorieError = null;
         state.editcategorie = "";
         state.editcategorieError = null;
+        state.deletecategorie = "";
+        state.deletecategorieError = null;
       })
       .addCase(Addcategorie.fulfilled, (state, action) => {
         state.categorie = [action.payload, ...state.categorie];
@@ -110,6 +135,8 @@ const categorieSlice = createSlice({
         state.savecategorieError = null;
         state.editcategorie = "";
         state.editcategorieError = null;
+        state.deletecategorie = "";
+        state.deletecategorieError = null;
       })
       .addCase(Addcategorie.rejected, (state, action) => {
         state.readcategorie = "";
@@ -118,6 +145,8 @@ const categorieSlice = createSlice({
         state.savecategorieError = action.payload;
         state.editcategorie = "";
         state.editcategorieError = null;
+        state.deletecategorie = "";
+        state.deletecategorieError = null;
       })
       .addCase(ModifierCategorie.pending, (state) => {
         state.readcategorie = "";
@@ -126,6 +155,8 @@ const categorieSlice = createSlice({
         state.savecategorieError = null;
         state.editcategorie = "pending";
         state.editcategorieError = null;
+        state.deletecategorie = "";
+        state.deletecategorieError = null;
       })
       .addCase(ModifierCategorie.fulfilled, (state, action) => {
         let filtre = state.categorie.map((x) =>
@@ -138,6 +169,8 @@ const categorieSlice = createSlice({
         state.savecategorieError = null;
         state.editcategorie = "success";
         state.editcategorieError = null;
+        state.deletecategorie = "";
+        state.deletecategorieError = null;
       })
       .addCase(ModifierCategorie.rejected, (state, action) => {
         state.readcategorie = "";
@@ -146,6 +179,40 @@ const categorieSlice = createSlice({
         state.savecategorieError = null;
         state.editcategorie = "rejected";
         state.editcategorieError = action.payload;
+        state.deletecategorie = "";
+        state.deletecategorieError = null;
+      })
+      .addCase(DeleteCategorie.pending, (state) => {
+        state.readcategorie = "";
+        state.readcategorieError = null;
+        state.savecategorie = "";
+        state.savecategorieError = null;
+        state.editcategorie = "";
+        state.editcategorieError = null;
+        state.deletecategorie = "pending";
+        state.deletecategorieError = null;
+      })
+      .addCase(DeleteCategorie.fulfilled, (state, action) => {
+        let filtre = state.categorie.filter((x) => x.id !== action.payload);
+        state.categorie = filtre;
+        state.readcategorie = "";
+        state.readcategorieError = null;
+        state.savecategorie = "";
+        state.savecategorieError = null;
+        state.editcategorie = "";
+        state.editcategorieError = null;
+        state.deletecategorie = "success";
+        state.deletecategorieError = null;
+      })
+      .addCase(DeleteCategorie.rejected, (state, action) => {
+        state.readcategorie = "";
+        state.readcategorieError = null;
+        state.savecategorie = "";
+        state.savecategorieError = null;
+        state.editcategorie = "";
+        state.editcategorieError = null;
+        state.deletecategorie = "rejected";
+        state.deletecategorieError = action.payload;
       });
   },
 });

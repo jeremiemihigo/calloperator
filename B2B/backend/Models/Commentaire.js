@@ -6,6 +6,7 @@ const schema = new mongoose.Schema(
     id: { type: String, required: true },
     concerne: { type: String, required: true },
     doby: { type: String, required: true },
+    vu: { type: [String], required: false },
   },
   { timestamps: true }
 );

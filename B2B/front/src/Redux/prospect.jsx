@@ -12,6 +12,10 @@ const initialState = {
   addactionError: null,
   comment: "",
   commentError: null,
+  delete: "",
+  deleteError: null,
+  edit: "",
+  editError: null,
 };
 
 // Async thunk to read prospect data
@@ -63,6 +67,28 @@ export const changeStatusProspect = createAsyncThunk(
     }
   }
 );
+export const DeleteProspect = createAsyncThunk(
+  "prospect/DeleteProspect",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${lien}/deleteprospect`, data, config);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data);
+    }
+  }
+);
+export const EditProspect = createAsyncThunk(
+  "prospect/EditProspect",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${lien}/editprospect`, data, config);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data);
+    }
+  }
+);
 
 // Create a slice of the store for prospect
 const prospectSlice = createSlice({
@@ -80,6 +106,10 @@ const prospectSlice = createSlice({
         state.addactionError = "";
         state.comment = "";
         state.commentError = null;
+        state.delete = "";
+        state.deleteError = null;
+        state.edit = "";
+        state.editError = null;
       })
       .addCase(Readprospects.fulfilled, (state, action) => {
         state.prospect = action.payload;
@@ -91,6 +121,10 @@ const prospectSlice = createSlice({
         state.addactionError = "";
         state.comment = "";
         state.commentError = null;
+        state.delete = "";
+        state.deleteError = null;
+        state.edit = "";
+        state.editError = null;
       })
       .addCase(Readprospects.rejected, (state, action) => {
         state.readprospect = "rejected";
@@ -101,6 +135,10 @@ const prospectSlice = createSlice({
         state.addactionError = "";
         state.comment = "";
         state.commentError = null;
+        state.delete = "";
+        state.deleteError = null;
+        state.edit = "";
+        state.editError = null;
       })
       .addCase(Addprospect.pending, (state) => {
         state.saveprospect = "pending";
@@ -109,6 +147,10 @@ const prospectSlice = createSlice({
         state.addactionError = "";
         state.comment = "";
         state.commentError = null;
+        state.delete = "";
+        state.deleteError = null;
+        state.edit = "";
+        state.editError = null;
       })
       .addCase(Addprospect.fulfilled, (state, action) => {
         state.prospect = [action.payload, ...state.prospect];
@@ -118,6 +160,10 @@ const prospectSlice = createSlice({
         state.addactionError = "";
         state.comment = "";
         state.commentError = null;
+        state.delete = "";
+        state.edit = "";
+        state.editError = null;
+        state.deleteError = null;
       })
       .addCase(Addprospect.rejected, (state, action) => {
         state.saveprospect = "rejected";
@@ -125,7 +171,11 @@ const prospectSlice = createSlice({
         state.addaction = "";
         state.addactionError = "";
         state.comment = "";
-        state.commentError = null;
+        state.commentError = "";
+        state.delete = "";
+        state.deleteError = null;
+        state.edit = "";
+        state.editError = null;
       })
       .addCase(AddActionProspect.pending, (state) => {
         state.saveprospect = "";
@@ -134,6 +184,10 @@ const prospectSlice = createSlice({
         state.addactionError = null;
         state.comment = "";
         state.commentError = null;
+        state.delete = "";
+        state.deleteError = null;
+        state.edit = "";
+        state.editError = null;
       })
       .addCase(AddActionProspect.fulfilled, (state, action) => {
         let filtre = state.prospect.map((x) =>
@@ -146,6 +200,10 @@ const prospectSlice = createSlice({
         state.addactionError = null;
         state.comment = "";
         state.commentError = null;
+        state.delete = "";
+        state.deleteError = null;
+        state.edit = "";
+        state.editError = null;
       })
       .addCase(AddActionProspect.rejected, (state, action) => {
         state.saveprospect = "";
@@ -154,6 +212,10 @@ const prospectSlice = createSlice({
         state.addactionError = action.payload;
         state.comment = "";
         state.commentError = null;
+        state.delete = "";
+        state.deleteError = null;
+        state.edit = "";
+        state.editError = null;
       })
       .addCase(changeStatusProspect.pending, (state) => {
         state.saveprospect = "";
@@ -162,6 +224,10 @@ const prospectSlice = createSlice({
         state.addactionError = null;
         state.comment = "pending";
         state.commentError = null;
+        state.delete = "";
+        state.deleteError = null;
+        state.edit = "";
+        state.editError = null;
       })
       .addCase(changeStatusProspect.fulfilled, (state, action) => {
         let filtre = state.prospect.map((x) =>
@@ -174,6 +240,10 @@ const prospectSlice = createSlice({
         state.addactionError = null;
         state.comment = "success";
         state.commentError = null;
+        state.delete = "";
+        state.deleteError = null;
+        state.edit = "";
+        state.editError = null;
       })
       .addCase(changeStatusProspect.rejected, (state, action) => {
         state.saveprospect = "";
@@ -182,6 +252,90 @@ const prospectSlice = createSlice({
         state.addactionError = null;
         state.comment = "rejected";
         state.commentError = action.payload;
+        state.delete = "";
+        state.deleteError = null;
+        state.edit = "";
+        state.editError = null;
+      })
+      .addCase(DeleteProspect.pending, (state) => {
+        state.saveprospect = "";
+        state.saveprospectError = "";
+        state.addaction = "";
+        state.addactionError = null;
+        state.comment = "pending";
+        state.commentError = null;
+        state.delete = "";
+        state.deleteError = null;
+        state.edit = "";
+        state.editError = null;
+      })
+      .addCase(DeleteProspect.fulfilled, (state, action) => {
+        let filtre = state.prospect.map((x) =>
+          x.id === action.payload.id ? action.payload : x
+        );
+        state.prospect = filtre;
+        state.saveprospect = "";
+        state.saveprospectError = "";
+        state.addaction = "";
+        state.addactionError = null;
+        state.comment = "success";
+        state.commentError = null;
+        state.delete = "";
+        state.deleteError = null;
+        state.edit = "";
+        state.editError = null;
+      })
+      .addCase(DeleteProspect.rejected, (state, action) => {
+        state.saveprospect = "";
+        state.saveprospectError = "";
+        state.addaction = "";
+        state.addactionError = null;
+        state.comment = "rejected";
+        state.commentError = action.payload;
+        state.delete = "";
+        state.deleteError = null;
+        state.edit = "";
+        state.editError = null;
+      })
+      .addCase(EditProspect.pending, (state) => {
+        state.saveprospect = "";
+        state.saveprospectError = "";
+        state.addaction = "";
+        state.addactionError = null;
+        state.comment = "";
+        state.commentError = null;
+        state.delete = "";
+        state.deleteError = null;
+        state.edit = "pending";
+        state.editError = null;
+      })
+      .addCase(EditProspect.fulfilled, (state, action) => {
+        let filtre = state.prospect.map((x) =>
+          x.id === action.payload.id ? action.payload : x
+        );
+        state.prospect = filtre;
+        state.saveprospect = "";
+        state.saveprospectError = "";
+        state.addaction = "";
+        state.addactionError = null;
+        state.comment = "";
+        state.commentError = null;
+        state.delete = "";
+        state.deleteError = null;
+        state.edit = "success";
+        state.editError = null;
+      })
+      .addCase(EditProspect.rejected, (state, action) => {
+        state.saveprospect = "";
+        state.saveprospectError = "";
+        state.addaction = "";
+        state.addactionError = null;
+        state.comment = "";
+        state.commentError = null;
+        state.delete = "";
+        state.deleteError = null;
+        state.edit = "rejected";
+        state.editError = action.payload;
       });
   },
 });

@@ -1,15 +1,34 @@
-import { Box, TextField, Typography } from "@mui/material";
+import { Delete, Edit } from "@mui/icons-material";
+import { Box, Paper, Typography } from "@mui/material";
 import { Grid } from "@mui/system";
 import { IconMessage } from "@tabler/icons-react";
+import _ from "lodash";
 import moment from "moment";
 import React from "react";
+import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
-import { allstatus } from "../../static/Lien";
-import Selected from "../../static/Select";
+import { DeleteProspect } from "src/Redux/prospect";
+import Popup from "src/static/Popup";
+import CountdownTimer from "src/static/Rebour";
+import ListeCout from "../Projet/ListeCout";
 import "../Projet/projet.style.css";
+import FormProspect from "./AddProspect";
 
 function ListeProspect({ donner }) {
   const location = useLocation();
+  const [opencout, setOpencout] = React.useState(false);
+  const [datacout, setDataCout] = React.useState();
+  const returnMontant = (index) => {
+    return _.reduce(
+      index,
+      function (curr, next) {
+        return curr + next.cout;
+      },
+      0
+    );
+  };
+  const [open, setOpen] = React.useState(false);
+  const [dataedit, setDataEdit] = React.useState();
   const data = location?.state ? location.state : donner;
   const navigation = useNavigate();
   const clickCommentaire = (prospect, event) => {
@@ -37,118 +56,131 @@ function ListeProspect({ donner }) {
       );
     }
   };
-  const returnclasse = (stat) => {
-    if (stat === "En cours") {
-      return "encours";
-    }
-    if (stat === "En pause") {
-      return "pause";
-    }
-    if (stat === "Abandonner") {
-      return "abandonner";
-    }
-  };
-  const [statut, setStatut] = React.useState("");
 
   const clickProjet = (projet) => {
     navigation("/detail_projet", { state: projet });
   };
+  const dispatch = useDispatch();
+  const deleteProspect = (id) => {
+    dispatch(DeleteProspect({ id }));
+    window.location.replace("/prospects");
+  };
 
   return (
-    <div>
-      <Grid container>
-        <Grid item size={{ lg: 6 }} className="display_">
-          <TextField
-            name="id"
-            label="ID Prospect"
-            id="id"
-            variant="outlined"
-            fullWidth
-            sx={{
-              mt: 2,
-              mb: 2,
-              minWidth: "20rem",
-            }}
-          />
-        </Grid>
-        <Grid
-          item
-          size={{ lg: 3 }}
-          style={{ padding: "3px", width: "15%" }}
-          className="display_"
-        >
-          <Selected
-            label="Statut"
-            data={[...allstatus, { id: 4, title: "Tous", value: "all" }]}
-            value={statut}
-            setValue={setStatut}
-          />
-        </Grid>
-      </Grid>
+    <>
       <Box sx={{ overflow: "auto", width: { xs: "280px", sm: "auto" } }}>
         {data &&
-          data.length > 0 &&
-          data.map((index) => {
-            return (
-              <Grid
-                container
-                key={index._id}
-                className={returnclasse(index.statut)}
-              >
-                <Grid item size={{ lg: 10 }} className="projetname">
-                  <Typography className="titreprojet" component="p">
-                    {index.id} #
-                    <Typography
-                      component="span"
-                      onClick={() => clickProjet(index)}
-                    >
-                      {index.name}
-                    </Typography>
-                  </Typography>
-                  <Typography className="description">
-                    {index.description}
-                  </Typography>
-                  {index.projet.length > 0 && (
-                    <Typography className="next_step" noWrap>
-                      <span style={{ fontWeight: "bolder" }}>Projet</span> :{" "}
-                      {index.projet[0].designation}
-                    </Typography>
-                  )}
-                  <Typography className="next_step" noWrap>
-                    <span style={{ fontWeight: "bolder" }}>Next_step</span> :{" "}
-                    {index.next_step}
-                  </Typography>
+          (data.length > 0 ? (
+            data.map((index) => {
+              return (
+                <Paper
+                  key={index._id}
+                  elevation={2}
+                  sx={{ padding: "10px", marginTop: "10px" }}
+                >
+                  <Grid container>
+                    <Grid item size={{ lg: 10 }} className="projetname">
+                      <div className="divtitleprojet">
+                        <Typography
+                          onClick={() => clickProjet(index)}
+                          className="titreprojet"
+                          noWrap
+                        >
+                          {index.name}
+                        </Typography>
+                        <div className="icon">
+                          <Delete
+                            onClick={() => deleteProspect(index.id)}
+                            fontSize="small"
+                          />
+                          <Edit
+                            onClick={() => {
+                              setDataEdit(index);
+                              setOpen(true);
+                            }}
+                            fontSize="small"
+                          />
+                        </div>
+                      </div>
+                      <Typography className="description">
+                        {index.description}
+                      </Typography>
+                      {index.projet.length > 0 && (
+                        <Typography className="next_step" noWrap>
+                          <span style={{ fontWeight: "bolder" }}>Projet</span> :{" "}
+                          {index.projet[0].designation}
+                        </Typography>
+                      )}
+                      <Typography className="next_step" noWrap>
+                        <span style={{ fontWeight: "bolder" }}>Next_step</span>{" "}
+                        : {index.next_step}
+                      </Typography>
 
-                  {lastComment(index)}
+                      {lastComment(index)}
 
-                  <Typography
-                    color="textSecondary"
-                    sx={{
-                      fontSize: "10px",
-                    }}
-                  >
-                    {moment(index.createdAt).fromNow()}
-                  </Typography>
-                </Grid>
-                <Grid item size={{ lg: 2 }} className="display">
-                  <div style={{ cursor: "pointer" }}>
-                    <IconMessage
-                      onClick={(event) => clickCommentaire(index, event)}
-                      fontSize="small"
-                    />
-                  </div>
-                  <Typography component="p" className="next_step" noWrap>
-                    Last Update {moment(index.updatedAt).fromNow()}
-                  </Typography>
-                  <Typography component="p" className="next_step" noWrap>
-                    {index.statut}
-                  </Typography>
-                </Grid>
-              </Grid>
-            );
-          })}
+                      <Typography
+                        color="textSecondary"
+                        sx={{
+                          fontSize: "10px",
+                        }}
+                      >
+                        {moment(index.createdAt).fromNow()}
+                      </Typography>
+                    </Grid>
+                    <Grid item size={{ lg: 2 }} className="display">
+                      <div style={{ cursor: "pointer" }}>
+                        <IconMessage
+                          onClick={(event) => clickCommentaire(index, event)}
+                          fontSize="small"
+                        />
+                      </div>
+
+                      <Typography component="p" className="next_step" noWrap>
+                        {index.statut}
+                      </Typography>
+                      <Typography
+                        onClick={() => {
+                          setDataCout(index);
+                          setOpencout(true);
+                        }}
+                        component="p"
+                        className="cout"
+                        noWrap
+                      >
+                        Depense : ${returnMontant(index.cout)}
+                      </Typography>
+                      {index.deedline && (
+                        <CountdownTimer
+                          targetDate={index.deedline}
+                          sx={{
+                            fontSize: "12px",
+                            color: "green",
+                            textAlign: "center",
+                          }}
+                        />
+                      )}
+                    </Grid>
+                  </Grid>
+                </Paper>
+              );
+            })
+          ) : (
+            <p style={{ textAlign: "center", color: "red" }}>Aucun prospect</p>
+          ))}
       </Box>
-    </div>
+      {datacout && (
+        <Popup
+          open={opencout}
+          setOpen={setOpencout}
+          title={datacout?.designation}
+        >
+          <ListeCout concerne={datacout.id} />
+        </Popup>
+      )}
+      <Popup open={open} setOpen={setOpen} title="Modifier le prospect">
+        <FormProspect dataedit={dataedit} />
+      </Popup>
+    </>
   );
 }
 

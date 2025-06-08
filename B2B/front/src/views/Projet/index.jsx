@@ -8,24 +8,23 @@ import FormProjet from "./FormProjet";
 
 function Projets() {
   const [open, setOpen] = React.useState(false);
-  const userconnect = useSelector((state) => state.user);
-
-  React.useLayoutEffect(() => {
-    if (userconnect && userconnect.readUser === "rejected") {
-      window.location.replace("/auth/login");
-    }
-  }, [userconnect]);
-  return (
-    <>
-      <PageContainer title="Projets" description="Projets B2B DRC">
-        <ContexteProjet>
-          <Acceuil />
-          <Popup open={open} setOpen={setOpen} title="Nouveau Projet">
-            <FormProjet />
-          </Popup>
-        </ContexteProjet>
-      </PageContainer>
-    </>
-  );
+  const user = useSelector((state) => state.alluser.user);
+  if (user === "token_expired") {
+    localStorage.removeItem("auth");
+    window.location.replace("/auth/login");
+  } else {
+    return (
+      <>
+        <PageContainer title="Projets" description="Projets B2B DRC">
+          <ContexteProjet>
+            <Acceuil />
+            <Popup open={open} setOpen={setOpen} title="Nouveau Projet">
+              <FormProjet />
+            </Popup>
+          </ContexteProjet>
+        </PageContainer>
+      </>
+    );
+  }
 }
 export default Projets;

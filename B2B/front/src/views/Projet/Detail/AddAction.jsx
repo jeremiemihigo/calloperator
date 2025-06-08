@@ -4,11 +4,14 @@ import { Grid } from "@mui/system";
 import axios from "axios";
 import _ from "lodash";
 import React from "react";
-import { config, lien } from "../../../static/Lien";
-import DirectionSnackbar from "../../../Static/SnackBar";
+import { config, lien } from "src/static/Lien";
+import DirectionSnackbar from "src/Static/SnackBar";
+import "./add.style.css";
 
 function AddActionForm({ data, setData }) {
   //action, concerne, next_step, statut_actuel
+  const [files, setFiles] = React.useState();
+
   const [initiale, setInitiale] = React.useState({
     commentaire: "",
     stepSelect: "",
@@ -37,6 +40,7 @@ function AddActionForm({ data, setData }) {
       console.log(error);
     }
   };
+  console.log(files);
 
   const [action, setAction] = React.useState("");
   const [message, setMessage] = React.useState("");
@@ -45,26 +49,57 @@ function AddActionForm({ data, setData }) {
     event.preventDefault();
     setMessage("");
     try {
-      const response = await axios.post(
-        `${lien}/addaction`,
-        {
-          action,
-          concerne: data?.id,
-          next_step: stepSelect,
-          statut_actuel: data?.next_step,
-          cout: allcout,
-          deedline,
-          commentaire,
-        },
-        config
-      );
-      if (response.status === 200) {
-        setData(response.data);
-        setInitiale({
-          commentaire: "",
-          stepSelect: "",
-          deedline: "",
-        });
+      const formData = new FormData();
+      formData.append("action", action);
+      formData.append("concerne", data?.id);
+      formData.append("next_step", stepSelect);
+      formData.append("statut_actuel", data?.next_step);
+      if (allcout && allcout.length > 0) {
+        formData.append("cout", JSON.stringify(allcout)); // Même champ pour chaque fichier
+      }
+      formData.append("deedline", deedline);
+      formData.append("commentaire", commentaire);
+      if (files && files.length > 0) {
+        for (let i = 0; i < files.length; i++) {
+          formData.append("files", files[i]); // Même champ pour chaque fichier
+        }
+      }
+      if (files && files.length > 0) {
+        const response = await axios.post(
+          `${lien}/addaction`,
+          formData,
+          config
+        );
+        if (response.status === 200) {
+          setData(response.data);
+          setInitiale({
+            commentaire: "",
+            stepSelect: "",
+            deedline: "",
+          });
+        }
+      } else {
+        const response = await axios.post(
+          `${lien}/addaction_sans_fichier`,
+          {
+            action,
+            concerne: data?.id,
+            next_step: stepSelect,
+            statut_actuel: data?.next_step,
+            cout: JSON.stringify(allcout),
+            deedline,
+            commentaire,
+          },
+          config
+        );
+        if (response.status === 200) {
+          setData(response.data);
+          setInitiale({
+            commentaire: "",
+            stepSelect: "",
+            deedline: "",
+          });
+        }
       }
     } catch (error) {
       setMessage("" + error.message);
@@ -226,6 +261,18 @@ function AddActionForm({ data, setData }) {
           }}
           type="date"
         />
+        <div style={{ marginTop: "20px" }}>
+          <label className="label" htmlFor="importer">
+            Importer le ficher
+          </label>
+          <input
+            onChange={(event) => setFiles(event.target.files)}
+            hidden
+            multiple
+            type="file"
+            id="importer"
+          />
+        </div>
 
         <Button
           onClick={(event) => sendData(event)}

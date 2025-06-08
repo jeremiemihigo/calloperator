@@ -1,13 +1,10 @@
 const ModelClient = require("../../Models/DefaultTracker/TableClient");
 const ModelRole = require("../../Models/DefaultTracker/Role");
-const ModelShop = require("../../Models/Shop");
-const ModelRegion = require("../../Models/Zone");
 const asyncLab = require("async");
 const moment = require("moment");
 const { returnMoisLetter } = require("../../Static/Static_Function");
 const lodash = require("lodash");
 const modelPeriode = require("../../Models/Periode");
-const ModelAgent = require("../../Models/Agent");
 
 const visitedMonth = (visites) => {
   if (visites.length === 0) {
@@ -294,7 +291,6 @@ const Graphique = async (req, res) => {
       visite.push(result.filter((x) => x._id === table[i])[0]?.visite);
       appel.push(result.filter((x) => x._id === table[i])[0]?.appel);
     }
-
     return res.status(200).json({ appel, table, visite, action });
   } catch (error) {
     console.log(error);
@@ -372,16 +368,30 @@ const GraphiqueClient = async (req, res, next) => {
             },
           },
           {
+            $lookup: {
+              from: "pfeedback_calls",
+              let: { codeclient: "$codeclient", month: "$month" },
+              pipeline: [
+                {
+                  $match: {
+                    $expr: {
+                      $and: [
+                        { $eq: ["$codeclient", "$$codeclient"] },
+                        { $eq: ["$month", "$$month"] },
+                        { $eq: ["$type", "Reachable"] },
+                      ],
+                    },
+                  },
+                },
+              ],
+              as: "appel",
+            },
+          },
+          {
             $addFields: {
               taille_action: { $size: "$actions" },
               taille_visite: { $size: "$visite" },
-              appelExiste: {
-                $cond: [
-                  { $gt: [{ $type: "$appel" }, "missing"] }, // Condition : si 'appel' existe
-                  1, // Valeur si vrai
-                  0, // Valeur si faux
-                ],
-              },
+              taille_appel: { $size: "$appel" },
             },
           },
           {
@@ -399,7 +409,7 @@ const GraphiqueClient = async (req, res, next) => {
               },
               appel: {
                 $sum: {
-                  $cond: [{ $gt: ["$appelExiste", 0] }, 1, 0],
+                  $cond: [{ $gt: ["$taille_appel", 0] }, 1, 0],
                 },
               },
             },

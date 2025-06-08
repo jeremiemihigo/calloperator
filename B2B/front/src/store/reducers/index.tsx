@@ -9,6 +9,7 @@ import alluser from "../../Redux/AllUser";
 import user from "../../Redux/Utilisateur";
 import action from "../../Redux/action";
 import categorie from "../../Redux/categorisation";
+import commentaire from "../../Redux/commentaire";
 import prospect from "../../Redux/prospect";
 
 // ==============================|| COMBINE REDUCERS ||============================== //
@@ -19,6 +20,7 @@ const reducers = combineReducers({
   alluser,
   prospect,
   action,
+  commentaire,
 });
 
 export default reducers;

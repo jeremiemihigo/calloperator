@@ -56,6 +56,17 @@ function CommentaireIndex() {
       console.log(error);
     }
   };
+  const sendVue = async () => {
+    try {
+      const response = await axios.get(`${lien}/addvue/${data?.id}`, config);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  React.useEffect(() => {
+    sendVue();
+  }, [data]);
   return (
     <div className="chat-container">
       {data && (
