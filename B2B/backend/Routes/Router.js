@@ -72,7 +72,20 @@ router.post(
   AddAction,
   ReadProjet
 );
+router.post(
+  "/addaction_prospect",
+  upload.array("files", 10),
+  protect,
+  AddAction,
+  ReadProspect
+);
 router.post("/addaction_sans_fichier", protect, AddAction, ReadProjet);
+router.post(
+  "/addaction_sans_fichier_prospect",
+  protect,
+  AddAction,
+  ReadProspect
+);
 
 router.post("/login", LoginUser);
 router.post("/resetPassword", protect, ResetPassword);

@@ -4,12 +4,6 @@ const schema = new mongoose.Schema(
   {
     idRole: { type: String, unique: true, required: true },
     title: { type: String, required: true },
-    type: { type: String, required: true, enum: ["suivi", "operation"] },
-    filterBy: {
-      type: String,
-      required: true,
-      enum: ["region", "shop", "all", "currentFeedback"],
-    },
   },
   { timestamps: true }
 );

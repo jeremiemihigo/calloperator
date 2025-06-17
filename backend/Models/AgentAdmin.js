@@ -18,9 +18,11 @@ const schema = new mongoose.Schema(
     plainteShop: { type: [String], required: false },
     synchro_shop: { type: Array, required: false },
     //Default tracker
-    role: { type: String, required: false },
-    valueFilter: { type: Array, required: false },
+    role: { type: String, required: true },
+    poste: { type: String, required: true },
+    valuefilter: { type: Array, required: false },
     validateShop: { type: Array, required: false },
+    validationdt: { type: Boolean, required: true, default: false },
   },
   { timestamps: true }
 );

@@ -1,6 +1,7 @@
 import { Button, TextField } from '@mui/material';
 import axios from 'axios';
 import SimpleBackdrop from 'components/Backdrop';
+import DirectionSnackbar from 'components/Direction';
 import React from 'react';
 import { config, lien_dt } from 'static/Lien';
 
@@ -15,8 +16,8 @@ function Formulaire({ client, data, setData }) {
         lien_dt + '/arbitrage',
         {
           id: client.id,
-          current_status: client.currentfeedback,
-          changeto: client.changeto.length === 0 ? client.appel[0] : client.changeto[0],
+          current_status: client.currentfeedback?.idFeedback,
+          changeto: client.changeto,
           submitedBy: client.changeto.length === 0 ? 'Automatique' : client.submitedBy,
           commentaire: feedback,
           feedback: statut
@@ -44,9 +45,17 @@ function Formulaire({ client, data, setData }) {
   return (
     <div style={{ width: '20rem', padding: '10px' }}>
       <SimpleBackdrop open={sending} title="Please wait..." />
-      {message && <p style={{ textAlign: 'center', fontSize: '12px', marginBottom: '12px' }}>{message}</p>}
+      {message && <DirectionSnackbar message={message} />}
+
       <div>
-        <TextField value={feedback} onChange={(e) => setFeedback(e.target.value)} fullWidth multiline row={5} label="Raison" />
+        <TextField
+          value={feedback}
+          onChange={(e) => setFeedback(e.target.value)}
+          fullWidth
+          multiline
+          row={5}
+          label="Commentaire (facultatif)"
+        />
       </div>
       <div style={{ marginTop: '10px', display: 'flex' }}>
         <div style={{ padding: '5px', width: '50%' }}>

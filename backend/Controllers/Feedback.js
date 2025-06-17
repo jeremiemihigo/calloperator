@@ -2,15 +2,15 @@ const ModelFeedback = require("../Models/Feedback");
 
 const AddFeedback = async (req, res) => {
   try {
-    const { title, id, incharge, plateforme } = req.body;
+    const { title, incharge, plateforme } = req.body;
     const { nom } = req.user;
-    if (!title || !plateforme || !id || incharge.length === 0) {
+    if (!title || !plateforme || incharge.length === 0) {
       return;
     }
     ModelFeedback.create({
       title,
       plateforme,
-      idFeedback: id,
+      idFeedback: new Date().getTime(),
       idRole: incharge,
       savedby: nom,
     })
@@ -18,7 +18,6 @@ const AddFeedback = async (req, res) => {
         return res.status(200).json(result);
       })
       .catch(function (error) {
-        console.log(error);
         return res.status(201).json("Error " + error.message);
       });
   } catch (error) {
@@ -47,7 +46,7 @@ const ReadFeedback = async (req, res) => {
           plateforme: 1,
           role: 1,
           idFeedback: 1,
-          savedBy: 1,
+          savedby: 1,
         },
       },
     ])

@@ -7,9 +7,9 @@ import React from "react";
 import { config, lien, lien_dt } from "static/Lien";
 
 function Formulaire({ data_edit, data, setData }) {
+  console.log(data_edit);
   const [value, setValue] = React.useState([]);
   const [feedback, setFeedback] = React.useState("");
-  const [id, setId] = React.useState("");
   const option = [
     { id: 1, title: "Visites Ménages", value: "vm" },
     { id: 2, title: "Protefeuille", value: "portofolio" },
@@ -34,21 +34,16 @@ function Formulaire({ data_edit, data, setData }) {
     loadingRole();
   }, []);
   React.useEffect(() => {
-    if (data_edit && departements.length > 0) {
+    if (data_edit) {
+      setInCharge([]);
       setValue(
         data_edit?.plateforme.map((x) => {
           return option.filter((opt) => opt.value === x)[0];
         })
       );
       setFeedback(data_edit?.title);
-      setId(data_edit?.id);
-      setInCharge(
-        data_edit?.incharge.map((x) => {
-          return departements.filter((dept) => dept.idRole === x)[0];
-        })
-      );
     }
-  }, [data_edit, departements]);
+  }, [data_edit]);
 
   const sendData = async (event) => {
     event.preventDefault();
@@ -56,7 +51,7 @@ function Formulaire({ data_edit, data, setData }) {
       setSending({ etat: true, message: "" });
       const donner = {
         title: feedback,
-        id,
+
         plateforme: _.uniq(
           value.map(function (x) {
             return x.value;
@@ -74,7 +69,6 @@ function Formulaire({ data_edit, data, setData }) {
         setSending({ etat: false, message: "Opération effectuée" });
         setValue([]);
         setFeedback("");
-        setId("");
         setInCharge([]);
       } else {
         setSending({ etat: false, message: JSON.stringify(response.data) });
@@ -89,17 +83,19 @@ function Formulaire({ data_edit, data, setData }) {
       setSending({ etat: true, message: "" });
       const donner = {
         title: feedback,
-        id,
         plateforme: _.uniq(
           value.map(function (x) {
             return x.value;
           })
         ),
-        incharge: _.uniq(
-          incharge.map(function (x) {
-            return x.idRole;
-          })
-        ),
+        incharge:
+          incharge.length > 0
+            ? _.uniq(
+                incharge.map(function (x) {
+                  return x.idRole;
+                })
+              )
+            : data_edit?.plateforme,
       };
       const response = await axios.put(
         lien + "/editfeedback",
@@ -123,17 +119,7 @@ function Formulaire({ data_edit, data, setData }) {
     <div style={{ minWidth: "80%" }}>
       <>
         {message && <DirectionSnackbar message={message} />}
-        <div style={{ marginTop: "10px", marginBottom: "10px" }}>
-          <TextField
-            onChange={(event) => setId(event.target.value)}
-            disabled={data_edit ? true : false}
-            variant="outlined"
-            value={id}
-            fullWidth
-            label="ID"
-            type="text"
-          />
-        </div>
+
         <div>
           <TextField
             onChange={(event) => setFeedback(event.target.value)}

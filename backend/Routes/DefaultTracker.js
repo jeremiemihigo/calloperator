@@ -13,6 +13,7 @@ const {
   ReadClientAfterChange,
   ReadCertainClient,
   ReadFilterClient,
+  ChangeStatusOnly,
 } = require("../Controllers/DefaultTracker/Client");
 const {
   Rapport,
@@ -25,7 +26,6 @@ const {
 } = require("../Controllers/DefaultTracker/Dashboard");
 const {
   AddAction,
-  ActionAgent,
   AddOneAction,
   ValiderAction,
   Validation,
@@ -51,7 +51,6 @@ const {
   ChangeDecisionByFile,
   SubmitDecisionByFile,
 } = require("../Controllers/DefaultTracker/Decision");
-const { SendMessage } = require("../Controllers/DefaultTracker/Performance");
 const router = express.Router();
 
 router.post("/role", protect, AddRoleDT);
@@ -88,19 +87,17 @@ router.post("/change_action_excel", protect, SubmitedByExcel);
 router.post("/valideraction", protect, ValiderAction);
 
 //Performance
-router.post("/sendmessage", protect, SendMessage);
 
 router.post("/changeactionbyfile", protect, ChangeActionByFile);
-router.get("/statusDashboard", StatusDashboard);
-router.get("/actionAgent", protectTech, ActionAgent);
-router.get("/graphique", protect, GraphiqueClient, Graphique);
-router.get("/graphique_taux", protect, GraphiqueClient, TauxValidation);
+router.post("/statusDashboard", StatusDashboard);
+router.post("/graphique", protect, GraphiqueClient, Graphique);
+router.post("/graphique_taux", protect, GraphiqueClient, TauxValidation);
 
 //Arbitrage
 router.post("/arbitrage", protect, Arbitrage);
 router.get("/arbitrage", protect, ReadArbitrage);
 router.post("/arbitrage_file", protect, Arbitrage_File);
-
+router.post("/changeStatusOnly", protect, ChangeStatusOnly);
 //Decision
 router.post("/adddecision", protect, AddDecision);
 router.get("/decision", protect, ReadDecision);

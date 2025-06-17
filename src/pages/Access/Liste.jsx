@@ -6,14 +6,11 @@ import { DataGrid } from "@mui/x-data-grid";
 import DirectionSnackbar from "Control/SnackBar";
 import { Button, Image } from "antd";
 import axios from "axios";
-import Dot from "components/@extended/Dot";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { config, lien } from "static/Lien";
 import Popup from "static/Popup";
-import { returnRole } from "utils/Lien";
 import AgentAdmin from "./AgentAdmin";
-import UpdateAgentAdmin from "./UpdateAgentAdmin";
 
 function AgentListeAdmin() {
   const theme = useTheme();
@@ -103,20 +100,6 @@ function AgentListeAdmin() {
         );
       },
     },
-
-    {
-      field: "first",
-      headerName: "Log",
-      width: 50,
-      editable: false,
-      renderCell: (params) => {
-        return params.row.first ? (
-          <Dot color="error" />
-        ) : (
-          <Dot color="success" />
-        );
-      },
-    },
     {
       field: "active",
       headerName: "Status",
@@ -154,17 +137,42 @@ function AgentListeAdmin() {
     },
     {
       field: "role",
-      headerName: "Role",
+      headerName: "Departement",
       width: 150,
       editable: false,
-      renderCell: (params) => {
-        return returnRole(role, params.row.role);
+      renderCell: (p) => {
+        return (
+          <>{p.row.departement.length > 0 ? p.row.departement[0].title : ""}</>
+        );
+      },
+    },
+    {
+      field: "poste",
+      headerName: "Poste",
+      width: 150,
+      editable: false,
+      renderCell: (p) => {
+        return <>{p.row.poste.length > 0 ? p.row.poste[0].title : ""}</>;
+      },
+    },
+    {
+      field: "value",
+      headerName: "Affectation",
+      width: 150,
+      editable: false,
+      renderCell: (p) => {
+        return (
+          <>
+            {p.row?.valuefilter?.length > 0 &&
+              p.row.valuefilter.map((x) => x + "--")}
+          </>
+        );
       },
     },
     {
       field: "reset",
       headerName: "Reset",
-      width: 200,
+      width: 150,
       editable: false,
       renderCell: (params) => {
         return (
@@ -236,7 +244,7 @@ function AgentListeAdmin() {
           setOpen={setOpenEdit}
           title={`Modification de l'agent ${agentEdit?.nom}`}
         >
-          <UpdateAgentAdmin agent={agentEdit} />
+          <AgentAdmin agentselect={agentEdit} />
         </Popup>
       )}
     </div>

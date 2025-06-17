@@ -46,6 +46,12 @@ function Feedback() {
     {
       field: "plateforme",
       headerName: "Plateforme",
+      width: 130,
+      editable: false,
+    },
+    {
+      field: "savedby",
+      headerName: "Saved by",
       width: 100,
       editable: false,
     },

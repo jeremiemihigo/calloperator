@@ -5,6 +5,7 @@ const moment = require("moment");
 const { returnMoisLetter } = require("../../Static/Static_Function");
 const lodash = require("lodash");
 const modelPeriode = require("../../Models/Periode");
+const ModelPoste = require("../../Models/Poste");
 
 const visitedMonth = (visites) => {
   if (visites.length === 0) {
@@ -232,9 +233,11 @@ const InformationCustomer = async (req, res) => {
 };
 const StatusDashboard = async (req, res) => {
   let month = moment(new Date()).format("MM-YYYY");
+  const { match } = req.body;
+  let recherche = match ? match : {};
   try {
     ModelClient.aggregate([
-      { $match: { month } },
+      { $match: recherche },
       { $group: { _id: "$currentFeedback", total: { $sum: 1 } } },
       {
         $lookup: {
@@ -299,11 +302,19 @@ const Graphique = async (req, res) => {
 const GraphiqueClient = async (req, res, next) => {
   try {
     const month = moment(new Date()).format("MM-YYYY");
+    const { poste, valuefilter } = req.user;
+    const { match } = req.body;
     asyncLab.waterfall([
       function (done) {
-        ModelRole.findOne({ idRole: req.user.role })
+        ModelPoste.findOne({ id: poste })
           .then((result) => {
-            done(null, result.filterBy);
+            if (result) {
+              done(null, result.filterby);
+            } else {
+              return res
+                .status(201)
+                .json("No position found; you can contact the administrator");
+            }
           })
           .catch(function (error) {
             console.log(error);
@@ -312,23 +323,24 @@ const GraphiqueClient = async (req, res, next) => {
       function (filterBy, done) {
         if (filterBy === "shop") {
           done(null, {
-            shop: { $in: req.user.valueFilter },
+            shop: { $in: valuefilter },
             month,
           });
         }
         if (filterBy === "region") {
           done(null, {
-            region: { $in: req.user.valueFilter },
+            region: { $in: valuefilter },
             month,
           });
         }
-        if (filterBy === "all") {
+        if (filterBy === "overall") {
           done(null, { month });
         }
       },
       function (recherche, done) {
+        let recherches = match ? match : recherche;
         ModelClient.aggregate([
-          { $match: recherche },
+          { $match: recherches },
           {
             $lookup: {
               from: "actions",
@@ -339,7 +351,8 @@ const GraphiqueClient = async (req, res, next) => {
                     $expr: {
                       $and: [
                         { $eq: ["$codeclient", "$$codeclient"] },
-                        { $eq: ["$month", "$$mois"] },
+                        { $eq: ["$month", month] },
+                        { $eq: ["$statut", "Approved"] },
                       ],
                     },
                   },
@@ -351,14 +364,14 @@ const GraphiqueClient = async (req, res, next) => {
           {
             $lookup: {
               from: "rapports",
-              let: { codeclient: "$codeclient", mois: "$month" },
+              let: { codeclient: "$codeclient" },
               pipeline: [
                 {
                   $match: {
                     $expr: {
                       $and: [
                         { $eq: ["$codeclient", "$$codeclient"] },
-                        { $eq: ["$demande.lot", "$$mois"] },
+                        { $eq: ["$demande.lot", month] },
                       ],
                     },
                   },
@@ -370,14 +383,14 @@ const GraphiqueClient = async (req, res, next) => {
           {
             $lookup: {
               from: "pfeedback_calls",
-              let: { codeclient: "$codeclient", month: "$month" },
+              let: { codeclient: "$codeclient" },
               pipeline: [
                 {
                   $match: {
                     $expr: {
                       $and: [
                         { $eq: ["$codeclient", "$$codeclient"] },
-                        { $eq: ["$month", "$$month"] },
+                        { $eq: ["$month", month] },
                         { $eq: ["$type", "Reachable"] },
                       ],
                     },
@@ -417,10 +430,12 @@ const GraphiqueClient = async (req, res, next) => {
         ])
           .then((result) => {
             if (result.length > 0) {
-              req.client = { result, recherche };
+              req.client = { result, recherche: recherches };
               next();
             } else {
-              return res.status(201).json("Aucune information trouvée");
+              return res
+                .status(200)
+                .json({ nombre: 0, visite: 0, action: 0, appel: 0 });
             }
           })
           .catch(function (err) {
@@ -438,7 +453,6 @@ const TauxValidation = async (req, res) => {
     const month = moment(new Date()).format("MM-YYYY");
     let datasearch = recherche;
     datasearch.month = month;
-    datasearch.actif = true;
     let analyse = result.filter((x) => x._id === month)[0];
     const nombre = await ModelClient.find(datasearch).count();
 

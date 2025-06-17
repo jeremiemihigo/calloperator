@@ -1,3 +1,4 @@
+import { Delete } from '@mui/icons-material';
 import { CircularProgress, Grid, Typography } from '@mui/material';
 import axios from 'axios';
 import SimpleBackdrop from 'components/Backdrop';
@@ -5,13 +6,12 @@ import DirectionSnackbar from 'components/Direction';
 import React from 'react';
 import { config, les_decisions, lien_dt } from 'static/Lien';
 import * as xlsx from 'xlsx';
-import { Delete } from '../../../../node_modules/@mui/icons-material/index';
 import '../../Clients/style.css';
 
 function ActionValidation() {
   const [data, setData] = React.useState();
   const [sending, setSending] = React.useState(false);
-  const column = ['codeclient', 'region', 'shop', 'decision', 'commentaire'];
+  const column = ['codeclient', 'region', 'shop', 'decision'];
   const [message, setMessage] = React.useState(false);
 
   const readUploadFile = (e) => {
@@ -36,7 +36,6 @@ function ActionValidation() {
             let table = [];
             for (let i = 0; i < json.length; i++) {
               table.push({
-                commentaire: json[i].commentaire,
                 codeclient: json[i].codeclient,
                 region: json[i].region,
                 shop: json[i].shop,
@@ -94,10 +93,9 @@ function ActionValidation() {
               <tr>
                 <td>#</td>
                 <td>codeclient</td>
-                <td>Decision </td>
-                <td>Region </td>
-                <td>Shop </td>
-                <td>commentaire </td>
+                <td>decision </td>
+                <td>region </td>
+                <td>shop </td>
                 <td>Remove </td>
               </tr>
             </thead>
@@ -110,7 +108,6 @@ function ActionValidation() {
                     <td>{index.decision}</td>
                     <td>{index.region}</td>
                     <td>{index.shop}</td>
-                    <td>{index.commentaire}</td>
                     <td>
                       <Delete fontSize="small" onClick={() => setData(data.filter((x) => x.codeclient !== index.codeclient))} />
                     </td>
@@ -125,10 +122,9 @@ function ActionValidation() {
             <thead>
               <tr>
                 <td>codeclient</td>
-                <td>Region </td>
-                <td>Shop </td>
+                <td>region </td>
+                <td>shop </td>
                 <td>decision</td>
-                <td>commentaire </td>
               </tr>
             </thead>
             <tbody>
@@ -144,7 +140,6 @@ function ActionValidation() {
                     ))}
                   </ol>
                 </td>
-                <td>Commentaire</td>
               </tr>
             </tbody>
           </table>

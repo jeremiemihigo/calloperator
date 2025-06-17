@@ -2,12 +2,13 @@ const moment = require("moment");
 const ModelAction = require("../../Models/DefaultTracker/Action");
 const asyncLab = require("async");
 const { ObjectId } = require("mongodb");
+const ModelClient = require("../../Models/DefaultTracker/TableClient");
 const _ = require("lodash");
 
 const AddAction = async (req, res) => {
   try {
     const { data } = req.body;
-    const { nom } = req.user;
+    const { nom, validationdt } = req.user;
     if (data && data.length === 0) {
       return res.status(201).json("Error");
     }
@@ -17,16 +18,51 @@ const AddAction = async (req, res) => {
         ...x,
         month,
         savedBy: nom,
+        statut: validationdt ? "Approved" : "Pending",
       };
     });
 
-    ModelAction.insertMany(les)
-      .then((re) => {
-        return res.status(200).json("Done");
-      })
-      .catch(function (err) {
-        return res.status(201).json(JSON.stringify(err.message));
-      });
+    asyncLab.waterfall([
+      function (done) {
+        ModelAction.insertMany(les)
+          .then((result) => {
+            done(null, result);
+          })
+          .catch(function (err) {
+            return res.status(201).json(JSON.stringify(err.message));
+          });
+      },
+      function (clients, done) {
+        if (validationdt) {
+          async function updateClientsWithBulk() {
+            const bulkoperation = data.map((client) => ({
+              updateOne: {
+                filter: {
+                  codeclient: client.codeclient,
+                  month: client.month,
+                },
+                update: {
+                  $set: {
+                    actif: false,
+                  },
+                },
+
+                returnDocument: "after",
+              },
+            }));
+            try {
+              const result = await ModelClient.bulkWrite(bulkoperation);
+              return res
+                .status(200)
+                .json(`End process for ${result.modifiedCount} customers`);
+            } catch (error) {}
+          }
+          updateClientsWithBulk();
+        } else {
+          return res.status(200).json("Done");
+        }
+      },
+    ]);
   } catch (error) {
     return res.status(201).json(JSON.stringify(error));
   }
@@ -35,7 +71,7 @@ const AddOneAction = async (req, res) => {
   try {
     const { codeclient, shop, region, action, codeAgent, commentaire } =
       req.body;
-    const { nom } = req.user;
+    const { nom, validationdt } = req.user;
     const month = moment(new Date()).format("MM-YYYY");
     if (!codeclient || !shop || !region || !action) {
       return res.status(201).json("Veuillez renseigner les champs");
@@ -55,11 +91,11 @@ const AddOneAction = async (req, res) => {
           region,
           savedBy: nom,
           action,
-          statut: "Pending",
+          statut: validationdt ? "Approved" : "Pending",
         },
         $push: {
           last_statut: "No_Action",
-          next_statut: "Pending",
+          next_statut: validationdt ? "Approved" : "Pending",
           commentaire,
           name: nom,
         },
@@ -121,21 +157,6 @@ const ValiderAction = async (req, res) => {
     console.log(error);
   }
 };
-const ActionAgent = async (req, res) => {
-  try {
-    const { codeAgent } = req.user;
-    const month = moment(new Date()).format("MM-YYYY");
-    ModelAction.find({ codeAgent, month }, { codeclient: 1, action: 1 })
-      .then((result) => {
-        return res.status(200).json(result);
-      })
-      .catch(function (err) {
-        console.log(err);
-      });
-  } catch (error) {
-    console.log(error);
-  }
-};
 const Validation = async (req, res) => {
   try {
     let month = moment(new Date()).format("MM-YYYY");
@@ -169,6 +190,7 @@ const Validation = async (req, res) => {
                 as: "client",
               },
             },
+            { $unwind: "$client" },
             {
               $lookup: {
                 from: "tfeedbacks",
@@ -334,7 +356,7 @@ const ChangeActionByFile = async (req, res) => {
 const SubmitedByExcel = async (req, res) => {
   try {
     const { data } = req.body;
-    const { nom } = req.user;
+    const { nom, validationdt } = req.user;
     const month = moment(new Date()).format("MM-YYYY");
 
     async function updateClientsWithBulk() {
@@ -354,12 +376,12 @@ const SubmitedByExcel = async (req, res) => {
               plateforme: client.plateforme,
               codeAgent: client.codeAgent,
               action: client.action,
-              statut: client.statut,
+              statut: validationdt ? "Approved" : "Pending",
             },
             $push: {
               statuschangeBy: {
                 last_statut: "No_Action",
-                next_statut: client.statut,
+                next_statut: validationdt ? "Approved" : client.statut,
                 commentaire: client.commentaire,
                 name: nom,
               },
@@ -376,7 +398,9 @@ const SubmitedByExcel = async (req, res) => {
           .json(
             `${result.upsertedCount} insertion and ${result.modifiedCount} action(s) updated`
           );
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+      }
     }
     updateClientsWithBulk();
   } catch (error) {
@@ -390,6 +414,5 @@ module.exports = {
   ChangeActionByFile,
   AddOneAction,
   ValiderAction,
-  ActionAgent,
   Validation,
 };

@@ -1,11 +1,11 @@
 import { HomeOutlined, InteractionOutlined, NodeCollapseOutlined, UserOutlined } from '@ant-design/icons';
 import { Grid, Paper } from '@mui/material';
 import React from 'react';
+import HomePage from './Acceuil';
+import './Acceuil/table.css';
 import Action from './Action';
 import Decision from './Decision';
-import HomePage from './Home';
 import MyCustomer from './MyCustomer';
-import './table.css';
 
 // Enregistrement des composants nécessaires pour Chart.js
 

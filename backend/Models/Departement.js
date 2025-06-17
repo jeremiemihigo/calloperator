@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 const schema = new mongoose.Schema(
   {
@@ -11,9 +11,9 @@ const schema = new mongoose.Schema(
     },
     idDepartement: { type: String, required: true, unique: true },
   },
-  { timestamps: true },
-)
+  { timestamps: true }
+);
 
-schema.index({ idDepartement: 1 })
-const model = mongoose.model('Departement', schema)
-module.exports = model
+schema.index({ idDepartement: 1 });
+const model = mongoose.model("Departement", schema);
+module.exports = model;

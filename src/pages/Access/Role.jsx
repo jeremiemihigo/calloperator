@@ -1,3 +1,8 @@
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Accordion from "@mui/material/Accordion";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import Typography from "@mui/material/Typography";
 import ConfirmDialog from "Control/ControlDialog";
 import React from "react";
 import "../style.css";
@@ -7,12 +12,7 @@ import PlainteCallCenter from "./PlainteCallCenter";
 import PlainteShop from "./PlainteShop";
 import Support from "./Support";
 import SychroTeam from "./SynchroTeam";
-
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import Accordion from "@mui/material/Accordion";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import Typography from "@mui/material/Typography";
+import ValidationIndex from "./ValidationDT";
 
 export default function ControlledAccordions() {
   const [expanded, setExpanded] = React.useState(false);
@@ -44,6 +44,11 @@ export default function ControlledAccordions() {
       id: "31665",
       title: "Confirmation des cas visites ménages",
       composant: <ConfirmationCas />,
+    },
+    {
+      id: "31666",
+      title: "Validation action sans arbitrage Default tracker",
+      composant: <ValidationIndex />,
     },
   ];
   return (

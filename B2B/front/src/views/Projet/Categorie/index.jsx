@@ -44,76 +44,84 @@ function CategorieIndex() {
     }
   };
 
-  return (
-    <Paper sx={{ height: "100%", padding: "5px" }}>
-      {categorie.deletecategorie === "rejected" && (
-        <DirectionSnackbar message={categorie.deletecategorieError} />
-      )}
-      <Grid
-        className="title_categorie"
-        onClick={() => {
-          setDataChange();
-          setOpen(true);
-        }}
-      >
-        <Typography component="p" noWrap>
-          Nouveau repertoire
-        </Typography>
-      </Grid>
-      <Grid>
-        {categorie &&
-          categorie?.categorie.length > 0 &&
-          categorie?.categorie.map((index) => {
-            return (
-              <Grid
-                key={index._id}
-                className={`item_categorie ${
-                  state?.titre._id === index._id && "actif"
-                }`}
-              >
-                <Tooltip title={index.title}>
-                  <Grid
-                    className={`folder ${
-                      state?.titre._id === index._id && "actif"
-                    }`}
-                    onClick={() => loadingProjet(index)}
-                  >
-                    <div className="content">
-                      <img src="/folder.png" width={30} height={30} />
-                      <Typography noWrap component="p">
-                        {index.title}
-                      </Typography>
-                    </div>
-                    <div className="options">
-                      <Edit
-                        fontSize="small"
-                        onClick={() => {
-                          setDataChange(index);
-                          setOpen(true);
-                        }}
-                      />
-                      <Delete
-                        fontSize="small"
-                        onClick={() => deletecategorie(index.id)}
-                      />
-                    </div>
-                  </Grid>
-                </Tooltip>
-              </Grid>
-            );
-          })}
-      </Grid>
+  if (categorie?.categorie === "token_expired") {
+    localStorage.removeItem("auth");
+    window.location.replace("/auth/login");
+  } else {
+    return (
+      <Paper sx={{ height: "100%", padding: "5px" }}>
+        {categorie.deletecategorie === "rejected" && (
+          <DirectionSnackbar message={categorie.deletecategorieError} />
+        )}
+        <Grid
+          className="title_categorie"
+          onClick={() => {
+            setDataChange();
+            setOpen(true);
+          }}
+        >
+          <Typography component="p" noWrap>
+            Nouveau repertoire
+          </Typography>
+        </Grid>
+        <Grid>
+          {categorie && categorie?.categorie ? (
+            categorie?.categorie.length > 0 &&
+            categorie?.categorie.map((index) => {
+              return (
+                <Grid
+                  key={index._id}
+                  className={`item_categorie ${
+                    state?.titre._id === index._id && "actif"
+                  }`}
+                >
+                  <Tooltip title={index.title}>
+                    <Grid
+                      className={`folder ${
+                        state?.titre._id === index._id && "actif"
+                      }`}
+                      onClick={() => loadingProjet(index)}
+                    >
+                      <div className="content">
+                        <img src="/folder.png" width={30} height={30} />
+                        <Typography noWrap component="p">
+                          {index.title}
+                        </Typography>
+                      </div>
+                      <div className="options">
+                        <Edit
+                          fontSize="small"
+                          onClick={() => {
+                            setDataChange(index);
+                            setOpen(true);
+                          }}
+                        />
+                        <Delete
+                          fontSize="small"
+                          onClick={() => deletecategorie(index.id)}
+                        />
+                      </div>
+                    </Grid>
+                  </Tooltip>
+                </Grid>
+              );
+            })
+          ) : (
+            <p>Loading...</p>
+          )}
+        </Grid>
 
-      <Popup open={open} setOpen={setOpen} title="Ajouter une catégorie">
-        <Ajouter />
-      </Popup>
-      {datachange && (
-        <Popup open={open} setOpen={setOpen} title="Modifier une catégorie">
-          <Ajouter data={datachange} />
+        <Popup open={open} setOpen={setOpen} title="Ajouter une catégorie">
+          <Ajouter />
         </Popup>
-      )}
-    </Paper>
-  );
+        {datachange && (
+          <Popup open={open} setOpen={setOpen} title="Modifier une catégorie">
+            <Ajouter data={datachange} />
+          </Popup>
+        )}
+      </Paper>
+    );
+  }
 }
 
 export default CategorieIndex;

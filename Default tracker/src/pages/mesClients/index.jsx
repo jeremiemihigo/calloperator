@@ -5,6 +5,7 @@ import axios from 'axios';
 import Dot from 'components/@extended/Dot';
 import AutoComplement from 'components/AutoComplete';
 import ChangeByExcel from 'components/ChangeByExcel';
+import DirectionSnackbar from 'components/Direction';
 import NoCustomer from 'components/NoCustomer';
 import React from 'react';
 import { useSelector } from 'react-redux';
@@ -13,16 +14,13 @@ import { config, lien_dt } from 'static/Lien';
 import Popup from 'static/Popup';
 import * as XLSX from 'xlsx';
 import AddAction from './AddAction';
-import Options from './ChangeStatus';
+import ChangeStatus from './ChangeStatus';
 import Chargement from './Chargement';
-import Agent from './Modification/Agent';
-import VisiteMenage from './Modification/VisiteMenage';
 import './mesclient.style.css';
 
 function Index() {
   const zone = useSelector((state) => state.zone.zone);
   const allfeedback = useSelector((state) => state.feedback.feedback);
-
   const [dateServer, setDateServer] = React.useState();
   const [texte, setTexte] = React.useState('');
   const [zoneSelect, setZoneSelect] = React.useState('');
@@ -32,6 +30,8 @@ function Index() {
   const [client, setClient] = React.useState();
   const [data, setData] = React.useState();
   const [loading, setLoading] = React.useState(false);
+  const [message, setMessage] = React.useState('');
+  const [changestatus, setDatachange] = React.useState();
 
   const navigation = useNavigate();
   const logout = () => {
@@ -40,6 +40,7 @@ function Index() {
   };
   const fetchData = async (defaultv) => {
     try {
+      setMessage('');
       setLoading(true);
       setData();
       const name_ = texte;
@@ -64,10 +65,19 @@ function Index() {
         setClient(response.data.client);
         setDateServer(response.data.dateServer);
       }
+      if (response.status === 201) {
+        setMessage(response.data);
+        setClient([]);
+      }
       if (response.data === 'token expired') {
         logout();
       }
     } catch (error) {}
+  };
+  const [open, setOpen] = React.useState(false);
+  const handlechange = (donner) => {
+    setDatachange(donner);
+    setOpen(true);
   };
 
   React.useEffect(() => {
@@ -80,16 +90,25 @@ function Index() {
     navigation('/customer_information', { state: row.codeclient });
   };
 
-  
-  const returnFeedback = (id) => {
+  const returnFeedback = (id, sinon) => {
     if (allfeedback && allfeedback.length > 0) {
       if (allfeedback.filter((x) => x.idFeedback === id).length > 0) {
         return allfeedback.filter((x) => x.idFeedback === id)[0]?.title;
       } else {
-        return 'no_visits';
+        return sinon;
       }
     }
-    // return 'no_visits';
+    // return 'No_visits';
+  };
+  const returnvisite = (visites, type) => {
+    //console.log(visites, type);
+    if (visites.filter((x) => type.includes(x.demandeur.fonction)).length > 0) {
+      let v = visites.filter((x) => type.includes(x.demandeur.fonction));
+      const { demande } = v[v.length - 1];
+      return returnFeedback(demande.raison, 'No_visits');
+    } else {
+      return 'No_visits';
+    }
   };
   React.useEffect(() => {
     if (client && client.length > 0 && allfeedback && allfeedback.length > 0) {
@@ -107,8 +126,10 @@ function Index() {
           action: x.action,
           submitedBy: x.submitedBy,
           currentFeedback: x.tfeedback?.title,
-          feedback_call: returnFeedback(x?.derniereappel?.sioui_texte) || 'no_calls',
-          last_vm: x?.derniereVisite ? returnFeedback(x.derniereVisite.demande.raison) : 'no_visits',
+          feedback_call: returnFeedback(x?.derniereappel?.sioui_texte, 'No_calls') || 'No_calls',
+          last_vm_agent: x?.visites.length > 0 ? returnvisite(x.visites, ['agent', 'tech']) : 'No_visits',
+          last_vm_rs: x?.visites.length > 0 ? returnvisite(x.visites, ['RS', 'TL']) : 'No_visits',
+          last_vm_po: x?.visites.length > 0 ? returnvisite(x.visites, ['PO']) : 'No_visits',
           sla: x.tfeedback.delai * 1440,
           fullDate: x.fullDate,
           statut_decision: x.statut_decision,
@@ -125,19 +146,10 @@ function Index() {
       setLoading(false);
     }
   }, [client, allfeedback]);
-
-  const [openAgent, setOpenAgent] = React.useState(false);
-  const [openvisite, setOpenVisite] = React.useState(false);
   const [openAction, setOpenAction] = React.useState(false);
   const [types, setType] = React.useState('');
   const [dataedit, setDataEdit] = React.useState();
   const editOne = (type, data) => {
-    if (type === 'agent') {
-      setOpenAgent(true);
-    }
-    if (type === 'visite') {
-      setOpenVisite(true);
-    }
     if (type === 'action') {
       setOpenAction(true);
       setType(type);
@@ -244,12 +256,30 @@ function Index() {
     },
 
     {
-      field: 'last_vm',
-      headerName: 'Last Feedback_VM',
+      field: 'last_vm_agent',
+      headerName: 'Last VM Agent or Tech',
       width: 280,
       editable: false,
       renderCell: (p) => {
-        return <Dot onClick={() => editOne('visite', p.row)} texte={p.row.last_vm} />;
+        return <Dot texte={p.row.last_vm_agent} />;
+      }
+    },
+    {
+      field: 'last_vm_po',
+      headerName: 'VM_PO',
+      width: 280,
+      editable: false,
+      renderCell: (p) => {
+        return <Dot texte={p.row.last_vm_po} />;
+      }
+    },
+    {
+      field: 'last_vm_rs',
+      headerName: 'VM_RS or TL',
+      width: 280,
+      editable: false,
+      renderCell: (p) => {
+        return <Dot texte={p.row.last_vm_rs} />;
       }
     },
     {
@@ -268,7 +298,7 @@ function Index() {
       width: 200,
       editable: false,
       renderCell: (p) => {
-        return <Options client={p.row} allclient={client} setClient={setClient} />;
+        return <Dot onClick={() => handlechange(p.row)} texte={p.row.currentFeedback} />;
       }
     },
     {
@@ -348,6 +378,7 @@ function Index() {
 
   return (
     <div>
+      {message && <DirectionSnackbar message={message} />}
       <Paper elevation={2} sx={{ padding: '10px', marginBottom: '10px' }}>
         <Grid container>
           <Grid item lg={3} xs={6} sm={3} md={3} sx={{ padding: '2px' }}>
@@ -363,13 +394,7 @@ function Index() {
           )}
           {role && role !== 'token expired' && (
             <Grid item lg={2} xs={6} sm={2} md={2} sx={{ padding: '2px' }}>
-              <AutoComplement
-                value={roleselect}
-                setValue={setRole}
-                options={role?.filter((x) => x.type === 'operation')}
-                title="Department"
-                propr="title"
-              />
+              <AutoComplement value={roleselect} setValue={setRole} options={role} title="Department" propr="title" />
             </Grid>
           )}
 
@@ -411,20 +436,15 @@ function Index() {
           </div>
         )}
       </Paper>
-      {dataedit && openAgent && (
-        <Popup open={openAgent} setOpen={setOpenAgent} title={`Edit agent for customer ${dataedit?.codeclient}`}>
-          <Agent data={dataedit} fetchData={fetchData} />
-        </Popup>
-      )}
 
-      {dataedit && openvisite && (
-        <Popup open={openvisite} setOpen={setOpenVisite} title={`Modification du feedback VM du client ${dataedit?.codeclient}`}>
-          <VisiteMenage data={dataedit} fetchData={fetchData} />
-        </Popup>
-      )}
       {dataedit && openAction && (
         <Popup open={openAction} setOpen={setOpenAction} title={`${types} ${dataedit?.codeclient}`}>
           <AddAction data={dataedit} fetchData={fetchData} type={types} />
+        </Popup>
+      )}
+      {changestatus && (
+        <Popup open={open} setOpen={setOpen} title="Change status">
+          <ChangeStatus client={changestatus} setOpen={setOpen} allclient={data} setClient={setData} />
         </Popup>
       )}
     </div>

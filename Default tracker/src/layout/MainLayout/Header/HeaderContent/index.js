@@ -21,15 +21,22 @@ const HeaderContent = () => {
       navigate('/login');
     }
   }, [user]);
+  const returnPoste = (utilisateur) => {
+    if (utilisateur && utilisateur?.valuefilter && utilisateur.valuefilter.length > 0) {
+      return '(' + utilisateur.valuefilter.join('; ') + ')';
+    } else {
+      return '';
+    }
+  };
 
   return (
     <>
       {!matchesXs && (
         <Box sx={{ width: '100%', ml: { xs: 0, md: 1 } }}>
-          {user.readUser === 'success' && (
+          {user.readUser === 'success' && user?.user?.poste.length > 0 && (
             <Typography variant="h6" color="default" sx={{ fontWeight: 'bolder' }}>
-              {user?.user.roles[0]?.title.toUpperCase() + ' '}
-              {'(' + user?.user.valueFilter.join(' ; ') + ')'}
+              {user?.user.poste[0]?.title.toUpperCase() + ' '}
+              {returnPoste(user?.user)}
             </Typography>
           )}
         </Box>

@@ -1,4 +1,4 @@
-import { Details, Edit } from '@mui/icons-material';
+import { Edit } from '@mui/icons-material';
 import { Fab, Paper, Tooltip } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import axios from 'axios';
@@ -13,16 +13,24 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { config, lien_dt } from 'static/Lien';
 import Popup from 'static/Popup';
-import Formulaire from './Formulaire';
 import './arbitrage.style.css';
+import ChangeCurrent from './ChangeCurrent';
+import Formulaire from './Formulaire';
 
 function Index() {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
+  const [changestatus, setChangestatus] = React.useState();
   const [dataedit, setDataEdit] = React.useState();
+  const allfeedback = useSelector((state) => state.feedback.feedback);
 
   const functionData = (donner) => {
     setDataEdit(donner);
+    setChangestatus();
+    setOpen(true);
+  };
+  const changestat = (donner, property) => {
+    setChangestatus({ donner, property });
     setOpen(true);
   };
   const logout = () => {
@@ -31,6 +39,18 @@ function Index() {
   };
   const [loading, setLoading] = React.useState(true);
   const [data, setData] = React.useState();
+
+  const returnvisite = (visites, type) => {
+    //console.log(visites, type);
+    if (visites.filter((x) => type.includes(x.demandeur.fonction)).length > 0) {
+      let v = visites.filter((x) => type.includes(x.demandeur.fonction));
+      const { demande } = v[v.length - 1];
+      return returnFeedback(demande.raison, 'No_visits', allfeedback);
+    } else {
+      return 'No_visits';
+    }
+  };
+
   const loadingData = async () => {
     try {
       setLoading(true);
@@ -39,16 +59,28 @@ function Index() {
         logout();
       }
       if (response.status === 200) {
-        setData(response.data);
+        let table = response.data.map((x) => {
+          return {
+            ...x,
+            incharge: x.incharge.map(function (x) {
+              return x.title;
+            }),
+            last_vm_agent: x?.visites.length > 0 ? returnvisite(x.visites, ['agent', 'tech']) : 'No_visits',
+            last_vm_rs: x?.visites.length > 0 ? returnvisite(x.visites, ['RS', 'TL']) : 'No_visits',
+            last_vm_po: x?.visites.length > 0 ? returnvisite(x.visites, ['PO']) : 'No_visits'
+          };
+        });
+
+        setData(table);
       }
       setLoading(false);
     } catch (error) {
       console.log(error);
     }
   };
-  const information = (codeclient) => {
-    navigate('/customer_information', { state: codeclient });
-  };
+  // const information = (codeclient) => {
+  //   navigate('/customer_information', { state: codeclient });
+  // };
 
   React.useEffect(() => {
     loadingData();
@@ -105,21 +137,39 @@ function Index() {
       }
     },
     {
+      field: 'last_vm_agent',
+      headerName: 'Last VM Agent or Tech',
+      width: 280,
+      editable: false,
+      renderCell: (p) => {
+        return <Dot texte={p.row.last_vm_agent} />;
+      }
+    },
+    {
+      field: 'last_vm_po',
+      headerName: 'VM_PO',
+      width: 280,
+      editable: false,
+      renderCell: (p) => {
+        return <Dot texte={p.row.last_vm_po} />;
+      }
+    },
+    {
+      field: 'last_vm_rs',
+      headerName: 'VM_RS or TL',
+      width: 280,
+      editable: false,
+      renderCell: (p) => {
+        return <Dot texte={p.row.last_vm_rs} />;
+      }
+    },
+    {
       field: 'appel',
       headerName: 'Appel',
       width: 150,
       editable: false,
       renderCell: (p) => {
-        return <Dot texte={p.row.appel ? returnFeedback(p.row.appel) : 'no_calls'} />;
-      }
-    },
-    {
-      field: 'visite',
-      headerName: 'Visite',
-      width: 150,
-      editable: false,
-      renderCell: (p) => {
-        return <Dot texte={p.row.visite ? returnFeedback(p.row.visite) : 'no_visits'} />;
+        return <Dot texte={p.row.appel ? returnFeedback(p.row.appel) : 'No_calls'} />;
       }
     },
 
@@ -127,7 +177,10 @@ function Index() {
       field: 'currentTitle',
       headerName: 'current_Feedback',
       width: 180,
-      editable: false
+      editable: false,
+      renderCell: (p) => {
+        return <Dot onClick={() => changestat(p.row, 'currentFeedback')} texte={p.row.currentTitle} />;
+      }
     },
     {
       field: 'changetotitle',
@@ -135,7 +188,16 @@ function Index() {
       width: 180,
       editable: false,
       renderCell: (p) => {
-        return <>{returnDt(p.row, 'dt')}</>;
+        return <Dot onClick={() => changestat(p.row, 'changeto')} texte={returnDt(p.row, 'dt')} />;
+      }
+    },
+    {
+      field: 'incharge',
+      headerName: 'Next in charge',
+      width: 200,
+      editable: false,
+      renderCell: (p) => {
+        return <>{p.row.incharge.join('; ')}</>;
       }
     },
     {
@@ -148,7 +210,7 @@ function Index() {
     {
       field: 'Action',
       headerName: 'Action',
-      width: 100,
+      width: 70,
       editable: false,
       renderCell: (p) => {
         return (
@@ -159,11 +221,11 @@ function Index() {
               </Fab>
             </Tooltip>
 
-            <Tooltip title="More information">
+            {/* <Tooltip title="More information">
               <Fab onClick={() => information(p.row.codeclient)} color="primary" size="small">
                 <Details fontSize="small" />
               </Fab>
-            </Tooltip>
+            </Tooltip> */}
           </>
         );
       }
@@ -214,10 +276,16 @@ function Index() {
         )}
         {!loading && data && data.length === 0 && <NoCustomer texte="No customers waiting" />}
       </Paper>
-
-      <Popup open={open} setOpen={setOpen} title="Form">
-        <Formulaire client={dataedit} data={data} setData={setData} />
-      </Popup>
+      {dataedit && (
+        <Popup open={open} setOpen={setOpen} title="Form">
+          <Formulaire client={dataedit} data={data} setData={setData} />
+        </Popup>
+      )}
+      {changestatus?.donner && (
+        <Popup open={open} setOpen={setOpen} title="Change current status">
+          <ChangeCurrent setOpen={setOpen} client={changestatus?.donner} property={changestatus?.property} loadingData={loadingData} />
+        </Popup>
+      )}
     </>
   );
 }

@@ -84,6 +84,7 @@ app.use(
 );
 app.use("/bboxx/dashboard", require("./Routes/dash_dt"));
 app.use("/bboxx/portofolio", require("./Routes/Portofolio"));
+app.use("/bboxx/settings", require("./Routes/settings"));
 
 // Démarrage du serveur
 const port = process.env.PORT || 5000;

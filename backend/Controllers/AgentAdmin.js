@@ -4,11 +4,12 @@ const asyncLab = require("async");
 //Corbeille done
 const AddAdminAgent = async (req, res) => {
   try {
-    const { nom, codeAgent, fonction, role } = req.body;
+    const { nom, codeAgent, poste, valuefilter, fonction, role } = req.body;
     //Agent admin qui fait l'operation
-    if (!nom || !codeAgent || !fonction || !role) {
+    if (!nom || !codeAgent || !fonction || !role || !poste) {
       return res.status(404).json("Veuillez renseigner les champs");
     }
+
     asyncLab.waterfall(
       [
         function (done) {
@@ -31,6 +32,8 @@ const AddAdminAgent = async (req, res) => {
             fonction,
             codeAgent,
             role,
+            valuefilter,
+            poste,
             id: new Date(),
           })
             .then((result) => {
@@ -39,7 +42,6 @@ const AddAdminAgent = async (req, res) => {
               }
             })
             .catch(function (err) {
-              console.log(err);
               if (err) {
                 return res.status(404).json("Error " + err);
               }
@@ -61,11 +63,31 @@ const AddAdminAgent = async (req, res) => {
 //Corbeille done
 const ReadAgentAdmin = async (req, res) => {
   try {
-    ModelAgentAdmin.find({})
-      .lean()
+    const match = req.recherche ? { codeAgent: req.recherche } : {};
+    ModelAgentAdmin.aggregate([
+      { $match: match },
+      {
+        $lookup: {
+          from: "postes",
+          localField: "poste",
+          foreignField: "id",
+          as: "poste",
+        },
+      },
+      {
+        $lookup: {
+          from: "roles",
+          localField: "role",
+          foreignField: "idRole",
+          as: "departement",
+        },
+      },
+    ])
+
       .then((agents) => {
         if (agents.length > 0) {
-          return res.status(200).json(agents.reverse());
+          let data = req.recherche ? agents[0] : agents.reverse();
+          return res.status(200).json(data);
         } else {
           return res.status(200).json([]);
         }
@@ -136,7 +158,6 @@ const AddTache = async (req, res) => {
     console.log(error);
   }
 };
-
 const EditAgent = async (req, res) => {
   try {
     const { id, data } = req.body;

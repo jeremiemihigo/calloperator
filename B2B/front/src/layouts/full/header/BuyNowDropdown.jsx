@@ -2,10 +2,11 @@ import { Badge, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import { alpha, styled } from "@mui/material/styles";
-import { IconBellMinusFilled } from "@tabler/icons-react";
+import { IconBellMinusFilled, IconUser } from "@tabler/icons-react";
 import moment from "moment";
 import * as React from "react";
 import { useSelector } from "react-redux";
+import { Link } from "react-router";
 import "./notification.css";
 
 const StyledMenu = styled((props) => (
@@ -73,7 +74,7 @@ export default function BuyNowDropdown() {
     }
   }, [commentaires]);
   return (
-    <div>
+    <>
       {commentaire && commentaire.length > 0 && (
         <>
           <Button
@@ -134,6 +135,19 @@ export default function BuyNowDropdown() {
           </StyledMenu>
         </>
       )}
-    </div>
+      <Button
+        id="demo-customized-button"
+        //aria-controls={open ? "demo-customized-menu" : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? "true" : undefined}
+        disableElevation
+        component={Link}
+        to="/utilisateurs"
+        startIcon={<IconUser />}
+        sx={{ borderRadius: "7px", color: "white" }}
+      >
+        Utilisateurs
+      </Button>
+    </>
   );
 }

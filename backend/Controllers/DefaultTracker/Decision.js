@@ -3,12 +3,12 @@ const { ObjectId } = require("mongodb");
 const asyncLab = require("async");
 const moment = require("moment");
 const _ = require("lodash");
+const ModelClient = require("../../Models/DefaultTracker/TableClient");
 
 const AddDecision = async (req, res) => {
   try {
     const { codeclient, shop, commentaire, region, decision } = req.body;
-
-    const { nom } = req.user;
+    const { nom, validationdt } = req.user;
     if (!codeclient || !shop || !region || !decision) {
       return res.status(201).json("Veuillez renseigner les champs");
     }
@@ -23,7 +23,7 @@ const AddDecision = async (req, res) => {
           decision,
           month,
           createdBy: nom,
-          statut: "Pending",
+          statut: validationdt ? "Approved" : "Pending",
         },
         $push: {
           validate: {
@@ -171,38 +171,86 @@ const ChangeDecisionByFile = async (req, res) => {
 const SubmitDecisionByFile = async (req, res) => {
   try {
     const { data } = req.body;
-    const { nom } = req.user;
+    const { nom, validationdt } = req.user;
     const month = moment(new Date()).format("MM-YYYY");
-    for (let i = 0; i < data.length; i++) {
-      const { codeclient, shop, region, commentaire, decision } = data[i];
-      ModelDecision.findOneAndUpdate(
-        { codeclient, month },
-        {
-          $set: {
-            codeclient,
-            shop,
-            region,
-            decision,
-            month,
-            createdBy: nom,
-            statut: "Pending",
-          },
-          $push: {
-            validate: {
-              last_statut: "Tracking_Ongoing",
-              next_statut: "Pending",
-              commentaire,
-              createdBy: nom,
+
+    asyncLab.waterfall([
+      function (done) {
+        async function updateClientsWithBulk() {
+          const bulkoperation = data.map((client) => ({
+            updateOne: {
+              filter: {
+                codeclient: client.codeclient,
+                month,
+              },
+              update: {
+                $set: {
+                  codeclient: client.codeclient,
+                  shop: client.shop,
+                  region: client.region,
+                  decision: client.decision,
+                  month,
+                  createdBy: nom,
+                  statut: validationdt ? "Approved" : "Pending",
+                },
+                $push: {
+                  validate: {
+                    last_statut: "Tracking_Ongoing",
+                    next_statut: "Pending",
+                    commentaire: client.commentaire,
+                    name: nom,
+                  },
+                },
+              },
+              returnDocument: "after",
             },
-          },
-        },
-        { upsert: true, returnDocument: "after" }
-      )
-        .then(() => {})
-        .catch(function (err) {
-          console.log(err);
-        });
-    }
+          }));
+          try {
+            const result = await ModelDecision.bulkWrite(bulkoperation);
+            return res
+              .status(200)
+              .json(
+                `${result.upsertedCount} insertion and ${result.modifiedCount} action(s) updated`
+              );
+          } catch (error) {
+            console.log(error);
+          }
+        }
+        updateClientsWithBulk();
+      },
+
+      function (clients, done) {
+        if (validationdt) {
+          async function updateClientsWithBulk() {
+            const bulkoperation = data.map((client) => ({
+              updateOne: {
+                filter: {
+                  codeclient: client.codeclient,
+                  month: client.month,
+                },
+                update: {
+                  $set: {
+                    actif: false,
+                  },
+                },
+
+                returnDocument: "after",
+              },
+            }));
+            try {
+              const result = await ModelClient.bulkWrite(bulkoperation);
+              return res
+                .status(200)
+                .json(`End process for ${result.modifiedCount} customers`);
+            } catch (error) {}
+          }
+          updateClientsWithBulk();
+        } else {
+          return res.status(200).json("Done");
+        }
+      },
+    ]);
+
     return res.status(200).json(`${data.length} decisions enregistrées`);
   } catch (error) {}
 };

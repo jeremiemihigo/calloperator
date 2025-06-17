@@ -166,7 +166,7 @@ const RecentTransactions = () => {
         </DashboardCard>
       )}
       {projetListe &&
-        projetListe.length > 0 &&
+        projetListe?.length > 0 &&
         filterFn.fn(projetListe).map((index) => {
           return (
             <Paper
@@ -205,27 +205,34 @@ const RecentTransactions = () => {
                   <Typography className="next_step" noWrap component="p">
                     Next : {index.next_step}{" "}
                   </Typography>
+                  {index?.prospects && index?.prospects.length > 0 && (
+                    <Typography
+                      onClick={(event) =>
+                        index?.prospects?.length > 0 &&
+                        clickProspect(index?.prospects, event)
+                      }
+                      component="span"
+                      style={{
+                        fontSize: "12px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {index?.prospects?.length}
+                      {index?.prospects?.length > 1
+                        ? " prospects"
+                        : " prospect"}
+                    </Typography>
+                  )}
                   <Typography
-                    onClick={(event) =>
-                      index?.prospects.length > 0 &&
-                      clickProspect(index?.prospects, event)
-                    }
-                    component="p"
-                    style={{
-                      fontSize: "12px",
+                    onClick={() => functionAddone(index.id)}
+                    component="span"
+                    sx={{
                       textDecoration: "underline",
+                      marginLeft: "20px",
                       cursor: "pointer",
                     }}
                   >
-                    {index?.prospects?.length}
-                    {index?.prospects?.length > 1 ? "prospects" : " prospect"}
-                    <Typography
-                      onClick={() => functionAddone(index.id)}
-                      component="span"
-                      sx={{ marginLeft: "20px" }}
-                    >
-                      Add Prospect
-                    </Typography>
+                    Add Prospect
                   </Typography>
                   {lastComment(index)}
                   <Typography

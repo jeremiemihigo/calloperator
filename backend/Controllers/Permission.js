@@ -31,7 +31,7 @@ const set_Plainte_Shop = async (req, res) => {
     console.log(error);
   }
 };
-const set_ModelAgentAdmin = async (req, res) => {
+const set_ModelAgentAdmin = async (req, res, next) => {
   try {
     const { idAgent, data, unset } = req.body;
     modelAgent
@@ -45,7 +45,8 @@ const set_ModelAgentAdmin = async (req, res) => {
       )
       .then((result) => {
         if (result) {
-          return res.status(200).json(result);
+          req.recherche = result.codeAgent;
+          next();
         } else {
           return res.status(404).json("Error");
         }

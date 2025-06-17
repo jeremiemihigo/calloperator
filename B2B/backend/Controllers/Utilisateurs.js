@@ -56,13 +56,13 @@ const LoginUser = async (req, res) => {
       active: true,
     }).select("+password");
     if (!user) {
-      return res.status(201).json("Accès non autorisée");
+      return res.status(201).json("Incorrect");
     }
 
     const isMatch = await user.matchPasswords(password);
 
     if (!isMatch) {
-      return res.status(201).json("Accès non autorisée");
+      return res.status(201).json("Incorrect");
     }
     sendToken(user, 200, res);
   } catch (error) {

@@ -1,24 +1,15 @@
 import { Divider } from "@mui/material";
 import moment from "moment";
 import React, { useEffect, useRef } from "react";
-import { useSelector } from "react-redux";
 import Profile from "src/assets/images/profile/user.png";
 import DashboardCard from "src/components/shared/DashboardCard";
 
 function Commentaires({ data, type }) {
   const [donner, setDonner] = React.useState([]);
-  const prospect = useSelector((state) => state.prospect.prospect);
 
   const loading = async () => {
     try {
-      if (type === "projet") {
-        setDonner(data.commentaire || []);
-      }
-      if (type === "prospect" && prospect) {
-        setDonner(
-          prospect.filter((x) => x.id === data?.id)[0].commentaire || []
-        );
-      }
+      setDonner(data.commentaire || []);
     } catch (error) {
       console.log(error);
     }
@@ -26,7 +17,7 @@ function Commentaires({ data, type }) {
 
   React.useEffect(() => {
     loading();
-  }, [prospect, data, type]);
+  }, [data, type]);
 
   const bottomRef = useRef(null);
 

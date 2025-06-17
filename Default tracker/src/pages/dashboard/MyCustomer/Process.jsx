@@ -132,6 +132,7 @@ const SalesColumnChart = () => {
     try {
       setLoad(true);
       const response = await axios.get(`${lien_dash}/inactif/${search}`, config);
+      console.log(response);
       if (response.status === 200) {
         setSeries([
           {

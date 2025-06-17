@@ -6,13 +6,12 @@ import { Avatar, Box, ButtonBase, CardContent, ClickAwayListener, Grid, IconButt
 import { useTheme } from '@mui/material/styles';
 
 // project import
-import Transitions from 'components/@extended/Transitions';
-import MainCard from 'components/MainCard';
-import React from 'react';
-// assets
 import { LogoutOutlined } from '@ant-design/icons';
 import { CreateContexteGlobal } from 'GlobalContext';
 import avatar1 from 'assets/images/users/profile.png';
+import Transitions from 'components/@extended/Transitions';
+import MainCard from 'components/MainCard';
+import React from 'react';
 import { useSelector } from 'react-redux';
 
 // tab panel wrapper

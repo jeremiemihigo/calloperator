@@ -210,7 +210,7 @@ router.post("/contact", protect, ContactClient);
 //Tracking default
 
 router.post("/setplainteshop", protect, set_Plainte_Shop);
-router.post("/edituseradminInfo", protect, set_ModelAgentAdmin);
+router.post("/edituseradminInfo", protect, set_ModelAgentAdmin, ReadAgentAdmin);
 router.post("/ajuterunshop", protect, AjouterUnShop);
 
 router.get("/call_today", Call_ToDay);

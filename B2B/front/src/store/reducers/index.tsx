@@ -10,7 +10,6 @@ import user from "../../Redux/Utilisateur";
 import action from "../../Redux/action";
 import categorie from "../../Redux/categorisation";
 import commentaire from "../../Redux/commentaire";
-import prospect from "../../Redux/prospect";
 
 // ==============================|| COMBINE REDUCERS ||============================== //
 
@@ -18,7 +17,6 @@ const reducers = combineReducers({
   user,
   categorie,
   alluser,
-  prospect,
   action,
   commentaire,
 });

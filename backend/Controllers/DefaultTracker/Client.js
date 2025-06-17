@@ -3,8 +3,8 @@ const asyncLab = require("async");
 const { ObjectId } = require("mongodb");
 const lodash = require("lodash");
 const moment = require("moment");
+const ModelPoste = require("../../Models/Poste");
 
-let month = moment(new Date()).format("MM-YYYY");
 let initialeSearch = [
   {
     $lookup: {
@@ -43,14 +43,6 @@ let initialeSearch = [
   },
   {
     $addFields: {
-      derniereVisite: {
-        $arrayElemAt: [
-          {
-            $reverseArray: "$visites", // Renverse l'ordre du tableau
-          },
-          0,
-        ],
-      },
       derniereappel: {
         $arrayElemAt: [
           {
@@ -62,7 +54,6 @@ let initialeSearch = [
     },
   },
   { $unwind: "$tfeedback" },
-
   {
     $lookup: {
       from: "roles",
@@ -71,25 +62,7 @@ let initialeSearch = [
       as: "incharge",
     },
   },
-  {
-    $lookup: {
-      from: "objectifs",
-      let: { codeclient: "$codeclient", month },
-      pipeline: [
-        {
-          $match: {
-            $expr: {
-              $and: [
-                { $eq: ["$codeclient", "$$codeclient"] },
-                { $eq: ["$month", "$$month"] },
-              ],
-            },
-          },
-        },
-      ],
-      as: "objectif",
-    },
-  },
+
   {
     $project: {
       codeclient: 1,
@@ -99,13 +72,12 @@ let initialeSearch = [
       id: 1,
       shop: 1,
       region: 1,
+      visites: 1,
       action: 1,
       par: 1,
-      objectif: 1,
       currentFeedback: 1,
       submitedBy: 1,
       tfeedback: 1,
-      derniereVisite: 1,
       derniereappel: 1,
       appel: 1,
       fullDate: 1,
@@ -159,14 +131,6 @@ let searchData2 = [
   },
   {
     $addFields: {
-      derniereVisite: {
-        $arrayElemAt: [
-          {
-            $reverseArray: "$visites", // Renverse l'ordre du tableau
-          },
-          0,
-        ],
-      },
       derniereappel: {
         $arrayElemAt: [
           {
@@ -177,25 +141,7 @@ let searchData2 = [
       },
     },
   },
-  {
-    $lookup: {
-      from: "objectifs",
-      let: { codeclient: "$codeclient", month },
-      pipeline: [
-        {
-          $match: {
-            $expr: {
-              $and: [
-                { $eq: ["$codeclient", "$$codeclient"] },
-                { $eq: ["$month", "$$month"] },
-              ],
-            },
-          },
-        },
-      ],
-      as: "objectif",
-    },
-  },
+
   {
     $lookup: {
       from: "roles",
@@ -215,11 +161,10 @@ let searchData2 = [
       region: 1,
       action: 1,
       par: 1,
-      objectif: 1,
       currentFeedback: 1,
       submitedBy: 1,
       tfeedback: 1,
-      derniereVisite: 1,
+      visites: 1,
       derniereappel: 1,
       appel: 1,
       fullDate: 1,
@@ -272,7 +217,8 @@ const AddClientDT = async (req, res) => {
 };
 const ChangeStatus = async (req, res, next) => {
   try {
-    const { nom } = req.user;
+    const { nom, validationdt } = req.user;
+
     const { id, lastFeedback, nextFeedback } = req.body;
 
     if (!id || !lastFeedback || !nextFeedback) {
@@ -288,9 +234,8 @@ const ChangeStatus = async (req, res, next) => {
             },
             {
               $set: {
-                //currentFeedback: nextFeedback,
-
-                feedback: "Pending",
+                currentFeedback: validationdt ? nextFeedback : lastFeedback,
+                feedback: validationdt ? "Approved" : "Pending",
                 changeto: nextFeedback,
                 submitedBy: nom,
               },
@@ -323,7 +268,7 @@ const ChangeByFile = async (req, res) => {
   try {
     const { data } = req.body;
     //Data : codeclient, nextFeedback,lasFeedback
-    const { role, nom } = req.user;
+    const { role, nom, validationdt } = req.user;
     const clients = data.map((x) => {
       return x.codeclient;
     });
@@ -385,7 +330,10 @@ const ChangeByFile = async (req, res) => {
               },
               update: {
                 $set: {
-                  feedback: "Pending",
+                  currentFeedback: validationdt
+                    ? client.nextFeedback
+                    : client.idFeedback,
+                  feedback: validationdt ? "Approved" : "Pending",
                   changeto: client.nextFeedback,
                   submitedBy: nom,
                 },
@@ -415,18 +363,42 @@ const ChangeByFile = async (req, res) => {
 const ReadFilterClient = async (req, res) => {
   try {
     const { data, defaultv } = req.body;
-    let month = moment(new Date()).format("MM-YYYY");
-    let filtre = data;
-    filtre.month = month;
-    filtre.action = { $in: ["No_Action", "Rejected"] };
-    filtre.statut_decision = "Tracking_Ongoing";
-    filtre.feedback = { $in: ["Rejected", "Approved", "success"] };
-    filtre.actif = true;
+    const { valuefilter, poste } = req.user;
 
     asyncLab.waterfall(
       [
         //Read role
         function (done) {
+          ModelPoste.findOne({ id: poste })
+            .lean()
+            .then((result) => {
+              if (result) {
+                done(null, result);
+              } else {
+                return res
+                  .status(201)
+                  .json("No position found; you can contact the administrator");
+              }
+            });
+        },
+        function (result_poste, done) {
+          let month = moment(new Date()).format("MM-YYYY");
+          let filtre = data;
+          filtre.month = month;
+          filtre.action = { $in: ["No_Action", "Rejected"] };
+          filtre.statut_decision = "Tracking_Ongoing";
+          filtre.feedback = { $in: ["Rejected", "Approved", "success"] };
+          filtre.actif = true;
+
+          if (result_poste.filterby === "region") {
+            filtre.region = { $in: valuefilter };
+          }
+          if (result_poste.filterby === "shop") {
+            filtre.shop = { $in: valuefilter };
+          }
+          done(null, filtre);
+        },
+        function (filtre, done) {
           ModelClient.aggregate(
             defaultv
               ? [{ $match: filtre }, { $limit: 50 }, ...initialeSearch]
@@ -551,6 +523,23 @@ const ReadCertainClient = async (req, res) => {
     console.log(error);
   }
 };
+const ChangeStatusOnly = async (req, res) => {
+  try {
+    const { id, data } = req.body;
+    if (!id || !data) {
+      return;
+    }
+    ModelClient.findByIdAndUpdate(id, { $set: data }, { new: true })
+      .then((result) => {
+        return res.status(200).json(result);
+      })
+      .catch(function (error) {
+        return res.status(201).json(error.message);
+      });
+  } catch (error) {
+    return res.status(201).json(error.message);
+  }
+};
 //Modification
 
 module.exports = {
@@ -559,6 +548,7 @@ module.exports = {
   Appel,
   ReadClientAfterChange,
   ReadCertainClient,
+  ChangeStatusOnly,
   ChangeByFile,
   ReadFilterClient,
 };

@@ -129,6 +129,15 @@ const ReadArbitrage = async (req, res) => {
               },
             },
             { $unwind: "$currentfeedback" },
+            { $unwind: "$fchangeto" },
+            {
+              $lookup: {
+                from: "roles",
+                localField: "fchangeto.idRole",
+                foreignField: "idRole",
+                as: "changetorole",
+              },
+            },
             {
               $lookup: {
                 from: "roles",
@@ -164,88 +173,27 @@ const ReadArbitrage = async (req, res) => {
                 as: "appelles",
               },
             },
-            {
-              $addFields: {
-                derniereVisite: {
-                  $arrayElemAt: [{ $reverseArray: "$visites" }, 0],
-                },
-                derniereappel: {
-                  $arrayElemAt: [{ $reverseArray: "$appelles" }, 0],
-                },
-              },
-            },
 
             {
-              $addFields: {
-                id: "$_id",
-                codeclient: "$codeclient",
-                visite: "$derniereVisite.demande.raison",
-                appel: "$derniereappel.sioui_texte",
-                matchappelvisite: {
-                  $cond: {
-                    if: {
-                      $and: [
-                        {
-                          $ne: ["$derniereVisite", null],
-                        },
-                        {
-                          $ne: ["$derniereappel", null],
-                        },
-                        {
-                          $eq: [
-                            "$derniereVisite.demande.raison",
-                            "$derniereappel.sioui_texte",
-                          ],
-                        },
-                      ],
-                    },
-                    then: true,
-                    else: false,
-                  },
-                },
-                shop: "$shop",
-                nomclient: "$nomclient",
-                currentTitle: "$currentfeedback.title",
-                currentfeedback: "$currentfeedback.idFeedback",
-                current_incharge: "$fcurrent_incharge",
-                firstchangeto: "$changeto",
-                changeto: "$fchangeto.idFeedback",
-                changetotitle: "$fchangeto.title",
-                par: "$par",
-                submitedBy: "$submitedBy",
-                feedback: "$feedback",
-              },
-            },
-            {
-              $match: {
-                $or: [
-                  {
-                    matchappelvisite: true,
-                    visite: { $exists: true },
-                    appel: { $exists: true },
-                    firstchangeto: { $exists: false },
-                  },
-                  filter,
-                ],
-              },
+              $match: filter,
             },
             {
               $project: {
-                id: 1,
-                codeclient: 1,
-                currentTitle: 1,
-                matchappelvisite: 1,
-                changetotitle: 1,
-                visite: 1,
-                appel: 1,
-                shop: 1,
-                nomclient: 1,
+                id: "$_id",
                 currentfeedback: 1,
-                current_incharge: 1,
+                idFeedback: "$currentfeedback.idFeedback",
+                currentTitle: "$currentfeedback.title",
+                changetotitle: "$fchangeto.title",
                 changeto: 1,
+                appelles: 1,
+                visites: 1,
+                codeclient: 1,
+                nomclient: 1,
+                shop: 1,
                 par: 1,
+                feedback: 1,
                 submitedBy: 1,
-                feedback: "Pending",
+                incharge: "$changetorole",
               },
             },
           ])
@@ -469,7 +417,6 @@ const PostArbitrage_Automatique = async (req, res, next) => {
     console.log(error);
   }
 };
-
 const Arbitrage_File = async (req, res) => {
   try {
     const { data } = req.body;

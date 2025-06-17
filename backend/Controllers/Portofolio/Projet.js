@@ -70,9 +70,9 @@ const RapportPortofolio = async (req, res) => {
             { $match: { dateSave: { $gte: beginDate, $lte: endDate } } },
             {
               $lookup: {
-                from: "feedbacks",
+                from: "tfeedbacks",
                 localField: "sioui_texte",
-                foreignField: "id",
+                foreignField: "idFeedback",
                 as: "feedback",
               },
             },

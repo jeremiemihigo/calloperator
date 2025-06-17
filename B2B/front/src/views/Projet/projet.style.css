@@ -73,6 +73,7 @@
 }
 .divtitleprojet .titreprojet {
   width: 93%;
+  cursor: pointer;
 }
 .divtitleprojet .icon {
   width: 7%;

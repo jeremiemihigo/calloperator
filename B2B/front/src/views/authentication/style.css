@@ -1,0 +1,7 @@
+.backgroundimage {
+  background-image: linear-gradient(to bottom, #0006, #0008),
+    url("../../assets/images/backgrounds/background.jpeg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}

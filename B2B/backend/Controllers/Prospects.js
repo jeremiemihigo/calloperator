@@ -5,12 +5,11 @@ const asyncLab = require("async");
 
 const AddProspect = async (req, res) => {
   try {
-    console.log(req.body);
     const {
       name,
       projet,
       contact,
-      suivi_par,
+      incharge,
       deedline,
       adresse,
       email,
@@ -19,7 +18,7 @@ const AddProspect = async (req, res) => {
     } = req.body;
 
     if (!name || !description || !next_step || !deedline) {
-      return res.status(404).json("Veuillez renseigner les champs obligatoire");
+      return res.status(201).json("Veuillez renseigner les champs obligatoire");
     }
     const id = generateString(7);
     ModelProspect.create({
@@ -31,7 +30,7 @@ const AddProspect = async (req, res) => {
       next_step,
       savedBy: req.user.name,
       contact,
-      suivi_par,
+      incharge,
       adresse,
       email,
     })
@@ -39,11 +38,10 @@ const AddProspect = async (req, res) => {
         return res.status(200).json(result);
       })
       .catch(function (error) {
-        console.log(error);
-        return res.status(404).json(error.message);
+        return res.status(201).json(error.message);
       });
   } catch (error) {
-    return res.status(404).json(error.message);
+    return res.status(201).json(error.message);
   }
 };
 const ReadProspect = async (req, res) => {
@@ -60,6 +58,14 @@ const ReadProspect = async (req, res) => {
           localField: "id",
           foreignField: "concerne",
           as: "actions",
+        },
+      },
+      {
+        $lookup: {
+          from: "couts",
+          localField: "id",
+          foreignField: "concerne",
+          as: "cout",
         },
       },
       {
@@ -101,9 +107,33 @@ const ReadProspectBy = async (req, res) => {
           as: "actions",
         },
       },
+      {
+        $lookup: {
+          from: "couts",
+          localField: "id",
+          foreignField: "concerne",
+          as: "cout",
+        },
+      },
+      {
+        $lookup: {
+          from: "projects",
+          localField: "projet",
+          foreignField: "id",
+          as: "projet",
+        },
+      },
+      {
+        $lookup: {
+          from: "commentaires",
+          localField: "id",
+          foreignField: "concerne",
+          as: "commentaire",
+        },
+      },
     ])
       .then((result) => {
-        return res.status(200).json(result);
+        return res.status(200).json(result.reverse());
       })
       .catch(function (error) {
         console.log(error);
@@ -116,17 +146,17 @@ const EditProspect = async (req, res) => {
   try {
     const { id, data } = req.body;
     if (!id || !data) {
-      return res.status(404).json("Error");
+      return res.status(201).json("Error");
     }
     ModelProspect.findByIdAndUpdate(id, { $set: data }, { new: true })
       .then((result) => {
         return res.status(200).json(result);
       })
       .catch(function (error) {
-        return res.status(404).json(error.message);
+        return res.status(201).json(error.message);
       });
   } catch (error) {
-    return res.status(404).json(error.message);
+    return res.status(201).json(error.message);
   }
 };
 const DeleteProspect = async (req, res) => {
@@ -146,7 +176,7 @@ const DeleteProspect = async (req, res) => {
             .lean()
             .then((action) => {
               if (action.length > 0) {
-                return res.status(404).json(returnMessage(action.length));
+                return res.status(201).json(returnMessage(action.length));
               } else {
                 done(null, true);
               }
@@ -161,7 +191,7 @@ const DeleteProspect = async (req, res) => {
               done(result);
             })
             .catch(function (error) {
-              return res.status(404).json(error.message);
+              return res.status(201).json(error.message);
             });
         },
       ],

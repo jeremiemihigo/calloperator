@@ -12,7 +12,7 @@ const schema = new mongoose.Schema(
     adresse: { type: String, required: false },
     contact: { type: String, required: false },
     deedline: { type: Date, required: false },
-    suivi_par: { type: [String], required: true },
+    incharge: { type: String, required: true },
 
     idCategorie: { type: String, required: true },
     statut: {

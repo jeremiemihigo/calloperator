@@ -34,10 +34,16 @@ function FormUser() {
   const alluser = useSelector((state) => state.alluser);
   const sendData = async (event) => {
     event.preventDefault();
-    try {
-      dispatch(Adduser({ name, username, permission }));
-    } catch (error) {
-      setMessage(error.message);
+    if (permission.length === 0) {
+      setMessage("Veuillez selectionner les permissions");
+    } else {
+      try {
+        dispatch(Adduser({ name, username, permission }));
+        setInitiale({ name: "", username: "" });
+        setPermission([]);
+      } catch (error) {
+        setMessage(error.message);
+      }
     }
   };
   return (
@@ -62,7 +68,7 @@ function FormUser() {
         id="username"
         name="username"
         onChange={(event) => onchange(event)}
-        label="Username"
+        label="Email adress"
         value={username}
         variant="outlined"
         fullWidth

@@ -4,9 +4,8 @@ import axios from "axios";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
-import { changeStatusProspect } from "../../Redux/prospect";
-import { allstatus, config, lien } from "../../static/Lien";
-import Selected from "../../static/Select";
+import { allstatus, config, lien } from "src/static/Lien";
+import Selected from "src/static/Select";
 import Commentaires from "./Commentaires";
 import "./style.css";
 
@@ -47,9 +46,14 @@ function CommentaireIndex() {
         }
       }
       if (commentaire !== "" && state.type === "prospect") {
-        dispatch(
-          changeStatusProspect({ statut, commentaire, concerne: data?.id })
+        const response = await axios.post(
+          `${lien}/changeStatusProspect`,
+          { statut, commentaire, concerne: data?.id },
+          config
         );
+        if (response.status === 200) {
+          console.log(response);
+        }
         setCommentaire("");
       }
     } catch (error) {

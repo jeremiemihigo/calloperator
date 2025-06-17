@@ -2,7 +2,6 @@ import { Button, Paper, Typography } from "@mui/material";
 import { Grid } from "@mui/system";
 import axios from "axios";
 import React from "react";
-import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
 import DashboardCard from "src/components/shared/DashboardCard";
 import { config, lien } from "src/static/Lien.js";
@@ -14,7 +13,6 @@ import Plus from "./Plus.jsx";
 
 const DetailsProjet = () => {
   const location = useLocation();
-  const prospect = useSelector((state) => state.prospect.prospect);
   const { state } = location;
   const navigation = useNavigate();
   const { id, type } = state;
@@ -41,16 +39,25 @@ const DetailsProjet = () => {
       console.log(error);
     }
   };
+  const loadingProspect = async () => {
+    try {
+      const response = await axios.get(`${lien}/readprospect/${id}`, config);
+      if (response.status === 200 && response.data.length > 0) {
+        setData(response.data[0]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   React.useEffect(() => {
     if (type === "projet") {
       loading();
     }
-    if (type === "prospect" && prospect) {
-      setData(prospect.filter((x) => x.id === id)[0]);
+    if (type === "prospect") {
+      loadingProspect();
     }
-  }, [id, type, prospect]);
+  }, [id, type]);
   const [show, setShow] = React.useState(false);
-  console.log(data);
 
   const closeProcess = async (id) => {
     try {
@@ -113,7 +120,7 @@ const DetailsProjet = () => {
         </Grid>
 
         <Popup open={open} setOpen={setOpen} title="Save an action">
-          <AddActionForm data={data} setData={setData} />
+          <AddActionForm type={type} data={data} setData={setData} />
         </Popup>
         <Popup open={show} setOpen={setShow} title="Detail">
           <Plus data={data} />

@@ -1,188 +1,199 @@
 /* eslint-disable react/prop-types */
-import { Add, Save } from '@mui/icons-material';
-import { Button, FormHelperText, Grid, OutlinedInput, Stack } from '@mui/material';
-import AutoComplement from 'Control/AutoComplet';
-import { AjouterAgentAdmin } from 'Redux/AgentAdmin';
-import { Formik } from 'formik';
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import Selected from 'static/Select';
-import * as Yup from 'yup';
+import { Edit, Save } from "@mui/icons-material";
+import { Button, Grid, TextField } from "@mui/material";
+import AutoComplement from "Control/AutoComplet";
+import AutoSelectMany from "Control/AutoSelectMany";
+import SimpleBackdrop from "Control/Backdrop";
+import DirectionSnackbar from "Control/SnackBar";
+import { AjouterAgentAdmin, OtherUpdated } from "Redux/AgentAdmin";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import Selected from "static/Select";
 
-function AgentAdmin() {
+function AgentAdmin({ agentselect }) {
   const dispatch = useDispatch();
   const roles = useSelector((state) => state.role.role);
-  const [roleSelect, setRole] = React.useState('');
+  const [initiale, setInitiale] = React.useState({ nom: "", code: "" });
+  const [roleSelect, setRole] = React.useState("");
+  const [poste, setPoste] = React.useState("");
+  const [valuefilter, setValueFilter] = React.useState([]);
   const region = useSelector((state) => state.zone.zone);
   const shop = useSelector((state) => state.shop.shop);
-  const [regionSelect, setRegionSelect] = React.useState('');
-  const [shopSelect, setShopSelect] = React.useState('');
-  const [allFilterRegion, setAllFilterRegion] = React.useState([]);
-  const [allFilterShop, setAllFilterShop] = React.useState([]);
 
+  console.log(valuefilter);
   const fonction = [
-    { id: 1, title: 'Super utilisateur', value: 'superUser' },
-    { id: 2, title: 'Admin', value: 'admin' },
-    { id: 3, title: 'Call operator', value: 'co' }
+    { id: 1, title: "Super utilisateur", value: "superUser" },
+    { id: 2, title: "Admin", value: "admin" },
+    { id: 3, title: "Call operator", value: "co" },
   ];
-  const [fonctionSelect, setFonctionSelect] = React.useState('');
+  const [fonctionSelect, setFonctionSelect] = React.useState("");
 
-  const adddataFilterRegion = () => {
-    setAllFilterShop([]);
-    let d = regionSelect?.denomination;
-    if (!allFilterRegion.includes(d)) {
-      setAllFilterRegion([...allFilterRegion, d]);
+  React.useEffect(() => {
+    if (agentselect) {
+      setFonctionSelect(agentselect?.fonction);
+      setInitiale({ nom: agentselect?.nom, code: agentselect?.codeAgent });
+      setValueFilter([]);
+      setPoste("");
+      setRole("");
+    } else {
+      setFonctionSelect("");
+      setInitiale({ nom: "", code: "" });
+      setValueFilter([]);
+      setPoste("");
+      setRole("");
+    }
+  }, [agentselect]);
+  const admin = useSelector((state) => state.agentAdmin);
+
+  const returnvaluefilter = (v) => {
+    if (poste?.filterby === "region") {
+      let a = v.map((x) => {
+        return x.denomination;
+      });
+      return a;
+    }
+    if (poste?.filterby === "shop") {
+      let a = v.map((x) => {
+        return x.shop;
+      });
+      return a;
+    }
+    if (poste?.filterby === "overall") {
+      return [];
     }
   };
-  const adddataFilterShop = () => {
-    let d = shopSelect?.shop;
-    setAllFilterRegion([]);
-    if (!allFilterShop.includes(d)) {
-      setAllFilterShop([...allFilterShop, d]);
+
+  const editData = () => {
+    try {
+      const donner = {
+        unset: {},
+        data: {
+          role: poste ? poste?.idDepartement : agentselect?.role,
+          poste: poste ? poste?.id : agentselect?.poste,
+          fonction: fonctionSelect,
+          nom: initiale.nom,
+          valuefilter:
+            valuefilter.length > 0
+              ? returnvaluefilter(valuefilter)
+              : agentselect?.valuefilter,
+        },
+        idAgent: agentselect._id,
+      };
+      dispatch(OtherUpdated(donner));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const saveData = () => {
+    try {
+      const data = {
+        nom: values.nom,
+        fonction: fonctionSelect,
+        codeAgent: values.code,
+        role: roleSelect?.idRole,
+        poste: poste?.id,
+        valuefilter: returnvaluefilter(valuefilter),
+      };
+      dispatch(AjouterAgentAdmin(data));
+    } catch (error) {
+      console.log(error);
     }
   };
 
   return (
-    <div style={{ width: '25rem' }}>
-      <Formik
-        initialValues={{
-          nom: '',
-          code: ''
-        }}
-        validationSchema={Yup.object().shape({
-          nom: Yup.string().max(255).required('Le nom est obligatoire'),
-          code: Yup.string().max(20).required('Le code est obligatoire')
-        })}
-        onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
-          try {
-            const data = {
-              nom: values.nom,
-              fonction: fonctionSelect,
-              codeAgent: values.code,
-              role: roleSelect?.idRole
-            };
-
-            dispatch(AjouterAgentAdmin(data));
-          } catch (error) {
-            setStatus({ success: false });
-            setErrors({ submit: error.message });
-            setSubmitting(false);
-          }
-        }}
-      >
-        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
-          <form noValidate onSubmit={handleSubmit}>
-            <Grid container spacing={1}>
-              <Grid item xs={12}>
-                <Stack spacing={1}>
-                  <OutlinedInput
-                    id="nom"
-                    type="text"
-                    value={values.nom}
-                    name="nom"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="Entrez le nom de l'agent"
-                    fullWidth
-                    error={Boolean(touched.nom && errors.nom)}
-                  />
-                  {touched.nom && errors.nom && (
-                    <FormHelperText error id="standard-weight-helper-text-email-login">
-                      {errors.nom}
-                    </FormHelperText>
-                  )}
-                </Stack>
-              </Grid>
-              <Grid item xs={12}>
-                <Selected label="Fonction" data={fonction} value={fonctionSelect} setValue={setFonctionSelect} />
-              </Grid>
-              <Grid item xs={12}>
-                {roles ? (
-                  <AutoComplement value={roleSelect} setValue={setRole} options={roles} title="Selectionnez le role" propr="title" />
-                ) : (
-                  <p style={{ textAlign: 'center' }}>Loading...</p>
-                )}
-              </Grid>
-              {roleSelect && roleSelect.filterBy === 'region' && (
-                <Grid item xs={12}>
-                  <Grid container>
-                    <Grid item lg={10} sx={{ paddingRight: '10px' }}>
-                      <AutoComplement
-                        value={regionSelect}
-                        setValue={setRegionSelect}
-                        options={region}
-                        title="Selectionnez la region"
-                        propr="denomination"
-                      />
-                    </Grid>
-                    <Grid item lg={2} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Button onClick={(e) => adddataFilterRegion(e)} variant="contained" color="primary" fullWidth>
-                        <Add fontSize="small" />
-                      </Button>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              )}
-              {roleSelect && roleSelect.filterBy === 'shop' && (
-                <Grid item xs={12}>
-                  <Grid container>
-                    <Grid item lg={10} sx={{ paddingRight: '10px' }}>
-                      <AutoComplement
-                        value={shopSelect}
-                        setValue={setShopSelect}
-                        options={shop}
-                        title="Selectionnez le Shop"
-                        propr="shop"
-                      />
-                    </Grid>
-                    <Grid item lg={2} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Button onClick={(e) => adddataFilterShop(e)} variant="contained" color="primary" fullWidth>
-                        <Add fontSize="small" />
-                      </Button>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              )}
-              <Grid container>
-                {allFilterRegion.map((index) => {
-                  return <span key={index}>{index + '; '}</span>;
-                })}
-                {allFilterShop.map((index) => {
-                  return <span key={index}>{index + '; '}</span>;
-                })}
-              </Grid>
-
-              <Grid item xs={12}>
-                <Stack>
-                  <OutlinedInput
-                    id="code"
-                    type="text"
-                    value={values.code}
-                    name="code"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="Nom d'utilisateur"
-                    fullWidth
-                    error={Boolean(touched.code && errors.code)}
-                  />
-                  {touched.code && errors.code && (
-                    <FormHelperText error id="standard-weight-helper-text-email-login">
-                      {errors.code}
-                    </FormHelperText>
-                  )}
-                </Stack>
-              </Grid>
-
-              <Grid item xs={12}>
-                <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
-                  <Save fontSize="small" />
-                  <span style={{ marginLeft: '10px' }}>Enregistrer</span>
-                </Button>
-              </Grid>
-            </Grid>
-          </form>
+    <div style={{ width: "25rem", padding: "10px" }}>
+      {admin.otherUpdated === "pending" && (
+        <SimpleBackdrop open={true} title="Please wait..." />
+      )}
+      {admin.otherUpdated === "success" && <DirectionSnackbar message="Done" />}
+      {admin.otherUpdated === "rejected" && (
+        <DirectionSnackbar message={admin.otherUpdatedError} />
+      )}
+      <TextField
+        value={initiale.nom}
+        onChange={(event) =>
+          setInitiale({
+            ...initiale,
+            nom: event.target.value,
+          })
+        }
+        label="Name"
+        name="title"
+        autoComplete="off"
+        fullWidth
+      />
+      <Grid item xs={12} sx={{ margin: "10px 0px" }}>
+        <Selected
+          label="Fonction"
+          data={fonction}
+          value={fonctionSelect}
+          setValue={setFonctionSelect}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        {roles ? (
+          <AutoComplement
+            value={roleSelect}
+            setValue={setRole}
+            options={roles}
+            title="Selectionnez le departement"
+            propr="title"
+          />
+        ) : (
+          <p style={{ textAlign: "center" }}>Loading...</p>
         )}
-      </Formik>
+        {roleSelect && roleSelect?.postes.length > 0 && (
+          <div style={{ marginTop: "10px" }}>
+            <AutoComplement
+              value={poste}
+              setValue={setPoste}
+              options={roleSelect?.postes}
+              title="Selectionnez le poste"
+              propr="title"
+            />
+          </div>
+        )}
+      </Grid>
+      {poste && ["region", "shop"].includes(poste.filterby) && (
+        <AutoSelectMany
+          value={valuefilter}
+          setValue={setValueFilter}
+          title="Value"
+          options={poste.filterby === "region" ? region : shop}
+          propr={poste.filterby === "region" ? "denomination" : "shop"}
+        />
+      )}
+      <TextField
+        value={initiale.code}
+        onChange={(event) =>
+          setInitiale({
+            ...initiale,
+            code: event.target.value,
+          })
+        }
+        disabled={agentselect ? true : false}
+        label="Code"
+        name="code"
+        autoComplete="off"
+        sx={{ margin: "10px 0px" }}
+        fullWidth
+      />
+      <Grid item xs={12}>
+        <Button
+          onClick={agentselect ? () => editData() : () => saveData()}
+          fullWidth
+          size="large"
+          type="submit"
+          variant="contained"
+          color={agentselect ? "secondary" : "primary"}
+        >
+          {agentselect ? <Edit fontSize="small" /> : <Save fontSize="small" />}
+          <span style={{ marginLeft: "10px" }}>
+            {agentselect ? "Edit" : "Save"}
+          </span>
+        </Button>
+      </Grid>
     </div>
   );
 }

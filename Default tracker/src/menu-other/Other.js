@@ -1,5 +1,5 @@
 // assets
-import { BgColorsOutlined, FontSizeOutlined, LineChartOutlined, UserOutlined } from '@ant-design/icons';
+import { BgColorsOutlined, FontSizeOutlined, LineChartOutlined, MessageOutlined, UserOutlined } from '@ant-design/icons';
 
 // icons
 
@@ -31,13 +31,20 @@ const other = {
       url: '/historique',
       icon: BgColorsOutlined
     },
-   
+
     {
       id: 'Arbitrage',
       title: 'Arbitrage',
       type: 'item',
       url: '/arbitrage',
       icon: LineChartOutlined
+    },
+    {
+      id: 'Status configuration',
+      title: 'Status configuration',
+      type: 'item',
+      url: '/feedback',
+      icon: MessageOutlined
     }
   ]
 };

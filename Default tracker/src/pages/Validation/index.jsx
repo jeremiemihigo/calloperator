@@ -89,7 +89,7 @@ function Index() {
       width: 90,
       editable: false,
       renderCell: (p) => {
-        return <Dot texte={p.row.statut} />;
+        return <Dot texte={p.row.statut || 'Pending'} />;
       }
     },
     {
@@ -154,7 +154,7 @@ function Index() {
       }
     });
   };
-
+  console.log(data);
   const changeDirection = () => {
     let code = data
       .filter((x) => ['Pending', 'Done'].includes(x.statut))
@@ -166,7 +166,8 @@ function Index() {
           last_statut: x.statut
         };
       });
-    navigation('/action_validation', { state: code });
+    console.log(code);
+    navigation('/action_validation', { state: { code } });
   };
   return (
     <>

@@ -8,7 +8,7 @@ import { config, lien } from "src/static/Lien";
 import DirectionSnackbar from "src/Static/SnackBar";
 import "./add.style.css";
 
-function AddActionForm({ data, setData }) {
+function AddActionForm({ data, type, setData }) {
   //action, concerne, next_step, statut_actuel
   const [files, setFiles] = React.useState();
 
@@ -31,6 +31,12 @@ function AddActionForm({ data, setData }) {
     cout: "",
   });
   const [allcout, setAllcout] = React.useState([]);
+  const reset = () => {
+    setAllcout([]);
+    setCout({ depense: "", cout: "" });
+    setInitiale({ commentaire: "", stepSelect: "", deedline: "" });
+    setFiles();
+  };
 
   const onchangecout = (event) => {
     try {
@@ -40,7 +46,6 @@ function AddActionForm({ data, setData }) {
       console.log(error);
     }
   };
-  console.log(files);
 
   const [action, setAction] = React.useState("");
   const [message, setMessage] = React.useState("");
@@ -65,22 +70,22 @@ function AddActionForm({ data, setData }) {
         }
       }
       if (files && files.length > 0) {
-        const response = await axios.post(
-          `${lien}/addaction`,
-          formData,
-          config
-        );
+        let link =
+          type === "projet"
+            ? `${lien}/addaction`
+            : `${lien}/addaction_prospect`;
+        const response = await axios.post(link, formData, config);
         if (response.status === 200) {
           setData(response.data);
-          setInitiale({
-            commentaire: "",
-            stepSelect: "",
-            deedline: "",
-          });
+          reset();
         }
       } else {
+        let link =
+          type === "projet"
+            ? `${lien}/addaction_sans_fichier`
+            : `${lien}/addaction_sans_fichier_prospect`;
         const response = await axios.post(
-          `${lien}/addaction_sans_fichier`,
+          link,
           {
             action,
             concerne: data?.id,
@@ -94,11 +99,7 @@ function AddActionForm({ data, setData }) {
         );
         if (response.status === 200) {
           setData(response.data);
-          setInitiale({
-            commentaire: "",
-            stepSelect: "",
-            deedline: "",
-          });
+          reset();
         }
       }
     } catch (error) {

@@ -8,48 +8,37 @@ import {
   Typography,
 } from "@mui/material";
 import axios from "axios";
-import Pusher from "pusher-js";
 import React from "react";
-import CustomTextField from "../../../components/forms/theme-elements/CustomTextField";
-import { lien } from "../../../Static/Lien";
+import CustomTextField from "src/components/forms/theme-elements/CustomTextField";
+import { lien } from "src/Static/Lien";
 
 const AuthLogin = () => {
-  var pusher = new Pusher("cd39021e8a157783f594", {
-    cluster: "ap2",
-  });
   const [initiale, setInitiale] = React.useState();
+  const [message, setMessage] = React.useState("");
   const onchange = (event) => {
+    setMessage("");
     const { name, value } = event.target;
     setInitiale({
       ...initiale,
       [name]: value,
     });
   };
-  const [message, setMessage] = React.useState("");
+
+  const [send, setSend] = React.useState(false);
   const sending = async () => {
     try {
+      setSend(true);
       const response = await axios.post(lien + "/login", initiale);
       if (response.status === 200) {
-        pusher.connection.bind("connected", () => {
-          const socketId = pusher.connection.socket_id;
-          console.log(socketId);
-          // Envoie-le à ton backend pour l’associer à ton utilisateur
-          fetch("/api/register-socket", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              userId: "USER_ID_HERE",
-              socketId: socketId,
-            }),
-          });
-        });
         localStorage.setItem("auth", response.data);
         window.location.replace("/projets");
       } else {
         setMessage(response.data);
+        setSend(false);
       }
     } catch (error) {
       setMessage(error.message);
+      setSend(false);
     }
   };
   return (
@@ -112,10 +101,11 @@ const AuthLogin = () => {
           variant="contained"
           size="large"
           fullWidth
+          disabled={send}
           onClick={() => sending()}
           type="submit"
         >
-          Sign In
+          {send ? "Loading..." : "Sign In"}
         </Button>
       </Box>
       <p

@@ -1,17 +1,15 @@
 import { Edit, Save } from "@mui/icons-material";
-import { Autocomplete, Button, TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import { Grid } from "@mui/system";
+import axios from "axios";
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
 import DirectionSnackbar from "src/Static/SnackBar";
-import { Addprospect, EditProspect } from "../../Redux/prospect";
+import { config, lien } from "../../static/Lien";
 
-function FormProspect({ projetSelect, dataedit }) {
-  const prospect = useSelector((state) => state.prospect);
-  const alluser = useSelector((state) => state.alluser.user);
-  const [suivi_par, setSuivipar] = React.useState([]);
+function FormProspect({ projetSelect, loading, dataedit }) {
   //designation, description, next_step
-  const dispatch = useDispatch();
+  const [message, setMessage] = React.useState("");
+  const [pending, setPending] = React.useState(false);
   const [initiale, setInitiale] = React.useState({
     description: "",
     designation: "",
@@ -20,6 +18,7 @@ function FormProspect({ projetSelect, dataedit }) {
     contact: "",
     nextstep: "",
     deedline: "",
+    incharge: "",
   });
   const {
     description,
@@ -29,6 +28,7 @@ function FormProspect({ projetSelect, dataedit }) {
     adresse,
     email,
     designation,
+    incharge,
   } = initiale;
   const onchange = (event) => {
     const { name, value } = event.target;
@@ -37,12 +37,14 @@ function FormProspect({ projetSelect, dataedit }) {
       [name]: value,
     });
   };
-
-  const sendData = (event) => {
+  const sendData = async (event) => {
     event.preventDefault();
+    setPending(true);
+    setMessage("");
     try {
-      dispatch(
-        Addprospect({
+      const response = await axios.post(
+        `${lien}/addprospect`,
+        {
           name: designation,
           description,
           projet: projetSelect ? projetSelect : "",
@@ -51,14 +53,32 @@ function FormProspect({ projetSelect, dataedit }) {
           contact,
           adresse,
           email,
-          suivi_par: suivi_par.map((index) => {
-            return index.name;
-          }),
-        })
+          incharge,
+        },
+        config
       );
-      setInitiale({ description: "", designation: "" });
-      setStepSelect("");
-    } catch (error) {}
+      if (response.status === 200) {
+        !projetSelect && loading();
+        setPending(false);
+        setMessage("Enregistrement effectuer");
+        setInitiale({
+          description: "",
+          designation: "",
+          email: "",
+          adresse: "",
+          contact: "",
+          nextstep: "",
+          deedline: "",
+          incharge: "",
+        });
+      } else {
+        setPending(false);
+        setMessage(response.data);
+      }
+    } catch (error) {
+      setPending(false);
+      setMessage(error.message);
+    }
   };
   React.useEffect(() => {
     if (dataedit) {
@@ -69,42 +89,43 @@ function FormProspect({ projetSelect, dataedit }) {
       });
     }
   }, [dataedit]);
-  const editprospect = () => {
-    dispatch(
-      EditProspect({
-        id: dataedit?._id,
-        data: {
-          name: designation,
-          description,
-          next_step: nextstep,
-          deedline,
-          contact,
-          adresse,
-          email,
-          suivi_par:
-            suivi_par.length > 0
-              ? suivi_par.map((index) => {
-                  return index.name;
-                })
-              : dataedit?.suivi_par,
+  const editprospect = async () => {
+    try {
+      setMessage("");
+      setPending(true);
+      const response = await axios.post(
+        `${lien}/editprospect`,
+        {
+          id: dataedit?._id,
+          data: {
+            name: designation,
+            description,
+            next_step: nextstep,
+            deedline,
+            contact,
+            adresse,
+            email,
+            incharge,
+          },
         },
-      })
-    );
+        config
+      );
+      if (response.status === 200) {
+        loading();
+        setPending(false);
+        setMessage("Modification effectuée");
+      } else {
+        setMessage(response.data);
+        setPending(false);
+      }
+    } catch (error) {
+      setMessage(error.message);
+      setPending(false);
+    }
   };
   return (
     <div>
-      {prospect.saveprospect === "success" && (
-        <DirectionSnackbar message="Done" />
-      )}
-      {prospect.saveprospect === "rejected" && (
-        <DirectionSnackbar message={prospect.saveprospectError} />
-      )}
-      {prospect.edit === "success" && (
-        <DirectionSnackbar message="Modification effectuée" />
-      )}
-      {prospect.edit === "rejected" && (
-        <DirectionSnackbar message={prospect.editError} />
-      )}
+      {message && <DirectionSnackbar message={message} />}
       <Grid container>
         <Grid size={{ lg: 6 }} sx={{ padding: "4px" }}>
           <TextField
@@ -168,42 +189,22 @@ function FormProspect({ projetSelect, dataedit }) {
               mb: 1,
             }}
           />
-          {alluser && (
-            <div style={{ margin: "10px 0px" }}>
-              <Autocomplete
-                multiple
-                value={suivi_par}
-                id="tags-outlined"
-                onChange={(event, newValue) => {
-                  if (typeof newValue === "string") {
-                    setSuivipar({
-                      title: newValue,
-                    });
-                  } else if (newValue && newValue.inputValue) {
-                    // Create a new value from the user input
-                    setSuivipar({
-                      title: newValue.inputValue,
-                    });
-                  } else {
-                    setSuivipar(newValue);
-                  }
-                }}
-                options={alluser}
-                getOptionLabel={(option) => option.name}
-                filterSelectedOptions
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Personne en charge au sein de Bboxx *"
-                    placeholder="Personne en charge au sein de Bboxx *"
-                  />
-                )}
-              />
-            </div>
-          )}
+
+          <TextField
+            name="incharge"
+            label="Personne en charge *"
+            value={incharge}
+            onChange={(event) => onchange(event)}
+            variant="outlined"
+            fullWidth
+            multiline
+            sx={{
+              mb: 1,
+            }}
+          />
           <TextField
             name="nextstep"
-            label="Next step"
+            label="Next step *"
             value={nextstep}
             onChange={(event) => onchange(event)}
             variant="outlined"
@@ -215,7 +216,7 @@ function FormProspect({ projetSelect, dataedit }) {
           />
           <TextField
             name="deedline"
-            label="Deedline"
+            label="Deedline *"
             value={deedline}
             onChange={(event) => onchange(event)}
             variant="outlined"
@@ -232,14 +233,25 @@ function FormProspect({ projetSelect, dataedit }) {
                 : (event) => sendData(event)
             }
             variant="contained"
+            disabled={pending}
             color={dataedit ? "warning" : "primary"}
             fullWidth
             sx={{ mt: 1 }}
           >
-            {dataedit ? <Edit fontSize="small" /> : <Save fontSize="small" />}
-            <span style={{ marginLeft: "10px" }}>
-              {dataedit ? "Edit" : "Enregistrer"}
-            </span>
+            {pending ? (
+              "Please wait..."
+            ) : (
+              <>
+                {dataedit ? (
+                  <Edit fontSize="small" />
+                ) : (
+                  <Save fontSize="small" />
+                )}
+                <span style={{ marginLeft: "10px" }}>
+                  {dataedit ? "Edit" : "Enregistrer"}
+                </span>
+              </>
+            )}
           </Button>
         </Grid>
       </Grid>

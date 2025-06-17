@@ -17,27 +17,10 @@ app.use(express.urlencoded({ limit: "50mb" }));
 
 // Connexion à la base de données
 const connectDB = require("./Config/Connection");
-const { sendMessage } = require("./Controllers/TestPusher");
 connectDB();
 // Création du serveur HTTP
 const server = http.createServer(app);
 
-// Initialisation de Socket.io avec CORS activé
-//const Pusher = require("pusher");
-
-// const pusher = new Pusher({
-//   appId: process.env.app_id,
-//   key: process.env.key,
-//   secret: process.env.secret,
-//   cluster: process.env.cluster,
-//   useTLS: true,
-// });
-
-// pusher.trigger("my-channel", "my-event", {
-//   message: "hello world",
-// });
-// Routes
-app.post("/sendMessage", sendMessage);
 app.use("/bboxx/b2b", require("./Routes/Router"));
 app.use(
   "/bboxx/b2b/file",

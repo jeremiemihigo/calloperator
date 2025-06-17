@@ -36,7 +36,7 @@ function Plus({ data }) {
         En charge
       </Typography>
       <Typography component="p" className="plus_value">
-        {data?.suivi_par}
+        {data?.incharge}
       </Typography>
     </div>
   );

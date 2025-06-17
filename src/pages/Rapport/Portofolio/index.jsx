@@ -1,11 +1,16 @@
 import { Search } from "@mui/icons-material";
-import { Button, CircularProgress, Grid, Paper } from "@mui/material";
+import {
+  Button,
+  CircularProgress,
+  Grid,
+  Paper,
+  Typography,
+} from "@mui/material";
 import { Input } from "antd";
+import axios from "axios";
 import React from "react";
 import ExcelButton from "static/ExcelButton";
 import { config, portofolio } from "static/Lien";
-import { Typography } from "../../../../node_modules/@mui/material/index";
-import axios from "../../../../node_modules/axios/index";
 import { generateNomFile } from "../NameFile";
 import Agents from "./Agents";
 import Statistique_Status from "./Stat_status";

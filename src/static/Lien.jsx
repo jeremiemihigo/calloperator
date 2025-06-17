@@ -7,6 +7,7 @@ const link = "http://localhost:5000";
 
 export const lien = `${link}/bboxx/support`;
 export const big_data = `${link}/bboxx/support`;
+export const lien_settings = `${link}/bboxx/settings`;
 export const lien_socket = link;
 export const lien_conge = `${link}/admin/conge`;
 export const lien_issue = `${link}/issue`;
@@ -24,20 +25,6 @@ export const config = {
   },
 };
 
-export const isEmpty = (value) => {
-  if (
-    value === undefined ||
-    value === null ||
-    value == [] ||
-    value.length === 0 ||
-    (typeof value === "object" && Object.keys(value).length === 0) ||
-    (typeof value === "string" && value.trim().length === 0)
-  ) {
-    return true;
-  } else {
-    return false;
-  }
-};
 export const dateFrancais = (donner) => {
   let dates = new Date(donner);
   return `${dates.getDate()}/${dates.getMonth() + 1}/${dates.getFullYear()}`;
@@ -80,7 +67,6 @@ export function TimeCounter(durationInMinutes) {
     const interval = setInterval(() => {
       setRemainingTimeInSeconds((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
-    // Nettoyage du timer à la fin
     return () => clearInterval(interval);
   }, []);
 
@@ -105,10 +91,6 @@ export function TimeCounter(durationInMinutes) {
       </p>
     );
   } else {
-    const days = Math.floor(remainingTimeInSeconds / (24 * 3600));
-    const hours = Math.floor((remainingTimeInSeconds % (24 * 3600)) / 3600);
-    const minutes = Math.floor((remainingTimeInSeconds % 3600) / 60);
-    const seconds = remainingTimeInSeconds % 60;
     return (
       <p
         style={{
@@ -125,7 +107,11 @@ export function TimeCounter(durationInMinutes) {
           justifyContent: "center",
         }}
       >{`
-      ${days + "jr"} ${hours + "h"} ${minutes + "m"} ${seconds + "s"}
+      ${Math.floor(remainingTimeInSeconds / (24 * 3600)) + "jr"} ${
+        Math.floor((remainingTimeInSeconds % (24 * 3600)) / 3600) + "h"
+      } ${Math.floor((remainingTimeInSeconds % 3600) / 60) + "m"} ${
+        (remainingTimeInSeconds % 60) + "s"
+      }
       `}</p>
     );
   }
@@ -133,13 +119,12 @@ export function TimeCounter(durationInMinutes) {
 // Exemple d'utilisation
 
 export const returnTime = (date1, date2) => {
-  //Date 2 : Date à jour
-  //Date 1 : Date à tester
   let resultat =
     (new Date(date2).getTime() - new Date(date1).getTime()) / 60000;
   if (resultat < 1) {
     return 1;
   } else {
+    console.log(resultat, date1, date2);
     return resultat;
   }
 };

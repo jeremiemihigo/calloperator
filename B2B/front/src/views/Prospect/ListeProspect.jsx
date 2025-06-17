@@ -2,14 +2,15 @@ import { Delete, Edit } from "@mui/icons-material";
 import { Box, Paper, Typography } from "@mui/material";
 import { Grid } from "@mui/system";
 import { IconMessage } from "@tabler/icons-react";
+import axios from "axios";
 import _ from "lodash";
 import moment from "moment";
 import React from "react";
-import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
-import { DeleteProspect } from "src/Redux/prospect";
+import { config, lien } from "src/static/Lien";
 import Popup from "src/static/Popup";
 import CountdownTimer from "src/static/Rebour";
+import DirectionSnackbar from "src/static/SnackBar";
 import ListeCout from "../Projet/ListeCout";
 import "../Projet/projet.style.css";
 import FormProspect from "./AddProspect";
@@ -58,19 +59,35 @@ function ListeProspect({ donner }) {
   };
 
   const clickProjet = (projet) => {
-    navigation("/detail_projet", { state: projet });
+    navigation("/detail_projet", {
+      state: { id: projet.id, type: "prospect" },
+    });
   };
-  const dispatch = useDispatch();
-  const deleteProspect = (id) => {
-    dispatch(DeleteProspect({ id }));
-    window.location.replace("/prospects");
+  const [message, setMessage] = React.useState("");
+  const deleteProspect = async (id) => {
+    try {
+      setMessage("");
+      const response = await axios.post(
+        `${lien}/deleteprospect`,
+        { id },
+        config
+      );
+      if (response.status === 200) {
+        window.location.replace("/prospects");
+      } else {
+        setMessage(response.data);
+      }
+    } catch (error) {
+      setMessage(error.message);
+    }
   };
 
   return (
     <>
+      {message && <DirectionSnackbar message={message} />}
       <Box sx={{ overflow: "auto", width: { xs: "280px", sm: "auto" } }}>
         {data &&
-          (data.length > 0 ? (
+          (data?.length > 0 ? (
             data.map((index) => {
               return (
                 <Paper
@@ -105,7 +122,7 @@ function ListeProspect({ donner }) {
                       <Typography className="description">
                         {index.description}
                       </Typography>
-                      {index.projet.length > 0 && (
+                      {index?.projet && index?.projet.length > 0 && (
                         <Typography className="next_step" noWrap>
                           <span style={{ fontWeight: "bolder" }}>Projet</span> :{" "}
                           {index.projet[0].designation}

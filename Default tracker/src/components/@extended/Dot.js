@@ -1,21 +1,20 @@
 import PropTypes from 'prop-types';
 
 // material-ui
-import { Box, Typography } from '@mui/material';
+import { Box, Tooltip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { Tooltip } from '../../../node_modules/@mui/material/index';
 
 const Dot = ({ texte, ...others }) => {
   const theme = useTheme();
   let main;
   switch (texte) {
-    case 'no_visits':
+    case 'No_visits':
       main = theme.palette.primary.main;
       break;
     case 'Categorisation':
       main = theme.palette.primary.main;
       break;
-    case 'no_calls':
+    case 'No_calls':
       main = theme.palette.primary.main;
       break;
     case 'Tracking_Ongoing':

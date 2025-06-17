@@ -18,6 +18,7 @@ function ActionValidation() {
   const [message, setMessage] = React.useState(false);
   const location = useLocation();
   const { state } = location;
+
   const readUploadFile = (e) => {
     e.preventDefault();
     setSending(true);
@@ -57,6 +58,7 @@ function ActionValidation() {
                 });
               }
             }
+
             setData(table);
             setSending(false);
           }
@@ -84,7 +86,7 @@ function ActionValidation() {
       setSending(false);
     }
   };
-
+  console.log(state);
   return (
     <>
       <EnteteFile texte="File of actions carried out in this month" />

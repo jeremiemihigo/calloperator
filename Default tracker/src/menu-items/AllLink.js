@@ -4,7 +4,6 @@ import {
   BgColorsOutlined,
   HomeOutlined,
   InteractionOutlined,
-  LineChartOutlined,
   MessageOutlined,
   NodeCollapseOutlined,
   SettingOutlined,
@@ -62,7 +61,7 @@ const utilities = {
       url: '/decision',
       icon: NodeCollapseOutlined
     },
-    
+
     {
       id: 'Status configuration',
       title: 'Status configuration',

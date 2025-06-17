@@ -76,6 +76,14 @@ const readUserAdmin = (req, res) => {
           as: "roles",
         },
       },
+      {
+        $lookup: {
+          from: "postes",
+          localField: "poste",
+          foreignField: "id",
+          as: "poste",
+        },
+      },
     ])
       .then((response) => {
         if (response.length > 0) {

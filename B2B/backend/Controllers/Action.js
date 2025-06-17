@@ -120,17 +120,17 @@ const AddProjet = async (req, res) => {
       email,
       adresse,
       contact,
-      suivi_par,
       description,
       idCategorie,
       next_step,
+      incharge,
     } = req.body;
     if (
       !designation ||
       !description ||
       !next_step ||
       !responsable ||
-      !suivi_par ||
+      !incharge ||
       !idCategorie ||
       !deedline
     ) {
@@ -145,7 +145,7 @@ const AddProjet = async (req, res) => {
       contact,
       idCategorie,
       deedline,
-      suivi_par,
+      incharge,
       description,
       next_step,
       id,

@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import moment from "moment";
-import { lien_file } from "../../../static/Lien";
+import { lien_file } from "src/static/Lien";
 import "./detail.style.css";
 
 function Item({ data, onclick }) {

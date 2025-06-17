@@ -54,3 +54,13 @@ export const par = [
 ];
 export const les_actions = ['Repossession', 'Reactivation', 'Opt-Out'];
 export const les_decisions = ['Write_off', 'Opt-Out', 'Tracking_Ongoing'];
+export const returnFeedback = (id, sinon, allfeedback) => {
+  if (allfeedback && allfeedback.length > 0) {
+    if (allfeedback.filter((x) => x.idFeedback === id).length > 0) {
+      return allfeedback.filter((x) => x.idFeedback === id)[0]?.title;
+    } else {
+      return sinon;
+    }
+  }
+  // return 'No_visits';
+};

@@ -3,16 +3,14 @@ const { generateString } = require("../../Static/Static_Function");
 
 const AddRoleDT = async (req, res) => {
   try {
-    const { title, filterBy, type } = req.body;
-    if (!title || !filterBy) {
+    const { title } = req.body;
+    if (!title) {
       return res.status(201).json("Veuillez renseigner les champs");
     }
     const idRole = generateString(5);
     ModelRole.create({
       title,
       idRole,
-      type,
-      filterBy,
     })
       .then((result) => {
         if (result) {
@@ -30,8 +28,16 @@ const AddRoleDT = async (req, res) => {
 };
 const ReadRole = async (req, res) => {
   try {
-    ModelRole.find({})
-      .lean()
+    ModelRole.aggregate([
+      {
+        $lookup: {
+          from: "postes",
+          localField: "idRole",
+          foreignField: "idDepartement",
+          as: "postes",
+        },
+      },
+    ])
       .then((result) => {
         return res.status(200).json(result);
       })
