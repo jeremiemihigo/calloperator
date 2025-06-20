@@ -48,7 +48,18 @@ const DeleteDepartement = async (req, res) => {
     console.log(error);
   }
 };
+const ReadPoste = async (req, res) => {
+  try {
+    const response = await ModelPoste.find({});
+    if (response.length > 0) {
+      return res.status(200).json(response);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
 module.exports = {
   addposte,
+  ReadPoste,
   DeleteDepartement,
 };

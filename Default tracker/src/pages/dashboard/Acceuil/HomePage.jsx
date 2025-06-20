@@ -132,7 +132,7 @@ const HomePage = () => {
     try {
       setLoad({ ...load, deux: true });
       const response = await axios.post(lien_dt + '/graphique', { match }, config);
-      if (response.status === 200) {
+      if (response.status === 200 && response.data.table) {
         setSeries([
           {
             name: 'Action',
@@ -188,7 +188,6 @@ const HomePage = () => {
   React.useEffect(() => {
     readDash();
   }, [match]);
-
   return (
     <Grid className="content">
       {message && <DirectionSnackbar message={message} />}
@@ -197,16 +196,15 @@ const HomePage = () => {
       <Paper elevation={1} sx={{ padding: '10px' }}>
         <div style={{ width: '100%' }}>
           <p>Visits of this month to date</p>
-          {load.deux && series.length === 0 ? (
+          {load.deux && (
             <div className="loading">
               <Paper elevation={1} className="load_papier">
                 <CircularProgress size={15} />
                 <p>Loading...</p>
               </Paper>
             </div>
-          ) : (
-            <ReactApexChart options={options} width="100%" series={series} type="bar" height={430} />
           )}
+          {series.length > 0 && <ReactApexChart options={options} width="100%" series={series} type="bar" height={430} />}
         </div>
       </Paper>
       <Paper elevation={1} sx={{ padding: '10px', marginTop: '10px' }}>

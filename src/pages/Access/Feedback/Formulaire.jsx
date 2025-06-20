@@ -5,20 +5,26 @@ import DirectionSnackbar from "Control/SnackBar";
 import _ from "lodash";
 import React from "react";
 import { config, lien, lien_dt } from "static/Lien";
+import Selected from "static/Select";
 
-function Formulaire({ data_edit, data, setData }) {
-  console.log(data_edit);
+function Formulaire({ data_edit, data, postes, setData }) {
   const [value, setValue] = React.useState([]);
   const [feedback, setFeedback] = React.useState("");
   const option = [
-    { id: 1, title: "Visites Ménages", value: "vm" },
-    { id: 2, title: "Protefeuille", value: "portofolio" },
-    { id: 3, title: "Default tracker", value: "dt" },
+    { _id: 1, title: "Visites Ménages", value: "vm" },
+    { _id: 2, title: "Protefeuille", value: "portofolio" },
+    { _id: 3, title: "Default tracker", value: "dt" },
   ];
+  const encharge = [
+    { id: 1, title: "Poste", value: "poste" },
+    { id: 2, title: "Departement", value: "departement" },
+  ];
+  const [role, setRole] = React.useState("");
   const [sending, setSending] = React.useState({ etat: false, message: "" });
   const { etat, message } = sending;
 
   const [departements, setAllDepartment] = React.useState([]);
+  const [posteselect, setPosteSelect] = React.useState([]);
   const [incharge, setInCharge] = React.useState([]);
   const loadingRole = async () => {
     try {
@@ -30,6 +36,7 @@ function Formulaire({ data_edit, data, setData }) {
       console.log(error);
     }
   };
+
   React.useEffect(() => {
     loadingRole();
   }, []);
@@ -42,11 +49,22 @@ function Formulaire({ data_edit, data, setData }) {
         })
       );
       setFeedback(data_edit?.title);
+      setRole(data_edit?.typecharge);
     }
   }, [data_edit]);
 
   const sendData = async (event) => {
     event.preventDefault();
+    const en =
+      role === "departement"
+        ? _.uniq(
+            incharge.map(function (x) {
+              return x.idRole;
+            })
+          )
+        : posteselect.map(function (x) {
+            return x.id;
+          });
     try {
       setSending({ etat: true, message: "" });
       const donner = {
@@ -57,11 +75,8 @@ function Formulaire({ data_edit, data, setData }) {
             return x.value;
           })
         ),
-        incharge: _.uniq(
-          incharge.map(function (x) {
-            return x.idRole;
-          })
-        ),
+        incharge: en,
+        typecharge: role,
       };
       const response = await axios.post(lien + "/addfeedback", donner, config);
       if (response.status === 200) {
@@ -70,6 +85,8 @@ function Formulaire({ data_edit, data, setData }) {
         setValue([]);
         setFeedback("");
         setInCharge([]);
+        setPosteSelect([]);
+        setRole("");
       } else {
         setSending({ etat: false, message: JSON.stringify(response.data) });
       }
@@ -81,6 +98,16 @@ function Formulaire({ data_edit, data, setData }) {
     event.preventDefault();
     try {
       setSending({ etat: true, message: "" });
+      const en =
+        role === "departement"
+          ? _.uniq(
+              incharge.map(function (x) {
+                return x.idRole;
+              }) || data_edit?.incharge
+            )
+          : posteselect.map(function (x) {
+              return x.id;
+            }) || data_edit?.incharge;
       const donner = {
         title: feedback,
         plateforme: _.uniq(
@@ -88,15 +115,10 @@ function Formulaire({ data_edit, data, setData }) {
             return x.value;
           })
         ),
-        incharge:
-          incharge.length > 0
-            ? _.uniq(
-                incharge.map(function (x) {
-                  return x.idRole;
-                })
-              )
-            : data_edit?.plateforme,
+        idRole: en,
+        typecharge: role,
       };
+      console.log(donner);
       const response = await axios.put(
         lien + "/editfeedback",
         { id: data_edit._id, data: donner },
@@ -116,7 +138,7 @@ function Formulaire({ data_edit, data, setData }) {
   };
 
   return (
-    <div style={{ minWidth: "80%" }}>
+    <div style={{ minWidth: "20rem" }}>
       <>
         {message && <DirectionSnackbar message={message} />}
 
@@ -161,7 +183,15 @@ function Formulaire({ data_edit, data, setData }) {
             )}
           />
         </Stack>
-        {departements.length > 0 && (
+        <div>
+          <Selected
+            label="En charge"
+            data={encharge}
+            value={role}
+            setValue={setRole}
+          />
+        </div>
+        {departements.length > 0 && role === "departement" && (
           <Stack spacing={3} sx={{ width: "100%", margin: "10px 0px" }}>
             <Autocomplete
               multiple
@@ -189,6 +219,39 @@ function Formulaire({ data_edit, data, setData }) {
                   {...params}
                   label="Departement en charge"
                   placeholder="Département en charge"
+                />
+              )}
+            />
+          </Stack>
+        )}
+        {postes && postes.length > 0 && role === "poste" && (
+          <Stack spacing={3} sx={{ width: "100%", margin: "10px 0px" }}>
+            <Autocomplete
+              multiple
+              value={posteselect}
+              id="tags-outlined"
+              onChange={(event, newValue) => {
+                if (typeof newValue === "string") {
+                  setPosteSelect({
+                    title: newValue,
+                  });
+                } else if (newValue && newValue.inputValue) {
+                  // Create a new value from the user input
+                  setPosteSelect({
+                    title: newValue.inputValue,
+                  });
+                } else {
+                  setPosteSelect(newValue);
+                }
+              }}
+              options={postes}
+              getOptionLabel={(option) => option.title}
+              filterSelectedOptions
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Poste en charge"
+                  placeholder="Poste en charge"
                 />
               )}
             />

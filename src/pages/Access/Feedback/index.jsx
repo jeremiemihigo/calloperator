@@ -3,13 +3,14 @@ import { Fab } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import React from "react";
-import { config, lien } from "static/Lien";
+import { config, lien, lien_settings } from "static/Lien";
 import Popup from "static/Popup";
 import Formulaire from "./Formulaire";
 
 function Feedback() {
   const [open, setOpen] = React.useState(false);
   const [data, setData] = React.useState([]);
+  const [postes, setPostes] = React.useState();
   const loading = async () => {
     try {
       const response = await axios.get(lien + "/readfeedback/all", config);
@@ -20,13 +21,39 @@ function Feedback() {
       console.log(error);
     }
   };
+  const loadingPoste = async () => {
+    try {
+      const response = await axios.get(lien_settings + "/readPoste", config);
+      if (response.status === 200) {
+        setPostes(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const [data_edit, setDataEdit] = React.useState();
   React.useEffect(() => {
     loading();
+    loadingPoste();
   }, []);
   const openPopup = (row) => {
     setDataEdit(row);
     setOpen(true);
+  };
+  const returnIncharge = (donner) => {
+    if (donner && donner?.typecharge === "poste") {
+      if (donner.postes) {
+        return donner.postes.map((x) => x.title) + "; ";
+      } else {
+        return "";
+      }
+    } else {
+      if (donner.role) {
+        return donner.role.map((x) => x.title) + "; ";
+      } else {
+        return "";
+      }
+    }
   };
   const columns = [
     { field: "idFeedback", headerName: "ID", width: 20, editable: false },
@@ -38,15 +65,19 @@ function Feedback() {
       width: 300,
       editable: false,
       renderCell: (p) => {
-        return (
-          <>{p.row.role && p.row?.role.map((index) => index.title + "; ")}</>
-        );
+        return <>{returnIncharge(p.row)}</>;
       },
     },
     {
       field: "plateforme",
       headerName: "Plateforme",
       width: 130,
+      editable: false,
+    },
+    {
+      field: "typecharge",
+      headerName: "Type",
+      width: 100,
       editable: false,
     },
     {
@@ -109,12 +140,17 @@ function Feedback() {
         )}
       </div>
 
-      <Popup open={open} setOpen={setOpen} title="Formulaire">
-        <Formulaire data={data} setData={setData} />
+      <Popup open={open} setOpen={setOpen} title="Ajoutez un feedback">
+        <Formulaire postes={postes} data={data} setData={setData} />
       </Popup>
       {data_edit && (
         <Popup open={open} setOpen={setOpen} title="Edit">
-          <Formulaire data_edit={data_edit} data={data} setData={setData} />
+          <Formulaire
+            postes={postes}
+            data_edit={data_edit}
+            data={data}
+            setData={setData}
+          />
         </Popup>
       )}
     </>

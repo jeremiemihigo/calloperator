@@ -4,6 +4,7 @@ const { ObjectId } = require("mongodb");
 const lodash = require("lodash");
 const moment = require("moment");
 const ModelPoste = require("../../Models/Poste");
+const ModelFeedback = require("../../Models/Feedback");
 
 let initialeSearch = [
   {
@@ -363,25 +364,58 @@ const ChangeByFile = async (req, res) => {
 const ReadFilterClient = async (req, res) => {
   try {
     const { data, defaultv } = req.body;
-    const { valuefilter, poste } = req.user;
+    const { valuefilter, poste, fonction } = req.user;
 
     asyncLab.waterfall(
       [
         //Read role
         function (done) {
-          ModelPoste.findOne({ id: poste })
-            .lean()
-            .then((result) => {
-              if (result) {
-                done(null, result);
-              } else {
-                return res
-                  .status(201)
-                  .json("No position found; you can contact the administrator");
-              }
-            });
+          ModelPoste.aggregate([
+            { $match: { id: poste } },
+            {
+              $lookup: {
+                from: "roles",
+                localField: "idDepartement",
+                foreignField: "idRole",
+                as: "departement",
+              },
+            },
+            { $unwind: "$departement" },
+          ]).then((result) => {
+            if (result.length > 0) {
+              done(null, result[0]);
+            } else {
+              return res
+                .status(201)
+                .json("No position found; you can contact the administrator");
+            }
+          });
         },
-        function (result_poste, done) {
+        function (department, done) {
+          ModelFeedback.aggregate([
+            { $unwind: "$idRole" },
+            {
+              $match: {
+                $or: [
+                  { idRole: poste },
+                  {
+                    idRole: department.departement.idRole,
+                    typecharge: "departement",
+                  },
+                ],
+              },
+            },
+            { $project: { idFeedback: 1 } },
+          ]).then((result) => {
+            if (result.length > 0) {
+              let table = result.map((x) => x.idFeedback);
+              done(null, department, table);
+            } else {
+              done(null, department, result);
+            }
+          });
+        },
+        function (result_poste, feedbacks, done) {
           let month = moment(new Date()).format("MM-YYYY");
           let filtre = data;
           filtre.month = month;
@@ -392,16 +426,19 @@ const ReadFilterClient = async (req, res) => {
 
           if (result_poste.filterby === "region") {
             filtre.region = { $in: valuefilter };
+            filtre.currentFeedback = { $in: feedbacks };
           }
           if (result_poste.filterby === "shop") {
             filtre.shop = { $in: valuefilter };
+            filtre.currentFeedback = { $in: feedbacks };
           }
+
           done(null, filtre);
         },
         function (filtre, done) {
           ModelClient.aggregate(
             defaultv
-              ? [{ $match: filtre }, { $limit: 50 }, ...initialeSearch]
+              ? [{ $match: filtre }, ...initialeSearch]
               : [...searchData, { $match: filtre }, ...searchData2]
           )
             .then((result) => {

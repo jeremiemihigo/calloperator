@@ -159,7 +159,7 @@ function AgentAdmin({ agentselect }) {
         <AutoSelectMany
           value={valuefilter}
           setValue={setValueFilter}
-          title="Value"
+          title="Location"
           options={poste.filterby === "region" ? region : shop}
           propr={poste.filterby === "region" ? "denomination" : "shop"}
         />

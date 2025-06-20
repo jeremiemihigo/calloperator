@@ -6,6 +6,7 @@ const { returnMoisLetter } = require("../../Static/Static_Function");
 const lodash = require("lodash");
 const modelPeriode = require("../../Models/Periode");
 const ModelPoste = require("../../Models/Poste");
+const ModelFeedback = require("../../Models/Feedback");
 
 const visitedMonth = (visites) => {
   if (visites.length === 0) {
@@ -22,17 +23,6 @@ const visitedMonth = (visites) => {
       lastfeedback: lastfeedback ? lastfeedback : "",
     };
   }
-};
-const returnLastFirstDate = () => {
-  const currentDate = new Date();
-  const lastMonthDate = new Date(currentDate);
-  lastMonthDate.setMonth(currentDate.getMonth() - 1);
-  const l = lastMonthDate.toISOString().split("T")[0];
-  const lastDate = new Date(l);
-  lastMonthDate.setDate(1);
-  const f = lastMonthDate.toISOString().split("T")[0];
-  const firstDate = new Date(f);
-  return { lastDate, firstDate };
 };
 const feedbackRole = (feedback, role) => {
   if (feedback.length === 0) {
@@ -232,7 +222,6 @@ const InformationCustomer = async (req, res) => {
   } catch (error) {}
 };
 const StatusDashboard = async (req, res) => {
-  let month = moment(new Date()).format("MM-YYYY");
   const { match } = req.body;
   let recherche = match ? match : {};
   try {
@@ -306,34 +295,67 @@ const GraphiqueClient = async (req, res, next) => {
     const { match } = req.body;
     asyncLab.waterfall([
       function (done) {
-        ModelPoste.findOne({ id: poste })
-          .then((result) => {
-            if (result) {
-              done(null, result.filterby);
-            } else {
-              return res
-                .status(201)
-                .json("No position found; you can contact the administrator");
-            }
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
+        ModelPoste.aggregate([
+          { $match: { id: poste } },
+          {
+            $lookup: {
+              from: "roles",
+              localField: "idDepartement",
+              foreignField: "idRole",
+              as: "departement",
+            },
+          },
+          { $unwind: "$departement" },
+        ]).then((result) => {
+          if (result) {
+            done(null, result[0]);
+          } else {
+            return res
+              .status(201)
+              .json("No position found; you can contact the administrator");
+          }
+        });
       },
-      function (filterBy, done) {
-        if (filterBy === "shop") {
+      function (department, done) {
+        ModelFeedback.aggregate([
+          { $unwind: "$idRole" },
+          {
+            $match: {
+              $or: [
+                { idRole: poste },
+                {
+                  idRole: department.departement.idRole,
+                  typecharge: "departement",
+                },
+              ],
+            },
+          },
+          { $project: { idFeedback: 1 } },
+        ]).then((result) => {
+          if (result.length > 0) {
+            let table = result.map((x) => x.idFeedback);
+            done(null, department, table);
+          } else {
+            done(null, department[0], result);
+          }
+        });
+      },
+      function (result_poste, feedbacks, done) {
+        if (result_poste.filterby === "shop") {
           done(null, {
             shop: { $in: valuefilter },
             month,
+            currentFeedback: { $in: feedbacks },
           });
         }
-        if (filterBy === "region") {
+        if (result_poste.filterby === "region") {
           done(null, {
             region: { $in: valuefilter },
             month,
+            currentFeedback: { $in: feedbacks },
           });
         }
-        if (filterBy === "overall") {
+        if (result_poste.filterby === "overall") {
           done(null, { month });
         }
       },

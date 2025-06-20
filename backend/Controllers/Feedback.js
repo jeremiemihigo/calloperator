@@ -2,10 +2,10 @@ const ModelFeedback = require("../Models/Feedback");
 
 const AddFeedback = async (req, res) => {
   try {
-    const { title, incharge, plateforme } = req.body;
+    const { title, incharge, plateforme, typecharge } = req.body;
     const { nom } = req.user;
-    if (!title || !plateforme || incharge.length === 0) {
-      return;
+    if (!title || !plateforme || incharge.length === 0 || !typecharge) {
+      return res.status(201).json("Veuillez renseigner les champs");
     }
     ModelFeedback.create({
       title,
@@ -13,6 +13,7 @@ const AddFeedback = async (req, res) => {
       idFeedback: new Date().getTime(),
       idRole: incharge,
       savedby: nom,
+      typecharge,
     })
       .then((result) => {
         return res.status(200).json(result);
@@ -41,12 +42,22 @@ const ReadFeedback = async (req, res) => {
         },
       },
       {
+        $lookup: {
+          from: "postes",
+          localField: "idRole",
+          foreignField: "id",
+          as: "postes",
+        },
+      },
+      {
         $project: {
           title: 1,
+          postes: 1,
           plateforme: 1,
           role: 1,
           idFeedback: 1,
           savedby: 1,
+          typecharge: 1,
         },
       },
     ])

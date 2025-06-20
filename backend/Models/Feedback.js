@@ -16,6 +16,11 @@ const schema = new mongoose.Schema(
       enum: ["vm", "dt", "portofolio"],
     },
     savedby: { type: String, required: true },
+    typecharge: {
+      type: String,
+      required: true,
+      enum: ["poste", "departement"],
+    },
   },
   { timestamps: true }
 );
