@@ -15,7 +15,7 @@ const Historique = Loadable(lazy(() => import('pages/Historique')));
 const Customer = Loadable(lazy(() => import('pages/mesClients/StatusDash/ShowCustomer')));
 //const Performance = Loadable(lazy(() => import('pages/Performance')));
 const Arbitrage = Loadable(lazy(() => import('pages/Arbitrage')));
-
+const MyTracker = Loadable(lazy(() => import('pages/MyTracker')));
 // ==============================|| MAIN ROUTING ||============================== //
 
 const OtherRoutes = {
@@ -38,6 +38,10 @@ const OtherRoutes = {
     {
       path: '/rapport',
       element: <Rapport />
+    },
+    {
+      path: '/all_customer',
+      element: <MyTracker />
     },
 
     {

@@ -1,5 +1,12 @@
 // assets
-import { BgColorsOutlined, FontSizeOutlined, LineChartOutlined, MessageOutlined, UserOutlined } from '@ant-design/icons';
+import {
+  BgColorsOutlined,
+  FontSizeOutlined,
+  LineChartOutlined,
+  MessageOutlined,
+  UsergroupDeleteOutlined,
+  UserOutlined
+} from '@ant-design/icons';
 
 // icons
 
@@ -18,8 +25,15 @@ const other = {
       icon: FontSizeOutlined
     },
     {
-      id: 'My customers',
-      title: 'My customers',
+      id: 'All customers',
+      title: 'All customers to track',
+      type: 'item',
+      url: '/all_customer',
+      icon: UsergroupDeleteOutlined
+    },
+    {
+      id: 'My tracker',
+      title: 'My tracker',
       type: 'item',
       url: '/mesclients',
       icon: UserOutlined

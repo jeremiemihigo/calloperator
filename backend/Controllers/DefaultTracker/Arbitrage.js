@@ -1,7 +1,8 @@
 const ModelClient = require("../../Models/DefaultTracker/TableClient");
-const ModelRole = require("../../Models/DefaultTracker/Role");
+const ModelFeedback = require("../../Models/Feedback");
 const asyncLab = require("async");
 const moment = require("moment");
+const lodash = require("lodash");
 
 const Arbitrage = async (req, res) => {
   try {
@@ -53,64 +54,70 @@ const Arbitrage = async (req, res) => {
     console.log(error);
   }
 };
-
 const ReadArbitrage = async (req, res) => {
   try {
     const month = moment(new Date()).format("MM-YYYY");
     asyncLab.waterfall(
       [
         // 1. Récupération du rôle
-        function (done) {
-          ModelRole.aggregate([
-            { $match: { idRole: req.user.role } },
-            {
-              $lookup: {
-                from: "tfeedbacks",
-                localField: "idRole",
-                foreignField: "idRole",
-                as: "feedback",
-              },
-            },
-          ])
-            .then((role) => done(null, role[0]))
-            .catch((err) => done(err));
-        },
+        // function (done) {
+        //   ModelRole.aggregate([
+        //     { $match: { idRole: req.user.role } },
+        //     {
+        //       $lookup: {
+        //         from: "tfeedbacks",
+        //         localField: "idRole",
+        //         foreignField: "idRole",
+        //         as: "feedback",
+        //       },
+        //     },
+        //   ])
+        //     .then((role) => done(null, role[0]))
+        //     .catch((err) => done(err));
+        // },
 
-        // 2. Génération du filtre
-        function (role, done) {
-          let idRoles = role.feedback.map((x) => x.idFeedback);
+        // // 2. Génération du filtre
+        // function (role, done) {
+        //   let idRoles = role.feedback.map((x) => x.idFeedback);
 
-          let baseFilter = {
-            feedback: { $in: ["Pending", "Rejected"] },
-          };
+        //   if (role.filterBy === "all") {
+        //     return done(null, baseFilter);
+        //   }
 
-          if (role.filterBy === "all") {
-            return done(null, baseFilter);
-          }
+        //   if (["region", "shop"].includes(role.filterBy)) {
+        //     return done(null, {
+        //       ...baseFilter,
+        //       [role.filterBy]: req.user.valueFilter,
+        //       currentFeedback: { $in: idRoles },
+        //     });
+        //   }
 
-          if (["region", "shop"].includes(role.filterBy)) {
-            return done(null, {
-              ...baseFilter,
-              [role.filterBy]: req.user.valueFilter,
-              currentFeedback: { $in: idRoles },
-            });
-          }
+        //   if (role.filterBy === "currentFeedback") {
+        //     return done(null, {
+        //       ...baseFilter,
+        //       currentFeedback: { $in: idRoles },
+        //     });
+        //   }
 
-          if (role.filterBy === "currentFeedback") {
-            return done(null, {
-              ...baseFilter,
-              currentFeedback: { $in: idRoles },
-            });
-          }
-
-          // Par défaut si aucun cas ne matche
-          return done(null, baseFilter);
-        },
+        //   // Par défaut si aucun cas ne matche
+        //   return done(null, baseFilter);
+        // },
 
         // 3. Requête principale
-        function (filter, done) {
+        function (done) {
           ModelClient.aggregate([
-            { $match: { month, actif: true } },
+            {
+              $match: {
+                month,
+                actif: true,
+                $or: [
+                  {
+                    feedback: { $in: ["Pending", "Rejected"] },
+                  },
+                  { currentFeedback: "Categorisation" },
+                ],
+              },
+            },
 
             {
               $lookup: {
@@ -129,15 +136,7 @@ const ReadArbitrage = async (req, res) => {
               },
             },
             { $unwind: "$currentfeedback" },
-            { $unwind: "$fchangeto" },
-            {
-              $lookup: {
-                from: "roles",
-                localField: "fchangeto.idRole",
-                foreignField: "idRole",
-                as: "changetorole",
-              },
-            },
+
             {
               $lookup: {
                 from: "roles",
@@ -173,10 +172,6 @@ const ReadArbitrage = async (req, res) => {
                 as: "appelles",
               },
             },
-
-            {
-              $match: filter,
-            },
             {
               $project: {
                 id: "$_id",
@@ -184,16 +179,13 @@ const ReadArbitrage = async (req, res) => {
                 idFeedback: "$currentfeedback.idFeedback",
                 currentTitle: "$currentfeedback.title",
                 changetotitle: "$fchangeto.title",
-                changeto: 1,
                 appelles: 1,
                 visites: 1,
                 codeclient: 1,
                 nomclient: 1,
                 shop: 1,
                 par: 1,
-                feedback: 1,
                 submitedBy: 1,
-                incharge: "$changetorole",
               },
             },
           ])
@@ -222,9 +214,20 @@ const PostArbitrage_Automatique = async (req, res, next) => {
     asyncLab.waterfall(
       [
         function (done) {
+          ModelFeedback.find({})
+            .lean()
+            .then((result) => {
+              done(null, result);
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+        },
+        function (feedbacks, done) {
           ModelClient.aggregate([
-            { $match: { month, actif: true } },
-
+            {
+              $match: { month, actif: true, currentFeedback: "Categorisation" },
+            },
             {
               $lookup: {
                 from: "tfeedbacks",
@@ -279,43 +282,17 @@ const PostArbitrage_Automatique = async (req, res, next) => {
             },
             {
               $addFields: {
-                derniereVisite: {
-                  $arrayElemAt: [{ $reverseArray: "$visites" }, 0],
-                },
                 derniereappel: {
                   $arrayElemAt: [{ $reverseArray: "$appelles" }, 0],
                 },
               },
             },
-
             {
               $addFields: {
                 id: "$_id",
                 codeclient: "$codeclient",
                 visite: "$derniereVisite.demande.raison",
                 appel: "$derniereappel.sioui_texte",
-                matchappelvisite: {
-                  $cond: {
-                    if: {
-                      $and: [
-                        {
-                          $ne: ["$derniereVisite", null],
-                        },
-                        {
-                          $ne: ["$derniereappel", null],
-                        },
-                        {
-                          $eq: [
-                            "$derniereVisite.demande.raison",
-                            "$derniereappel.sioui_texte",
-                          ],
-                        },
-                      ],
-                    },
-                    then: true,
-                    else: false,
-                  },
-                },
                 shop: "$shop",
                 nomclient: "$nomclient",
                 currentTitle: "$currentfeedback.title",
@@ -329,14 +306,7 @@ const PostArbitrage_Automatique = async (req, res, next) => {
                 feedback: "$feedback",
               },
             },
-            {
-              $match: {
-                matchappelvisite: true,
-                visite: { $exists: true },
-                appel: { $exists: true },
-                firstchangeto: { $exists: false },
-              },
-            },
+
             {
               $project: {
                 id: 1,
@@ -344,7 +314,7 @@ const PostArbitrage_Automatique = async (req, res, next) => {
                 currentTitle: 1,
                 matchappelvisite: 1,
                 changetotitle: 1,
-                visite: 1,
+                visites: 1,
                 appel: 1,
                 shop: 1,
                 nomclient: 1,
@@ -358,11 +328,86 @@ const PostArbitrage_Automatique = async (req, res, next) => {
             },
           ])
             .then((result) => {
-              done(null, result);
+              done(null, feedbacks, result);
             })
             .catch((err) => console.log(err));
         },
-        function (result, done) {
+        function (feedbacks, result, done) {
+          const returnFeedback = (client) => {
+            if (client.visites.length > 0) {
+              if (
+                lodash.filter(client.visites, { "demandeur.fonction": "PO" })
+                  .length > 0
+              ) {
+                let vmpo = lodash.filter(client.visites, {
+                  "demandeur.fonction": "PO",
+                });
+                let lastvm = vmpo[vmpo.length - 1];
+                if (
+                  lodash.filter(feedbacks, {
+                    idFeedback: lastvm[0].demande.raison,
+                  }).length > 0
+                ) {
+                  return lodash.filter(feedbacks, {
+                    idFeedback: lastvm[0].demande.raison,
+                  })[0].idFeedback;
+                } else {
+                  return "Categorisation";
+                }
+              }
+              if (
+                client.visites.filter((x) =>
+                  ["RS", "SM", "TL"].includes(x.demandeur.fonction)
+                ).length > 0
+              ) {
+                let vm = client.visites.filter((x) =>
+                  ["RS", "SM", "TL"].includes(x.demandeur.fonction)
+                );
+                let lastvm = vm[vm.length - 1];
+                if (
+                  lodash.filter(feedbacks, {
+                    idFeedback: lastvm.demande.raison,
+                  }).length > 0
+                ) {
+                  return lodash.filter(feedbacks, {
+                    idFeedback: lastvm.demande.raison,
+                  })[0].idFeedback;
+                } else {
+                  return "Categorisation";
+                }
+              }
+              if (
+                client.visites.filter(
+                  (x) =>
+                    !["RS", "SM", "TL", "PO"].includes(x.demandeur.fonction) &&
+                    ["agent", "tech", "stagiaire", "AR"].includes(
+                      x.demandeur.fonction
+                    )
+                ).length > 0
+              ) {
+                let vm = client.visites.filter((x) =>
+                  ["agent", "tech", "stagiaire", "AR"].includes(
+                    x.demandeur.fonction
+                  )
+                );
+                let lastvm = vm[vm.length - 1];
+                if (
+                  lodash.filter(feedbacks, {
+                    idFeedback: lastvm.demande.raison,
+                  }).length > 0
+                ) {
+                  return lodash.filter(feedbacks, {
+                    idFeedback: lastvm.demande.raison,
+                  })[0].idFeedback;
+                } else {
+                  return "Categorisation";
+                }
+              }
+            } else {
+              return "Categorisation";
+            }
+          };
+
           if (result.length > 0) {
             async function updateClientsWithBulk() {
               const bulkoperation = result.map((client) => ({
@@ -375,7 +420,7 @@ const PostArbitrage_Automatique = async (req, res, next) => {
                   update: {
                     $set: {
                       feedback: "Approved",
-                      currentFeedback: client.visite,
+                      currentFeedback: returnFeedback(client),
                       changeto: client.visite,
                       submitedBy: "System",
                     },
@@ -396,7 +441,6 @@ const PostArbitrage_Automatique = async (req, res, next) => {
               }));
               try {
                 const result = await ModelClient.bulkWrite(bulkoperation);
-                console.log(result);
               } catch (error) {}
             }
             updateClientsWithBulk();

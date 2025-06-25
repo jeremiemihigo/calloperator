@@ -1,5 +1,4 @@
-import { Edit } from '@mui/icons-material';
-import { Fab, Paper, Tooltip } from '@mui/material';
+import { Paper } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import axios from 'axios';
 import Dot from 'components/@extended/Dot';
@@ -15,22 +14,15 @@ import { config, lien_dt } from 'static/Lien';
 import Popup from 'static/Popup';
 import './arbitrage.style.css';
 import ChangeCurrent from './ChangeCurrent';
-import Formulaire from './Formulaire';
 
 function Index() {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const [changestatus, setChangestatus] = React.useState();
-  const [dataedit, setDataEdit] = React.useState();
   const allfeedback = useSelector((state) => state.feedback.feedback);
 
-  const functionData = (donner) => {
-    setDataEdit(donner);
-    setChangestatus();
-    setOpen(true);
-  };
-  const changestat = (donner, property) => {
-    setChangestatus({ donner, property });
+  const changestat = (donner) => {
+    setChangestatus(donner);
     setOpen(true);
   };
   const logout = () => {
@@ -55,6 +47,7 @@ function Index() {
     try {
       setLoading(true);
       const response = await axios.get(lien_dt + '/arbitrage', config);
+      console.log(response);
       if (response.data === 'token expired') {
         logout();
       }
@@ -62,9 +55,6 @@ function Index() {
         let table = response.data.map((x) => {
           return {
             ...x,
-            incharge: x.incharge.map(function (x) {
-              return x.title;
-            }),
             last_vm_agent: x?.visites.length > 0 ? returnvisite(x.visites, ['agent', 'tech']) : 'No_visits',
             last_vm_rs: x?.visites.length > 0 ? returnvisite(x.visites, ['RS', 'TL']) : 'No_visits',
             last_vm_po: x?.visites.length > 0 ? returnvisite(x.visites, ['PO']) : 'No_visits'
@@ -94,11 +84,16 @@ function Index() {
     }
   };
   const returnDt = (row) => {
-    if (row.appel && row.visite && row.appel === row.visite && _.filter(feedporto, { id: row.appel }).length > 0) {
-      return _.filter(feedporto, { id: row.appel })[0].feeddt[0].title;
-    } else {
+    if (row.changetotitle && row.changetotitle.length > 0) {
       return row.changetotitle;
+    } else {
+      return 'Categorisation';
     }
+    // if (row.appel && row.visite && row.appel === row.visite && _.filter(feedporto, { id: row.appel }).length > 0) {
+    //   return _.filter(feedporto, { id: row.appel })[0].feeddt[0].title;
+    // } else {
+    //   return row.changetotitle;
+    // }
   };
   const columns = [
     {
@@ -127,15 +122,6 @@ function Index() {
       editable: false
     },
 
-    {
-      field: 'feedback',
-      headerName: 'statut',
-      width: 100,
-      editable: false,
-      renderCell: (p) => {
-        return <Dot texte={p.row.feedback} />;
-      }
-    },
     {
       field: 'last_vm_agent',
       headerName: 'Last VM Agent or Tech',
@@ -179,7 +165,7 @@ function Index() {
       width: 180,
       editable: false,
       renderCell: (p) => {
-        return <Dot onClick={() => changestat(p.row, 'currentFeedback')} texte={p.row.currentTitle} />;
+        return <Dot texte={p.row.currentTitle} />;
       }
     },
     {
@@ -188,47 +174,15 @@ function Index() {
       width: 180,
       editable: false,
       renderCell: (p) => {
-        return <Dot onClick={() => changestat(p.row, 'changeto')} texte={returnDt(p.row, 'dt')} />;
+        return <Dot onClick={() => changestat(p.row)} texte={returnDt(p.row, 'dt')} />;
       }
     },
-    {
-      field: 'incharge',
-      headerName: 'Next in charge',
-      width: 200,
-      editable: false,
-      renderCell: (p) => {
-        return <>{p.row.incharge.join('; ')}</>;
-      }
-    },
+
     {
       field: 'submitedBy',
       headerName: 'submited_by',
       width: 100,
       editable: false
-    },
-
-    {
-      field: 'Action',
-      headerName: 'Action',
-      width: 70,
-      editable: false,
-      renderCell: (p) => {
-        return (
-          <>
-            <Tooltip title="Take action">
-              <Fab sx={{ marginRight: '5px' }} size="small" color="primary" onClick={() => functionData(p.row)}>
-                <Edit fontSize="small" />
-              </Fab>
-            </Tooltip>
-
-            {/* <Tooltip title="More information">
-              <Fab onClick={() => information(p.row.codeclient)} color="primary" size="small">
-                <Details fontSize="small" />
-              </Fab>
-            </Tooltip> */}
-          </>
-        );
-      }
     }
   ];
   const changeDirection = () => {
@@ -265,25 +219,21 @@ function Index() {
               initialState={{
                 pagination: {
                   paginationModel: {
-                    pageSize: 30
+                    pageSize: 100
                   }
                 }
               }}
-              pageSizeOptions={[30]}
+              pageSizeOptions={[100]}
               disableRowSelectionOnClick
             />
           </div>
         )}
         {!loading && data && data.length === 0 && <NoCustomer texte="No customers waiting" />}
       </Paper>
-      {dataedit && (
-        <Popup open={open} setOpen={setOpen} title="Form">
-          <Formulaire client={dataedit} data={data} setData={setData} />
-        </Popup>
-      )}
-      {changestatus?.donner && (
+
+      {changestatus && (
         <Popup open={open} setOpen={setOpen} title="Change current status">
-          <ChangeCurrent setOpen={setOpen} client={changestatus?.donner} property={changestatus?.property} loadingData={loadingData} />
+          <ChangeCurrent setOpen={setOpen} client={changestatus} loadingData={loadingData} />
         </Popup>
       )}
     </>

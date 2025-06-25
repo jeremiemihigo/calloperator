@@ -74,6 +74,7 @@ let initialeSearch = [
       shop: 1,
       region: 1,
       visites: 1,
+      actif: 1,
       action: 1,
       par: 1,
       currentFeedback: 1,
@@ -364,7 +365,9 @@ const ChangeByFile = async (req, res) => {
 const ReadFilterClient = async (req, res) => {
   try {
     const { data, defaultv } = req.body;
-    const { valuefilter, poste, fonction } = req.user;
+    const { valuefilter, poste } = req.user;
+
+    console.log(data, defaultv, valuefilter, poste);
 
     asyncLab.waterfall(
       [
@@ -441,6 +444,37 @@ const ReadFilterClient = async (req, res) => {
               ? [{ $match: filtre }, ...initialeSearch]
               : [...searchData, { $match: filtre }, ...searchData2]
           )
+            .then((result) => {
+              done(null, result);
+            })
+            .catch(function (err) {
+              return res.status(404).json(err);
+            });
+        },
+        function (result, done) {
+          done(result);
+        },
+      ],
+      function (result) {
+        return res.status(200).json({
+          client: result,
+          dateServer: new Date(),
+        });
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+const ReadAllClient = async (req, res) => {
+  try {
+    asyncLab.waterfall(
+      [
+        //Read role
+
+        function (done) {
+          let month = moment(new Date()).format("MM-YYYY");
+          ModelClient.aggregate([{ $match: { month } }, ...initialeSearch])
             .then((result) => {
               done(null, result);
             })
@@ -582,6 +616,7 @@ const ChangeStatusOnly = async (req, res) => {
 module.exports = {
   AddClientDT,
   ChangeStatus,
+  ReadAllClient,
   Appel,
   ReadClientAfterChange,
   ReadCertainClient,

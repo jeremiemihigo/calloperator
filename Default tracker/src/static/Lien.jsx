@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-undef
 
-const serverhost = 'https://visitemenagesbackend.bboxxvm.com';
-//const serverhost = 'http://localhost:5000';
+//const serverhost = 'https://visitemenagesbackend.bboxxvm.com';
+const serverhost = 'http://localhost:5000';
 export const puls_img = 'https://pulse.bboxx.com/v2/assets/animations/loader.gif';
 export const lien_socket = serverhost;
 export const lien_post = `${serverhost}/bboxx/support`;

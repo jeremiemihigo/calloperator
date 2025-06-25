@@ -7,6 +7,7 @@ import {
   MessageOutlined,
   NodeCollapseOutlined,
   SettingOutlined,
+  UsergroupDeleteOutlined,
   UserOutlined
 } from '@ant-design/icons';
 
@@ -27,8 +28,15 @@ const utilities = {
       icon: HomeOutlined
     },
     {
-      id: 'My customers',
-      title: 'My customers',
+      id: 'All customers',
+      title: 'All customers to track',
+      type: 'item',
+      url: '/all_customer',
+      icon: UsergroupDeleteOutlined
+    },
+    {
+      id: 'My tracker',
+      title: 'My tracker',
       type: 'item',
       url: '/mesclients',
       icon: UserOutlined

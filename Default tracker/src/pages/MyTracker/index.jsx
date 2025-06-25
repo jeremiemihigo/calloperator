@@ -1,9 +1,9 @@
-import { Details, Search } from '@mui/icons-material';
-import { Button, Fab, Grid, Paper, TextField } from '@mui/material';
+import { Grid, Paper, TextField, Tooltip } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import axios from 'axios';
 import Dot from 'components/@extended/Dot';
 import AutoComplement from 'components/AutoComplete';
+import SimpleBackdrop from 'components/Backdrop';
 import ChangeByExcel from 'components/ChangeByExcel';
 import DirectionSnackbar from 'components/Direction';
 import NoCustomer from 'components/NoCustomer';
@@ -11,59 +11,34 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { config, lien_dt } from 'static/Lien';
-import Popup from 'static/Popup';
 import * as XLSX from 'xlsx';
-import Chargement from '../MyTracker/Chargement';
-import AddAction from './AddAction';
-import ChangeStatus from './ChangeStatus';
+import Chargement from './Chargement';
 import './mesclient.style.css';
 
 function Index() {
   const zone = useSelector((state) => state.zone.zone);
   const allfeedback = useSelector((state) => state.feedback.feedback);
-  const [dateServer, setDateServer] = React.useState();
-  const [texte, setTexte] = React.useState('');
   const [zoneSelect, setZoneSelect] = React.useState('');
   const [shop, setShop] = React.useState('');
   const role = useSelector((state) => state.role.role);
-  const [roleselect, setRole] = React.useState('');
   const [client, setClient] = React.useState();
   const [data, setData] = React.useState();
   const [loading, setLoading] = React.useState(false);
   const [message, setMessage] = React.useState('');
-  const [changestatus, setDatachange] = React.useState();
 
   const navigation = useNavigate();
   const logout = () => {
     localStorage.removeItem('auth');
     navigation('/login');
   };
-  const fetchData = async (defaultv) => {
+  const fetchData = async () => {
     try {
       setMessage('');
       setLoading(true);
       setData();
-      const name_ = texte;
-      const shops = shop?.shop;
-      const region = zoneSelect?.denomination;
-      const departement = roleselect?.idRole;
-      let data = {};
-      if (texte) {
-        data.codeclient = name_;
-      }
-      if (shops) {
-        data.shop = shops;
-      }
-      if (region) {
-        data.region = region;
-      }
-      if (departement) {
-        data['tfeedback.idRole'] = departement;
-      }
-      const response = await axios.post(lien_dt + '/lienclient', { data, defaultv, taille: { $lte: 0 } }, config);
+      const response = await axios.get(lien_dt + '/allclient', config);
       if (response.status === 200) {
         setClient(response.data.client);
-        setDateServer(response.data.dateServer);
       }
       if (response.status === 201) {
         setMessage(response.data);
@@ -74,21 +49,12 @@ function Index() {
       }
     } catch (error) {}
   };
-  const [open, setOpen] = React.useState(false);
-  const handlechange = (donner) => {
-    setDatachange(donner);
-    setOpen(true);
-  };
 
   React.useEffect(() => {
     if (role === 'token expired') {
       logout();
     }
   }, [role]);
-
-  const information = (row) => {
-    navigation('/customer_information', { state: row.codeclient });
-  };
 
   const returnFeedback = (id, sinon) => {
     if (allfeedback && allfeedback.length > 0) {
@@ -116,6 +82,7 @@ function Index() {
         return {
           id,
           _id: x._id,
+          actif: x.actif,
           idFeedback: x.currentFeedback,
           codeclient: x.codeclient,
           nomclient: x.nomclient,
@@ -146,87 +113,6 @@ function Index() {
       setLoading(false);
     }
   }, [client, allfeedback]);
-  const [openAction, setOpenAction] = React.useState(false);
-  const [types, setType] = React.useState('');
-  const [dataedit, setDataEdit] = React.useState();
-  const editOne = (type, data) => {
-    if (type === 'action') {
-      setOpenAction(true);
-      setType(type);
-    }
-    if (type === 'decision') {
-      setOpenAction(true);
-      setType(type);
-    }
-    setDataEdit(data);
-  };
-  const returnTime = (date1, date2) => {
-    let resultat = (new Date(date2).getTime() - new Date(date1).getTime()) / 60000;
-    if (resultat < 1) {
-      return 1;
-    } else {
-      return resultat;
-    }
-  };
-  function TimeCounter(durationInMinutes) {
-    const [remainingTimeInSeconds, setRemainingTimeInSeconds] = React.useState(durationInMinutes * 60);
-
-    React.useEffect(() => {
-      const interval = setInterval(() => {
-        setRemainingTimeInSeconds((prev) => (prev > 0 ? prev - 1 : 0));
-      }, 1000);
-      // Nettoyage du timer à la fin
-      return () => clearInterval(interval);
-    }, []);
-
-    if (remainingTimeInSeconds <= 0) {
-      return (
-        <p
-          style={{
-            background: 'red',
-            padding: '0px',
-            margin: '0px',
-            height: '50%',
-            fontSize: '12px',
-            color: 'white',
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            borderRadius: '5px',
-            justifyContent: 'center'
-          }}
-        >
-          OUT SLA
-        </p>
-      );
-    } else {
-      const days = Math.floor(remainingTimeInSeconds / (24 * 3600));
-      const hours = Math.floor((remainingTimeInSeconds % (24 * 3600)) / 3600);
-      const minutes = Math.floor((remainingTimeInSeconds % 3600) / 60);
-      const seconds = remainingTimeInSeconds % 60;
-      return (
-        <p
-          style={{
-            background: 'green',
-            padding: '0px',
-            borderRadius: '10px',
-            margin: '0px',
-            height: '50%',
-            fontSize: '12px',
-            color: 'white',
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
-          {`
-      ${days + 'jr'} ${hours + 'h'} ${minutes + 'm'} ${seconds + 's'}
-      `}
-        </p>
-      );
-    }
-  }
 
   const columns = [
     {
@@ -242,6 +128,12 @@ function Index() {
       editable: false
     },
     {
+      field: 'region',
+      headerName: 'Region',
+      width: 100,
+      editable: false
+    },
+    {
       field: 'shop',
       headerName: 'Shop',
       width: 100,
@@ -253,6 +145,15 @@ function Index() {
       headerName: 'PAR',
       width: 80,
       editable: false
+    },
+    {
+      field: 'actif',
+      headerName: 'In process',
+      width: 100,
+      editable: false,
+      renderCell: (p) => {
+        return <Dot texte={p.row.actif ? 'En cours' : 'Achevé'} />;
+      }
     },
 
     {
@@ -298,7 +199,7 @@ function Index() {
       width: 200,
       editable: false,
       renderCell: (p) => {
-        return <Dot onClick={() => handlechange(p.row)} texte={p.row.currentFeedback} />;
+        return <Dot texte={p.row.currentFeedback} />;
       }
     },
     {
@@ -307,7 +208,7 @@ function Index() {
       width: 150,
       editable: false,
       renderCell: (p) => {
-        return <Dot onClick={() => editOne('action', p.row)} texte={p.row.action} />;
+        return <Dot texte={p.row.action} />;
       }
     },
     {
@@ -316,7 +217,7 @@ function Index() {
       width: 150,
       editable: false,
       renderCell: (p) => {
-        return <Dot onClick={() => editOne('decision', p.row)} texte={p.row.statut_decision} />;
+        return <Dot texte={p.row.statut_decision} />;
       }
     },
     {
@@ -325,7 +226,7 @@ function Index() {
       width: 100,
       editable: false,
       renderCell: (p) => {
-        return <>{p.row.incharge.join(';')}</>;
+        return <Tooltip title={p.row.incharge.join('; ')}>{p.row.incharge.join('; ')}</Tooltip>;
       }
     },
     {
@@ -333,56 +234,68 @@ function Index() {
       headerName: 'submited By',
       width: 100,
       editable: false
-    },
-    {
-      field: 'dateClose',
-      headerName: 'SLA',
-      width: 130,
-      editable: false,
-      renderCell: (p) => {
-        return TimeCounter((p.row.sla - returnTime(p.row.fullDate, new Date(dateServer))).toFixed(0));
-      }
-    },
-    {
-      field: 'change',
-      headerName: 'Change',
-      width: 70,
-      editable: false,
-      renderCell: (p) => {
-        return (
-          <>
-            <Fab color="primary" size="small" onClick={() => information(p.row)}>
-              <Details fontSize="small" />
-            </Fab>
-          </>
-        );
-      }
     }
   ];
 
   const StructureDataExcel = (e) => {
     e.preventDefault();
-    const fileName = 'customer_to_track';
+    const fileName = 'All customer to track in default tracker';
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'DT');
     XLSX.writeFile(workbook, `${fileName}.xlsx`);
   };
   React.useEffect(() => {
-    fetchData(true);
+    fetchData();
   }, []);
 
-  const changeDirection = (link) => {
-    navigation(link);
+  const [filterFn, setFilterFn] = React.useState({
+    fn: (items) => {
+      return items;
+    }
+  });
+  const handleChanges = (e) => {
+    let target = e.target.value;
+    setFilterFn({
+      fn: (items) => {
+        if (target === '') {
+          return items;
+        } else {
+          return items.filter(
+            (x) => x.codeclient.toUpperCase().includes(target.toUpperCase()) || x.nomclient.toUpperCase().includes(target.toUpperCase())
+          );
+        }
+      }
+    });
   };
+  const [open, setOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    setOpen(true);
+    setFilterFn({
+      fn: (items) => {
+        if (shop === '' && zoneSelect === '') {
+          return items;
+        }
+        if (zoneSelect !== '' && shop === '') {
+          return items.filter((x) => x.region === zoneSelect?.denomination);
+        }
+        if (zoneSelect !== '' && shop !== '') {
+          return items.filter((x) => x.shop === shop?.shop);
+        }
+      }
+    });
+    setOpen(false);
+  }, [zoneSelect, shop]);
 
   return (
     <div>
+      <SimpleBackdrop open={open} />
       {message && <DirectionSnackbar message={message} />}
       <Paper elevation={2} sx={{ padding: '10px', marginBottom: '10px' }}>
         <Grid container>
           <Grid item lg={3} xs={6} sm={3} md={3} sx={{ padding: '2px' }}>
-            <TextField onChange={(e) => setTexte(e.target.value)} fullWidth label="customer code " id="customer code" />
+            <TextField onChange={(e) => handleChanges(e)} fullWidth label="customer code or customer name" id="customer" />
           </Grid>
           <Grid item lg={2} xs={6} sm={2} md={2} sx={{ padding: '2px' }}>
             <AutoComplement value={zoneSelect} setValue={setZoneSelect} options={zone} title="Region" propr="denomination" />
@@ -392,26 +305,12 @@ function Index() {
               <AutoComplement value={shop} setValue={setShop} options={zoneSelect?.shop} title="Shop" propr="shop" />
             </Grid>
           )}
-          {role && role !== 'token expired' && (
-            <Grid item lg={2} xs={6} sm={2} md={2} sx={{ padding: '2px' }}>
-              <AutoComplement value={roleselect} setValue={setRole} options={role} title="Department" propr="title" />
-            </Grid>
-          )}
-
-          <Grid item lg={1} xs={6} sm={1} md={2} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Button fullWidth disabled={loading} onClick={() => fetchData(false)} color="primary" variant="contained">
-              <Search fontSize="small" />
-            </Button>
-          </Grid>
         </Grid>
       </Paper>
       <Paper elevation={2}>
         {data && !loading && data.length > 0 && (
           <div className="excelFile">
             <ChangeByExcel texte="Export in Excel" onClick={(e) => StructureDataExcel(e)} />
-            <ChangeByExcel texte="Import actions" onClick={() => changeDirection('/change_action_excel')} />
-            <ChangeByExcel texte="Change status" onClick={() => changeDirection('/change_status_excel')} />
-            <ChangeByExcel texte="Import decisions" onClick={() => changeDirection('/change_decision_excel')} />
           </div>
         )}
         {data && !loading && data.length === 0 && <NoCustomer texte="No results found" />}
@@ -421,7 +320,7 @@ function Index() {
         {!loading && allfeedback && allfeedback.length > 0 && data && data.length > 0 && (
           <div>
             <DataGrid
-              rows={data}
+              rows={filterFn.fn(data)}
               columns={columns}
               initialState={{
                 pagination: {
@@ -436,17 +335,6 @@ function Index() {
           </div>
         )}
       </Paper>
-
-      {dataedit && openAction && (
-        <Popup open={openAction} setOpen={setOpenAction} title={`${types} ${dataedit?.codeclient}`}>
-          <AddAction data={dataedit} fetchData={fetchData} type={types} />
-        </Popup>
-      )}
-      {changestatus && (
-        <Popup open={open} setOpen={setOpen} title="Change status">
-          <ChangeStatus client={changestatus} setOpen={setOpen} allclient={data} setClient={setData} />
-        </Popup>
-      )}
     </div>
   );
 }

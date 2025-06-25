@@ -169,14 +169,11 @@ const HomePage = () => {
   React.useEffect(() => {
     loading();
   }, [match]);
-  // Données pour le graphique
-
-  // Options de configuration du graphique
 
   const readDash = async () => {
     try {
       setLoad({ ...load, trois: true });
-      const response = await axios.post(lien_dt + '/statusDashboard', { match }, config);
+      const response = await axios.post(lien_dt + '/statusDashboard', config);
       if (response.status === 200) {
         setStatut(response.data);
         setLoad({ ...load, trois: false });
@@ -188,6 +185,19 @@ const HomePage = () => {
   React.useEffect(() => {
     readDash();
   }, [match]);
+
+  const returnInCharge = (index) => {
+    if (index.role.length > 0) {
+      return index.role.map(function (x) {
+        return x.title + '; ';
+      });
+    }
+    if (index.poste.length > 0) {
+      return index.poste.map(function (x) {
+        return x.title + '; ';
+      });
+    }
+  };
   return (
     <Grid className="content">
       {message && <DirectionSnackbar message={message} />}
@@ -228,15 +238,12 @@ const HomePage = () => {
               </thead>
               <tbody>
                 {statut?.map((index) => {
+                  console.log(index);
                   return (
                     <tr key={index._id}>
                       <td>{index.status}</td>
                       <td>{index.total}</td>
-                      <td>
-                        {index.role.map(function (x) {
-                          return x.title + '; ';
-                        })}
-                      </td>
+                      <td>{returnInCharge(index)}</td>
                     </tr>
                   );
                 })}

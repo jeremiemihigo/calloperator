@@ -142,7 +142,9 @@ function AgentListeAdmin() {
       editable: false,
       renderCell: (p) => {
         return (
-          <>{p.row.departement.length > 0 ? p.row.departement[0].title : ""}</>
+          <>
+            {p.row?.departement?.length > 0 ? p.row.departement[0].title : ""}
+          </>
         );
       },
     },

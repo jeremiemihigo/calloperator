@@ -7,7 +7,8 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { config, lien_dt } from 'static/Lien';
 
-function ChangeCurrent({ client, property, loadingData, setOpen }) {
+function ChangeCurrent({ client, loadingData, setOpen }) {
+  const user = useSelector((state) => state.user.user);
   const feedback = useSelector((state) => state.feedback.feedback);
   const [feedselect, setFeedselect] = React.useState('');
   const [message, setMessage] = React.useState({ load: false, message: '' });
@@ -20,7 +21,9 @@ function ChangeCurrent({ client, property, loadingData, setOpen }) {
         {
           id: client.id,
           data: {
-            [property]: feedselect?.idFeedback
+            currentFeedback: feedselect?.idFeedback,
+            feedback: 'Approved',
+            submitedBy: user.nom
           }
         },
         config

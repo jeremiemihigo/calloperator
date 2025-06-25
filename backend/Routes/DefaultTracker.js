@@ -14,6 +14,7 @@ const {
   ReadCertainClient,
   ReadFilterClient,
   ChangeStatusOnly,
+  ReadAllClient,
 } = require("../Controllers/DefaultTracker/Client");
 const {
   Rapport,
@@ -32,7 +33,6 @@ const {
   ChangeActionByFile,
   SubmitedByExcel,
 } = require("../Controllers/DefaultTracker/Action");
-const { protectTech } = require("../MiddleWare/protectTech");
 const {
   AddObjectif,
   EditObjectif,
@@ -64,6 +64,7 @@ router.post(
   PostArbitrage_Automatique,
   ReadFilterClient
 );
+router.get("/allclient", protect, ReadAllClient);
 router.post("/validation", protect, Validation);
 router.post("/readCertainClient", protect, ReadCertainClient);
 router.post("/changefeedback", protect, ChangeStatus, ReadClientAfterChange);
@@ -89,7 +90,7 @@ router.post("/valideraction", protect, ValiderAction);
 //Performance
 
 router.post("/changeactionbyfile", protect, ChangeActionByFile);
-router.post("/statusDashboard", StatusDashboard);
+router.post("/statusDashboard", protect, StatusDashboard);
 router.post("/graphique", protect, GraphiqueClient, Graphique);
 router.post("/graphique_taux", protect, GraphiqueClient, TauxValidation);
 

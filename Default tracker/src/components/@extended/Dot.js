@@ -11,6 +11,12 @@ const Dot = ({ texte, ...others }) => {
     case 'No_visits':
       main = theme.palette.primary.main;
       break;
+    case 'En cours':
+      main = theme.palette.secondary.main;
+      break;
+    case 'Achevé':
+      main = theme.palette.success.main;
+      break;
     case 'Categorisation':
       main = theme.palette.primary.main;
       break;

@@ -88,9 +88,9 @@ function AgentAdmin({ agentselect }) {
   const saveData = () => {
     try {
       const data = {
-        nom: values.nom,
+        nom: initiale.nom,
         fonction: fonctionSelect,
-        codeAgent: values.code,
+        codeAgent: initiale.code,
         role: roleSelect?.idRole,
         poste: poste?.id,
         valuefilter: returnvaluefilter(valuefilter),
@@ -103,6 +103,12 @@ function AgentAdmin({ agentselect }) {
 
   return (
     <div style={{ width: "25rem", padding: "10px" }}>
+      {admin.addAgent === "pending" && (
+        <SimpleBackdrop open={true} title="Please wait..." />
+      )}
+      {admin.addAgent === "rejected" && (
+        <DirectionSnackbar message={admin.addAgentError} />
+      )}
       {admin.otherUpdated === "pending" && (
         <SimpleBackdrop open={true} title="Please wait..." />
       )}

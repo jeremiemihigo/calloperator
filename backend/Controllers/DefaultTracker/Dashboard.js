@@ -244,7 +244,14 @@ const StatusDashboard = async (req, res) => {
           as: "role",
         },
       },
-
+      {
+        $lookup: {
+          from: "postes",
+          localField: "feedback.idRole",
+          foreignField: "id",
+          as: "poste",
+        },
+      },
       { $unwind: "$feedback" },
       {
         $addFields: {
@@ -307,6 +314,7 @@ const GraphiqueClient = async (req, res, next) => {
           },
           { $unwind: "$departement" },
         ]).then((result) => {
+          console.log(result);
           if (result) {
             done(null, result[0]);
           } else {
@@ -317,6 +325,7 @@ const GraphiqueClient = async (req, res, next) => {
         });
       },
       function (department, done) {
+        console.log(department);
         ModelFeedback.aggregate([
           { $unwind: "$idRole" },
           {
@@ -336,7 +345,7 @@ const GraphiqueClient = async (req, res, next) => {
             let table = result.map((x) => x.idFeedback);
             done(null, department, table);
           } else {
-            done(null, department[0], result);
+            done(null, department, result);
           }
         });
       },

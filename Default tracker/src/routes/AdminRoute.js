@@ -26,6 +26,7 @@ const Appel = Loadable(lazy(() => import('pages/Appel')));
 const ChangeStatusExcel = Loadable(lazy(() => import('pages/mesClients/ChangeByExcel')));
 const ChangeDecisionExcel = Loadable(lazy(() => import('pages/mesClients/DecisionExcel')));
 const ChangeActionExcel = Loadable(lazy(() => import('pages/mesClients/ActionExcel')));
+const MyTracker = Loadable(lazy(() => import('pages/MyTracker')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -112,6 +113,10 @@ const AdminRoute = {
     {
       path: '/decision',
       element: <Decision />
+    },
+    {
+      path: '/all_customer',
+      element: <MyTracker />
     },
     {
       path: '*',
