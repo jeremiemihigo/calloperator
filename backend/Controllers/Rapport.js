@@ -59,6 +59,7 @@ const Rapport = async (req, res) => {
       "demande.cell": 1,
       "demande.reference": 1,
       "demande.sat": 1,
+      "demande.commentaire": 1,
       raison: 1,
       "demande.itemswap": 1,
       "coordonnee.longitude": 1,

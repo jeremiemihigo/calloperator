@@ -4,6 +4,7 @@ const _ = require("lodash");
 const asyncLab = require("async");
 const ActionAgent = require("../../Models/Portofolio/ActionAgent");
 const ModelReactivation = require("../../Models/Portofolio/Reactivations");
+const ModelClient = require("../../Models/DefaultTracker/TableClient");
 
 const par = [
   { id: "PAR 0", value: 14.5 },
@@ -159,6 +160,28 @@ const AcceptDataPayement = async (req, res) => {
             })
             .catch(function (error) {
               return res.status(201).json(error.message);
+            });
+        },
+        //Action Default tracker
+        function (result, done) {
+          let lesIDs = datamany.map(function (x) {
+            return x.account_id;
+          });
+          const month = moment(new Date()).format("MM-YYYY");
+          ModelClient.updateMany(
+            { month, actif: true, codeclient: { $in: lesIDs } },
+            {
+              $set: {
+                action: "REACTIVATION",
+                actif: false,
+              },
+            }
+          )
+            .then((results) => {
+              done(null, results);
+            })
+            .catch(function (error) {
+              console.log(error);
             });
         },
         function (reactivation, done) {

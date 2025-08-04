@@ -230,38 +230,7 @@ const ReadMy_Backoffice = async (req, res) => {
     console.log(error);
   }
 };
-const ReadOneComplaint = async (req, res) => {
-  try {
-    const { id } = req.params;
-    if (!id) {
-      return res.status(201).json("Error");
-    }
-    modelPlainte
-      .aggregate([
-        { $match: { idPlainte: id } },
-        {
-          $lookup: {
-            from: "messages",
-            localField: "idPlainte",
-            foreignField: "idPlainte",
-            as: "message",
-          },
-        },
-      ])
-      .then((result) => {
-        if (result.length > 0) {
-          return res.status(200).json(result);
-        } else {
-          return res.status(201).json("Error");
-        }
-      })
-      .catch(function (err) {
-        console.log(err);
-      });
-  } catch (error) {
-    console.log(error);
-  }
-};
+
 const ReadData_Backoffice = async (req, res) => {
   try {
     const now = moment(new Date()).format("MM-YYYY");
@@ -343,5 +312,4 @@ module.exports = {
   Mydeedline,
   ReadMy_Backoffice,
   ReadData_Backoffice,
-  ReadOneComplaint,
 };

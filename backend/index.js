@@ -18,6 +18,7 @@ app.use(express.urlencoded({ limit: "50mb" }));
 
 // Connexion à la base de données
 const connectDB = require("./config/Connection");
+const { protect } = require("./MiddleWare/protect");
 connectDB();
 
 // Création du serveur HTTP
@@ -56,7 +57,13 @@ io.on("connection", (socket) => {
   socket.on("newUser", (data) => {
     const { codeAgent, nom, backOffice } = data;
     addNewUser(codeAgent, nom, socket.id, backOffice);
-    io.emit("userConnected", onlineuser);
+    let lesusers =
+      onlineuser.length > 0
+        ? onlineuser.sort(function (x, y) {
+            return x - y.nom;
+          })
+        : onlineuser;
+    io.emit("userConnected", lesusers);
   });
 
   // Gestion de la déconnexion
@@ -67,6 +74,15 @@ io.on("connection", (socket) => {
 });
 
 // Middleware pour injecter `io` et `users` dans les requêtes
+
+// const pusher = new Pusher({
+//   appId: process.env.PUSHER_APP_ID,
+//   key: process.env.PUSHER_KEY,
+//   secret: process.env.PUSHER_SECRET,
+//   cluster: process.env.PUSHER_CLUSTER,
+//   useTLS: true,
+// });
+
 app.use((req, res, next) => {
   req.io = io;
   req.users = onlineuser;

@@ -48,6 +48,7 @@ const schema = new mongoose.Schema(
     jours: { type: Number, required: false },
     concerne: { type: String, required: false, enum: ["agent", "rs"] },
     feedbackrs: { type: String, required: false },
+    commentaire: { type: String, required: false },
     typeVisit: {
       dateFollowup: { type: Date, required: false },
       //ID de la premiere visite

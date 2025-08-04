@@ -8,102 +8,148 @@ const { protect } = require("../MiddleWare/protect");
 const {
   AddClientDT,
   ChangeStatus,
-  ChangeByFile,
-  Appel,
-  ReadClientAfterChange,
+
   ReadCertainClient,
   ReadFilterClient,
   ChangeStatusOnly,
   ReadAllClient,
+  ReadCustomerStatus,
+  InformationClient,
+  ShowAction,
+  ValidationAction,
+  customerToRefresh,
+  verification_field,
+  cas_valider,
+  AllVisitsStaff,
 } = require("../Controllers/DefaultTracker/Client");
 const {
   Rapport,
   ClientVisited,
-  InformationCustomer,
-  Graphique,
-  GraphiqueClient,
-  TauxValidation,
-  StatusDashboard,
+  // GraphiqueClient,
+  // TauxValidation,
+  // StatusDashboard,
+  MesCriteredeRecherche,
+  ReadValidation,
 } = require("../Controllers/DefaultTracker/Dashboard");
-const {
-  AddAction,
-  AddOneAction,
-  ValiderAction,
-  Validation,
-  ChangeActionByFile,
-  SubmitedByExcel,
-} = require("../Controllers/DefaultTracker/Action");
-const {
-  AddObjectif,
-  EditObjectif,
-} = require("../Controllers/DefaultTracker/Objectif");
 const { EditFeedbackVM } = require("../Controllers/Rapport");
 const {
   ReadArbitrage,
   Arbitrage,
-  Arbitrage_File,
   PostArbitrage_Automatique,
+  PostArbitrage_,
 } = require("../Controllers/DefaultTracker/Arbitrage");
 const {
-  AddDecision,
   ReadDecision,
   VerificationDecision,
-  ChangeDecisionByFile,
-  SubmitDecisionByFile,
+  ChangeDecision,
+  ReadDecisionArbitrage,
+  ValidateDecision,
 } = require("../Controllers/DefaultTracker/Decision");
+const {
+  categorisationAutomatique,
+} = require("../Controllers/DefaultTracker/ChangementAutomatique");
+const {
+  AddPayement,
+  ReadPayment,
+} = require("../Controllers/DefaultTracker/Payement");
 const router = express.Router();
 
 router.post("/role", protect, AddRoleDT);
 router.get("/role", protect, ReadRole);
 router.put("/editrole", protect, EditRole);
 //Clients
-router.post("/upload_customer", protect, AddClientDT);
-router.post(
-  "/lienclient",
-  protect,
-  PostArbitrage_Automatique,
-  ReadFilterClient
-);
-router.get("/allclient", protect, ReadAllClient);
-router.post("/validation", protect, Validation);
+
+router.get("/clientstatus/:status", protect, ReadCustomerStatus);
+
 router.post("/readCertainClient", protect, ReadCertainClient);
-router.post("/changefeedback", protect, ChangeStatus, ReadClientAfterChange);
-router.post("/change_by_file", protect, ChangeByFile);
-router.get("/information/:codeclient", protect, InformationCustomer);
-router.post("/appel", protect, Appel);
 
 //Objectif
-router.post("/objectif", protect, AddObjectif);
-router.put("/objectif", protect, EditObjectif);
 router.put("/edit_feeback_vm", protect, EditFeedbackVM);
 
 //Dashboard
 router.get("/rapport", Rapport);
 router.get("/justvisited", ClientVisited);
 
-//ACTION
-router.post("/action", protect, AddAction);
-router.post("/oneaction", protect, AddOneAction);
-router.post("/change_action_excel", protect, SubmitedByExcel);
-router.post("/valideraction", protect, ValiderAction);
-
-//Performance
-
-router.post("/changeactionbyfile", protect, ChangeActionByFile);
-router.post("/statusDashboard", protect, StatusDashboard);
-router.post("/graphique", protect, GraphiqueClient, Graphique);
-router.post("/graphique_taux", protect, GraphiqueClient, TauxValidation);
+// router.post(
+//   "/statusDashboard",
+//   protect,
+//   MesCriteredeRecherche,
+//   StatusDashboard
+// );
+// router.post(
+//   "/graphique_taux",
+//   protect,
+//   MesCriteredeRecherche,
+//   GraphiqueClient,
+//   TauxValidation
+// );
 
 //Arbitrage
 router.post("/arbitrage", protect, Arbitrage);
-router.get("/arbitrage", protect, ReadArbitrage);
-router.post("/arbitrage_file", protect, Arbitrage_File);
+
 router.post("/changeStatusOnly", protect, ChangeStatusOnly);
 //Decision
-router.post("/adddecision", protect, AddDecision);
 router.get("/decision", protect, ReadDecision);
-router.post("/changebyfile", protect, ChangeDecisionByFile);
-router.post("/change_decision_file", protect, SubmitDecisionByFile);
 router.post("/verification_decision", protect, VerificationDecision);
+
+router.get("/showAction", ShowAction);
+router.post("/validationAction", protect, ValidationAction);
+
+//Historique
+router.post("/historique", protect, InformationClient);
+router.get("/customerToRefresh", protect, customerToRefresh);
+
+//Affectation automatique
+router.get(
+  "/categorisationAutomatique",
+  protect,
+  MesCriteredeRecherche,
+  categorisationAutomatique
+);
+
+//My tracker Visite menage
+
+//NOUVEAU SYSTEME
+router.get(
+  "/lienclient",
+  protect,
+  PostArbitrage_Automatique,
+  ReadValidation,
+  ReadFilterClient
+);
+router.get("awaiting_field", protect);
+router.get(
+  "/lienclient",
+  protect,
+  PostArbitrage_Automatique,
+  ReadValidation,
+  ReadFilterClient
+);
+router.get(
+  "/verification/:filterfonction/:departement",
+  protect,
+  verification_field
+);
+router.get("/cas_valider/:departement", protect, cas_valider);
+router.get("/allclient", protect, ReadAllClient);
+router.get("/allstaffvisits", protect, AllVisitsStaff);
+router.get("/arbitrage", protect, PostArbitrage_, ReadArbitrage);
+router.post("/change_decision", protect, ChangeDecision);
+router.post("/changefeedback", protect, ChangeStatus);
+
+//Arbitrage decision
+router.get(
+  "/readDecisionArbitrage/:departement",
+  protect,
+  ReadDecisionArbitrage
+);
+router.post("/validateDecision", protect, ValidateDecision);
+
+//Payement dt
+router.post("/addpayements", protect, AddPayement);
+router.get("/readPayment", protect, ReadPayment);
+
+//Upload customer to track
+router.post("/upload_customer", protect, AddClientDT);
 
 module.exports = router;

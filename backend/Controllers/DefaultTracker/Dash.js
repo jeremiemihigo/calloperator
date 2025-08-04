@@ -5,93 +5,62 @@ const ModelObjectif = require("../../Models/DefaultTracker/Objectif");
 const asyncLab = require("async");
 const ModelAgent = require("../../Models/Agent");
 const ModelRapport = require("../../Models/Rapport");
-const { returnLastFirstDate } = require("../../Static/Static_Function");
+const {
+  returnLastFirstDate,
+  initialeSearch,
+} = require("../../Static/Static_Function");
 
 //My customer
-const ClientAttente = async (req, res) => {
-  try {
-    ModelClient.aggregate([
-      { $match: { actif: true } },
-      // { $group: { _id: "$currentFeedback", nombre: { $sum: 1 } } },
-      {
-        $lookup: {
-          from: "tfeedbacks",
-          localField: "currentFeedback",
-          foreignField: "idFeedback",
-          as: "feedback",
-        },
-      },
-      { $unwind: "$feedback" },
-      { $unwind: "$feedback.idRole" },
-      {
-        $lookup: {
-          from: "roles",
-          localField: "feedback.idRole",
-          foreignField: "idRole",
-          as: "role",
-        },
-      },
-      { $unwind: "$role" },
-      { $addFields: { departement: "$role.title" } },
-      { $group: { _id: "$departement", nombre: { $sum: 1 } } },
-    ]).then((result) => {
-      let serie = [];
-      let label = [];
-      for (let i = 0; i < result.length; i++) {
-        serie.push(result[i].nombre);
-        label.push(result[i]._id);
-      }
-      return res.status(200).json({ serie, label });
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
+
 const Inactif_thisMonth = async (req, res) => {
   try {
-    const { search } = req.params;
-    const month = moment(new Date()).format("MM-YYYY");
+    const month = moment().format("MM-YYYY");
     ModelClient.aggregate([
       {
         $match: {
           month,
         },
       },
+      { $unwind: "$historique" },
       {
-        $group: {
-          _id: { title: search, actif: "$actif" },
-          count: { $sum: 1 },
+        $lookup: {
+          from: "tfeedbacks",
+          localField: "currentFeedback",
+          foreignField: "idFeedback",
+          as: "tfeedback",
         },
       },
+      { $unwind: "$tfeedback" },
       {
-        $addFields: {
-          titre: "$_id.title",
-          actif: "$_id.actif",
+        $lookup: {
+          from: "roles",
+          localField: "tfeedback.idRole",
+          foreignField: "idRole",
+          as: "incharge",
         },
       },
-      { $project: { _id: 0 } },
+      { $unwind: "$incharge" },
     ])
       .then((result) => {
-        let title = lodash.uniq(result.map((x) => x.titre));
-        let process = [];
-        let not_process = [];
-        for (let i = 0; i < title.length; i++) {
-          process.push(
-            result.filter((x) => x.titre === title[i] && x.actif)[0]?.count || 0
-          );
-          not_process.push(
-            result.filter((x) => x.titre === title[i] && !x.actif)[0]?.count ||
-              0
-          );
-        }
-        return res.status(200).json({ process, not_process, title });
+        let incharge = Object.keys(lodash.groupBy(result, "incharge.idRole"));
 
-        // let serie = [];
-        // let label = [];
-        // for (let i = 0; i < result.length; i++) {
-        //   label.push(result[i]._id ? "In Process" : "End Process");
-        //   serie.push(result[i].total);
-        // }
+        let tableau = [];
+        for (let i = 0; i < incharge.length; i++) {
+          tableau.push({
+            departement: result.filter(
+              (x) => x.incharge.idRole === incharge[i]
+            )[0].incharge.title,
+            nombreAconfirmer: result.filter(
+              (x) => x.incharge.idRole === incharge[i]
+            ).length,
+            dejaconfirmer: result.filter(
+              (x) =>
+                x.historique?.length > 0 &&
+                x.historique.departement === incharge[i]
+            ).length,
+          });
+        }
+        return res.status(200).json(tableau);
       })
       .catch(function (err) {
         console.log(err);
@@ -272,7 +241,6 @@ const Analyse_Dash_All = async (req, res) => {
 };
 
 module.exports = {
-  ClientAttente,
   Inactif_thisMonth,
   Analyse_Dash_All,
 };

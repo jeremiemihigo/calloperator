@@ -12,6 +12,7 @@ const demande = async (req, res) => {
       codeclient,
       typeImage,
       codeAgent,
+      commentaire,
       jours,
       codeZone,
       commune,
@@ -28,7 +29,7 @@ const demande = async (req, res) => {
       sat, //placeholder = SAT
     } = req.body;
     const { filename } = req.file;
-
+    const io = req.io;
     const idDemande = new Date().getTime();
     if (
       !codeAgent ||
@@ -48,7 +49,7 @@ const demande = async (req, res) => {
         .json("Veuillez renseigner la raison de non payement");
     }
 
-    const io = req.io;
+    // const pusher = req.pushers;
     const dates = new Date().toISOString();
     var periode = moment(new Date()).format("MM-YYYY");
     asyncLab.waterfall(
@@ -81,6 +82,7 @@ const demande = async (req, res) => {
               codeclient,
               lot: periode,
               idDemande,
+              commentaire,
               itemswap,
               jours,
               sector,
@@ -135,10 +137,12 @@ const demande = async (req, res) => {
       function (demande) {
         io.emit("demande", demande);
         return res.status(200).json(demande);
+        // pusher.trigger("visitemenage", "demande", {
+        //   demande,
+        // });
       }
     );
   } catch (error) {
-    console.log(error);
     return res.status(201).json("Erreur");
   }
 };
@@ -347,7 +351,6 @@ const lectureDemandeBd = async (req, res) => {
 const ToutesDemandeAttente = async (req, res) => {
   try {
     var periode = moment(new Date()).format("MM-YYYY");
-    const { limit } = req.params;
     asyncLab.waterfall(
       [
         function (done) {
@@ -369,7 +372,6 @@ const ToutesDemandeAttente = async (req, res) => {
                 },
               },
               { $sort: { updatedAt: 1 } },
-              { $limit: parseInt(limit) === 100 ? 100 : 2000 },
             ])
             .then((response) => {
               if (response.length > 0) {
@@ -394,36 +396,45 @@ const ToutesDemandeAttente = async (req, res) => {
 const updateDemandeAgent = async (req, res) => {
   try {
     const { id, data } = req.body;
+    const pusher = req.pushers;
     asyncLab.waterfall(
       [
         function (done) {
           modelDemande
-            .findById(id)
-            .then((demande) => {
-              if (demande) {
-                done(null, demande);
-              } else {
-                return res.status(201).json("Visite introuvable");
-              }
-            })
-            .catch(function (err) {
-              return res.status(201).json("Erreur : " + err);
-            });
-        },
-        function (demande, done) {
-          modelDemande
             .findByIdAndUpdate(id, data, { new: true })
             .then((response) => {
-              done(response);
+              done(null, response);
             })
             .catch(function (err) {
               console.log(err);
               return res.status(201).json("Erreur 3");
             });
         },
+        function (response, done) {
+          modelDemande
+            .aggregate([
+              { $match: { _id: new ObjectId(response._id) } },
+              {
+                $lookup: {
+                  from: "conversations",
+                  localField: "_id",
+                  foreignField: "code",
+                  as: "conversation",
+                },
+              },
+            ])
+            .then((result) => {
+              if (result.length > 0) {
+                done(result[0]);
+              }
+            });
+        },
       ],
       function (result) {
         if (result) {
+          pusher.trigger("visitemenage", "demande", {
+            demande: result,
+          });
           return res.status(200).json(result);
         } else {
           return res.status(201).json("Erreur");
@@ -455,24 +466,10 @@ const updateDemandeAgentFile = async (req, res, next) => {
       id, //placeholder = SAT
     } = req.body;
     const { filename } = req.file;
+    const pusher = req.pushers;
     asyncLab.waterfall(
       [
         function (done) {
-          modelDemande
-            .findOne({ _id: new ObjectId(id), valide: false })
-            .then((demande) => {
-              if (demande) {
-                done(null, demande);
-              } else {
-                return res.status(201).json("Erreur 1");
-              }
-            })
-            .catch(function (err) {
-              console.log(err);
-              return res.status(201).json("Erreur 2");
-            });
-        },
-        function (demande, done) {
           try {
             modelDemande
               .findByIdAndUpdate(
@@ -495,7 +492,7 @@ const updateDemandeAgentFile = async (req, res, next) => {
                 { new: true }
               )
               .then((response) => {
-                done(response);
+                done(null, response);
               })
               .catch(function (err) {
                 console.log(err);
@@ -505,9 +502,35 @@ const updateDemandeAgentFile = async (req, res, next) => {
             console.log(error);
           }
         },
+        function (response, done) {
+          modelDemande
+            .aggregate([
+              { $match: { _id: new ObjectId(response._id) } },
+              {
+                $lookup: {
+                  from: "conversations",
+                  localField: "_id",
+                  foreignField: "code",
+                  as: "conversation",
+                },
+              },
+            ])
+            .then((result) => {
+              if (result.length > 0) {
+                done(result[0]);
+              }
+            });
+        },
       ],
       function (result) {
-        return res.status(200).json(result);
+        if (result) {
+          pusher.trigger("visitemenage", "demande", {
+            demande: result,
+          });
+          return res.status(200).json(result);
+        } else {
+          return res.status(201).json("Erreur");
+        }
       }
     );
 

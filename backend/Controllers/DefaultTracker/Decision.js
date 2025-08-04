@@ -1,84 +1,76 @@
 const ModelDecision = require("../../Models/DefaultTracker/Decision");
+const ModelClient = require("../../Models/DefaultTracker/TableClient");
 const { ObjectId } = require("mongodb");
 const asyncLab = require("async");
 const moment = require("moment");
 const _ = require("lodash");
-const ModelClient = require("../../Models/DefaultTracker/TableClient");
 
-const AddDecision = async (req, res) => {
-  try {
-    const { codeclient, shop, commentaire, region, decision } = req.body;
-    const { nom, validationdt } = req.user;
-    if (!codeclient || !shop || !region || !decision) {
-      return res.status(201).json("Veuillez renseigner les champs");
-    }
-    const month = moment(new Date()).format("MM-YYYY");
-    ModelDecision.findOneAndUpdate(
-      { codeclient, month },
-      {
-        $set: {
-          codeclient,
-          shop,
-          region,
-          decision,
-          month,
-          createdBy: nom,
-          statut: validationdt ? "Approved" : "Pending",
-        },
-        $push: {
-          validate: {
-            last_statut: "Tracking_Ongoing",
-            next_statut: "pending",
-            commentaire,
-            createdBy: nom,
-          },
-        },
-      },
-      { upsert: true, returnDocument: "after" }
-    )
-      .then((result) => {
-        return res.status(200).json(result);
-      })
-      .catch(function (err) {
-        console.log(err);
-      });
-  } catch (error) {
-    console.log(error);
-  }
-};
 const VerificationDecision = async (req, res) => {
   try {
-    const { id, commentaire, last_statut, next_statut } = req.body;
+    const { id, commentaire, next_statut } = req.body;
     const { nom } = req.user;
-    ModelDecision.findOneAndUpdate(
-      {
-        _id: new ObjectId(id),
-      },
-      {
-        $set: {
-          statut: next_statut,
+    if (next_statut === "REJECTED" && commentaire === "") {
+      return res
+        .status(201)
+        .json("Commentary is mandatory for rejected decisions");
+    }
+    if (!next_statut || !id) {
+      return res.status(201).json("ERROR");
+    }
+    asyncLab.waterfall(
+      [
+        function (done) {
+          ModelDecision.findOneAndUpdate(
+            {
+              _id: new ObjectId(id),
+            },
+            {
+              $set: {
+                statut: next_statut,
+                commentRejected: commentaire,
+                verifiedby: nom,
+              },
+            },
+            { new: true }
+          )
+            .then((result) => {
+              if (result) {
+                done(null, result);
+              } else {
+                return res.status(201).json("Error");
+              }
+            })
+            .catch(function (error) {
+              return res.status(201).json(JSON.stringify(error));
+            });
         },
-        $push: {
-          validate: {
-            last_statut,
-            next_statut,
-            commentaire,
-            createdBy: nom,
-          },
+        function (decision, done) {
+          if (decision.statut === "APPROVED") {
+            ModelClient.findOneAndUpdate(
+              {
+                codeclient: decision.codeclient,
+                actif: true,
+                month: decision.month,
+              },
+              { $set: { actif: false, statut_decision: decision.decision } }
+            )
+              .then((result) => {
+                if (result) {
+                  done(decision);
+                }
+              })
+              .catch(function (error) {
+                console.log(error);
+              });
+          } else {
+            done(decision);
+          }
         },
-      },
-      { new: true }
-    )
-      .then((result) => {
-        if (result) {
-          return res.status(200).json(result);
-        } else {
-          return res.status(201).json("Error");
-        }
-      })
-      .catch(function (error) {
-        return res.status(201).json(JSON.stringify(error));
-      });
+      ],
+      function (decision) {
+        return res.status(200).json(decision);
+      }
+    );
   } catch (error) {
     return res.status(201).json(JSON.stringify(error));
   }
@@ -125,6 +117,7 @@ const ReadDecision = async (req, res) => {
           id: 1,
           shop: 1,
           statut: 1,
+          comment: 1,
         },
       },
     ])
@@ -138,121 +131,39 @@ const ReadDecision = async (req, res) => {
     console.log(error);
   }
 };
-const ChangeDecisionByFile = async (req, res) => {
+//Change decision by form or excel file
+const ChangeDecision = async (req, res) => {
   try {
-    const { data } = req.body;
-    const { nom } = req.user;
-    for (let i = 0; i < data.length; i++) {
-      ModelDecision.findOneAndUpdate(
-        {
-          _id: new ObjectId(data[i].id),
-        },
-        {
-          $set: {
-            statut: data[i].next_statut,
-          },
-          $push: {
-            validate: {
-              last_statut: data[i].last_statut,
-              next_statut: data[i].next_statut,
-              commentaire: data[i].commentaire,
-              createdBy: nom,
-            },
-          },
-        },
-        { new: true }
-      ).then((r) => {
-        console.log(r);
-      });
-    }
-    return res.status(200).json("Done");
-  } catch (error) {}
-};
-const SubmitDecisionByFile = async (req, res) => {
-  try {
-    const { data } = req.body;
+    const { codeclient, comment, shop, idHistorique, region, decision } =
+      req.body.data;
+    console.log(req.body);
     const { nom, validationdt } = req.user;
-    const month = moment(new Date()).format("MM-YYYY");
+    const month = moment().format("MM-YYYY");
 
-    asyncLab.waterfall([
-      function (done) {
-        async function updateClientsWithBulk() {
-          const bulkoperation = data.map((client) => ({
-            updateOne: {
-              filter: {
-                codeclient: client.codeclient,
-                month,
-              },
-              update: {
-                $set: {
-                  codeclient: client.codeclient,
-                  shop: client.shop,
-                  region: client.region,
-                  decision: client.decision,
-                  month,
-                  createdBy: nom,
-                  statut: validationdt ? "Approved" : "Pending",
-                },
-                $push: {
-                  validate: {
-                    last_statut: "Tracking_Ongoing",
-                    next_statut: "Pending",
-                    commentaire: client.commentaire,
-                    name: nom,
-                  },
-                },
-              },
-              returnDocument: "after",
-            },
-          }));
-          try {
-            const result = await ModelDecision.bulkWrite(bulkoperation);
-            return res
-              .status(200)
-              .json(
-                `${result.upsertedCount} insertion and ${result.modifiedCount} action(s) updated`
-              );
-          } catch (error) {
-            console.log(error);
-          }
-        }
-        updateClientsWithBulk();
-      },
-
-      function (clients, done) {
-        if (validationdt) {
-          async function updateClientsWithBulk() {
-            const bulkoperation = data.map((client) => ({
-              updateOne: {
-                filter: {
-                  codeclient: client.codeclient,
-                  month: client.month,
-                },
-                update: {
-                  $set: {
-                    actif: false,
-                  },
-                },
-
-                returnDocument: "after",
-              },
-            }));
-            try {
-              const result = await ModelClient.bulkWrite(bulkoperation);
-              return res
-                .status(200)
-                .json(`End process for ${result.modifiedCount} customers`);
-            } catch (error) {}
-          }
-          updateClientsWithBulk();
+    ModelDecision.create({
+      codeclient,
+      comment,
+      shop,
+      id: idHistorique ? idHistorique : "",
+      region,
+      decision,
+      month,
+      createdBy: nom,
+      statut: validationdt ? "APPROVED" : "PENDING",
+    })
+      .then((result) => {
+        if (result) {
+          return res.status(200).json(result);
         } else {
-          return res.status(200).json("Done");
+          return res.status(201).json("Error");
         }
-      },
-    ]);
-
-    return res.status(200).json(`${data.length} decisions enregistrées`);
-  } catch (error) {}
+      })
+      .catch(function (error) {
+        return res.status(201).json(error.message);
+      });
+  } catch (error) {
+    return res.status(201).json(error.message);
+  }
 };
 const GraphiqueDecision = async (req, res) => {
   try {
@@ -262,7 +173,7 @@ const GraphiqueDecision = async (req, res) => {
       [
         function (done) {
           ModelDecision.aggregate([
-            { $match: { statut: "Approved", month } },
+            { $match: { statut: "APPROVED", month } },
             {
               $group: {
                 _id: {
@@ -332,11 +243,62 @@ const GraphiqueDecision = async (req, res) => {
     console.log(error);
   }
 };
+
+const ReadDecisionArbitrage = async (req, res) => {
+  try {
+    const { departement } = req.params;
+    ModelDecision.aggregate([
+      {
+        $match: {
+          idDepartement: departement,
+          statut: { $in: ["PENDING", "REJECTED", "APPROVED"] },
+        },
+      },
+      {
+        $project: {
+          decision: 1,
+          createdBy: 1,
+          customer_id: "$codeclient",
+          region: 1,
+          id: 1,
+          _id: 1,
+          shop: 1,
+          comment: 1,
+          statut: 1,
+          createdAt: 1,
+        },
+      },
+    ]).then((result) => {
+      return res.status(200).json(result);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+const ValidateDecision = async (req, res) => {
+  try {
+    const { id, statut, commentaire } = req.body;
+    if (!id || !statut) {
+      return res.status(201).json("Veuillez renseigner les champs");
+    }
+    if (statut === "REJECTED" && commentaire === "") {
+      return res.status(201).json("Veuillez renseigner le commentaire");
+    }
+    ModelDecision.findByIdAndUpdate(id, {
+      $set: { statut, verifiedby: req.user.nom },
+    }).then((result) => {
+      return res.status(200).json(result);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
 module.exports = {
-  AddDecision,
-  SubmitDecisionByFile,
   GraphiqueDecision,
   VerificationDecision,
   ReadDecision,
-  ChangeDecisionByFile,
+  ChangeDecision,
+  //Nouvelle version
+  ValidateDecision,
+  ReadDecisionArbitrage,
 };

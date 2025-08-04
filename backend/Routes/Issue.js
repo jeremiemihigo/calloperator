@@ -37,7 +37,6 @@ const {
   ReadTech,
   Readclient,
   ReadMy_Backoffice,
-  ReadOneComplaint,
   ReadData_Backoffice,
   Mydeedline,
 } = require("../Controllers/Issue/Ticket/Read");
@@ -114,7 +113,6 @@ router.get("/mybackoffice", protect, ReadMy_Backoffice);
 router.post("/fermeture_plainte", protect, Demande_FermeturePlainte);
 
 router.post("/addplainte_support", protect, AddPlainteSupport);
-router.get("/onecomplaint/:id", protect, ReadOneComplaint);
 
 router.post("/information_customer", protect, AddInformation);
 router.get("/notification_reader", protect, ReadMy_Notification);

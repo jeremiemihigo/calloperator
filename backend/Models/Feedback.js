@@ -21,6 +21,10 @@ const schema = new mongoose.Schema(
       required: true,
       enum: ["poste", "departement"],
     },
+    verification: { type: Boolean, required: true, default: false },
+    suivisuperuser: { type: Boolean, required: true, default: false },
+    isAction: { type: Boolean, required: true, default: false },
+    torefresh: { type: Boolean, required: true, default: false },
   },
   { timestamps: true }
 );

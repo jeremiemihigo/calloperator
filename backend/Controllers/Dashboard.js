@@ -1,6 +1,9 @@
 const ModelRapport = require("../Models/Rapport");
-
+const ModelDemande = require("../Models/Demande");
+const ModelAppelPortofolio = require("../Models/Portofolio/PFeedback");
 const asyncLab = require("async");
+const moment = require("moment");
+
 const { returnLastFirstDate } = require("../Static/Static_Function");
 
 const AnalyseVisites = async (req, res) => {
@@ -108,6 +111,38 @@ const AnalyseVisites = async (req, res) => {
     );
   } catch (error) {}
 };
+
+const BadgeSidebar = async (req, res) => {
+  try {
+    const { validateShop } = req.user;
+    const month = moment().format("MM-YYYY");
+
+    const today = new Date(moment().format("YYYY-MM-DD")); // inutile ici sauf si tu l'utilises ailleurs
+
+    // 2. Appels en escalade ouverts
+
+    // 3. Appros non validés pour RS
+    const appro = await ModelDemande.countDocuments({
+      concerne: "rs",
+      valide: false,
+      idShop: { $in: validateShop },
+      feedback: "chat",
+      lot: month,
+    });
+    const portofolio = await ModelAppelPortofolio.countDocuments({
+      dateSave: today.getTime(),
+      type: "Reachable",
+    });
+
+    // Retour JSON
+    return res.json({ appro, portofolio });
+  } catch (err) {
+    console.error("Erreur dans BadgeSidebar:", err);
+    return res.status(500).json({ error: "Erreur interne du serveur." });
+  }
+};
+
 module.exports = {
   AnalyseVisites,
+  BadgeSidebar,
 };

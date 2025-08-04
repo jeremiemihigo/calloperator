@@ -27,7 +27,7 @@ const UserSchema = new mongoose.Schema(
     id: { type: String, required: true, unique: true },
     filename: { type: String, required: false },
     first: { type: Boolean, required: true, default: true },
-    servey: { type: [String], required: false },
+    idvm: { type: String, required: false, unique: true },
   },
   { timestamps: true }
 );

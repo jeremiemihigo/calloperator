@@ -152,4 +152,106 @@ module.exports = {
     const firstDate = new Date(f);
     return { lastDate, firstDate };
   },
+  initialeSearch: [
+    {
+      $lookup: {
+        from: "tfeedbacks",
+        localField: "currentFeedback",
+        foreignField: "idFeedback",
+        as: "tfeedback",
+      },
+    },
+    {
+      $lookup: {
+        from: "rapports",
+        localField: "visite",
+        foreignField: "idDemande",
+        as: "visite_concerne",
+      },
+    },
+    {
+      $lookup: {
+        from: "rapports",
+        localField: "codeclient",
+        foreignField: "codeclient",
+        as: "visites",
+      },
+    },
+    {
+      $lookup: {
+        from: "pfeedback_calls",
+        let: { codeclient: "$codeclient" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$codeclient", "$$codeclient"] },
+                  { $eq: ["$type", "Reachable"] },
+                ],
+              },
+            },
+          },
+        ],
+        as: "appelles",
+      },
+    },
+    {
+      $addFields: {
+        derniereappel: {
+          $arrayElemAt: [
+            {
+              $reverseArray: "$appelles", // Renverse l'ordre du tableau
+            },
+            0,
+          ],
+        },
+      },
+    },
+    { $unwind: "$tfeedback" },
+    {
+      $lookup: {
+        from: "roles",
+        localField: "tfeedback.idRole",
+        foreignField: "idRole",
+        as: "incharge",
+      },
+    },
+    {
+      $lookup: {
+        from: "postes",
+        localField: "tfeedback.idRole",
+        foreignField: "id",
+        as: "postes",
+      },
+    },
+
+    {
+      $project: {
+        codeclient: 1,
+        nomclient: 1,
+        decision: 1,
+        postes: 1,
+        month: 1,
+        id: 1,
+        shop: 1,
+        visite_concerne: 1,
+        region: 1,
+        visites: 1,
+        actif: 1,
+        action: 1,
+        par: 1,
+        currentFeedback: 1,
+        submitedBy: 1,
+        tfeedback: 1,
+        derniereappel: 1,
+        appel: 1,
+        fullDate: 1,
+        statut_decision: 1,
+        incharge: 1,
+        statut: 1,
+        feedback: 1,
+      },
+    },
+  ],
 };

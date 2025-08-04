@@ -50,6 +50,8 @@ const schema = new mongoose.Schema(
       jours: Number,
       file: String,
     },
+    //used : Si on l'a déjà utilisé au changement de feedback default tracker
+    used: { type: Boolean, default: false, required: true },
     paid: { type: Boolean, required: false },
     coordonnee: { longitude: String, latitude: String, altitude: String },
   },

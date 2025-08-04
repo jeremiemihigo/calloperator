@@ -8,6 +8,7 @@ const schema = new mongoose.Schema(
     month: { type: String, required: true },
     considerer: { type: Boolean, required: true, default: false },
     id: { type: String, required: true },
+    idpayement: { type: String, required: true, unique: true },
   },
   { timestamps: true }
 );

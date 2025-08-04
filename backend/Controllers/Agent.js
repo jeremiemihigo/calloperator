@@ -5,7 +5,8 @@ const { generateNumber } = require("../Static/Static_Function");
 
 const AddAgent = async (req, res, next) => {
   try {
-    const { nom, codeAgent, fonction, telephone, idZone, idShop } = req.body;
+    const { nom, idvm, codeAgent, fonction, telephone, idZone, idShop } =
+      req.body;
     if (!nom || !codeAgent || !fonction || !idZone) {
       return res.status(400).json("Veuillez renseigner les champs");
     }
@@ -13,7 +14,7 @@ const AddAgent = async (req, res, next) => {
       [
         function (done) {
           modelAgent
-            .findOne({ codeAgent: codeAgent.trim() })
+            .findOne({ codeAgent: codeAgent.trim().toUpperCase() })
             .then((agent) => {
               if (agent) {
                 return res.status(400).json("L'agent existe déjà");
@@ -32,6 +33,7 @@ const AddAgent = async (req, res, next) => {
               nom,
               password: pass,
               codeAgent,
+              idvm,
               pass,
               codeZone: idZone,
               fonction,
@@ -67,8 +69,16 @@ const AddAgent = async (req, res, next) => {
 };
 const ReadAgent = async (req, res) => {
   const recherche = req.recherche;
-  const matched = req.user.fonction === "superUser" ? {} : { active: true };
-
+  const matched = req.user?.fonction === "superUser" ? {} : { active: true };
+  const project =
+    req.user?.fonction === "superUser"
+      ? {
+          password: 0,
+        }
+      : {
+          password: 0,
+          filename: 0,
+        };
   let match = recherche
     ? { $match: { _id: new ObjectId(recherche) } }
     : { $match: matched };
@@ -95,14 +105,9 @@ const ReadAgent = async (req, res) => {
         {
           $unwind: "$region",
         },
+
         {
-          $sort: { nom: -1 },
-        },
-        {
-          $project: {
-            password: 0,
-            __v: 0,
-          },
+          $project: project,
         },
       ])
       .then((response) => {
@@ -138,7 +143,7 @@ const BloquerAgent = async (req, res, next) => {
 };
 const UpdateAgent = async (req, res, next) => {
   try {
-    const { _id, nom, fonction, telephone, idShop, idZone } = req.body;
+    const { _id, nom, fonction, telephone, idvm, idShop, idZone } = req.body;
 
     asyncLab.waterfall(
       [
@@ -151,6 +156,7 @@ const UpdateAgent = async (req, res, next) => {
                   nom,
                   fonction,
                   idShop,
+                  idvm,
                   telephone,
                   codeZone: idZone,
                 },
@@ -158,14 +164,15 @@ const UpdateAgent = async (req, res, next) => {
               { new: true }
             )
             .then((response) => {
+              console.log(response);
               if (response) {
                 done(response);
               } else {
-                return res.status(400).json("Erreur");
+                return res.status(404).json("Erreur");
               }
             })
             .catch(function (err) {
-              return res.status(400).json("Error");
+              return res.status(404).json(err.message);
             });
         },
       ],

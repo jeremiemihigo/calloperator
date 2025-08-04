@@ -2,7 +2,16 @@ const ModelFeedback = require("../Models/Feedback");
 
 const AddFeedback = async (req, res) => {
   try {
-    const { title, incharge, plateforme, typecharge } = req.body;
+    const {
+      title,
+      incharge,
+      suivisuperuser,
+      verification,
+      torefresh,
+      isAction,
+      plateforme,
+      typecharge,
+    } = req.body;
     const { nom } = req.user;
     if (!title || !plateforme || incharge.length === 0 || !typecharge) {
       return res.status(201).json("Veuillez renseigner les champs");
@@ -10,9 +19,13 @@ const AddFeedback = async (req, res) => {
     ModelFeedback.create({
       title,
       plateforme,
+      suivisuperuser,
       idFeedback: new Date().getTime(),
       idRole: incharge,
+      verification,
       savedby: nom,
+      torefresh,
+      isAction,
       typecharge,
     })
       .then((result) => {
@@ -54,10 +67,15 @@ const ReadFeedback = async (req, res) => {
           title: 1,
           postes: 1,
           plateforme: 1,
+          idRole: 1,
           role: 1,
           idFeedback: 1,
           savedby: 1,
           typecharge: 1,
+          verification: 1,
+          suivisuperuser: 1,
+          isAction: 1,
+          torefresh: 1,
         },
       },
     ])

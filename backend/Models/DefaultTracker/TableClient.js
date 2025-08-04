@@ -1,29 +1,18 @@
 const mongoose = require("mongoose");
 
-const feedback = new mongoose.Schema(
+const historique = new mongoose.Schema(
   {
-    newFeedback: { type: String, required: true },
-    lasFeedback: { type: String, required: true },
-    deedline: { type: String, required: true, enum: ["IN SLA", "OUT SLA"] },
-    doBy: { type: String, required: true },
-    role: { type: String, required: true },
+    id: { type: String, required: true },
+    lastfeedback: { type: String, required: true }, //L'ancien feedback
+    sla: { type: String, required: true, enum: ["IN SLA", "OUT SLA"] },
+    nextfeedback: { type: String, required: true }, //Le nouveau feedback;
+    submitedBy: { type: String, required: true }, //L'agent qui soumet le nextfeedback
+    poste: { type: String, required: true }, //Le poste de l'agent qui soumet le feedback
+    departement: { type: String, required: true }, //Le departement de l'agent qui soumet le feedback
     commentaire: { type: String, required: false },
-    statut: { type: String, required: true },
   },
   { timestamps: true }
 );
-const Hist_Arbitrage = new mongoose.Schema(
-  {
-    current_status: { type: String, required: true },
-    changeto: { type: String, required: true },
-    submitedBy: { type: String, required: true },
-    checkedBy: { type: String, required: true },
-    commentaire: { type: String, required: false },
-    feedback: { type: String, required: true, enum: ["Approved", "Rejected"] },
-  },
-  { timestamps: true }
-);
-
 const schema = new mongoose.Schema(
   {
     codeclient: {
@@ -40,8 +29,7 @@ const schema = new mongoose.Schema(
     par: { type: String, required: true },
     region: { type: String, required: true },
     actif: { type: Boolean, required: true, default: true },
-    dateupdate: { type: Date, required: false },
-    feedback: { type: [feedback], required: false },
+    dateupdate: { type: Date, required: true },
     currentFeedback: { type: String, required: true },
     appel: { type: String, required: false },
     fullDate: { type: Date, required: true, default: new Date() },
@@ -49,25 +37,32 @@ const schema = new mongoose.Schema(
     feedback: {
       type: String,
       required: true,
-      enum: ["Pending", "Rejected", "Approved", "success"],
-      default: "success",
+      enum: ["PENDING", "REJECTED", "APPROVED", "SUCCESS"],
+      default: "SUCCESS",
+      uppercase: true,
     },
     changeto: { type: String, required: false },
     submitedBy: { type: String, required: true },
-    Hist_Arbitrage: { type: [Hist_Arbitrage], required: false },
-
     action: {
-      type: String,
+      type: Boolean,
       required: true,
-      enum: ["No_Action", "Pending", "Rejected", "Approved"],
-      default: "No_Action",
+      enum: ["NO_ACTION", "PENDING", "REJECTED", "APPROVED"],
+      default: "NO_ACTION",
+      uppercase: true,
     },
+    visite: { type: String, required: false },
+    //Decision
     statut_decision: {
       type: String,
       required: true,
-      enum: ["Pending", "Rejected", "Approved", "Tracking_Ongoing"],
-      default: "Tracking_Ongoing",
+      enum: ["WRITE_OFF", "OPT_OUT", "A_RECONDUIRE", "TRACKING_ONGOING"],
+      default: "TRACKING_ONGOING",
+      uppercase: true,
     },
+
+    historique: { type: [historique], required: false },
+    sat: { type: String, required: true },
+    cashattendu: { type: Number, required: true },
   },
   { timestamps: true }
 );
