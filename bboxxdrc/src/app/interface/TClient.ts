@@ -31,6 +31,7 @@ export interface ITclient {
   visites: IVisite[];
   cashattendu?: number;
   cashPayer?: number;
+  inprocess?: string;
 }
 export interface IVerificationField {
   _id: string;

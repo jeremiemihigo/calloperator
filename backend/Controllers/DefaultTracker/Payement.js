@@ -1,7 +1,9 @@
 const ModelPayement = require("../../Models/DefaultTracker/Payement");
 const moment = require("moment");
+const asyncLab = require("async");
+const ModelClient = require("../../Models/DefaultTracker/TableClient");
 
-const AddPayement = (req, res) => {
+const AddPayement = (req, res, next) => {
   try {
     const { data } = req.body;
     if (!data || (data && data.length === 0)) {
@@ -19,7 +21,8 @@ const AddPayement = (req, res) => {
     });
     ModelPayement.insertMany(donner)
       .then((result) => {
-        return res.status(200).json("Opération effectuée avec succès");
+        req.message = "Opération effectuée avec succès";
+        next();
       })
       .catch(function (error) {
         return res.status(201).json(error.message);
@@ -63,11 +66,75 @@ const ReadPayment = (req, res) => {
     console.log(error);
   }
 };
-const DeletePayment = (req, res) => {
+const AjustagePayement = (req, res) => {
   try {
-    const id = req.body.id;
+    const month = moment().format("MM-YYYY");
+    const message = req.message;
+    asyncLab.waterfall([
+      function (done) {
+        ModelPayement.aggregate([
+          { $match: { month } },
+          {
+            $group: {
+              _id: "$account_id",
+              total: { $sum: "$amount" },
+            },
+          },
+        ])
+          .then((result) => {
+            if (result.length > 0) {
+              done(null, result);
+            } else {
+              return res.status(200).json(message);
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      },
+      function (result, done) {
+        async function updateClientsWithBulk() {
+          const bulkoperation = result.map((client) => ({
+            updateOne: {
+              filter: {
+                codeclient: client._id,
+                month,
+              },
+              update: {
+                $set: {
+                  cashPayer: client.total,
+                },
+              },
+              returnDocument: "after",
+            },
+          }));
+          try {
+            const reponse = await ModelClient.bulkWrite(bulkoperation);
+            if (reponse) {
+              done(null, true);
+            }
+          } catch (error) {
+            console.log(error);
+          }
+        }
+        updateClientsWithBulk();
+      },
+      function (result, done) {
+        ModelClient.updateMany(
+          { month, $expr: { $gte: ["$cashPayer", "$cashattendu"] } },
+          { $set: { action: "REACTIVATION", actif: false } }
+        )
+          .then((clients) => {
+            return res.status(200).json(message);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      },
+    ]);
   } catch (error) {
     console.log(error);
   }
 };
-module.exports = { AddPayement, ReadPayment };
+
+module.exports = { AddPayement, AjustagePayement, ReadPayment };

@@ -118,10 +118,6 @@ const BadgeSidebar = async (req, res) => {
     const month = moment().format("MM-YYYY");
 
     const today = new Date(moment().format("YYYY-MM-DD")); // inutile ici sauf si tu l'utilises ailleurs
-
-    // 2. Appels en escalade ouverts
-
-    // 3. Appros non validés pour RS
     const appro = await ModelDemande.countDocuments({
       concerne: "rs",
       valide: false,

@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
         shop: x.shop,
         action: x.action,
         submitedBy: x.submitedBy,
-        inprocess: x.actif ? "In process" : "Achevé",
+        inprocess: x.actif ? "In_Process" : "Done",
         currentFeedback: x.tfeedback?.title,
         cashattendu: x.cashattendu ? "$" + x.cashattendu : "undefined",
         cashPayer: x.cashPayer ? "$" + x.cashPayer : "undefined",

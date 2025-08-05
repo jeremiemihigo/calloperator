@@ -1,4 +1,5 @@
 const ModelClient = require("../../Models/DefaultTracker/TableClient");
+const ModelDecisions = require("../../Models/DefaultTracker/Decision");
 const asyncLab = require("async");
 const { ObjectId } = require("mongodb");
 const moment = require("moment");
@@ -6,6 +7,7 @@ const ModelPoste = require("../../Models/Poste");
 const ModelFeedback = require("../../Models/Feedback");
 const { initialeSearch } = require("../../Static/Static_Function");
 const ModelRapport = require("../../Models/Rapport");
+const _ = require("lodash");
 
 let searchData = [
   {
@@ -586,7 +588,6 @@ const customerToRefresh = (req, res) => {
     );
     // Soustraire 1 jour pour avoir le dernier jour du mois courant
     const lastDayOfMonth = new Date(nextMonth - 1);
-    const aujourdhui = new Date(moment().format("YYYY-MM-DD"));
     const derriere3mois = new Date(moment(lastDayOfMonth).format("YYYY-MM-DD")); // Format YYYY-MM-DD
 
     asyncLab.waterfall([
@@ -1123,6 +1124,168 @@ const ChangeStatus = async (req, res, next) => {
     console.log(error);
   }
 };
+const DashboardTracker = async (req, res) => {
+  try {
+    const month = moment().format("MM-YYYY");
+    const fraude = "D7UNY";
+    const field = "NRMRG";
+    const donner = {};
+    const validation = await ModelClient.aggregate([
+      { $match: { month } },
+      { $unwind: "$historique" },
+      {
+        $group: {
+          _id: "$historique.departement",
+          total: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const validationFraude =
+      validation.filter((x) => x._id === fraude).length > 0
+        ? validation.filter((x) => x._id === fraude)[0].total
+        : 0;
+    const validationField =
+      validation.filter((x) => x._id === field).length > 0
+        ? validation.filter((x) => x._id === field)[0].total
+        : 0;
+
+    const returnAllPosteDepartment = (id) => {
+      return ModelPoste.find({ idDepartement: id }, { id: 1, _id: 0 }).then(
+        (result) => result.map((x) => x.id)
+      );
+    };
+    const fields = await returnAllPosteDepartment(field);
+    const fraudes = await returnAllPosteDepartment(fraude);
+    const awaiting_verification = await ModelClient.aggregate([
+      { $match: { month, actif: true } },
+      {
+        $lookup: {
+          from: "tfeedbacks",
+          localField: "currentFeedback",
+          foreignField: "idFeedback",
+          as: "feedback",
+        },
+      },
+      { $unwind: "$feedback" },
+      { $unwind: "$feedback.idRole" },
+    ]);
+    const awaiting_fields = awaiting_verification.filter((x) =>
+      [...fields, field].includes(x.feedback.idRole)
+    ).length;
+    const awaiting_fraudes = awaiting_verification.filter((x) =>
+      [...fraudes, fraude].includes(x.feedback.idRole)
+    ).length;
+
+    donner.validationFraude = validationFraude;
+    donner.validationField = validationField;
+    donner.awaiting_fields = awaiting_fields;
+    donner.awaiting_fraudes = awaiting_fraudes;
+
+    const poste_fiels = ["SM", "RS", "ZBM", "TL"];
+    const poste_fraude = ["PO"];
+
+    const returnAllVisiteDepartement = (postes) => {
+      return ModelRapport.find(
+        { "demande.lot": month, "demandeur.fonction": { $in: postes } },
+        { _id: 1 }
+      ).then((result) => result.length);
+    };
+    const vmpo = await returnAllVisiteDepartement(poste_fraude);
+    const vmfield = await returnAllVisiteDepartement(poste_fiels);
+    donner.vmfield = vmfield;
+    donner.vmpo = vmpo;
+
+    //Visites à refresh
+    const today = new Date();
+    const pastDate = new Date();
+    pastDate.setMonth(today.getMonth() - 3);
+    // Aller au 1er jour du mois suivant
+    const nextMonth = new Date(
+      pastDate.getFullYear(),
+      pastDate.getMonth() + 1,
+      1
+    );
+    // Soustraire 1 jour pour avoir le dernier jour du mois courant
+    const lastDayOfMonth = new Date(nextMonth - 1);
+    const derriere3mois = new Date(moment(lastDayOfMonth).format("YYYY-MM-DD"));
+
+    const returnFeedbacks = (property) => {
+      return ModelFeedback.find({ [property]: true }, { idFeedback: 1 }).then(
+        (result) => result.map((x) => x.idFeedback)
+      );
+    };
+    const feedbackrefresh = await returnFeedbacks("torefresh");
+    const customerRefresh = await ModelClient.aggregate([
+      { $match: { month, currentFeedback: { $in: feedbackrefresh } } },
+      {
+        $lookup: {
+          from: "rapports",
+          localField: "codeclient",
+          foreignField: "codeclient",
+          as: "visites",
+        },
+      },
+      {
+        $addFields: {
+          dernierevisite: {
+            $arrayElemAt: [
+              {
+                $reverseArray: "$visites", // Renverse l'ordre du tableau
+              },
+              0,
+            ],
+          },
+        },
+      },
+      {
+        $match: {
+          "dernierevisite.dateSave": { $lte: derriere3mois },
+        },
+      },
+    ]);
+    donner.refresh = customerRefresh.length;
+    // Retour JSON
+    const feedbackaction = await returnFeedbacks("isAction");
+    const actions = await ModelClient.find(
+      {
+        $or: [
+          { actif: false, month, currentFeedback: { $in: feedbackaction } },
+          {
+            month,
+            action: { $in: ["REACTIVATION", "REPOSSESSION"] },
+            actif: false,
+          },
+        ],
+      },
+      { region: 1, shop: 1, _id: 0 }
+    );
+    const decisions = await ModelDecisions.find(
+      {
+        month,
+        statut: "APPROVED",
+      },
+      { shop: 1, region: 1, _id: 0 }
+    );
+    const alldonner = decisions.concat(actions);
+    let groupeShop = _.groupBy(alldonner, "shop");
+    let allshop = Object.keys(groupeShop);
+    let tableau = [];
+    for (let i = 0; i < allshop.length; i++) {
+      tableau.push({
+        shop: allshop[i],
+        action: _.filter(actions, { shop: allshop[i] }).length,
+        decision: _.filter(decisions, { shop: allshop[i] }).length,
+        region: _.filter(alldonner, { shop: allshop[i] })[0].region,
+      });
+    }
+    donner.regions = Object.keys(_.groupBy(tableau, "region"));
+    donner.act_decisions = tableau;
+    return res.status(200).json(donner);
+  } catch (err) {
+    return res.status(500).json({ error: "Erreur interne du serveur." });
+  }
+};
 
 module.exports = {
   AddClientDT,
@@ -1142,4 +1305,5 @@ module.exports = {
   verification_field,
   cas_valider,
   AllVisitsStaff,
+  DashboardTracker,
 };

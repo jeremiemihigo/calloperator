@@ -2,7 +2,10 @@
 import HeaderComponent from "@/app/header/Header";
 import { ITclient } from "@/app/interface/TClient";
 import Loading from "@/app/Tools/loading";
-import Tableau from "@/app/Tools/Tableau";
+import Tableau_set_Header from "@/app/Tools/Tab_set_Header";
+import { Button } from "@/components/ui/button";
+import { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown } from "lucide-react";
 import { useEffect, useState } from "react";
 
 function page() {
@@ -49,14 +52,42 @@ function page() {
     { title: "cash Payer", accessorKey: "cashPayer" },
     { title: "incharge", accessorKey: "incharge" },
   ];
+
+  const columns1: ColumnDef<ITclient>[] = keyColonnes.map((cle) => {
+    return {
+      accessorKey: cle.accessorKey,
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            {cle.title}
+            <ArrowUpDown />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div
+          className={
+            cle.accessorKey === "inprocess"
+              ? row.original.inprocess?.toLocaleLowerCase()
+              : ""
+          }
+        >
+          {row.getValue(cle.accessorKey)}
+        </div>
+      ),
+    };
+  });
   return (
     <HeaderComponent title="All Customers to track for this month">
       {isLoading ? (
         <Loading type="Loading" />
       ) : (
-        <Tableau
+        <Tableau_set_Header
           data={data}
-          keyColonnes={keyColonnes}
+          columns={columns1}
           customer_id="customer_id"
           search_placeholder="Filter by customer ID"
         />

@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import React from "react";
 import { toast } from "sonner";
 import * as xlsx from "xlsx";
+import TableauCustomerTrack from "./Tableau";
 
 function UploadingCustomer() {
   const [data, setData] = React.useState<IUploadClient[]>([]);
@@ -14,6 +15,7 @@ function UploadingCustomer() {
     "shop",
     "par",
     "region",
+    "sat",
     "cashattendu",
   ];
   const readUploadFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,7 +41,7 @@ function UploadingCustomer() {
           const json: IUploadClient[] = xlsx.utils.sheet_to_json(worksheet);
           const colonnes = Object.keys(json[0]);
           let notexist = column.filter((x) => !colonnes.includes(x));
-          if (notexist.length > 0) {
+          if (notexist.length > 0 || column.length !== colonnes.length) {
             toast("Certaines colonnes ne sont pas dans le fichier uploader");
             return;
           } else {
@@ -71,8 +73,9 @@ function UploadingCustomer() {
         customer_id: "",
         customer_name: "",
         shop: "",
-        par: "",
         region: "",
+        sat: "",
+        par: "",
         cashattendu: "",
       },
     ];
@@ -104,23 +107,29 @@ function UploadingCustomer() {
       toast(error.message);
     }
   };
-  console.log(data);
   return (
-    <div className="flex w-full items-center gap-3">
-      <Input
-        accept=".xlsx"
-        onChange={(e) => readUploadFile(e)}
-        id="picture"
-        className="w-lg"
-        type="file"
-      />
+    <>
+      <div className="flex w-full items-center gap-3">
+        <Input
+          accept=".xlsx"
+          onChange={(e) => readUploadFile(e)}
+          id="picture"
+          className="w-lg"
+          type="file"
+        />
+        {data.length > 0 && (
+          <Button disabled={sending} onClick={(event) => sendData(event)}>
+            Submit
+          </Button>
+        )}
+        <Button onClick={() => template()}>Download template</Button>
+      </div>
       {data.length > 0 && (
-        <Button disabled={sending} onClick={(event) => sendData(event)}>
-          Submit
-        </Button>
+        <div>
+          <TableauCustomerTrack data={data} />
+        </div>
       )}
-      <Button onClick={() => template()}>Download template</Button>
-    </div>
+    </>
   );
 }
 

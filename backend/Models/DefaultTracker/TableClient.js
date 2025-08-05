@@ -30,7 +30,11 @@ const schema = new mongoose.Schema(
     region: { type: String, required: true },
     actif: { type: Boolean, required: true, default: true },
     dateupdate: { type: Date, required: true },
-    currentFeedback: { type: String, required: true },
+    currentFeedback: {
+      type: String,
+      required: true,
+      default: "Categorisation",
+    },
     appel: { type: String, required: false },
     fullDate: { type: Date, required: true, default: new Date() },
     //changeto contient le nouveau statut
@@ -44,9 +48,9 @@ const schema = new mongoose.Schema(
     changeto: { type: String, required: false },
     submitedBy: { type: String, required: true },
     action: {
-      type: Boolean,
+      type: String,
       required: true,
-      enum: ["NO_ACTION", "PENDING", "REJECTED", "APPROVED"],
+      enum: ["NO_ACTION", "REACTIVATION", "REPOSSESSION"],
       default: "NO_ACTION",
       uppercase: true,
     },
@@ -63,6 +67,7 @@ const schema = new mongoose.Schema(
     historique: { type: [historique], required: false },
     sat: { type: String, required: true },
     cashattendu: { type: Number, required: true },
+    cashPayer: { type: Number, required: true },
   },
   { timestamps: true }
 );

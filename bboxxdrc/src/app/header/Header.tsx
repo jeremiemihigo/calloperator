@@ -1,5 +1,7 @@
+import { AppSidebar } from "@/components/app-sidebar";
 import { ModeToggle } from "@/components/mode-toogle";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { ThemeProvider } from "@/components/theme-provider";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import React from "react";
 import { IUser } from "../interface/IUser";
 
@@ -22,6 +24,9 @@ function HeaderComponent({ children, title }: Props) {
       if (response.status === 200) {
         setUser(response.data);
       }
+      if (response.status === 201) {
+        window.location.replace("/login");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -33,20 +38,40 @@ function HeaderComponent({ children, title }: Props) {
     initialize();
   }, []);
   return (
-    <div className="w-full">
-      <nav className="flex nav-app w-screen">
-        <div className="first_div">
-          <SidebarTrigger />
-          <ModeToggle />
-          <p>{title}</p>
-        </div>
-        <div className="identity">
-          <p className="name">{user && user.nom}</p>
-          <p className="fonction">CUSTOMER SUPPORT APP DEV</p>
-        </div>
-      </nav>
-      <div style={{ padding: "10px" }}>{children}</div>
-    </div>
+    <>
+      <SidebarProvider>
+        <AppSidebar />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <main style={{ width: "100%" }}>
+            <div className="w-full">
+              {user && (
+                <nav className="flex nav-app w-screen">
+                  <div className="first_div">
+                    <SidebarTrigger />
+                    <ModeToggle />
+                    <p>{title}</p>
+                  </div>
+                  <div className="identity">
+                    <p className="name">{user && user.nom}</p>
+                    <p className="fonction">
+                      {user.poste.length > 0 && user.poste[0].title}{" "}
+                      {user.valueFilter?.length > 0 &&
+                        user?.valueFilter.join("; ")}
+                    </p>
+                  </div>
+                </nav>
+              )}
+              <div style={{ padding: "10px" }}>{children}</div>
+            </div>
+          </main>
+        </ThemeProvider>
+      </SidebarProvider>
+    </>
   );
 }
 

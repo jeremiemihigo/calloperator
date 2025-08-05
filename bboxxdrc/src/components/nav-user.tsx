@@ -25,6 +25,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { toast } from "sonner";
 
 export function NavUser({
   user,
@@ -36,6 +37,20 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+  const Deconnexion = async () => {
+    const res = await fetch("/api/deconnexion", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const response = await res.json();
+    toast(response.message);
+    if (response.status === 200) {
+      window.location.replace("/login");
+    }
+  };
 
   return (
     <SidebarMenu>
@@ -102,7 +117,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => Deconnexion()}>
               <LogOut />
               Log out
             </DropdownMenuItem>

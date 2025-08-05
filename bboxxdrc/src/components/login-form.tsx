@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
 
 import React from "react";
 
@@ -22,7 +21,6 @@ export function LoginForm({
     username: "",
     password: "",
   });
-  const router = useRouter();
   const handlechange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = event.target;
     setValue({
@@ -44,7 +42,7 @@ export function LoginForm({
       const data = await res.json();
 
       if (data.message === "success") {
-        window.location.replace("/dashboard");
+        window.location.replace("/");
       } else {
         setMessage(data.message);
       }
@@ -80,12 +78,6 @@ export function LoginForm({
         <div className="grid gap-3">
           <div className="flex items-center">
             <Label htmlFor="password">Password</Label>
-            {/* <a
-              href="#"
-              className="ml-auto text-sm underline-offset-4 hover:underline"
-            >
-              Forgot your password?
-            </a> */}
           </div>
           <Input
             onChange={(e) => handlechange(e)}

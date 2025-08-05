@@ -19,4 +19,22 @@ export interface IUploadClient {
   par: string;
   region: string;
   cashattendu: number;
+  cashPayer: number;
+}
+export interface ShopRegion {
+  shop: string;
+  action: number;
+  decision: number;
+  region: string;
+}
+export interface IDonner {
+  validationFraude: number;
+  validationField: number;
+  awaiting_fields: number;
+  awaiting_fraudes: number;
+  vmfield: number;
+  vmpo: number;
+  refresh: number;
+  act_decisions: ShopRegion[];
+  regions: string[];
 }

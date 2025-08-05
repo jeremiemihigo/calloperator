@@ -125,12 +125,14 @@
   border-radius: 5px;
   text-align: center;
 }
-.pending {
+.pending,
+.in_process {
   background-color: rgb(196, 198, 91);
   border-radius: 5px;
   text-align: center;
 }
-.approved {
+.approved,
+.done {
   background-color: rgb(14, 95, 45);
   border-radius: 5px;
   text-align: center;
@@ -160,4 +162,10 @@
   font-size: 14px;
   padding: 0;
   margin: 0;
+}
+/* Dashboard Card */
+.section_one {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

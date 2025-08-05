@@ -21,6 +21,7 @@ const {
   verification_field,
   cas_valider,
   AllVisitsStaff,
+  DashboardTracker,
 } = require("../Controllers/DefaultTracker/Client");
 const {
   Rapport,
@@ -51,6 +52,7 @@ const {
 const {
   AddPayement,
   ReadPayment,
+  AjustagePayement,
 } = require("../Controllers/DefaultTracker/Payement");
 const router = express.Router();
 
@@ -146,10 +148,13 @@ router.get(
 router.post("/validateDecision", protect, ValidateDecision);
 
 //Payement dt
-router.post("/addpayements", protect, AddPayement);
+router.post("/addpayements", protect, AddPayement, AjustagePayement);
 router.get("/readPayment", protect, ReadPayment);
 
 //Upload customer to track
 router.post("/upload_customer", protect, AddClientDT);
+
+//Dashboard default tracker
+router.get("/dashboardTracker", DashboardTracker);
 
 module.exports = router;

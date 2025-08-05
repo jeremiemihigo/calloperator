@@ -43,20 +43,28 @@ export async function POST(request: Request) {
 //Lecture de l'agent
 export async function GET(request: NextRequest) {
   const token = request.cookies.get("access")?.value;
-  const link = `${lien}/userAdmin`;
-  const res = await fetch(link, {
-    method: "GET",
-    headers: {
-      "Content-Type": "Application/json",
-      Authorization: "Bearer " + token,
-    },
-  });
+  if (!token) {
+    const response = NextResponse.json({
+      data: "token expired",
+      status: 201,
+    });
+    return response;
+  } else {
+    const link = `${lien}/userAdmin`;
+    const res = await fetch(link, {
+      method: "GET",
+      headers: {
+        "Content-Type": "Application/json",
+        Authorization: "Bearer " + token,
+      },
+    });
 
-  const reponse = await res.json();
-  const response = NextResponse.json({
-    data: reponse,
-    status: res.status,
-  });
-
-  return response;
+    const reponse = await res.json();
+    console.log(reponse);
+    const response = NextResponse.json({
+      data: reponse,
+      status: res.status,
+    });
+    return response;
+  }
 }

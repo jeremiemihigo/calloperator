@@ -25,21 +25,13 @@ const data = {
   navMain: [
     {
       title: "DASHBOARD",
-      url: "#",
+      url: "/",
       icon: LayoutDashboard,
       isActive: true,
       items: [
         {
-          title: "My customer",
-          url: "/mycustomer",
-        },
-        {
-          title: "Actions",
-          url: "/actions",
-        },
-        {
-          title: "Decisions",
-          url: "/decisions",
+          title: "Default tracker",
+          url: "/",
         },
       ],
     },
