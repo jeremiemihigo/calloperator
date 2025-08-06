@@ -1,6 +1,12 @@
 "use client";
 
-import { Database, LayoutDashboard, Target, Upload, User } from "lucide-react";
+import {
+  Database,
+  DecimalsArrowLeftIcon,
+  LayoutDashboard,
+  Target,
+  Upload,
+} from "lucide-react";
 import * as React from "react";
 
 import { NavMain } from "@/components/nav-main";
@@ -16,12 +22,6 @@ import {
 
 // This is sample data.
 const data = {
-  user: {
-    name: "Bboxx-DRC",
-    email: "By system and data department",
-    avatar: "/bboxx.png",
-  },
-
   navMain: [
     {
       title: "DASHBOARD",
@@ -33,13 +33,6 @@ const data = {
           title: "Default tracker",
           url: "/",
         },
-      ],
-    },
-    {
-      title: "ALL CUSTOMERS",
-      url: "#",
-      icon: User,
-      items: [
         {
           title: "Customers",
           url: "/customers",
@@ -50,49 +43,75 @@ const data = {
         },
       ],
     },
+
+    {
+      title: "Decisions",
+      url: "#",
+      icon: DecimalsArrowLeftIcon,
+      items: [
+        {
+          title: "Fraud",
+          url: "/decision_fraude",
+          valeur: "decision_fraude",
+        },
+        {
+          title: "Field",
+          url: "/decision_field",
+          valeur: "decision_field",
+        },
+        {
+          title: "Portfolio",
+          url: "/decision_portfolio",
+          valeur: "decision_portfolio",
+        },
+      ],
+    },
+
     {
       title: "MY TRACKER",
       url: "#",
       icon: Target,
       items: [
         {
-          title: "Verification field",
+          title: "Individually",
+          url: "/individually",
+        },
+        {
+          title: "Verif. field",
           url: "/awaiting_field",
         },
         {
-          title: "Confirmed by field",
-          url: "/confirmed_field",
-        },
-        {
-          title: "Verification fraud",
+          title: "Verif. fraud",
           url: "/fraude_verification",
         },
         {
-          title: "Confirmed by fraud",
+          title: "Conf. field",
+          url: "/confirmed_field",
+        },
+        {
+          title: "Conf fraud",
           url: "/confirmed_fraude",
         },
         {
-          title: "All staff visits",
+          title: "visits",
           url: "/all_visits",
+          valeur: "visite",
         },
       ],
     },
+
     {
       title: "ARBITRATION",
       url: "#",
       icon: Database,
       items: [
         {
-          title: "Fraud Managment",
-          url: "/arbitration_fraud",
-        },
-        {
-          title: "Field Managment",
-          url: "/arbitration_field",
-        },
-        {
-          title: "Call center",
+          title: "Categorization",
           url: "/arbitration_call_center",
+        },
+        {
+          title: "Actions",
+          url: "/actions",
         },
       ],
     },
@@ -124,7 +143,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

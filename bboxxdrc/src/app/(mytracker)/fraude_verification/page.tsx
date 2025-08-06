@@ -42,7 +42,6 @@ const postes = [
 ];
 function page() {
   const [data, setData] = useState<IVerificationField_Front[]>([]);
-  const [open, setOpen] = useState<boolean>(false);
   const [value, setValue] = useState<string>("PO");
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -149,13 +148,7 @@ function page() {
         <Loading type="Loading" />
       ) : (
         <>
-          <Combobox
-            open={open}
-            setOpen={setOpen}
-            value={value}
-            data={postes}
-            setValue={setValue}
-          />
+          <Combobox value={value} data={postes} setValue={setValue} />
           <Tableau_set_Header
             data={data}
             columns={[...columns, ...columns1]}

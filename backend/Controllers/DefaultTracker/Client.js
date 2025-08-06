@@ -8,6 +8,7 @@ const ModelFeedback = require("../../Models/Feedback");
 const { initialeSearch } = require("../../Static/Static_Function");
 const ModelRapport = require("../../Models/Rapport");
 const _ = require("lodash");
+const ModelAgentAdmin = require("../../Models/AgentAdmin");
 
 let searchData = [
   {
@@ -710,16 +711,18 @@ const customerToRefresh = (req, res) => {
 
 const verification_field = (req, res) => {
   try {
-    const { valueFilter, poste, fonction } = req.user;
+    const { valuefilter, poste, fonction, role } = req.user;
     const filterfonction = req.params.filterfonction
       ? req.params.filterfonction
       : "PO";
     const month = moment().format("MM-YYYY");
-    const idDepartement = req.params.departement;
+    const idDepartement = req.params.departement
+      ? req.params.departement
+      : role;
     asyncLab.waterfall(
       [
         function (done) {
-          ModelPoste.find({ idDepartement }, { id: 1 })
+          ModelPoste.find({ idDepartement }, { id: 1, filterby: 1 })
             .lean()
             .then((postes) => {
               let tab = postes.map((x) => {
@@ -752,11 +755,22 @@ const verification_field = (req, res) => {
             fonction === "superUser"
               ? { actif: true, month, currentFeedback: { $in: feedbacks } }
               : {
-                  [fiterby]: { $in: valueFilter },
+                  [fiterby]: { $in: valuefilter },
                   actif: true,
                   month,
+                  provenance: { $ne: role },
                   currentFeedback: { $in: feedbacks },
                 };
+          let parsuperieur = ["PAR 120", "PAR 90", "PAR 60"];
+          let parinferieur = ["PAR 15", "PAR 30"];
+          if (poste === "1750079733475" && fonction !== "superUser") {
+            match.par = { $in: parinferieur };
+          }
+          //Shop manager
+          if (poste === "1750079748336" && fonction !== "superUser") {
+            match.par = { $in: parsuperieur };
+          }
+
           ModelClient.aggregate([
             {
               $match: match,
@@ -1047,9 +1061,7 @@ const AllVisitsStaff = (req, res) => {
 };
 const ChangeStatus = async (req, res, next) => {
   try {
-    console.log("je suis dedans");
     const { nom, validationdt, codeAgent, poste, role } = req.user;
-    console.log(req.body);
     const { data } = req.body;
     //id, lastFeedback, nextFeedback
     if (!data) {
@@ -1060,7 +1072,6 @@ const ChangeStatus = async (req, res, next) => {
         async function updateClientsWithBulk() {
           try {
             // 1. Attendre que tous les `findById` et calculs soient terminés
-
             const bulkOperations = await Promise.all(
               data.map(async (client) => {
                 const lastclient = await ModelClient.findById(client.id);
@@ -1084,6 +1095,7 @@ const ChangeStatus = async (req, res, next) => {
                         dateupdate: now,
                         changeto: client.nextFeedback,
                         submitedBy: nom,
+                        provenance: role,
                       },
                       $push: {
                         historique: {
@@ -1286,6 +1298,43 @@ const DashboardTracker = async (req, res) => {
     return res.status(500).json({ error: "Erreur interne du serveur." });
   }
 };
+const DashboardAgent = async (req, res, next) => {
+  try {
+    const { codeAgent } = req.body.data;
+
+    ModelAgentAdmin.findOne({ codeAgent })
+      .lean()
+      .then((user) => {
+        req.user = user;
+        next();
+      })
+      .catch(function (err) {
+        console.log(err);
+        return res.status(201).json("token expired");
+      });
+  } catch (error) {
+    return res.status(201).json("token expired");
+  }
+};
+const sidebarDefaultTracker = async (req, res) => {
+  try {
+    const month = moment().format("MM-YYYY");
+    let donner = {};
+    const decisions = await ModelDecisions.find({ month }).lean();
+    donner.decision_field = decisions.filter(
+      (x) => x.idDepartement === "NRMRG" && x.statut === "PENDING"
+    ).length;
+    donner.decision_fraude = decisions.filter(
+      (x) => x.idDepartement === "D7UNY" && x.statut === "PENDING"
+    ).length;
+    donner.decision_portfolio = decisions.filter(
+      (x) => x.statut === "VERIFICATION"
+    ).length;
+    return res.status(200).json(donner);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 module.exports = {
   AddClientDT,
@@ -1306,4 +1355,6 @@ module.exports = {
   cas_valider,
   AllVisitsStaff,
   DashboardTracker,
+  DashboardAgent,
+  sidebarDefaultTracker,
 };

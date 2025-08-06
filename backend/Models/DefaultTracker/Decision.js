@@ -1,6 +1,14 @@
 const mongoose = require("mongoose");
 const ModelClient = require("./TableClient");
 
+const schemaComment = new mongoose.Schema(
+  {
+    commentaire: { type: String, required: true, trim: true },
+    sendby: { type: String, required: true },
+  },
+  { timestamps: true }
+);
+
 const schema = new mongoose.Schema(
   {
     decision: { type: String, required: true },
@@ -14,12 +22,12 @@ const schema = new mongoose.Schema(
     statut: {
       type: String,
       required: true,
-      enum: ["PENDING", "APPROVED", "REJECTED"],
+      enum: ["PENDING", "APPROVED", "REJECTED", "VERIFICATION"],
       default: "PENDING",
       uppercase: true,
     },
+    commentaire: { type: [schemaComment], required: false },
     idDepartement: { type: String, required: true },
-    commentRejected: { type: String, required: false },
     verifiedby: { type: String, required: false },
   },
   { timestamps: true }

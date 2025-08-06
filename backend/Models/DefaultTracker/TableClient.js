@@ -65,6 +65,7 @@ const schema = new mongoose.Schema(
     },
 
     historique: { type: [historique], required: false },
+    provenance: { type: String, required: false },
     sat: { type: String, required: true },
     cashattendu: { type: Number, required: true },
     cashPayer: { type: Number, required: true },

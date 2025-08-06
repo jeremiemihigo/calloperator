@@ -26,9 +26,34 @@ export const lien_image = `${link}/bboxx/image`;
 export const lien_dt = `${link_big}/dt`;
 export const lien_file = `${link}/bboxx/file`;
 export const lien_terrain = `${link}/bboxx/terrain`;
-// export const config = {
-//   headers: {
-//     "Content-Type": "Application/json",
-//     Authorization: "Bearer " + localStorage.getItem("auth"),
-//   },
-// };
+
+export const postes = [
+  {
+    value: "PO",
+    label: "Process officer",
+  },
+  {
+    value: "ZBM",
+    label: "Zonal Bisness Manager",
+  },
+  {
+    value: "RS",
+    label: "RS",
+  },
+  {
+    value: "SM",
+    label: "Shop Manager",
+  },
+  {
+    value: "TL",
+    label: "Team leader",
+  },
+  {
+    value: "tech",
+    label: "Technicien",
+  },
+  {
+    value: "agent",
+    label: "PA",
+  },
+];

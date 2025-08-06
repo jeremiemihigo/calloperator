@@ -71,13 +71,19 @@ export interface IVerificationField_Front {
   submitedby: string;
   incharge: string;
 }
+export interface IComment {
+  commentaire: string;
+  sendby: string;
+  createdAt: string;
+  _id: string;
+}
 export interface IDecision {
   decision: "WRITE_OFF" | "OPT_OUT" | "TRACKING_ONGOING";
   createdBy: string;
   codeclient: string;
   region: string;
   shop: string;
-  comment: string;
+  commentaire: IComment[];
   idDepartement: string;
   month: string;
   statut: "APPROVED" | "PENDING" | "REJECTED";

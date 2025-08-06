@@ -38,3 +38,8 @@ export interface IDonner {
   act_decisions: ShopRegion[];
   regions: string[];
 }
+export interface ISidebar {
+  decision_field: number;
+  decision_fraude: number;
+  decision_portfolio: number;
+}

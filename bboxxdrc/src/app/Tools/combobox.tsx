@@ -17,17 +17,17 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import React from "react";
 import { ICombo } from "../interface/IOther";
 
 type Props = {
-  open: boolean;
-  setOpen: (isOpen: boolean) => void;
   value: string;
   setValue: (isOpen: string) => void;
   data: ICombo[];
 };
 
-export function Combobox({ open, setOpen, value, data, setValue }: Props) {
+export function Combobox({ value, data, setValue }: Props) {
+  const [open, setOpen] = React.useState<boolean>(false);
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>

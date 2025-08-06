@@ -1,6 +1,7 @@
 "use client";
 import HeaderComponent from "@/app/header/Header";
 import { IVerificationField_Front } from "@/app/interface/TClient";
+import { postes } from "@/app/static/lien";
 import { Combobox } from "@/app/Tools/combobox";
 import Loading from "@/app/Tools/loading";
 import Popup from "@/app/Tools/Popup";
@@ -11,40 +12,8 @@ import { ArrowUpDown, SquarePen } from "lucide-react";
 import { useEffect, useState } from "react";
 import Changestatus from "./changestatus";
 
-const postes = [
-  {
-    value: "PO",
-    label: "Process officer",
-  },
-  {
-    value: "ZBM",
-    label: "Zonal Bisness Manager",
-  },
-  {
-    value: "RS",
-    label: "RS",
-  },
-  {
-    value: "SM",
-    label: "Shop Manager",
-  },
-  {
-    value: "TL",
-    label: "Team leader",
-  },
-  {
-    value: "tech",
-    label: "Technicien",
-  },
-  {
-    value: "agent",
-    label: "PA",
-  },
-];
-
 function page() {
   const [data, setData] = useState<IVerificationField_Front[]>([]);
-  const [open, setOpen] = useState<boolean>(false);
   const [value, setValue] = useState<string>("PO");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const submitLogin = async () => {
@@ -150,13 +119,7 @@ function page() {
         <Loading type="Loading" />
       ) : (
         <>
-          <Combobox
-            open={open}
-            setOpen={setOpen}
-            value={value}
-            data={postes}
-            setValue={setValue}
-          />
+          <Combobox value={value} data={postes} setValue={setValue} />
           <Tableau_set_Header
             data={data}
             columns={[...columns, ...columns1]}

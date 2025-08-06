@@ -41,10 +41,7 @@ const Doublon = async (req, res) => {
         },
       ],
       function (response) {
-        if (response) {
-          return res.status(200).json(present);
-        } else {
-        }
+        return res.status(200).json(present);
       }
     );
   } catch (error) {

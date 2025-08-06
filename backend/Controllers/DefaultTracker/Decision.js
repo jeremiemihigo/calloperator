@@ -27,8 +27,13 @@ const VerificationDecision = async (req, res) => {
             {
               $set: {
                 statut: next_statut,
-                commentRejected: commentaire,
                 verifiedby: nom,
+              },
+              $push: {
+                commentaire: {
+                  commentaire,
+                  sendby: req.user.nom,
+                },
               },
             },
             { new: true }
@@ -75,6 +80,7 @@ const VerificationDecision = async (req, res) => {
     return res.status(201).json(JSON.stringify(error));
   }
 };
+
 const ReadDecision = async (req, res) => {
   try {
     const month = moment(new Date()).format("MM-YYYY");
@@ -136,20 +142,23 @@ const ChangeDecision = async (req, res) => {
   try {
     const { codeclient, comment, shop, idHistorique, region, decision } =
       req.body.data;
-    console.log(req.body);
-    const { nom, validationdt } = req.user;
+
+    const { nom, validationdt, role } = req.user;
     const month = moment().format("MM-YYYY");
 
     ModelDecision.create({
       codeclient,
-      comment,
+      commentaire: {
+        commentaire: comment,
+        sendby: req.user.nom,
+      },
       shop,
       id: idHistorique ? idHistorique : "",
       region,
       decision,
+      idDepartement: role,
       month,
       createdBy: nom,
-      statut: validationdt ? "APPROVED" : "PENDING",
     })
       .then((result) => {
         if (result) {
@@ -159,6 +168,7 @@ const ChangeDecision = async (req, res) => {
         }
       })
       .catch(function (error) {
+        console.log(error);
         return res.status(201).json(error.message);
       });
   } catch (error) {
@@ -247,12 +257,16 @@ const GraphiqueDecision = async (req, res) => {
 const ReadDecisionArbitrage = async (req, res) => {
   try {
     const { departement } = req.params;
+    let match =
+      departement === "portfolio"
+        ? { statut: "VERIFICATION" }
+        : {
+            idDepartement: departement,
+            statut: { $in: ["PENDING", "REJECTED", "APPROVED"] },
+          };
     ModelDecision.aggregate([
       {
-        $match: {
-          idDepartement: departement,
-          statut: { $in: ["PENDING", "REJECTED", "APPROVED"] },
-        },
+        $match: match,
       },
       {
         $project: {
@@ -263,7 +277,7 @@ const ReadDecisionArbitrage = async (req, res) => {
           id: 1,
           _id: 1,
           shop: 1,
-          comment: 1,
+          commentaire: 1,
           statut: 1,
           createdAt: 1,
         },
@@ -284,11 +298,49 @@ const ValidateDecision = async (req, res) => {
     if (statut === "REJECTED" && commentaire === "") {
       return res.status(201).json("Veuillez renseigner le commentaire");
     }
-    ModelDecision.findByIdAndUpdate(id, {
-      $set: { statut, verifiedby: req.user.nom },
-    }).then((result) => {
-      return res.status(200).json(result);
-    });
+    asyncLab.waterfall(
+      [
+        function (done) {
+          ModelDecision.findByIdAndUpdate(id, {
+            $set: {
+              statut,
+              commentaire: {
+                commentaire,
+                sendby: req.user.nom,
+              },
+              verifiedby: req.user.nom,
+            },
+          }).then((result) => {
+            if (statut === "APPROVED") {
+              done(null, result);
+            } else {
+              return res.status(200).json(result);
+            }
+          });
+        },
+        function (decision, done) {
+          ModelClient.findOneAndUpdate(
+            {
+              codeclient: decision.codeclient,
+              actif: true,
+              month: decision.month,
+            },
+            { $set: { actif: false, statut_decision: decision.decision } }
+          )
+            .then((result) => {
+              done(result);
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+        },
+      ],
+      function (result) {
+        if (result) {
+          return res.status(200).json(result);
+        }
+      }
+    );
   } catch (error) {
     console.log(error);
   }

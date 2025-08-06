@@ -162,12 +162,11 @@ const reponse = async (req, res, next) => {
                 if (response) {
                   done(null, response);
                 } else {
-                  done("Erreur d'enregistrement");
+                  return res.status(404).json("Error");
                 }
               })
               .catch(function (err) {
-                console.log(err);
-                done("Erreur " + err);
+                return res.status(404).json(err.message);
               });
           }
         },
@@ -177,17 +176,15 @@ const reponse = async (req, res, next) => {
               .then((deleted) => {
                 done(response);
               })
-              .catch(function (err) {});
+              .catch(function (err) {
+                done(response);
+              });
           } catch (error) {}
         },
       ],
       function (response) {
-        if (response.codeclient) {
-          io.emit("reponse", response);
-          return res.status(200).json(idDemande);
-        } else {
-          return res.status(400).json("Error");
-        }
+        io.emit("reponse", response);
+        return res.status(200).json(idDemande);
       }
     );
   } catch (error) {

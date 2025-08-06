@@ -22,6 +22,8 @@ const {
   cas_valider,
   AllVisitsStaff,
   DashboardTracker,
+  DashboardAgent,
+  sidebarDefaultTracker,
 } = require("../Controllers/DefaultTracker/Client");
 const {
   Rapport,
@@ -156,5 +158,11 @@ router.post("/upload_customer", protect, AddClientDT);
 
 //Dashboard default tracker
 router.get("/dashboardTracker", DashboardTracker);
+router.post(
+  "/dashboardAgent/:filterfonction",
+  DashboardAgent,
+  verification_field
+);
+router.get("/sidebarDefaultTracker", sidebarDefaultTracker);
 
 module.exports = router;

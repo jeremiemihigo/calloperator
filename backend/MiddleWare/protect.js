@@ -22,13 +22,23 @@ module.exports = {
         return res.status(201).json("token expired");
       }
 
-      ModelAgentAdmin.findOne({ _id: new ObjectId(decoded.id), active: true })
+      ModelAgentAdmin.aggregate([
+        { $match: { _id: new ObjectId(decoded.id), active: true } },
+        {
+          $lookup: {
+            from: "agents",
+            localField: "codeAgent",
+            foreignField: "idvm",
+            as: "idvm",
+          },
+        },
+      ])
         .then((user) => {
-          if (user) {
-            req.user = user;
+          if (user.length) {
+            req.user = user[0];
             next();
           } else {
-            done(null, user);
+            return res.status(201).json("token expired");
           }
         })
         .catch(function (err) {

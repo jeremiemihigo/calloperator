@@ -15,7 +15,6 @@ type Props = {
 function Changestatus({ data }: Props) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [feedbacks, setFeedbacks] = useState<ICombo[]>([]);
-  const [opencombo, setOpencombo] = useState<boolean>(false);
   const [feedbackselect, setFeedbacksSelect] = useState<string>("");
   const [isSending, setIsSending] = useState<boolean>(false);
   const [commentaire, setCommentaire] = useState<string>("");
@@ -82,8 +81,6 @@ function Changestatus({ data }: Props) {
         <div className="grid gap-4">
           <div className="grid gap-3">
             <Combobox
-              open={opencombo}
-              setOpen={setOpencombo}
               value={feedbackselect}
               data={feedbacks}
               setValue={setFeedbacksSelect}

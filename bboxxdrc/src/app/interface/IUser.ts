@@ -4,4 +4,5 @@ export interface IUser {
   nom: string;
   poste: IPoste[];
   valueFilter: string[];
+  codeAgent: string;
 }

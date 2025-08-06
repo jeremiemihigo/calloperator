@@ -17,13 +17,13 @@ const login = async (req, res) => {
       active: true,
     }).select("+password");
     if (!user) {
-      return res.status(201).json("Accès non autorisée");
+      return res.status(201).json("Accès incorrect");
     }
 
     const isMatch = await user.matchPasswords(password);
 
     if (!isMatch) {
-      return res.status(201).json("Accès non autorisée");
+      return res.status(201).json("Accès incorrect");
     }
     sendToken(user, 200, res);
   } catch (error) {
@@ -239,13 +239,13 @@ const LoginAgentAdmin = async (req, res) => {
       active: true,
     }).select("+password");
     if (!user) {
-      return res.status(201).json("Accès non autorisée");
+      return res.status(201).json("Accès incorrect");
     }
 
     const isMatch = await user.matchPasswords(password);
 
     if (!isMatch) {
-      return res.status(201).json("Accès non autorisée");
+      return res.status(201).json("Accès incorrect");
     }
     const token = user.getSignedToken();
     return res.status(200).json({ token });
