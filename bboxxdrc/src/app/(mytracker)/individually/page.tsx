@@ -31,8 +31,8 @@ function Individually() {
     });
     const response = await result.json();
     if (response.status === 200) {
-      let utilisateurs: IUser[] = response.data;
-      let donner = utilisateurs.map((x) => {
+      const utilisateurs: IUser[] = response.data;
+      const donner = utilisateurs.map((x) => {
         return {
           label: x.nom,
           value: x.codeAgent,

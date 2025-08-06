@@ -3,7 +3,6 @@ import HeaderComponent from "./header/Header";
 function NotFound() {
   return (
     <HeaderComponent title="Not found">
-      {" "}
       <div id="errorMessage">
         <div>
           <h2>404</h2>

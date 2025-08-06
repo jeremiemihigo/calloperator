@@ -1,4 +1,5 @@
 import { LoginForm } from "@/components/login-form";
+import Image from "next/image";
 
 export default function LoginPage() {
   return (
@@ -11,9 +12,11 @@ export default function LoginPage() {
         </div>
       </div>
       <div className="bg-muted relative hidden lg:block">
-        <img
+        <Image
           src="/bboxx.png"
-          alt="Image"
+          width={100}
+          height={200}
+          alt="Picture of the author"
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />
       </div>

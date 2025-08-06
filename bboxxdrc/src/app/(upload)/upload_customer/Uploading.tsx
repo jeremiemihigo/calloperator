@@ -40,7 +40,7 @@ function UploadingCustomer() {
           const worksheet = workbook.Sheets[sheetName];
           const json: IUploadClient[] = xlsx.utils.sheet_to_json(worksheet);
           const colonnes = Object.keys(json[0]);
-          let notexist = column.filter((x) => !colonnes.includes(x));
+          const notexist = column.filter((x) => !colonnes.includes(x));
           if (notexist.length > 0 || column.length !== colonnes.length) {
             toast("Certaines colonnes ne sont pas dans le fichier uploader");
             return;

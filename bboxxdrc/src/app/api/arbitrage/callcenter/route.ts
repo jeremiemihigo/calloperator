@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
         return "No_visits";
       }
     };
-    let donner = result.map((x: IArbitration) => {
+    const donner = result.map((x: IArbitration) => {
       return {
         ...x,
         appel: returnFeedback(

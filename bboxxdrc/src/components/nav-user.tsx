@@ -51,8 +51,6 @@ export function NavUser() {
     }
   };
 
-  const [load, setLoad] = React.useState<boolean>(true);
-
   const [user, setUser] = React.useState<IUser | null>(null);
   const loadingUser = async () => {
     try {

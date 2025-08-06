@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   });
   if (res.status === 200) {
     const data: IFeedback[] = await res.json();
-    let formatage = data.map((x) => {
+    const formatage = data.map((x) => {
       return {
         value: x.idFeedback,
         label: x.title,

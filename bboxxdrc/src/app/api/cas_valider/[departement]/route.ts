@@ -18,7 +18,7 @@ export async function GET(
   });
   if (res.status === 200) {
     const data: ICasValider[] = await res.json();
-    let donner = data.map((x) => {
+    const donner = data.map((x) => {
       return {
         ...x,
         typeDecision:

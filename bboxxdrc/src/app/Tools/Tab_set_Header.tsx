@@ -31,10 +31,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-type Keys = {
-  title: string;
-  accessorKey: string;
-};
 type Props = {
   data: any;
   customer_id: string;

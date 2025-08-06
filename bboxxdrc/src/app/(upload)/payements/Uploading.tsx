@@ -41,7 +41,7 @@ function UploadingPayment() {
           const worksheet = workbook.Sheets[sheetName];
           const json: IPayement[] = xlsx.utils.sheet_to_json(worksheet);
           const colonnes = Object.keys(json[0]);
-          let notexist = column.filter((x) => !colonnes.includes(x));
+          const notexist = column.filter((x) => !colonnes.includes(x));
           if (notexist.length > 0) {
             toast("Certaines colonnes ne sont pas dans le fichier uploader");
             return;

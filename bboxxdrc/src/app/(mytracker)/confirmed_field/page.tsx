@@ -10,7 +10,7 @@ import { ArrowUpDown, SquarePen } from "lucide-react";
 import { useEffect, useState } from "react";
 import ChangeDecision from "../confirmed_fraude/decision";
 
-function page() {
+function Confirmed_field() {
   const [data, setData] = useState<ICasValider[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const submitLogin = async () => {
@@ -106,4 +106,4 @@ function page() {
   );
 }
 
-export default page;
+export default Confirmed_field;

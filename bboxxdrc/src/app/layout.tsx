@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Default tracker",
   description: "Application used to track customers in higher PAR",
+  icons: {
+    icon: "/bboxx.png",
+  },
 };
 
 export default function RootLayout({

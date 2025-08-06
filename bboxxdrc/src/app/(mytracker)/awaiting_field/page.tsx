@@ -12,7 +12,7 @@ import { ArrowUpDown, SquarePen } from "lucide-react";
 import { useEffect, useState } from "react";
 import Changestatus from "./changestatus";
 
-function page() {
+function Awaiting_Field() {
   const [data, setData] = useState<IVerificationField_Front[]>([]);
   const [value, setValue] = useState<string>("PO");
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -132,4 +132,4 @@ function page() {
   );
 }
 
-export default page;
+export default Awaiting_Field;

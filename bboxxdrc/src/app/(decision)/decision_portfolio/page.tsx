@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import Validation from "../decision_field/validation";
 import Commentaire from "../decision_fraude/Commentaire";
 
-function page() {
+function Decision_portfolio() {
   const [data, setData] = useState<IDecision[]>([]);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -146,4 +146,4 @@ function page() {
   );
 }
 
-export default page;
+export default Decision_portfolio;

@@ -8,7 +8,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { useEffect, useState } from "react";
 
-function page() {
+function Customers() {
   const [data, setData] = useState<ITclient[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const submitLogin = async () => {
@@ -96,4 +96,4 @@ function page() {
   );
 }
 
-export default page;
+export default Customers;

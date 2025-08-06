@@ -2,7 +2,7 @@
 import HeaderComponent from "@/app/header/Header";
 import UploadingCustomer from "./Uploading";
 
-function page() {
+function Upload_customer() {
   return (
     <HeaderComponent title="Upload payments">
       <UploadingCustomer />
@@ -10,4 +10,4 @@ function page() {
   );
 }
 
-export default page;
+export default Upload_customer;

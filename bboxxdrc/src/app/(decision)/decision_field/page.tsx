@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import Commentaire from "../decision_fraude/Commentaire";
 import Validation from "./validation";
 
-function page() {
+function Decision_field() {
   const [data, setData] = useState<IDecision[]>([]);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -146,4 +146,4 @@ function page() {
   );
 }
 
-export default page;
+export default Decision_field;

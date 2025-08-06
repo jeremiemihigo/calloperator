@@ -40,7 +40,7 @@ const postes = [
     label: "PA",
   },
 ];
-function page() {
+function Fraude_verification() {
   const [data, setData] = useState<IVerificationField_Front[]>([]);
   const [value, setValue] = useState<string>("PO");
 
@@ -161,4 +161,4 @@ function page() {
   );
 }
 
-export default page;
+export default Fraude_verification;

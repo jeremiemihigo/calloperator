@@ -3,7 +3,7 @@ import HeaderComponent from "@/app/header/Header";
 import Tableau from "./Tableau";
 import UploadingPayment from "./Uploading";
 
-function page() {
+function Payements() {
   return (
     <HeaderComponent title="Upload payments">
       <UploadingPayment />
@@ -12,4 +12,4 @@ function page() {
   );
 }
 
-export default page;
+export default Payements;

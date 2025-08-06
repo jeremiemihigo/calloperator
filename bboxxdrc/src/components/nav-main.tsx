@@ -92,7 +92,7 @@ export function NavMain({
                           style={{ justifyContent: "space-between" }}
                         >
                           <span>{subItem.title}</span>
-                          {subItem.valeur && data && (
+                          {subItem.valeur && data && !load && (
                             <span
                               style={{
                                 background: "black",

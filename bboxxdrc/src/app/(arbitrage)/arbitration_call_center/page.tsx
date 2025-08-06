@@ -6,7 +6,7 @@ import Tableau from "@/app/Tools/Tableau";
 import { useEffect, useState } from "react";
 import Uploadcallcenter from "./uploadcallcenter";
 
-function page() {
+function Arbitration_call_center() {
   const [data, setData] = useState<IArbitration[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const submitLogin = async () => {
@@ -66,4 +66,4 @@ function page() {
   );
 }
 
-export default page;
+export default Arbitration_call_center;

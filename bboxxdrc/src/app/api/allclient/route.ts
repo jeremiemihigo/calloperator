@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
       if (
         visites.filter((x) => type.includes(x.demandeur.fonction)).length > 0
       ) {
-        let v = visites.filter((x) => type.includes(x.demandeur.fonction));
+        const v = visites.filter((x) => type.includes(x.demandeur.fonction));
         const { demande } = v[v.length - 1];
         return returnFeedback(demande.raison, "No_visits");
       } else {
